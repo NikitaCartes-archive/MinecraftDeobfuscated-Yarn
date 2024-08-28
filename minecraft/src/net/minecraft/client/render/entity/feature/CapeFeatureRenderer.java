@@ -33,7 +33,6 @@ public class CapeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 			if (skinTextures.capeTexture() != null) {
 				if (!playerEntityRenderState.equippedChestStack.isOf(Items.ELYTRA)) {
 					VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(skinTextures.capeTexture()));
-					this.getContextModel().copyBipedStateTo(this.model);
 					this.model.setAngles(playerEntityRenderState);
 					this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				}

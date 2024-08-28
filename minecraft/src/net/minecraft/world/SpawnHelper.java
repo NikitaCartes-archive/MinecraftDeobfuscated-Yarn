@@ -299,7 +299,7 @@ public final class SpawnHelper {
 
 	public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
 		if (spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)) {
-			Structure structure = structureAccessor.getRegistryManager().get(RegistryKeys.STRUCTURE).get(StructureKeys.FORTRESS);
+			Structure structure = structureAccessor.getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE).get(StructureKeys.FORTRESS);
 			return structure == null ? false : structureAccessor.getStructureAt(pos, structure).hasChildren();
 		} else {
 			return false;

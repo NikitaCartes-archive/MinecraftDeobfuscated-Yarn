@@ -39,7 +39,7 @@ public abstract class DimensionEffects {
 		return BY_IDENTIFIER.get(dimensionType.effects());
 	}
 
-	public boolean method_62183(float skyAngle) {
+	public boolean isSunHigh(float skyAngle) {
 		return false;
 	}
 
@@ -119,7 +119,7 @@ public abstract class DimensionEffects {
 		}
 
 		@Override
-		public boolean method_62183(float skyAngle) {
+		public boolean isSunHigh(float skyAngle) {
 			float f = MathHelper.cos(skyAngle * (float) (Math.PI * 2));
 			return f >= -0.4F && f <= 0.4F;
 		}

@@ -9,12 +9,10 @@ import net.minecraft.client.render.entity.state.ItemEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
@@ -34,10 +32,6 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity, ItemEntityRen
 		this.itemRenderer = context.getItemRenderer();
 		this.shadowRadius = 0.15F;
 		this.shadowOpacity = 0.75F;
-	}
-
-	public Identifier getTexture(ItemEntityRenderState itemEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	public ItemEntityRenderState getRenderState() {

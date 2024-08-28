@@ -16,7 +16,8 @@ public class CowEntityRenderer extends AgeableMobEntityRenderer<CowEntity, Livin
 		super(context, new CowEntityModel(context.getPart(EntityModelLayers.COW)), new CowEntityModel(context.getPart(EntityModelLayers.COW_BABY)), 0.7F);
 	}
 
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	@Override
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 

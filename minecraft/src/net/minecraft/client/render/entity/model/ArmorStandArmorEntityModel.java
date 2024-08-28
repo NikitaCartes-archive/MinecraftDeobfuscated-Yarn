@@ -47,6 +47,7 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 	}
 
 	public void setAngles(ArmorStandEntityRenderState armorStandEntityRenderState) {
+		super.setAngles(armorStandEntityRenderState);
 		this.head.pitch = (float) (Math.PI / 180.0) * armorStandEntityRenderState.headRotation.getPitch();
 		this.head.yaw = (float) (Math.PI / 180.0) * armorStandEntityRenderState.headRotation.getYaw();
 		this.head.roll = (float) (Math.PI / 180.0) * armorStandEntityRenderState.headRotation.getRoll();

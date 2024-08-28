@@ -24,7 +24,7 @@ public class OctreeDebugRenderer {
 	}
 
 	public void render(MatrixStack matrices, Frustum frustum, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-		Octree octree = this.client.worldRenderer.getChunkRenderingDataPreparer().method_62925();
+		Octree octree = this.client.worldRenderer.getChunkRenderingDataPreparer().getOctree();
 		MutableInt mutableInt = new MutableInt(0);
 		octree.visit(
 			(node, skipVisibilityCheck, depth) -> this.renderNode(node, matrices, vertexConsumers, cameraX, cameraY, cameraZ, depth, skipVisibilityCheck, mutableInt),
@@ -60,15 +60,15 @@ public class OctreeDebugRenderer {
 			matrices,
 			vertexConsumer,
 			box.contract(0.1 * (double)depth).offset(-cameraX, -cameraY, -cameraZ),
-			method_62980(m, 0.3F),
-			method_62980(m, 0.8F),
-			method_62980(m, 0.5F),
+			getColorComponent(m, 0.3F),
+			getColorComponent(m, 0.8F),
+			getColorComponent(m, 0.5F),
 			skipVisibilityCheck ? 0.4F : 1.0F
 		);
 	}
 
-	private static float method_62980(long l, float f) {
-		float g = 0.1F;
-		return MathHelper.fractionalPart(f * (float)l) * 0.9F + 0.1F;
+	private static float getColorComponent(long size, float gradient) {
+		float f = 0.1F;
+		return MathHelper.fractionalPart(gradient * (float)size) * 0.9F + 0.1F;
 	}
 }

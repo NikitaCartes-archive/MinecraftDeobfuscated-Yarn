@@ -14,13 +14,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TadpoleEntityModel extends EntityModel<LivingEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart tail;
 
-	public TadpoleEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityCutoutNoCull);
-		this.root = root;
-		this.tail = root.getChild(EntityModelPartNames.TAIL);
+	public TadpoleEntityModel(ModelPart modelPart) {
+		super(modelPart, RenderLayer::getEntityCutoutNoCull);
+		this.tail = modelPart.getChild(EntityModelPartNames.TAIL);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -38,12 +36,8 @@ public class TadpoleEntityModel extends EntityModel<LivingEntityRenderState> {
 		return TexturedModelData.of(modelData, 16, 16);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(LivingEntityRenderState livingEntityRenderState) {
+		super.setAngles(livingEntityRenderState);
 		float f = livingEntityRenderState.touchingWater ? 1.0F : 1.5F;
 		this.tail.yaw = -f * 0.25F * MathHelper.sin(0.3F * livingEntityRenderState.age);
 	}

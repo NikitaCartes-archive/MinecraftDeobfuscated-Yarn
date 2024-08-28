@@ -70,7 +70,7 @@ public abstract class AbstractMinecartEntityRenderer<T extends AbstractMinecartE
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(minecartEntityRenderState);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(minecartEntityRenderState)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
 	}
@@ -104,10 +104,6 @@ public abstract class AbstractMinecartEntityRenderer<T extends AbstractMinecartE
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-g));
 	}
 
-	public Identifier getTexture(S minecartEntityRenderState) {
-		return TEXTURE;
-	}
-
 	public void updateRenderState(T abstractMinecartEntity, S minecartEntityRenderState, float f) {
 		super.updateRenderState(abstractMinecartEntity, minecartEntityRenderState, f);
 		if (abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController) {
@@ -130,7 +126,7 @@ public abstract class AbstractMinecartEntityRenderer<T extends AbstractMinecartE
 	private static <T extends AbstractMinecartEntity, S extends MinecartEntityRenderState> void updateFromExperimentalController(
 		T minecart, ExperimentalMinecartController controller, S state, float tickDelta
 	) {
-		if (controller.method_61614()) {
+		if (controller.hasCurrentLerpSteps()) {
 			state.lerpedPos = controller.getLerpedPosition(tickDelta);
 			state.lerpedPitch = controller.getLerpedPitch(tickDelta);
 			state.lerpedYaw = controller.getLerpedYaw(tickDelta);

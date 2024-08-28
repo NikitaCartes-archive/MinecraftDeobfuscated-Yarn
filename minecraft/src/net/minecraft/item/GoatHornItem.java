@@ -82,7 +82,7 @@ public class GoatHornItem extends Item {
 		if (registryEntry != null) {
 			return Optional.of(registryEntry);
 		} else {
-			Optional<RegistryEntryList.Named<Instrument>> optional = registries.getWrapperOrThrow(RegistryKeys.INSTRUMENT).getOptional(this.instrumentTag);
+			Optional<RegistryEntryList.Named<Instrument>> optional = registries.getOrThrow(RegistryKeys.INSTRUMENT).getOptional(this.instrumentTag);
 			if (optional.isPresent()) {
 				Iterator<RegistryEntry<Instrument>> iterator = ((RegistryEntryList.Named)optional.get()).iterator();
 				if (iterator.hasNext()) {

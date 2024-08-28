@@ -149,9 +149,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
-		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
-		RegistryEntryLookup<Item> registryEntryLookup2 = registries.getWrapperOrThrow(RegistryKeys.ITEM);
-		RegistryEntryLookup<Block> registryEntryLookup3 = registries.getWrapperOrThrow(RegistryKeys.BLOCK);
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<Item> registryEntryLookup2 = registries.getOrThrow(RegistryKeys.ITEM);
+		RegistryEntryLookup<Block> registryEntryLookup3 = registries.getOrThrow(RegistryKeys.BLOCK);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Items.MAP,
@@ -393,7 +393,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.rewards(AdvancementRewards.Builder.experience(85))
 			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.create(NumberRange.IntRange.exactly(5)))
 			.build(exporter, "adventure/arbalistic");
-		RegistryWrapper.Impl<BannerPattern> impl = registries.getWrapperOrThrow(RegistryKeys.BANNER_PATTERN);
+		RegistryWrapper.Impl<BannerPattern> impl = registries.getOrThrow(RegistryKeys.BANNER_PATTERN);
 		AdvancementEntry advancementEntry8 = Advancement.Builder.create()
 			.parent(advancementEntry)
 			.display(
@@ -557,7 +557,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				"play_jukebox_in_meadows",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create()
-						.biome(RegistryEntryList.of(registries.getWrapperOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.MEADOW)))
+						.biome(RegistryEntryList.of(registries.getOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.MEADOW)))
 						.block(BlockPredicate.Builder.create().blocks(registryEntryLookup3, Blocks.JUKEBOX)),
 					ItemPredicate.Builder.create().subPredicate(ItemSubPredicateTypes.JUKEBOX_PLAYABLE, JukeboxPlayablePredicate.empty())
 				)
@@ -750,7 +750,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"minecraft_trials_edition",
 				TickCriterion.Conditions.createLocation(
-					LocationPredicate.Builder.createStructure(registries.getWrapperOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.TRIAL_CHAMBERS))
+					LocationPredicate.Builder.createStructure(registries.getOrThrow(RegistryKeys.STRUCTURE).getOrThrow(StructureKeys.TRIAL_CHAMBERS))
 				)
 			)
 			.build(exporter, "adventure/minecraft_trials_edition");
@@ -1063,7 +1063,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	protected static Advancement.Builder requireListedBiomesVisited(
 		Advancement.Builder builder, RegistryWrapper.WrapperLookup registries, List<RegistryKey<Biome>> biomes
 	) {
-		RegistryEntryLookup<Biome> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.BIOME);
+		RegistryEntryLookup<Biome> registryEntryLookup = registries.getOrThrow(RegistryKeys.BIOME);
 
 		for (RegistryKey<Biome> registryKey : biomes) {
 			builder.criterion(

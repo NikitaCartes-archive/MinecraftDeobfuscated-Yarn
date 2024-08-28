@@ -54,10 +54,6 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity, E
 		return g - 1.4F;
 	}
 
-	public Identifier getTexture(EndCrystalEntityRenderState endCrystalEntityRenderState) {
-		return TEXTURE;
-	}
-
 	public EndCrystalEntityRenderState getRenderState() {
 		return new EndCrystalEntityRenderState();
 	}

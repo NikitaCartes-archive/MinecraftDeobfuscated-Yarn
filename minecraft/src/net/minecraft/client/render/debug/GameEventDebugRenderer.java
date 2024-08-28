@@ -60,7 +60,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 							double jx = pos.getX() + (double)listener.getRange();
 							double k = pos.getY() + (double)listener.getRange();
 							double l = pos.getZ() + (double)listener.getRange();
-							DebugRenderer.method_62350(
+							DebugRenderer.drawVoxelShapeOutlines(
 								matrices, vertexConsumer, VoxelShapes.cuboid(new Box(gx, hx, ix, jx, k, l)), -cameraX, -cameraY, -cameraZ, 1.0F, 1.0F, 0.0F, 0.35F, true
 							);
 						}

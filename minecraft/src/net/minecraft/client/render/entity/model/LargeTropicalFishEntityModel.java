@@ -14,12 +14,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class LargeTropicalFishEntityModel extends EntityModel<TropicalFishEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart tail;
 
-	public LargeTropicalFishEntityModel(ModelPart root) {
-		this.root = root;
-		this.tail = root.getChild(EntityModelPartNames.TAIL);
+	public LargeTropicalFishEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.tail = modelPart.getChild(EntityModelPartNames.TAIL);
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -59,12 +58,8 @@ public class LargeTropicalFishEntityModel extends EntityModel<TropicalFishEntity
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(TropicalFishEntityRenderState tropicalFishEntityRenderState) {
+		super.setAngles(tropicalFishEntityRenderState);
 		float f = tropicalFishEntityRenderState.touchingWater ? 1.0F : 1.5F;
 		this.tail.yaw = -f * 0.45F * MathHelper.sin(0.6F * tropicalFishEntityRenderState.age);
 	}

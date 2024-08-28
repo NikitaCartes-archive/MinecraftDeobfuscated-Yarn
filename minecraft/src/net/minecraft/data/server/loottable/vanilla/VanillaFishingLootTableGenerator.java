@@ -32,7 +32,7 @@ import net.minecraft.world.biome.BiomeKeys;
 public record VanillaFishingLootTableGenerator(RegistryWrapper.WrapperLookup registries) implements LootTableGenerator {
 	@Override
 	public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> lootTableBiConsumer) {
-		RegistryWrapper.Impl<Biome> impl = this.registries.getWrapperOrThrow(RegistryKeys.BIOME);
+		RegistryWrapper.Impl<Biome> impl = this.registries.getOrThrow(RegistryKeys.BIOME);
 		lootTableBiConsumer.accept(
 			LootTables.FISHING_GAMEPLAY,
 			LootTable.builder()

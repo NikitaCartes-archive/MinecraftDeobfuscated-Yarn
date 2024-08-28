@@ -51,8 +51,8 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity,
 		super.render(witherSkullEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(WitherSkullEntityRenderState witherSkullEntityRenderState) {
-		return witherSkullEntityRenderState.charged ? INVULNERABLE_TEXTURE : TEXTURE;
+	private Identifier getTexture(WitherSkullEntityRenderState state) {
+		return state.charged ? INVULNERABLE_TEXTURE : TEXTURE;
 	}
 
 	public WitherSkullEntityRenderState getRenderState() {

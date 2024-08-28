@@ -41,7 +41,7 @@ public class ProfilesTooltipComponent implements TooltipComponent {
 	}
 
 	@Override
-	public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+	public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
 		for (int i = 0; i < this.profiles.size(); i++) {
 			ProfileResult profileResult = (ProfileResult)this.profiles.get(i);
 			int j = y + 2 + i * 12;

@@ -43,7 +43,7 @@ public class RegistryBuilder {
 	) {
 		return new RegistryBuilder.UntaggedLookup<T>(owner) {
 			@Override
-			public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
+			public RegistryKey<? extends Registry<? extends T>> getKey() {
 				return registryRef;
 			}
 
@@ -98,8 +98,8 @@ public class RegistryBuilder {
 		}
 
 		final Map<RegistryKey<? extends Registry<?>>, WrapperInfoPair<?>> map = new HashMap();
-		registryManager.streamAllRegistries().forEach(registry -> map.put(registry.key(), WrapperInfoPair.of(registry.value().getReadOnlyWrapper())));
-		wrappers.forEach(wrapper -> map.put(wrapper.getRegistryKey(), WrapperInfoPair.of(entryOwner, wrapper)));
+		registryManager.streamAllRegistries().forEach(registry -> map.put(registry.key(), WrapperInfoPair.of(registry.value())));
+		wrappers.forEach(wrapper -> map.put(wrapper.getKey(), WrapperInfoPair.of(entryOwner, wrapper)));
 		return new RegistryWrapper.WrapperLookup() {
 			@Override
 			public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
@@ -111,7 +111,7 @@ public class RegistryBuilder {
 			}
 
 			@Override
-			public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+			public <T> Optional<RegistryWrapper.Impl<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef) {
 				return this.get(registryRef).map(WrapperInfoPair::lookup);
 			}
 
@@ -168,14 +168,14 @@ public class RegistryBuilder {
 			throw new NullPointerException("No cloner for " + registryRef.getValue());
 		} else {
 			Map<RegistryKey<T>, RegistryEntry.Reference<T>> map = new HashMap();
-			RegistryWrapper.Impl<T> impl = patches.getWrapperOrThrow(registryRef);
+			RegistryWrapper.Impl<T> impl = patches.getOrThrow(registryRef);
 			impl.streamEntries().forEach(entry -> {
 				RegistryKey<T> registryKey = entry.registryKey();
 				RegistryBuilder.LazyReferenceEntry<T> lazyReferenceEntry = new RegistryBuilder.LazyReferenceEntry<>(owner, registryKey);
 				lazyReferenceEntry.supplier = () -> registryCloner.clone((T)entry.value(), patches, lazyWrapper.getValue());
 				map.put(registryKey, lazyReferenceEntry);
 			});
-			RegistryWrapper.Impl<T> impl2 = base.getWrapperOrThrow(registryRef);
+			RegistryWrapper.Impl<T> impl2 = base.getOrThrow(registryRef);
 			impl2.streamEntries().forEach(entry -> {
 				RegistryKey<T> registryKey = entry.registryKey();
 				map.computeIfAbsent(registryKey, key -> {
@@ -302,8 +302,7 @@ public class RegistryBuilder {
 			List<RuntimeException> list = new ArrayList();
 			RegistryBuilder.StandAloneEntryCreatingLookup standAloneEntryCreatingLookup = new RegistryBuilder.StandAloneEntryCreatingLookup(anyOwner);
 			Builder<Identifier, RegistryEntryLookup<?>> builder = ImmutableMap.builder();
-			dynamicRegistryManager.streamAllRegistries()
-				.forEach(entry -> builder.put(entry.key().getValue(), RegistryBuilder.toLookup(entry.value().getReadOnlyWrapper())));
+			dynamicRegistryManager.streamAllRegistries().forEach(entry -> builder.put(entry.key().getValue(), RegistryBuilder.toLookup(entry.value())));
 			registryRefs.forEach(registryRef -> builder.put(registryRef.getValue(), standAloneEntryCreatingLookup));
 			return new RegistryBuilder.Registries(anyOwner, standAloneEntryCreatingLookup, builder.build(), new HashMap(), list);
 		}
@@ -412,7 +411,7 @@ public class RegistryBuilder {
 		}
 
 		@Override
-		public Stream<RegistryEntryList.Named<T>> streamTags() {
+		public Stream<RegistryEntryList.Named<T>> getTags() {
 			throw new UnsupportedOperationException("Tags are not available in datagen");
 		}
 	}

@@ -197,7 +197,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		BeehiveBlockEntity.BeeState beeState,
 		@Nullable BlockPos flowerPos
 	) {
-		if ((world.isNight() || world.isRaining()) && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
+		if (BeeEntity.isNightOrRaining(world) && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 			return false;
 		} else {
 			Direction direction = state.get(BeehiveBlock.FACING);

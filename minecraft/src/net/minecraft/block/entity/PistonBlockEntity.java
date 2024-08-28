@@ -333,7 +333,7 @@ public class PistonBlockEntity extends BlockEntity {
 		super.readNbt(nbt, registries);
 		RegistryEntryLookup<Block> registryEntryLookup = (RegistryEntryLookup<Block>)(this.world != null
 			? this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK)
-			: Registries.BLOCK.getReadOnlyWrapper());
+			: Registries.BLOCK);
 		this.pushedBlock = NbtHelper.toBlockState(registryEntryLookup, nbt.getCompound("blockState"));
 		this.facing = Direction.byId(nbt.getInt("facing"));
 		this.progress = nbt.getFloat("progress");

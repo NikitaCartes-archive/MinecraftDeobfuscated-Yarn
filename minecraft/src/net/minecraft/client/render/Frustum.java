@@ -95,7 +95,7 @@ public class Frustum {
 		return this.frustumIntersection.intersectAab(f, g, h, i, j, k);
 	}
 
-	public Vector4f[] method_62342() {
+	public Vector4f[] getBoundaryPoints() {
 		Vector4f[] vector4fs = new Vector4f[]{
 			new Vector4f(-1.0F, -1.0F, -1.0F, 1.0F),
 			new Vector4f(1.0F, -1.0F, -1.0F, 1.0F),
@@ -116,15 +116,15 @@ public class Frustum {
 		return vector4fs;
 	}
 
-	public double method_62343() {
+	public double getX() {
 		return this.x;
 	}
 
-	public double method_62344() {
+	public double getY() {
 		return this.y;
 	}
 
-	public double method_62345() {
+	public double getZ() {
 		return this.z;
 	}
 }

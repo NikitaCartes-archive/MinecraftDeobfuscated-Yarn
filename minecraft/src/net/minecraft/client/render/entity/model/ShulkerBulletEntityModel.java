@@ -31,12 +31,11 @@ public class ShulkerBulletEntityModel extends EntityModel<ShulkerBulletEntityRen
 	 * The key of the main model part, whose value is {@value}.
 	 */
 	private static final String MAIN = "main";
-	private final ModelPart root;
 	private final ModelPart bullet;
 
-	public ShulkerBulletEntityModel(ModelPart root) {
-		this.root = root;
-		this.bullet = root.getChild("main");
+	public ShulkerBulletEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.bullet = modelPart.getChild("main");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -56,12 +55,8 @@ public class ShulkerBulletEntityModel extends EntityModel<ShulkerBulletEntityRen
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(ShulkerBulletEntityRenderState shulkerBulletEntityRenderState) {
+		super.setAngles(shulkerBulletEntityRenderState);
 		this.bullet.yaw = shulkerBulletEntityRenderState.yaw * (float) (Math.PI / 180.0);
 		this.bullet.pitch = shulkerBulletEntityRenderState.pitch * (float) (Math.PI / 180.0);
 	}

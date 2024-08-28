@@ -7,6 +7,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -44,7 +45,7 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 		return world.getEntityById(this.entityId);
 	}
 
-	public byte getHeadYaw() {
-		return this.headYaw;
+	public float getHeadYaw() {
+		return MathHelper.unpackDegrees(this.headYaw);
 	}
 }

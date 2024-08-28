@@ -1512,10 +1512,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
 	}
 
-	public RegistryKey<LootTable> getLootTable() {
-		return this.getType().getLootTableId();
-	}
-
 	public long getLootTableSeed() {
 		return 0L;
 	}
@@ -1528,20 +1524,22 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
-		RegistryKey<LootTable> registryKey = this.getLootTable();
-		LootTable lootTable = this.getWorld().getServer().getReloadableRegistries().getLootTable(registryKey);
-		LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
-			.add(LootContextParameters.THIS_ENTITY, this)
-			.add(LootContextParameters.ORIGIN, this.getPos())
-			.add(LootContextParameters.DAMAGE_SOURCE, damageSource)
-			.addOptional(LootContextParameters.ATTACKING_ENTITY, damageSource.getAttacker())
-			.addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, damageSource.getSource());
-		if (causedByPlayer && this.attackingPlayer != null) {
-			builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).luck(this.attackingPlayer.getLuck());
-		}
+		Optional<RegistryKey<LootTable>> optional = this.getLootTable();
+		if (!optional.isEmpty()) {
+			LootTable lootTable = this.getWorld().getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)optional.get());
+			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+				.add(LootContextParameters.THIS_ENTITY, this)
+				.add(LootContextParameters.ORIGIN, this.getPos())
+				.add(LootContextParameters.DAMAGE_SOURCE, damageSource)
+				.addOptional(LootContextParameters.ATTACKING_ENTITY, damageSource.getAttacker())
+				.addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, damageSource.getSource());
+			if (causedByPlayer && this.attackingPlayer != null) {
+				builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).luck(this.attackingPlayer.getLuck());
+			}
 
-		LootContextParameterSet lootContextParameterSet = builder.build(LootContextTypes.ENTITY);
-		lootTable.generateLoot(lootContextParameterSet, this.getLootTableSeed(), this::dropStack);
+			LootContextParameterSet lootContextParameterSet = builder.build(LootContextTypes.ENTITY);
+			lootTable.generateLoot(lootContextParameterSet, this.getLootTableSeed(), this::dropStack);
+		}
 	}
 
 	protected void forEachShearedItem(RegistryKey<LootTable> lootTable, Consumer<ItemStack> action) {
@@ -3430,6 +3428,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public boolean canEquip(ItemStack stack) {
+		return false;
+	}
+
+	public boolean canPickUpLoot() {
 		return false;
 	}
 

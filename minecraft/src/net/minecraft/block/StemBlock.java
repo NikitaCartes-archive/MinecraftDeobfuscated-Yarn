@@ -87,9 +87,9 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 					BlockPos blockPos = pos.offset(direction);
 					BlockState blockState = world.getBlockState(blockPos.down());
 					if (world.getBlockState(blockPos).isAir() && (blockState.isOf(Blocks.FARMLAND) || blockState.isIn(BlockTags.DIRT))) {
-						Registry<Block> registry = world.getRegistryManager().get(RegistryKeys.BLOCK);
-						Optional<Block> optional = registry.getOrEmpty(this.gourdBlock);
-						Optional<Block> optional2 = registry.getOrEmpty(this.attachedStemBlock);
+						Registry<Block> registry = world.getRegistryManager().getOrThrow(RegistryKeys.BLOCK);
+						Optional<Block> optional = registry.getOptionalValue(this.gourdBlock);
+						Optional<Block> optional2 = registry.getOptionalValue(this.attachedStemBlock);
 						if (optional.isPresent() && optional2.isPresent()) {
 							world.setBlockState(blockPos, ((Block)optional.get()).getDefaultState());
 							world.setBlockState(pos, ((Block)optional2.get()).getDefaultState().with(HorizontalFacingBlock.FACING, direction));
@@ -102,7 +102,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-		return new ItemStack(DataFixUtils.orElse(world.getRegistryManager().get(RegistryKeys.ITEM).getOrEmpty(this.pickBlockItem), this));
+		return new ItemStack(DataFixUtils.orElse(world.getRegistryManager().getOrThrow(RegistryKeys.ITEM).getOptionalValue(this.pickBlockItem), this));
 	}
 
 	@Override

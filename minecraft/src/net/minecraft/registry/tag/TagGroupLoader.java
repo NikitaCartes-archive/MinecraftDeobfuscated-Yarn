@@ -177,7 +177,7 @@ public class TagGroupLoader<T> {
 		List<RegistryWrapper.Impl<?>> list = new ArrayList();
 		registryManager.streamAllRegistries().forEach(registry -> {
 			Registry.PendingTagLoad<?> pendingTagLoad = find(tagLoads, registry.key());
-			list.add(pendingTagLoad != null ? pendingTagLoad.getLookup() : registry.value().getReadOnlyWrapper());
+			list.add(pendingTagLoad != null ? pendingTagLoad.getLookup() : registry.value());
 		});
 		return list;
 	}

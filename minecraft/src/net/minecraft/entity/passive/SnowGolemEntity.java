@@ -122,7 +122,9 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		double g = Math.sqrt(d * d + f * f) * 0.2F;
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			ItemStack itemStack = new ItemStack(Items.SNOWBALL);
-			ProjectileEntity.spawnWithVelocity(SnowballEntity::new, serverWorld, itemStack, this, d, e + g, f, 1.6F, 12.0F);
+			ProjectileEntity.spawn(
+				new SnowballEntity(serverWorld, this, itemStack), serverWorld, itemStack, entity -> entity.setVelocity(d, e + g - entity.getY(), f, 1.6F, 12.0F)
+			);
 		}
 
 		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));

@@ -170,7 +170,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			Optional<RegistryEntry.Reference<Enchantment>> optional = this.client
 				.world
 				.getRegistryManager()
-				.get(RegistryKeys.ENCHANTMENT)
+				.getOrThrow(RegistryKeys.ENCHANTMENT)
 				.getEntry(this.handler.enchantmentId[j]);
 			if (!optional.isEmpty()) {
 				int l = this.handler.enchantmentLevel[j];

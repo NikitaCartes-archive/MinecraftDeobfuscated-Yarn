@@ -251,44 +251,54 @@ public class DebugRenderer {
 		}
 	}
 
-	private static Vec3d method_62348(float f) {
-		float g = 5.99999F;
-		int i = (int)(MathHelper.clamp(f, 0.0F, 1.0F) * 5.99999F);
-		float h = f * 5.99999F - (float)i;
+	private static Vec3d hueToRgb(float hue) {
+		float f = 5.99999F;
+		int i = (int)(MathHelper.clamp(hue, 0.0F, 1.0F) * 5.99999F);
+		float g = hue * 5.99999F - (float)i;
 
 		return switch (i) {
-			case 0 -> new Vec3d(1.0, (double)h, 0.0);
-			case 1 -> new Vec3d((double)(1.0F - h), 1.0, 0.0);
-			case 2 -> new Vec3d(0.0, 1.0, (double)h);
-			case 3 -> new Vec3d(0.0, 1.0 - (double)h, 1.0);
-			case 4 -> new Vec3d((double)h, 0.0, 1.0);
-			case 5 -> new Vec3d(1.0, 0.0, 1.0 - (double)h);
+			case 0 -> new Vec3d(1.0, (double)g, 0.0);
+			case 1 -> new Vec3d((double)(1.0F - g), 1.0, 0.0);
+			case 2 -> new Vec3d(0.0, 1.0, (double)g);
+			case 3 -> new Vec3d(0.0, 1.0 - (double)g, 1.0);
+			case 4 -> new Vec3d((double)g, 0.0, 1.0);
+			case 5 -> new Vec3d(1.0, 0.0, 1.0 - (double)g);
 			default -> throw new IllegalStateException("Unexpected value: " + i);
 		};
 	}
 
-	private static Vec3d method_62349(float f, float g, float h, float i) {
-		Vec3d vec3d = method_62348(i).multiply((double)f);
-		Vec3d vec3d2 = method_62348((i + 0.33333334F) % 1.0F).multiply((double)g);
-		Vec3d vec3d3 = method_62348((i + 0.6666667F) % 1.0F).multiply((double)h);
+	private static Vec3d shiftHue(float r, float g, float b, float dHue) {
+		Vec3d vec3d = hueToRgb(dHue).multiply((double)r);
+		Vec3d vec3d2 = hueToRgb((dHue + 0.33333334F) % 1.0F).multiply((double)g);
+		Vec3d vec3d3 = hueToRgb((dHue + 0.6666667F) % 1.0F).multiply((double)b);
 		Vec3d vec3d4 = vec3d.add(vec3d2).add(vec3d3);
 		double d = Math.max(Math.max(1.0, vec3d4.x), Math.max(vec3d4.y, vec3d4.z));
 		return new Vec3d(vec3d4.x / d, vec3d4.y / d, vec3d4.z / d);
 	}
 
-	public static void method_62350(
-		MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j, boolean bl
+	public static void drawVoxelShapeOutlines(
+		MatrixStack matrices,
+		VertexConsumer vertexConsumer,
+		VoxelShape shape,
+		double offsetX,
+		double offsetY,
+		double offsetZ,
+		float r,
+		float g,
+		float b,
+		float a,
+		boolean bl
 	) {
-		List<Box> list = voxelShape.getBoundingBoxes();
+		List<Box> list = shape.getBoundingBoxes();
 		if (!list.isEmpty()) {
-			int k = bl ? list.size() : list.size() * 8;
-			VertexRendering.drawOutline(matrixStack, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), d, e, f, g, h, i, j);
+			int i = bl ? list.size() : list.size() * 8;
+			VertexRendering.drawOutline(matrices, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), offsetX, offsetY, offsetZ, r, g, b, a);
 
-			for (int l = 1; l < list.size(); l++) {
-				Box box = (Box)list.get(l);
-				float m = (float)l / (float)k;
-				Vec3d vec3d = method_62349(g, h, i, m);
-				VertexRendering.drawOutline(matrixStack, vertexConsumer, VoxelShapes.cuboid(box), d, e, f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z, j);
+			for (int j = 1; j < list.size(); j++) {
+				Box box = (Box)list.get(j);
+				float f = (float)j / (float)i;
+				Vec3d vec3d = shiftHue(r, g, b, f);
+				VertexRendering.drawOutline(matrices, vertexConsumer, VoxelShapes.cuboid(box), offsetX, offsetY, offsetZ, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z, a);
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -26,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
@@ -40,9 +42,11 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -326,5 +330,15 @@ public class BeehiveBlock extends BlockWithEntity {
 	@Override
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
 		return state.rotate(mirror.getRotation(state.get(FACING)));
+	}
+
+	@Override
+	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
+		super.appendTooltip(stack, context, tooltip, options);
+		BlockStateComponent blockStateComponent = stack.getOrDefault(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT);
+		int i = (Integer)Objects.requireNonNullElse((Integer)blockStateComponent.getValue(HONEY_LEVEL), 0);
+		int j = stack.getOrDefault(DataComponentTypes.BEES, List.of()).size();
+		tooltip.add(Text.translatable("container.beehive.bees", j, 3).formatted(Formatting.GRAY));
+		tooltip.add(Text.translatable("container.beehive.honey", i, 5).formatted(Formatting.GRAY));
 	}
 }

@@ -151,11 +151,7 @@ public class BundleItem extends Item {
 	@Override
 	public int getItemBarColor(ItemStack stack) {
 		BundleContentsComponent bundleContentsComponent = stack.getOrDefault(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
-		return getItemBarColor(bundleContentsComponent.getOccupancy());
-	}
-
-	public static int getItemBarColor(Fraction occupancy) {
-		return occupancy.compareTo(Fraction.ONE) >= 0 ? FULL_ITEM_BAR_COLOR : ITEM_BAR_COLOR;
+		return bundleContentsComponent.getOccupancy().compareTo(Fraction.ONE) >= 0 ? FULL_ITEM_BAR_COLOR : ITEM_BAR_COLOR;
 	}
 
 	public static void setSelectedStackIndex(ItemStack stack, int selectedStackIndex) {

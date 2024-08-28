@@ -20,7 +20,6 @@ import net.minecraft.client.render.block.entity.model.BellBlockModel;
 import net.minecraft.client.render.block.entity.model.ChestBlockModel;
 import net.minecraft.client.render.entity.DragonEntityModel;
 import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
-import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.entity.vehicle.BoatEntity;
 
 @Environment(EnvType.CLIENT)
@@ -233,7 +232,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.PLAYER_SLIM, TexturedModelData.of(PlayerEntityModel.getTexturedModelData(Dilation.NONE, true), 64, 64));
 		builder.put(EntityModelLayers.PLAYER_SLIM_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR, texturedModelData2);
-		builder.put(EntityModelLayers.SPIN_ATTACK, TridentRiptideFeatureRenderer.getTexturedModelData());
+		builder.put(EntityModelLayers.SPIN_ATTACK, TridentRiptideEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.POLAR_BEAR, texturedModelData36);
 		builder.put(EntityModelLayers.POLAR_BEAR_BABY, texturedModelData36.transform(PolarBearEntityModel.BABY_TRANSFORMER));
 		builder.put(EntityModelLayers.PUFFERFISH_BIG, LargePufferfishEntityModel.getTexturedModelData());

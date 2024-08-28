@@ -104,8 +104,8 @@ public class SpawnArmorTrimsCommand {
 	private static int execute(ServerCommandSource source, PlayerEntity player) {
 		World world = player.getWorld();
 		DefaultedList<ArmorTrim> defaultedList = DefaultedList.of();
-		Registry<ArmorTrimPattern> registry = world.getRegistryManager().get(RegistryKeys.TRIM_PATTERN);
-		Registry<ArmorTrimMaterial> registry2 = world.getRegistryManager().get(RegistryKeys.TRIM_MATERIAL);
+		Registry<ArmorTrimPattern> registry = world.getRegistryManager().getOrThrow(RegistryKeys.TRIM_PATTERN);
+		Registry<ArmorTrimMaterial> registry2 = world.getRegistryManager().getOrThrow(RegistryKeys.TRIM_MATERIAL);
 		registry.stream()
 			.sorted(Comparator.comparing(pattern -> PATTERN_INDEX_GETTER.applyAsInt((RegistryKey)registry.getKey(pattern).orElse(null))))
 			.forEachOrdered(
@@ -114,7 +114,7 @@ public class SpawnArmorTrimsCommand {
 						.forEachOrdered(material -> defaultedList.add(new ArmorTrim(registry2.getEntry(material), registry.getEntry(pattern))))
 			);
 		BlockPos blockPos = player.getBlockPos().offset(player.getHorizontalFacing(), 5);
-		Registry<ArmorMaterial> registry3 = source.getRegistryManager().get(RegistryKeys.ARMOR_MATERIAL);
+		Registry<ArmorMaterial> registry3 = source.getRegistryManager().getOrThrow(RegistryKeys.ARMOR_MATERIAL);
 		int i = registry3.size() - 1;
 		double d = 3.0;
 		int j = 0;

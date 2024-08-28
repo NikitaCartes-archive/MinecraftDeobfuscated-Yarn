@@ -35,8 +35,8 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	}
 
 	@Override
-	public void renderIcon(DrawContext context, float brightness, float f) {
-		PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12, ColorHelper.getWhite(f));
+	public void renderIcon(DrawContext context, float brightness, float alpha) {
+		PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12, ColorHelper.getWhite(alpha));
 	}
 
 	@Override

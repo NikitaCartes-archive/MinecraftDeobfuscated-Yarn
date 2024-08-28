@@ -42,8 +42,8 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = Blocks.SHORT_GRASS.getDefaultState();
 		Optional<RegistryEntry.Reference<PlacedFeature>> optional = world.getRegistryManager()
-			.get(RegistryKeys.PLACED_FEATURE)
-			.getEntry(VegetationPlacedFeatures.GRASS_BONEMEAL);
+			.getOrThrow(RegistryKeys.PLACED_FEATURE)
+			.getOptional(VegetationPlacedFeatures.GRASS_BONEMEAL);
 
 		label49:
 		for (int i = 0; i < 128; i++) {

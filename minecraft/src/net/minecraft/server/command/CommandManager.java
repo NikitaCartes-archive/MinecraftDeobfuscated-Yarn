@@ -390,8 +390,8 @@ public class CommandManager {
 			}
 
 			@Override
-			public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
-				return registries.getOptionalWrapper(registryRef).map(this::createTagCreatingLookup);
+			public <T> Optional<RegistryWrapper.Impl<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef) {
+				return registries.getOptional(registryRef).map(this::createTagCreatingLookup);
 			}
 
 			private <T> RegistryWrapper.Impl.Delegating<T> createTagCreatingLookup(RegistryWrapper.Impl<T> original) {

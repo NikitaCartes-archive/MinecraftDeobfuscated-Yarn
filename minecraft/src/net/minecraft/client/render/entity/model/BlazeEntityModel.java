@@ -66,15 +66,14 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class BlazeEntityModel extends EntityModel<LivingEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart[] rods;
 	private final ModelPart head;
 
-	public BlazeEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public BlazeEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.rods = new ModelPart[12];
-		Arrays.setAll(this.rods, index -> root.getChild(getRodName(index)));
+		Arrays.setAll(this.rods, i -> modelPart.getChild(getRodName(i)));
 	}
 
 	private static String getRodName(int index) {
@@ -119,12 +118,8 @@ public class BlazeEntityModel extends EntityModel<LivingEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(LivingEntityRenderState livingEntityRenderState) {
+		super.setAngles(livingEntityRenderState);
 		float f = livingEntityRenderState.age * (float) Math.PI * -0.1F;
 
 		for (int i = 0; i < 4; i++) {

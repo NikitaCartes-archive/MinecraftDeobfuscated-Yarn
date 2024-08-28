@@ -999,7 +999,7 @@ public class ItemGroups {
 						entries.add(Items.GLOW_ITEM_FRAME);
 						entries.add(Items.PAINTING);
 						displayContext.lookup()
-							.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
+							.getOptional(RegistryKeys.PAINTING_VARIANT)
 							.ifPresent(
 								registryWrapper -> addPaintings(
 										entries,
@@ -1105,7 +1105,7 @@ public class ItemGroups {
 						entries.add(Items.PURPLE_BANNER);
 						entries.add(Items.MAGENTA_BANNER);
 						entries.add(Items.PINK_BANNER);
-						entries.add(Raid.createOminousBanner(displayContext.lookup().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+						entries.add(Raid.createOminousBanner(displayContext.lookup().getOrThrow(RegistryKeys.BANNER_PATTERN)));
 						entries.add(Items.SKELETON_SKULL);
 						entries.add(Items.WITHER_SKELETON_SKULL);
 						entries.add(Items.PLAYER_HEAD);
@@ -1335,7 +1335,7 @@ public class ItemGroups {
 						entries.add(Items.FURNACE_MINECART);
 						entries.add(Items.TNT_MINECART);
 						displayContext.lookup()
-							.getOptionalWrapper(RegistryKeys.INSTRUMENT)
+							.getOptional(RegistryKeys.INSTRUMENT)
 							.ifPresent(wrapper -> addInstruments(entries, wrapper, Items.GOAT_HORN, InstrumentTags.GOAT_HORNS, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS));
 						entries.add(Items.MUSIC_DISC_13);
 						entries.add(Items.MUSIC_DISC_CAT);
@@ -1425,7 +1425,7 @@ public class ItemGroups {
 						entries.add(Items.ARROW);
 						entries.add(Items.SPECTRAL_ARROW);
 						displayContext.lookup()
-							.getOptionalWrapper(RegistryKeys.POTION)
+							.getOptional(RegistryKeys.POTION)
 							.ifPresent(
 								registryWrapper -> addPotions(
 										entries, registryWrapper, Items.TIPPED_ARROW, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures()
@@ -1485,7 +1485,7 @@ public class ItemGroups {
 					entries.add(Items.MILK_BUCKET);
 					entries.add(Items.HONEY_BOTTLE);
 					addOminousBottles(entries, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
-					displayContext.lookup().getOptionalWrapper(RegistryKeys.POTION).ifPresent(registryWrapper -> {
+					displayContext.lookup().getOptional(RegistryKeys.POTION).ifPresent(registryWrapper -> {
 						addPotions(entries, registryWrapper, Items.POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures());
 						addPotions(entries, registryWrapper, Items.SPLASH_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures());
 						addPotions(entries, registryWrapper, Items.LINGERING_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS, displayContext.enabledFeatures());
@@ -1646,7 +1646,7 @@ public class ItemGroups {
 					entries.add(Items.EXPERIENCE_BOTTLE);
 					entries.add(Items.TRIAL_KEY);
 					entries.add(Items.OMINOUS_TRIAL_KEY);
-					displayContext.lookup().getOptionalWrapper(RegistryKeys.ENCHANTMENT).ifPresent(registryWrapper -> {
+					displayContext.lookup().getOptional(RegistryKeys.ENCHANTMENT).ifPresent(registryWrapper -> {
 						addMaxLevelEnchantedBooks(entries, registryWrapper, ItemGroup.StackVisibility.PARENT_TAB_ONLY);
 						addAllLevelEnchantedBooks(entries, registryWrapper, ItemGroup.StackVisibility.SEARCH_TAB_ONLY);
 					});
@@ -1768,7 +1768,7 @@ public class ItemGroups {
 							}
 
 							displayContext.lookup()
-								.getOptionalWrapper(RegistryKeys.PAINTING_VARIANT)
+								.getOptional(RegistryKeys.PAINTING_VARIANT)
 								.ifPresent(
 									registryWrapper -> addPaintings(
 											entries,
@@ -1802,7 +1802,7 @@ public class ItemGroups {
 		Map<Pair<ItemGroup.Row, Integer>, String> map = new HashMap();
 
 		for (RegistryKey<ItemGroup> registryKey : Registries.ITEM_GROUP.getKeys()) {
-			ItemGroup itemGroup = Registries.ITEM_GROUP.getOrThrow(registryKey);
+			ItemGroup itemGroup = Registries.ITEM_GROUP.getValueOrThrow(registryKey);
 			String string = itemGroup.getDisplayName().getString();
 			String string2 = (String)map.put(Pair.of(itemGroup.getRow(), itemGroup.getColumn()), string);
 			if (string2 != null) {
@@ -1812,7 +1812,7 @@ public class ItemGroups {
 	}
 
 	public static ItemGroup getDefaultTab() {
-		return Registries.ITEM_GROUP.getOrThrow(BUILDING_BLOCKS);
+		return Registries.ITEM_GROUP.getValueOrThrow(BUILDING_BLOCKS);
 	}
 
 	private static void addPotions(
@@ -1922,7 +1922,7 @@ public class ItemGroups {
 	}
 
 	public static ItemGroup getSearchGroup() {
-		return Registries.ITEM_GROUP.getOrThrow(SEARCH);
+		return Registries.ITEM_GROUP.getValueOrThrow(SEARCH);
 	}
 
 	private static void updateEntries(ItemGroup.DisplayContext displayContext) {

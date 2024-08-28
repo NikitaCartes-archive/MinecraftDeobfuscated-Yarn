@@ -48,11 +48,6 @@ public class WallBannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public String getTranslationKey() {
-		return this.asItem().getTranslationKey();
-	}
-
-	@Override
 	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite())).isSolid();
 	}

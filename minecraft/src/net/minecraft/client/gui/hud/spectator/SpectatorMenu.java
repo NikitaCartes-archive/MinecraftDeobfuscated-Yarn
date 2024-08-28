@@ -36,7 +36,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, float f) {
+		public void renderIcon(DrawContext context, float brightness, float alpha) {
 		}
 
 		@Override
@@ -137,8 +137,8 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, float f) {
-			int i = ColorHelper.fromFloats(f, brightness, brightness, brightness);
+		public void renderIcon(DrawContext context, float brightness, float alpha) {
+			int i = ColorHelper.fromFloats(alpha, brightness, brightness, brightness);
 			if (this.direction < 0) {
 				context.drawGuiTexture(RenderLayer::getGuiTextured, SpectatorMenu.SCROLL_LEFT_TEXTURE, 0, 0, 16, 16, i);
 			} else {
@@ -165,8 +165,10 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, float f) {
-			context.drawGuiTexture(RenderLayer::getGuiTextured, SpectatorMenu.CLOSE_TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(f, brightness, brightness, brightness));
+		public void renderIcon(DrawContext context, float brightness, float alpha) {
+			context.drawGuiTexture(
+				RenderLayer::getGuiTextured, SpectatorMenu.CLOSE_TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(alpha, brightness, brightness, brightness)
+			);
 		}
 
 		@Override

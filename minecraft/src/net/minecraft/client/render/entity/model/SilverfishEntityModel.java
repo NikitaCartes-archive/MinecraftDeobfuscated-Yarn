@@ -15,16 +15,15 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class SilverfishEntityModel extends EntityModel<EntityRenderState> {
 	private static final int BODY_PARTS_COUNT = 7;
-	private final ModelPart root;
 	private final ModelPart[] body = new ModelPart[7];
 	private final ModelPart[] scales = new ModelPart[3];
 	private static final int[][] SEGMENT_LOCATIONS = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
 	private static final int[][] SEGMENT_SIZES = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
 
-	public SilverfishEntityModel(ModelPart root) {
-		this.root = root;
-		Arrays.setAll(this.body, index -> root.getChild(getSegmentName(index)));
-		Arrays.setAll(this.scales, index -> root.getChild(getLayerName(index)));
+	public SilverfishEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		Arrays.setAll(this.body, i -> modelPart.getChild(getSegmentName(i)));
+		Arrays.setAll(this.scales, i -> modelPart.getChild(getLayerName(i)));
 	}
 
 	private static String getLayerName(int index) {
@@ -81,12 +80,9 @@ public class SilverfishEntityModel extends EntityModel<EntityRenderState> {
 	}
 
 	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
-	@Override
 	public void setAngles(EntityRenderState state) {
+		super.setAngles(state);
+
 		for (int i = 0; i < this.body.length; i++) {
 			this.body[i].yaw = MathHelper.cos(state.age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.05F * (float)(1 + Math.abs(i - 2));
 			this.body[i].pivotX = MathHelper.sin(state.age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.2F * (float)Math.abs(i - 2);

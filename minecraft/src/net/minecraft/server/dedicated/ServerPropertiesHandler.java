@@ -208,7 +208,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		);
 
 		public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(RegistryWrapper.WrapperLookup registries) {
-			RegistryWrapper<WorldPreset> registryWrapper = registries.getWrapperOrThrow(RegistryKeys.WORLD_PRESET);
+			RegistryWrapper<WorldPreset> registryWrapper = registries.getOrThrow(RegistryKeys.WORLD_PRESET);
 			RegistryEntry.Reference<WorldPreset> reference = (RegistryEntry.Reference<WorldPreset>)registryWrapper.getOptional(WorldPresets.DEFAULT)
 				.or(() -> registryWrapper.streamEntries().findAny())
 				.orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));

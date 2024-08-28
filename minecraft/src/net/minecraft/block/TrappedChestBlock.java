@@ -22,7 +22,7 @@ public class TrappedChestBlock extends ChestBlock {
 	}
 
 	public TrappedChestBlock(AbstractBlock.Settings settings) {
-		super(settings, () -> BlockEntityType.TRAPPED_CHEST);
+		super(() -> BlockEntityType.TRAPPED_CHEST, settings);
 	}
 
 	@Override

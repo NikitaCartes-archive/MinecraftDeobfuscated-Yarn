@@ -12,10 +12,8 @@ import net.minecraft.client.render.entity.state.EntityRenderState;
 
 @Environment(EnvType.CLIENT)
 public class SlimeEntityModel extends EntityModel<EntityRenderState> {
-	private final ModelPart root;
-
-	public SlimeEntityModel(ModelPart root) {
-		this.root = root;
+	public SlimeEntityModel(ModelPart modelPart) {
+		super(modelPart);
 	}
 
 	public static TexturedModelData getOuterTexturedModelData() {
@@ -35,14 +33,5 @@ public class SlimeEntityModel extends EntityModel<EntityRenderState> {
 		modelPartData.addChild(EntityModelPartNames.LEFT_EYE, ModelPartBuilder.create().uv(32, 4).cuboid(1.25F, 18.0F, -3.5F, 2.0F, 2.0F, 2.0F), ModelTransform.NONE);
 		modelPartData.addChild(EntityModelPartNames.MOUTH, ModelPartBuilder.create().uv(32, 8).cuboid(0.0F, 21.0F, -3.5F, 1.0F, 1.0F, 1.0F), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 64, 32);
-	}
-
-	@Override
-	public void setAngles(EntityRenderState state) {
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

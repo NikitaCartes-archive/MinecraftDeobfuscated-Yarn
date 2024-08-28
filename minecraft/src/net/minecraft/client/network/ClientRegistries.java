@@ -45,7 +45,7 @@ public class ClientRegistries {
 	private static <T> Registry.PendingTagLoad<T> method_62160(
 		DynamicRegistryManager.Immutable immutable, RegistryKey<? extends Registry<? extends T>> registryKey, TagPacketSerializer.Serialized serialized
 	) {
-		Registry<T> registry = immutable.get(registryKey);
+		Registry<T> registry = immutable.getOrThrow(registryKey);
 		return registry.startTagReload(serialized.toRegistryTags(registry));
 	}
 

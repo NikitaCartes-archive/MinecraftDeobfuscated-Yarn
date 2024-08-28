@@ -121,10 +121,10 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		boolean isBanner,
 		DyeColor color,
 		BannerPatternsComponent patterns,
-		boolean bl,
-		boolean bl2
+		boolean glint,
+		boolean solid
 	) {
-		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, bl2, bl), light, overlay);
+		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, solid, glint), light, overlay);
 		renderLayer(matrices, vertexConsumers, light, overlay, canvas, isBanner ? TexturedRenderLayers.BANNER_BASE : TexturedRenderLayers.SHIELD_BASE, color);
 
 		for (int i = 0; i < 16 && i < patterns.layers().size(); i++) {

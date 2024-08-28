@@ -22,7 +22,7 @@ import net.minecraft.registry.RegistryWrapper;
 public record VanillaBarterLootTableGenerator(RegistryWrapper.WrapperLookup registries) implements LootTableGenerator {
 	@Override
 	public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> lootTableBiConsumer) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		lootTableBiConsumer.accept(
 			LootTables.PIGLIN_BARTERING_GAMEPLAY,
 			LootTable.builder()

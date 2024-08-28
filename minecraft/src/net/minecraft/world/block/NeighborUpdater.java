@@ -33,10 +33,10 @@ public interface NeighborUpdater {
 	}
 
 	static void replaceWithStateForNeighborUpdate(
-		WorldAccess world, Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth
+		WorldAccess world, Direction direction, BlockPos pos, BlockPos neighborPos, BlockState neighborState, int flags, int maxUpdateDepth
 	) {
 		BlockState blockState = world.getBlockState(pos);
-		if ((flags & Block.SKIP_REDSTONE_WIRE_STATE_REPLACEMENT) == 0 || !neighborState.isOf(Blocks.REDSTONE_WIRE)) {
+		if ((flags & Block.SKIP_REDSTONE_WIRE_STATE_REPLACEMENT) == 0 || !blockState.isOf(Blocks.REDSTONE_WIRE)) {
 			BlockState blockState2 = blockState.getStateForNeighborUpdate(direction, neighborState, world, pos, neighborPos);
 			Block.replace(blockState, blockState2, world, pos, flags, maxUpdateDepth);
 		}

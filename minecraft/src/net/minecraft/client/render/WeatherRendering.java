@@ -62,42 +62,44 @@ public class WeatherRendering {
 		}
 	}
 
-	public void method_62316(World world, LightmapTextureManager lightmapTextureManager, int ticks, float delta, Vec3d vec3d) {
+	public void renderPrecipitation(World world, LightmapTextureManager lightmapTextureManager, int ticks, float delta, Vec3d pos) {
 		float f = world.getRainGradient(delta);
 		if (!(f <= 0.0F)) {
 			int i = MinecraftClient.isFancyGraphicsOrBetter() ? 10 : 5;
 			List<WeatherRendering.Piece> list = new ArrayList();
 			List<WeatherRendering.Piece> list2 = new ArrayList();
-			this.method_62315(world, ticks, delta, vec3d, i, list, list2);
+			this.buildPrecipitationPieces(world, ticks, delta, pos, i, list, list2);
 			if (!list.isEmpty() || !list2.isEmpty()) {
-				this.method_62320(lightmapTextureManager, vec3d, i, f, list, list2);
+				this.renderPrecipitation(lightmapTextureManager, pos, i, f, list, list2);
 			}
 		}
 	}
 
-	private void method_62315(World world, int ticks, float f, Vec3d pos, int i, List<WeatherRendering.Piece> rainOut, List<WeatherRendering.Piece> snowOut) {
-		int j = MathHelper.floor(pos.x);
-		int k = MathHelper.floor(pos.y);
-		int l = MathHelper.floor(pos.z);
+	private void buildPrecipitationPieces(
+		World world, int ticks, float delta, Vec3d pos, int range, List<WeatherRendering.Piece> rainOut, List<WeatherRendering.Piece> snowOut
+	) {
+		int i = MathHelper.floor(pos.x);
+		int j = MathHelper.floor(pos.y);
+		int k = MathHelper.floor(pos.z);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		Random random = Random.create();
 
-		for (int m = l - i; m <= l + i; m++) {
-			for (int n = j - i; n <= j + i; n++) {
-				int o = world.getTopY(Heightmap.Type.MOTION_BLOCKING, n, m);
-				int p = Math.max(k - i, o);
-				int q = Math.max(k + i, o);
-				if (q - p != 0) {
-					Biome.Precipitation precipitation = this.getPrecipitationAt(world, mutable.set(n, k, m));
+		for (int l = k - range; l <= k + range; l++) {
+			for (int m = i - range; m <= i + range; m++) {
+				int n = world.getTopY(Heightmap.Type.MOTION_BLOCKING, m, l);
+				int o = Math.max(j - range, n);
+				int p = Math.max(j + range, n);
+				if (p - o != 0) {
+					Biome.Precipitation precipitation = this.getPrecipitationAt(world, mutable.set(m, j, l));
 					if (precipitation != Biome.Precipitation.NONE) {
-						int r = n * n * 3121 + n * 45238971 ^ m * m * 418711 + m * 13761;
-						random.setSeed((long)r);
-						int s = Math.max(k, o);
-						int t = WorldRenderer.getLightmapCoordinates(world, mutable.set(n, s, m));
+						int q = m * m * 3121 + m * 45238971 ^ l * l * 418711 + l * 13761;
+						random.setSeed((long)q);
+						int r = Math.max(j, n);
+						int s = WorldRenderer.getLightmapCoordinates(world, mutable.set(m, r, l));
 						if (precipitation == Biome.Precipitation.RAIN) {
-							rainOut.add(this.createRainPiece(random, ticks, n, p, q, m, t, f));
+							rainOut.add(this.createRainPiece(random, ticks, m, o, p, l, s, delta));
 						} else if (precipitation == Biome.Precipitation.SNOW) {
-							snowOut.add(this.createSnowPiece(random, ticks, n, p, q, m, t, f));
+							snowOut.add(this.createSnowPiece(random, ticks, m, o, p, l, s, delta));
 						}
 					}
 				}
@@ -105,8 +107,13 @@ public class WeatherRendering {
 		}
 	}
 
-	private void method_62320(
-		LightmapTextureManager lightmapTextureManager, Vec3d vec3d, int i, float f, List<WeatherRendering.Piece> list, List<WeatherRendering.Piece> list2
+	private void renderPrecipitation(
+		LightmapTextureManager lightmapTextureManager,
+		Vec3d pos,
+		int range,
+		float gradient,
+		List<WeatherRendering.Piece> rainPieces,
+		List<WeatherRendering.Piece> snowPieces
 	) {
 		lightmapTextureManager.enable();
 		Tessellator tessellator = Tessellator.getInstance();
@@ -115,14 +122,14 @@ public class WeatherRendering {
 		RenderSystem.enableDepthTest();
 		RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
 		RenderSystem.setShader(ShaderProgramKeys.PARTICLE);
-		if (!list.isEmpty()) {
+		if (!rainPieces.isEmpty()) {
 			RenderSystem.setShaderTexture(0, RAIN_TEXTURE);
-			this.method_62318(tessellator, list, vec3d, 1.0F, i, f);
+			this.renderPieces(tessellator, rainPieces, pos, 1.0F, range, gradient);
 		}
 
-		if (!list2.isEmpty()) {
+		if (!snowPieces.isEmpty()) {
 			RenderSystem.setShaderTexture(0, SNOW_TEXTURE);
-			this.method_62318(tessellator, list2, vec3d, 0.8F, i, f);
+			this.renderPieces(tessellator, snowPieces, pos, 0.8F, range, gradient);
 		}
 
 		RenderSystem.depthMask(true);
@@ -131,58 +138,58 @@ public class WeatherRendering {
 		lightmapTextureManager.disable();
 	}
 
-	private WeatherRendering.Piece createRainPiece(Random random, int ticks, int x, int yMin, int yMax, int z, int light, float f) {
+	private WeatherRendering.Piece createRainPiece(Random random, int ticks, int x, int yMin, int yMax, int z, int light, float tickDelta) {
 		int i = ticks & 131071;
 		int j = x * x * 3121 + x * 45238971 + z * z * 418711 + z * 13761 & 0xFF;
-		float g = 3.0F + random.nextFloat();
-		float h = -((float)(i + j) + f) / 32.0F * g;
-		float k = h % 32.0F;
-		return new WeatherRendering.Piece(x, z, yMin, yMax, 0.0F, k, light);
+		float f = 3.0F + random.nextFloat();
+		float g = -((float)(i + j) + tickDelta) / 32.0F * f;
+		float h = g % 32.0F;
+		return new WeatherRendering.Piece(x, z, yMin, yMax, 0.0F, h, light);
 	}
 
-	private WeatherRendering.Piece createSnowPiece(Random random, int ticks, int x, int yMin, int yMax, int z, int light, float f) {
-		float g = (float)ticks + f;
-		float h = (float)(random.nextDouble() + (double)(g * 0.01F * (float)random.nextGaussian()));
-		float i = (float)(random.nextDouble() + (double)(g * (float)random.nextGaussian() * 0.001F));
-		float j = -((float)(ticks & 511) + f) / 512.0F;
-		int k = LightmapTextureManager.pack(
+	private WeatherRendering.Piece createSnowPiece(Random random, int ticks, int x, int yMin, int yMax, int z, int light, float tickDelta) {
+		float f = (float)ticks + tickDelta;
+		float g = (float)(random.nextDouble() + (double)(f * 0.01F * (float)random.nextGaussian()));
+		float h = (float)(random.nextDouble() + (double)(f * (float)random.nextGaussian() * 0.001F));
+		float i = -((float)(ticks & 511) + tickDelta) / 512.0F;
+		int j = LightmapTextureManager.pack(
 			(LightmapTextureManager.getBlockLightCoordinates(light) * 3 + 15) / 4, (LightmapTextureManager.getSkyLightCoordinates(light) * 3 + 15) / 4
 		);
-		return new WeatherRendering.Piece(x, z, yMin, yMax, h, j + i, k);
+		return new WeatherRendering.Piece(x, z, yMin, yMax, g, i + h, j);
 	}
 
-	private void method_62318(Tessellator tessellator, List<WeatherRendering.Piece> pieces, Vec3d pos, float f, int i, float g) {
+	private void renderPieces(Tessellator tessellator, List<WeatherRendering.Piece> pieces, Vec3d pos, float intensity, int range, float gradient) {
 		BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 
 		for (WeatherRendering.Piece piece : pieces) {
-			float h = (float)((double)piece.x + 0.5 - pos.x);
-			float j = (float)((double)piece.z + 0.5 - pos.z);
-			float k = (float)MathHelper.squaredHypot((double)h, (double)j);
-			float l = MathHelper.lerp(k / (float)(i * i), f, 0.5F) * g;
-			int m = ColorHelper.getWhite(l);
-			int n = (piece.z - MathHelper.floor(pos.z) + 16) * 32 + piece.x - MathHelper.floor(pos.x) + 16;
-			float o = this.NORMAL_LINE_DX[n] / 2.0F;
-			float p = this.NORMAL_LINE_DZ[n] / 2.0F;
-			float q = h - o;
-			float r = h + o;
-			float s = (float)((double)piece.topY - pos.y);
-			float t = (float)((double)piece.bottomY - pos.y);
-			float u = j - p;
-			float v = j + p;
-			float w = piece.uOffset + 0.0F;
-			float x = piece.uOffset + 1.0F;
-			float y = (float)piece.bottomY * 0.25F + piece.vOffset;
-			float z = (float)piece.topY * 0.25F + piece.vOffset;
-			bufferBuilder.vertex(q, s, u).texture(w, y).color(m).light(piece.lightCoords);
-			bufferBuilder.vertex(r, s, v).texture(x, y).color(m).light(piece.lightCoords);
-			bufferBuilder.vertex(r, t, v).texture(x, z).color(m).light(piece.lightCoords);
-			bufferBuilder.vertex(q, t, u).texture(w, z).color(m).light(piece.lightCoords);
+			float f = (float)((double)piece.x + 0.5 - pos.x);
+			float g = (float)((double)piece.z + 0.5 - pos.z);
+			float h = (float)MathHelper.squaredHypot((double)f, (double)g);
+			float i = MathHelper.lerp(h / (float)(range * range), intensity, 0.5F) * gradient;
+			int j = ColorHelper.getWhite(i);
+			int k = (piece.z - MathHelper.floor(pos.z) + 16) * 32 + piece.x - MathHelper.floor(pos.x) + 16;
+			float l = this.NORMAL_LINE_DX[k] / 2.0F;
+			float m = this.NORMAL_LINE_DZ[k] / 2.0F;
+			float n = f - l;
+			float o = f + l;
+			float p = (float)((double)piece.topY - pos.y);
+			float q = (float)((double)piece.bottomY - pos.y);
+			float r = g - m;
+			float s = g + m;
+			float t = piece.uOffset + 0.0F;
+			float u = piece.uOffset + 1.0F;
+			float v = (float)piece.bottomY * 0.25F + piece.vOffset;
+			float w = (float)piece.topY * 0.25F + piece.vOffset;
+			bufferBuilder.vertex(n, p, r).texture(t, v).color(j).light(piece.lightCoords);
+			bufferBuilder.vertex(o, p, s).texture(u, v).color(j).light(piece.lightCoords);
+			bufferBuilder.vertex(o, q, s).texture(u, w).color(j).light(piece.lightCoords);
+			bufferBuilder.vertex(n, q, r).texture(t, w).color(j).light(piece.lightCoords);
 		}
 
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 
-	public void method_62319(ClientWorld world, Camera camera, int ticks, ParticlesMode particlesMode) {
+	public void addParticlesAndSound(ClientWorld world, Camera camera, int ticks, ParticlesMode particlesMode) {
 		float f = world.getRainGradient(1.0F) / (MinecraftClient.isFancyGraphicsOrBetter() ? 1.0F : 2.0F);
 		if (!(f <= 0.0F)) {
 			Random random = Random.create((long)ticks * 312987231L);

@@ -84,7 +84,7 @@ public class BoneMealItem extends Item {
 			} else {
 				Random random = world.getRandom();
 
-				label78:
+				label80:
 				for (int i = 0; i < 128; i++) {
 					BlockPos blockPos2 = blockPos;
 					BlockState blockState = Blocks.SEAGRASS.getDefaultState();
@@ -92,7 +92,7 @@ public class BoneMealItem extends Item {
 					for (int j = 0; j < i / 16; j++) {
 						blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
 						if (world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
-							continue label78;
+							continue label80;
 						}
 					}
 
@@ -124,7 +124,7 @@ public class BoneMealItem extends Item {
 						BlockState blockState2 = world.getBlockState(blockPos2);
 						if (blockState2.isOf(Blocks.WATER) && world.getFluidState(blockPos2).getLevel() == 8) {
 							world.setBlockState(blockPos2, blockState, Block.NOTIFY_ALL);
-						} else if (blockState2.isOf(Blocks.SEAGRASS) && random.nextInt(10) == 0) {
+						} else if (blockState2.isOf(Blocks.SEAGRASS) && ((Fertilizable)Blocks.SEAGRASS).isFertilizable(world, blockPos2, blockState2) && random.nextInt(10) == 0) {
 							((Fertilizable)Blocks.SEAGRASS).grow((ServerWorld)world, random, blockPos2, blockState2);
 						}
 					}

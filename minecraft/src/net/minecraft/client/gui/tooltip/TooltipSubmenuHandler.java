@@ -12,6 +12,4 @@ public interface TooltipSubmenuHandler {
 	boolean onScroll(double horizontal, double vertical, int slotId, ItemStack item);
 
 	void reset(Slot slot);
-
-	boolean onKeyPressed(ItemStack item, int slotId, int keyCode, int scanCode);
 }

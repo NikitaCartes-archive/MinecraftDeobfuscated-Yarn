@@ -32,7 +32,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 	private final RegistryWrapper<Block> registryWrapper;
 
 	public BlockPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.registryWrapper = commandRegistryAccess.getWrapperOrThrow(RegistryKeys.BLOCK);
+		this.registryWrapper = commandRegistryAccess.getOrThrow(RegistryKeys.BLOCK);
 	}
 
 	public static BlockPredicateArgumentType blockPredicate(CommandRegistryAccess commandRegistryAccess) {

@@ -23,12 +23,12 @@ public class SalmonEntityModel extends EntityModel<SalmonEntityRenderState> {
 	 * The key of the body back model part, whose value is {@value}.
 	 */
 	private static final String BODY_BACK = "body_back";
-	private final ModelPart root;
+	private static final float field_54015 = -7.2F;
 	private final ModelPart tail;
 
-	public SalmonEntityModel(ModelPart root) {
-		this.root = root;
-		this.tail = root.getChild("body_back");
+	public SalmonEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.tail = modelPart.getChild("body_back");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -36,13 +36,13 @@ public class SalmonEntityModel extends EntityModel<SalmonEntityRenderState> {
 		ModelPartData modelPartData = modelData.getRoot();
 		int i = 20;
 		ModelPartData modelPartData2 = modelPartData.addChild(
-			"body_front", ModelPartBuilder.create().uv(0, 0).cuboid(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F), ModelTransform.pivot(0.0F, 20.0F, 0.0F)
+			"body_front", ModelPartBuilder.create().uv(0, 0).cuboid(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F), ModelTransform.pivot(0.0F, 20.0F, -7.2F)
 		);
 		ModelPartData modelPartData3 = modelPartData.addChild(
-			"body_back", ModelPartBuilder.create().uv(0, 13).cuboid(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F), ModelTransform.pivot(0.0F, 20.0F, 8.0F)
+			"body_back", ModelPartBuilder.create().uv(0, 13).cuboid(-1.5F, -2.5F, 0.0F, 3.0F, 5.0F, 8.0F), ModelTransform.pivot(0.0F, 20.0F, 0.8000002F)
 		);
 		modelPartData.addChild(
-			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(22, 0).cuboid(-1.0F, -2.0F, -3.0F, 2.0F, 4.0F, 3.0F), ModelTransform.pivot(0.0F, 20.0F, 0.0F)
+			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(22, 0).cuboid(-1.0F, -2.0F, -3.0F, 2.0F, 4.0F, 3.0F), ModelTransform.pivot(0.0F, 20.0F, -7.2F)
 		);
 		modelPartData3.addChild(
 			EntityModelPartNames.BACK_FIN, ModelPartBuilder.create().uv(20, 10).cuboid(0.0F, -2.5F, 0.0F, 0.0F, 5.0F, 6.0F), ModelTransform.pivot(0.0F, 0.0F, 8.0F)
@@ -56,22 +56,18 @@ public class SalmonEntityModel extends EntityModel<SalmonEntityRenderState> {
 		modelPartData.addChild(
 			EntityModelPartNames.RIGHT_FIN,
 			ModelPartBuilder.create().uv(-4, 0).cuboid(-2.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F),
-			ModelTransform.of(-1.5F, 21.5F, 0.0F, 0.0F, 0.0F, (float) (-Math.PI / 4))
+			ModelTransform.of(-1.5F, 21.5F, -7.2F, 0.0F, 0.0F, (float) (-Math.PI / 4))
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.LEFT_FIN,
 			ModelPartBuilder.create().uv(0, 0).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F),
-			ModelTransform.of(1.5F, 21.5F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 4))
+			ModelTransform.of(1.5F, 21.5F, -7.2F, 0.0F, 0.0F, (float) (Math.PI / 4))
 		);
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(SalmonEntityRenderState salmonEntityRenderState) {
+		super.setAngles(salmonEntityRenderState);
 		float f = 1.0F;
 		float g = 1.0F;
 		if (!salmonEntityRenderState.touchingWater) {

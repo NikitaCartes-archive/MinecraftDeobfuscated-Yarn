@@ -46,12 +46,11 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class CodEntityModel extends EntityModel<LivingEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart tailFin;
 
-	public CodEntityModel(ModelPart root) {
-		this.root = root;
-		this.tailFin = root.getChild(EntityModelPartNames.TAIL_FIN);
+	public CodEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.tailFin = modelPart.getChild(EntityModelPartNames.TAIL_FIN);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -86,12 +85,8 @@ public class CodEntityModel extends EntityModel<LivingEntityRenderState> {
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(LivingEntityRenderState livingEntityRenderState) {
+		super.setAngles(livingEntityRenderState);
 		float f = livingEntityRenderState.touchingWater ? 1.0F : 1.5F;
 		this.tailFin.yaw = -f * 0.45F * MathHelper.sin(0.6F * livingEntityRenderState.age);
 	}

@@ -31,7 +31,7 @@ public class ItemListProvider implements DataProvider {
 				registries -> {
 					JsonObject jsonObject = new JsonObject();
 					RegistryOps<JsonElement> registryOps = registries.getOps(JsonOps.INSTANCE);
-					registries.getWrapperOrThrow(RegistryKeys.ITEM)
+					registries.getOrThrow(RegistryKeys.ITEM)
 						.streamEntries()
 						.forEach(
 							entry -> {

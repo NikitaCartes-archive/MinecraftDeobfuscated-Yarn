@@ -62,20 +62,19 @@ public class WitherEntityModel extends EntityModel<WitherEntityRenderState> {
 	private static final String LEFT_HEAD = "left_head";
 	private static final float RIBCAGE_PITCH_OFFSET = 0.065F;
 	private static final float TAIL_PITCH_OFFSET = 0.265F;
-	private final ModelPart root;
 	private final ModelPart centerHead;
 	private final ModelPart rightHead;
 	private final ModelPart leftHead;
 	private final ModelPart ribcage;
 	private final ModelPart tail;
 
-	public WitherEntityModel(ModelPart root) {
-		this.root = root;
-		this.ribcage = root.getChild("ribcage");
-		this.tail = root.getChild(EntityModelPartNames.TAIL);
-		this.centerHead = root.getChild("center_head");
-		this.rightHead = root.getChild("right_head");
-		this.leftHead = root.getChild("left_head");
+	public WitherEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.ribcage = modelPart.getChild("ribcage");
+		this.tail = modelPart.getChild(EntityModelPartNames.TAIL);
+		this.centerHead = modelPart.getChild("center_head");
+		this.rightHead = modelPart.getChild("right_head");
+		this.leftHead = modelPart.getChild("left_head");
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -108,12 +107,8 @@ public class WitherEntityModel extends EntityModel<WitherEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(WitherEntityRenderState witherEntityRenderState) {
+		super.setAngles(witherEntityRenderState);
 		rotateHead(witherEntityRenderState, this.rightHead, 0);
 		rotateHead(witherEntityRenderState, this.leftHead, 1);
 		float f = MathHelper.cos(witherEntityRenderState.age * 0.1F);

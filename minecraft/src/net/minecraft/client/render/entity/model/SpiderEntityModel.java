@@ -37,7 +37,6 @@ public class SpiderEntityModel extends EntityModel<LivingEntityRenderState> {
 	 * The key of the left middle hind leg model part, whose value is {@value}.
 	 */
 	private static final String LEFT_MIDDLE_HIND_LEG = "left_middle_hind_leg";
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart rightHindLeg;
 	private final ModelPart leftHindLeg;
@@ -48,17 +47,17 @@ public class SpiderEntityModel extends EntityModel<LivingEntityRenderState> {
 	private final ModelPart rightFrontLeg;
 	private final ModelPart leftFrontLeg;
 
-	public SpiderEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightMiddleLeg = root.getChild("right_middle_hind_leg");
-		this.leftMiddleLeg = root.getChild("left_middle_hind_leg");
-		this.rightMiddleFrontLeg = root.getChild("right_middle_front_leg");
-		this.leftMiddleFrontLeg = root.getChild("left_middle_front_leg");
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+	public SpiderEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightMiddleLeg = modelPart.getChild("right_middle_hind_leg");
+		this.leftMiddleLeg = modelPart.getChild("left_middle_hind_leg");
+		this.rightMiddleFrontLeg = modelPart.getChild("right_middle_front_leg");
+		this.leftMiddleFrontLeg = modelPart.getChild("left_middle_front_leg");
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -93,13 +92,8 @@ public class SpiderEntityModel extends EntityModel<LivingEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(LivingEntityRenderState livingEntityRenderState) {
-		this.root.traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(livingEntityRenderState);
 		this.head.yaw = livingEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = livingEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		float f = livingEntityRenderState.limbFrequency * 0.6662F;

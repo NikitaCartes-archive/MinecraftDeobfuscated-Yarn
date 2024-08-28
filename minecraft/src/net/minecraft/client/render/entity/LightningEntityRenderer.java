@@ -6,10 +6,8 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.state.LightningEntityRenderState;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 
@@ -109,10 +107,6 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity, Lig
 		buffer.vertex(matrix, x2 + (shiftEast1 ? offset2 : -offset2), (float)((y + 1) * 16), z2 + (shiftSouth1 ? offset2 : -offset2)).color(red, green, blue, 0.3F);
 		buffer.vertex(matrix, x2 + (shiftEast2 ? offset2 : -offset2), (float)((y + 1) * 16), z2 + (shiftSouth2 ? offset2 : -offset2)).color(red, green, blue, 0.3F);
 		buffer.vertex(matrix, x1 + (shiftEast2 ? offset1 : -offset1), (float)(y * 16), z1 + (shiftSouth2 ? offset1 : -offset1)).color(red, green, blue, 0.3F);
-	}
-
-	public Identifier getTexture(LightningEntityRenderState lightningEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	public LightningEntityRenderState getRenderState() {

@@ -1,7 +1,12 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.VariantHolder;
@@ -25,6 +30,7 @@ public class SalmonEntity extends SchoolingFishEntity implements VariantHolder<S
 
 	public SalmonEntity(EntityType<? extends SalmonEntity> entityType, World world) {
 		super(entityType, world);
+		this.calculateDimensions();
 	}
 
 	@Override
@@ -64,6 +70,14 @@ public class SalmonEntity extends SchoolingFishEntity implements VariantHolder<S
 	}
 
 	@Override
+	public void onTrackedDataSet(TrackedData<?> data) {
+		super.onTrackedDataSet(data);
+		if (VARIANT.equals(data)) {
+			this.calculateDimensions();
+		}
+	}
+
+	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("type", this.getVariant().asString());
@@ -72,6 +86,18 @@ public class SalmonEntity extends SchoolingFishEntity implements VariantHolder<S
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
+		this.setVariant(SalmonEntity.Variant.byId(nbt.getString("type")));
+	}
+
+	@Override
+	public void copyDataToStack(ItemStack stack) {
+		Bucketable.copyDataToStack(this, stack);
+		NbtComponent.set(DataComponentTypes.BUCKET_ENTITY_DATA, stack, nbt -> nbt.putString("type", this.getVariant().asString()));
+	}
+
+	@Override
+	public void copyDataFromNbt(NbtCompound nbt) {
+		Bucketable.copyDataFromNbt(this, nbt);
 		this.setVariant(SalmonEntity.Variant.byId(nbt.getString("type")));
 	}
 
@@ -94,16 +120,27 @@ public class SalmonEntity extends SchoolingFishEntity implements VariantHolder<S
 		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
+	public float getVariantScale() {
+		return this.getVariant().scale;
+	}
+
+	@Override
+	protected EntityDimensions getBaseDimensions(EntityPose pose) {
+		return super.getBaseDimensions(pose).scaled(this.getVariantScale());
+	}
+
 	public static enum Variant implements StringIdentifiable {
-		SMALL("small"),
-		MEDIUM("medium"),
-		LARGE("large");
+		SMALL("small", 0.5F),
+		MEDIUM("medium", 1.0F),
+		LARGE("large", 1.5F);
 
 		public static final StringIdentifiable.EnumCodec<SalmonEntity.Variant> CODEC = StringIdentifiable.createCodec(SalmonEntity.Variant::values);
 		final String id;
+		final float scale;
 
-		private Variant(final String id) {
+		private Variant(final String id, final float scale) {
 			this.id = id;
+			this.scale = scale;
 		}
 
 		@Override

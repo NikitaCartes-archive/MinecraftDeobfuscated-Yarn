@@ -247,14 +247,18 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		int i = this.getRows() - 4;
-		if (this.canApplyDyePattern && i > 0) {
-			float f = (float)verticalAmount / (float)i;
-			this.scrollPosition = MathHelper.clamp(this.scrollPosition - f, 0.0F, 1.0F);
-			this.visibleTopRow = Math.max((int)(this.scrollPosition * (float)i + 0.5F), 0);
-		}
+		if (super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) {
+			return true;
+		} else {
+			int i = this.getRows() - 4;
+			if (this.canApplyDyePattern && i > 0) {
+				float f = (float)verticalAmount / (float)i;
+				this.scrollPosition = MathHelper.clamp(this.scrollPosition - f, 0.0F, 1.0F);
+				this.visibleTopRow = Math.max((int)(this.scrollPosition * (float)i + 0.5F), 0);
+			}
 
-		return true;
+			return true;
+		}
 	}
 
 	@Override

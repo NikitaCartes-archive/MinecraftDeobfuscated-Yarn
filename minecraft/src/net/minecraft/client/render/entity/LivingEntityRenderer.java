@@ -117,6 +117,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, S extends Liv
 		return -1;
 	}
 
+	public abstract Identifier getTexture(S state);
+
 	/**
 	 * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
 	 */

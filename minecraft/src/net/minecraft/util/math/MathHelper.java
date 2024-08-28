@@ -226,6 +226,14 @@ public class MathHelper {
 		return a % b == 0;
 	}
 
+	public static byte packDegrees(float degrees) {
+		return (byte)floor(degrees * 256.0F / 360.0F);
+	}
+
+	public static float unpackDegrees(byte packedDegrees) {
+		return (float)(packedDegrees * 360) / 256.0F;
+	}
+
 	/**
 	 * Wraps an angle in degrees to the interval {@code [-180, 180)}.
 	 */

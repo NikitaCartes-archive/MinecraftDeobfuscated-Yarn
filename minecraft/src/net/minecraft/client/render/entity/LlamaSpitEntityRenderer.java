@@ -35,10 +35,6 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity, Lla
 		super.render(llamaSpitEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(LlamaSpitEntityRenderState llamaSpitEntityRenderState) {
-		return TEXTURE;
-	}
-
 	public LlamaSpitEntityRenderState getRenderState() {
 		return new LlamaSpitEntityRenderState();
 	}

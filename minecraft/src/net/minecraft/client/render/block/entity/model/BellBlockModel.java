@@ -17,12 +17,10 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class BellBlockModel extends Model {
 	private static final String BELL_BODY = "bell_body";
-	private final ModelPart root;
 	private final ModelPart bellBody;
 
 	public BellBlockModel(ModelPart root) {
-		super(RenderLayer::getEntitySolid);
-		this.root = root;
+		super(root, RenderLayer::getEntitySolid);
 		this.bellBody = root.getChild("bell_body");
 	}
 
@@ -57,10 +55,5 @@ public class BellBlockModel extends Model {
 
 		this.bellBody.pitch = g;
 		this.bellBody.roll = h;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

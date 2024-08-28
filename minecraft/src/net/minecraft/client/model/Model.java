@@ -1,5 +1,6 @@
 package net.minecraft.client.model;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
@@ -19,10 +20,14 @@ import org.joml.Vector3f;
 @Environment(EnvType.CLIENT)
 public abstract class Model {
 	private static final Vector3f ANIMATION_VEC = new Vector3f();
+	protected final ModelPart root;
 	protected final Function<Identifier, RenderLayer> layerFactory;
+	private final List<ModelPart> parts;
 
-	public Model(Function<Identifier, RenderLayer> layerFactory) {
+	public Model(ModelPart root, Function<Identifier, RenderLayer> layerFactory) {
+		this.root = root;
 		this.layerFactory = layerFactory;
+		this.parts = root.traverse().toList();
 	}
 
 	/**
@@ -35,19 +40,31 @@ public abstract class Model {
 	}
 
 	public final void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-		this.getPart().render(matrices, vertices, light, overlay, color);
+		this.getRootPart().render(matrices, vertices, light, overlay, color);
 	}
 
 	public final void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
 		this.render(matrices, vertices, light, overlay, -1);
 	}
 
-	public abstract ModelPart getPart();
+	public final ModelPart getRootPart() {
+		return this.root;
+	}
 
 	public Optional<ModelPart> getPart(String name) {
 		return name.equals("root")
-			? Optional.of(this.getPart())
-			: this.getPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(partx -> partx.getChild(name));
+			? Optional.of(this.getRootPart())
+			: this.getRootPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(partx -> partx.getChild(name));
+	}
+
+	public final List<ModelPart> getParts() {
+		return this.parts;
+	}
+
+	public final void resetTransforms() {
+		for (ModelPart modelPart : this.parts) {
+			modelPart.resetTransform();
+		}
 	}
 
 	protected void animate(AnimationState animationState, Animation animation, float age) {
@@ -70,16 +87,8 @@ public abstract class Model {
 
 	@Environment(EnvType.CLIENT)
 	public static class SinglePartModel extends Model {
-		private final ModelPart part;
-
 		public SinglePartModel(ModelPart part, Function<Identifier, RenderLayer> layerFactory) {
-			super(layerFactory);
-			this.part = part;
-		}
-
-		@Override
-		public ModelPart getPart() {
-			return this.part;
+			super(part, layerFactory);
 		}
 	}
 }

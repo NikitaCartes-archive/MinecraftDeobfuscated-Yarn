@@ -44,7 +44,7 @@ public class DynamicRegistriesProvider implements DataProvider {
 		DataWriter writer, RegistryWrapper.WrapperLookup registries, DynamicOps<JsonElement> ops, RegistryLoader.Entry<T> registry
 	) {
 		RegistryKey<? extends Registry<T>> registryKey = registry.key();
-		return registries.getOptionalWrapper(registryKey)
+		return registries.getOptional(registryKey)
 			.map(
 				wrapper -> {
 					DataOutput.PathResolver pathResolver = this.output.getResolver(registryKey);

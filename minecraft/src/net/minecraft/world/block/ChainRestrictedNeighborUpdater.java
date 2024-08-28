@@ -150,7 +150,7 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 		implements ChainRestrictedNeighborUpdater.Entry {
 		@Override
 		public boolean update(World world) {
-			NeighborUpdater.replaceWithStateForNeighborUpdate(world, this.direction, this.neighborState, this.pos, this.neighborPos, this.updateFlags, this.updateLimit);
+			NeighborUpdater.replaceWithStateForNeighborUpdate(world, this.direction, this.pos, this.neighborPos, this.neighborState, this.updateFlags, this.updateLimit);
 			return false;
 		}
 	}

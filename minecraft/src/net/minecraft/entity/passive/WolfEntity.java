@@ -164,8 +164,8 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
 		DynamicRegistryManager dynamicRegistryManager = this.getRegistryManager();
-		Registry<WolfVariant> registry = dynamicRegistryManager.get(RegistryKeys.WOLF_VARIANT);
-		builder.add(VARIANT, (RegistryEntry<WolfVariant>)registry.getEntry(WolfVariants.DEFAULT).or(registry::getDefaultEntry).orElseThrow());
+		Registry<WolfVariant> registry = dynamicRegistryManager.getOrThrow(RegistryKeys.WOLF_VARIANT);
+		builder.add(VARIANT, (RegistryEntry<WolfVariant>)registry.getOptional(WolfVariants.DEFAULT).or(registry::getDefaultEntry).orElseThrow());
 		builder.add(BEGGING, false);
 		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
 		builder.add(ANGER_TIME, 0);
@@ -189,7 +189,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 		super.readCustomDataFromNbt(nbt);
 		Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
 			.map(variantId -> RegistryKey.of(RegistryKeys.WOLF_VARIANT, variantId))
-			.flatMap(variantKey -> this.getRegistryManager().get(RegistryKeys.WOLF_VARIANT).getEntry(variantKey))
+			.flatMap(variantKey -> this.getRegistryManager().getOrThrow(RegistryKeys.WOLF_VARIANT).getOptional(variantKey))
 			.ifPresent(this::setVariant);
 		if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
 			this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));

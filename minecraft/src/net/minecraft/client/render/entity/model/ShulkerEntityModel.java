@@ -22,15 +22,13 @@ public class ShulkerEntityModel extends EntityModel<ShulkerEntityRenderState> {
 	 * The key of the base model part, whose value is {@value}.
 	 */
 	private static final String BASE = "base";
-	private final ModelPart root;
 	private final ModelPart lid;
 	private final ModelPart head;
 
-	public ShulkerEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityCutoutNoCullZOffset);
-		this.root = root;
-		this.lid = root.getChild("lid");
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public ShulkerEntityModel(ModelPart modelPart) {
+		super(modelPart, RenderLayer::getEntityCutoutNoCullZOffset);
+		this.lid = modelPart.getChild("lid");
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 	}
 
 	private static ModelData getModelData() {
@@ -56,6 +54,7 @@ public class ShulkerEntityModel extends EntityModel<ShulkerEntityRenderState> {
 	}
 
 	public void setAngles(ShulkerEntityRenderState shulkerEntityRenderState) {
+		super.setAngles(shulkerEntityRenderState);
 		float f = (0.5F + shulkerEntityRenderState.openProgress) * (float) Math.PI;
 		float g = -1.0F + MathHelper.sin(f);
 		float h = 0.0F;
@@ -72,10 +71,5 @@ public class ShulkerEntityModel extends EntityModel<ShulkerEntityRenderState> {
 
 		this.head.pitch = shulkerEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.yaw = (shulkerEntityRenderState.headYaw - 180.0F - shulkerEntityRenderState.shellYaw) * (float) (Math.PI / 180.0);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

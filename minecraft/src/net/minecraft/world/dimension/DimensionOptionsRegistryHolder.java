@@ -69,7 +69,7 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 	}
 
 	public DimensionOptionsRegistryHolder with(RegistryWrapper.WrapperLookup registries, ChunkGenerator chunkGenerator) {
-		RegistryWrapper<DimensionType> registryWrapper = registries.getWrapperOrThrow(RegistryKeys.DIMENSION_TYPE);
+		RegistryWrapper<DimensionType> registryWrapper = registries.getOrThrow(RegistryKeys.DIMENSION_TYPE);
 		Map<RegistryKey<DimensionOptions>, DimensionOptions> map = createRegistry(registryWrapper, this.dimensions, chunkGenerator);
 		return new DimensionOptionsRegistryHolder(map);
 	}
@@ -115,7 +115,7 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 	}
 
 	private static LevelProperties.SpecialProperty getSpecialProperty(Registry<DimensionOptions> dimensionOptionsRegistry) {
-		return (LevelProperties.SpecialProperty)dimensionOptionsRegistry.getOrEmpty(DimensionOptions.OVERWORLD).map(overworldEntry -> {
+		return (LevelProperties.SpecialProperty)dimensionOptionsRegistry.getOptionalValue(DimensionOptions.OVERWORLD).map(overworldEntry -> {
 			ChunkGenerator chunkGenerator = overworldEntry.chunkGenerator();
 			if (chunkGenerator instanceof DebugChunkGenerator) {
 				return LevelProperties.SpecialProperty.DEBUG;
@@ -181,7 +181,7 @@ public record DimensionOptionsRegistryHolder(Map<RegistryKey<DimensionOptions>, 
 		List<Entry> list = new ArrayList();
 		streamAll(stream)
 			.forEach(
-				key -> existingRegistry.getOrEmpty(key)
+				key -> existingRegistry.getOptionalValue(key)
 						.or(() -> Optional.ofNullable((DimensionOptions)this.dimensions.get(key)))
 						.ifPresent(dimensionOptions -> list.add(new Entry(key, dimensionOptions)))
 			);

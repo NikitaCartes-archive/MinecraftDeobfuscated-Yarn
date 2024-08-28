@@ -56,7 +56,6 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class BeeEntityModel extends EntityModel<BeeEntityRenderState> {
-	private static final float BONE_BASE_Y_PIVOT = 19.0F;
 	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
 	/**
 	 * The key of the bone model part, whose value is {@value}.
@@ -88,7 +87,6 @@ public class BeeEntityModel extends EntityModel<BeeEntityRenderState> {
 	 * The key of the back legs model part, whose value is {@value}.
 	 */
 	private static final String BACK_LEGS = "back_legs";
-	private final ModelPart root;
 	private final ModelPart bone;
 	private final ModelPart rightWing;
 	private final ModelPart leftWing;
@@ -100,13 +98,13 @@ public class BeeEntityModel extends EntityModel<BeeEntityRenderState> {
 	private final ModelPart rightAntenna;
 	private float bodyPitch;
 
-	public BeeEntityModel(ModelPart root) {
-		this.root = root;
-		this.bone = root.getChild(EntityModelPartNames.BONE);
-		ModelPart modelPart = this.bone.getChild(EntityModelPartNames.BODY);
-		this.stinger = modelPart.getChild("stinger");
-		this.leftAntenna = modelPart.getChild("left_antenna");
-		this.rightAntenna = modelPart.getChild("right_antenna");
+	public BeeEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.bone = modelPart.getChild(EntityModelPartNames.BONE);
+		ModelPart modelPart2 = this.bone.getChild(EntityModelPartNames.BODY);
+		this.stinger = modelPart2.getChild("stinger");
+		this.leftAntenna = modelPart2.getChild("left_antenna");
+		this.rightAntenna = modelPart2.getChild("right_antenna");
 		this.rightWing = this.bone.getChild(EntityModelPartNames.RIGHT_WING);
 		this.leftWing = this.bone.getChild(EntityModelPartNames.LEFT_WING);
 		this.frontLegs = this.bone.getChild("front_legs");
@@ -150,22 +148,10 @@ public class BeeEntityModel extends EntityModel<BeeEntityRenderState> {
 	}
 
 	public void setAngles(BeeEntityRenderState beeEntityRenderState) {
+		super.setAngles(beeEntityRenderState);
 		this.bodyPitch = beeEntityRenderState.bodyPitch;
 		this.stinger.visible = beeEntityRenderState.hasStinger;
-		this.rightWing.pitch = 0.0F;
-		this.leftAntenna.pitch = 0.0F;
-		this.rightAntenna.pitch = 0.0F;
-		this.bone.pitch = 0.0F;
-		if (beeEntityRenderState.stoppedOnGround) {
-			this.rightWing.yaw = -0.2618F;
-			this.rightWing.roll = 0.0F;
-			this.leftWing.pitch = 0.0F;
-			this.leftWing.yaw = 0.2618F;
-			this.leftWing.roll = 0.0F;
-			this.frontLegs.pitch = 0.0F;
-			this.middleLegs.pitch = 0.0F;
-			this.backLegs.pitch = 0.0F;
-		} else {
+		if (!beeEntityRenderState.stoppedOnGround) {
 			float f = beeEntityRenderState.age * 120.32113F * (float) (Math.PI / 180.0);
 			this.rightWing.yaw = 0.0F;
 			this.rightWing.roll = MathHelper.cos(f) * (float) Math.PI * 0.15F;
@@ -175,33 +161,20 @@ public class BeeEntityModel extends EntityModel<BeeEntityRenderState> {
 			this.frontLegs.pitch = (float) (Math.PI / 4);
 			this.middleLegs.pitch = (float) (Math.PI / 4);
 			this.backLegs.pitch = (float) (Math.PI / 4);
-			this.bone.pitch = 0.0F;
-			this.bone.yaw = 0.0F;
-			this.bone.roll = 0.0F;
 		}
 
-		if (!beeEntityRenderState.angry) {
-			this.bone.pitch = 0.0F;
-			this.bone.yaw = 0.0F;
-			this.bone.roll = 0.0F;
-			if (!beeEntityRenderState.stoppedOnGround) {
-				float f = MathHelper.cos(beeEntityRenderState.age * 0.18F);
-				this.bone.pitch = 0.1F + f * (float) Math.PI * 0.025F;
-				this.leftAntenna.pitch = f * (float) Math.PI * 0.03F;
-				this.rightAntenna.pitch = f * (float) Math.PI * 0.03F;
-				this.frontLegs.pitch = -f * (float) Math.PI * 0.1F + (float) (Math.PI / 8);
-				this.backLegs.pitch = -f * (float) Math.PI * 0.05F + (float) (Math.PI / 4);
-				this.bone.pivotY = 19.0F - MathHelper.cos(beeEntityRenderState.age * 0.18F) * 0.9F;
-			}
+		if (!beeEntityRenderState.angry && !beeEntityRenderState.stoppedOnGround) {
+			float f = MathHelper.cos(beeEntityRenderState.age * 0.18F);
+			this.bone.pitch = 0.1F + f * (float) Math.PI * 0.025F;
+			this.leftAntenna.pitch = f * (float) Math.PI * 0.03F;
+			this.rightAntenna.pitch = f * (float) Math.PI * 0.03F;
+			this.frontLegs.pitch = -f * (float) Math.PI * 0.1F + (float) (Math.PI / 8);
+			this.backLegs.pitch = -f * (float) Math.PI * 0.05F + (float) (Math.PI / 4);
+			this.bone.pivotY = this.bone.pivotY - MathHelper.cos(beeEntityRenderState.age * 0.18F) * 0.9F;
 		}
 
 		if (this.bodyPitch > 0.0F) {
 			this.bone.pitch = MathHelper.lerpAngleRadians(this.bodyPitch, this.bone.pitch, 3.0915928F);
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

@@ -38,10 +38,6 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity,
 		}
 	}
 
-	public Identifier getTexture(EvokerFangsEntityRenderState evokerFangsEntityRenderState) {
-		return TEXTURE;
-	}
-
 	public EvokerFangsEntityRenderState getRenderState() {
 		return new EvokerFangsEntityRenderState();
 	}

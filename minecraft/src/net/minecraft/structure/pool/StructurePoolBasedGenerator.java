@@ -68,10 +68,10 @@ public class StructurePoolBasedGenerator {
 		StructureTemplateManager structureTemplateManager = context.structureTemplateManager();
 		HeightLimitView heightLimitView = context.world();
 		ChunkRandom chunkRandom = context.random();
-		Registry<StructurePool> registry = dynamicRegistryManager.get(RegistryKeys.TEMPLATE_POOL);
+		Registry<StructurePool> registry = dynamicRegistryManager.getOrThrow(RegistryKeys.TEMPLATE_POOL);
 		BlockRotation blockRotation = BlockRotation.random(chunkRandom);
 		StructurePool structurePool2 = (StructurePool)structurePool.getKey()
-			.flatMap(key -> registry.getOrEmpty(aliasLookup.lookup(key)))
+			.flatMap(key -> registry.getOptionalValue(aliasLookup.lookup(key)))
 			.orElse(structurePool.value());
 		StructurePoolElement structurePoolElement = structurePool2.getRandomElement(chunkRandom);
 		if (structurePoolElement == EmptyPoolElement.INSTANCE) {
@@ -313,7 +313,7 @@ public class StructurePoolBasedGenerator {
 				int j = blockPos2.getY() - i;
 				int k = Integer.MIN_VALUE;
 				RegistryKey<StructurePool> registryKey = lookupPool(structureBlockInfo, aliasLookup);
-				Optional<? extends RegistryEntry<StructurePool>> optional = this.registry.getEntry(registryKey);
+				Optional<? extends RegistryEntry<StructurePool>> optional = this.registry.getOptional(registryKey);
 				if (optional.isEmpty()) {
 					StructurePoolBasedGenerator.LOGGER.warn("Empty or non-existent pool: {}", registryKey.getValue());
 				} else {
@@ -362,7 +362,7 @@ public class StructurePoolBasedGenerator {
 												return 0;
 											} else {
 												RegistryKey<StructurePool> registryKeyx = lookupPool(structureBlockInfox, aliasLookup);
-												Optional<? extends RegistryEntry<StructurePool>> optionalx = this.registry.getEntry(registryKeyx);
+												Optional<? extends RegistryEntry<StructurePool>> optionalx = this.registry.getOptional(registryKeyx);
 												Optional<RegistryEntry<StructurePool>> optional2 = optionalx.map(entry -> ((StructurePool)entry.value()).getFallback());
 												int ix = (Integer)optionalx.map(entry -> ((StructurePool)entry.value()).getHighestY(this.structureTemplateManager)).orElse(0);
 												int jx = (Integer)optional2.map(entry -> ((StructurePool)entry.value()).getHighestY(this.structureTemplateManager)).orElse(0);

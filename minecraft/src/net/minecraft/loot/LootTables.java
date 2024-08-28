@@ -14,7 +14,6 @@ import net.minecraft.util.Util;
 public class LootTables {
 	private static final Set<RegistryKey<LootTable>> LOOT_TABLES = new HashSet();
 	private static final Set<RegistryKey<LootTable>> LOOT_TABLES_READ_ONLY = Collections.unmodifiableSet(LOOT_TABLES);
-	public static final RegistryKey<LootTable> EMPTY = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.ofVanilla("empty"));
 	public static final RegistryKey<LootTable> SPAWN_BONUS_CHEST = register("chests/spawn_bonus_chest");
 	public static final RegistryKey<LootTable> END_CITY_TREASURE_CHEST = register("chests/end_city_treasure");
 	public static final RegistryKey<LootTable> SIMPLE_DUNGEON_CHEST = register("chests/simple_dungeon");
@@ -81,9 +80,6 @@ public class LootTables {
 	public static final Map<DyeColor, RegistryKey<LootTable>> SHEEP_DROPS_FROM_DYE_COLOR = Util.make(
 		new EnumMap(DyeColor.class), lootTableMap -> registerAllDyeColors(lootTableMap, "entities/sheep")
 	);
-	public static final Map<DyeColor, RegistryKey<LootTable>> SHEEP_SHEARING_FROM_DYE_COLOR = Util.make(
-		new EnumMap(DyeColor.class), lootTableMap -> registerAllDyeColors(lootTableMap, "shearing/sheep")
-	);
 	public static final RegistryKey<LootTable> FISHING_GAMEPLAY = register("gameplay/fishing");
 	public static final RegistryKey<LootTable> FISHING_JUNK_GAMEPLAY = register("gameplay/fishing/junk");
 	public static final RegistryKey<LootTable> FISHING_TREASURE_GAMEPLAY = register("gameplay/fishing/treasure");
@@ -111,9 +107,14 @@ public class LootTables {
 	public static final RegistryKey<LootTable> OMINOUS_TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/ominous/trial_chamber/consumables");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_ITEMS_TO_DROP_WHEN_OMINOUS_SPAWNER = register("spawners/trial_chamber/items_to_drop_when_ominous");
 	public static final RegistryKey<LootTable> BOGGED_SHEARING = register("shearing/bogged");
+	public static final RegistryKey<LootTable> MOOSHROOM_SHEARING = register("shearing/mooshroom");
 	public static final RegistryKey<LootTable> MOOSHROOM_RED_SHEARING = register("shearing/mooshroom/red");
 	public static final RegistryKey<LootTable> MOOSHROOM_BROWN_SHEARING = register("shearing/mooshroom/brown");
 	public static final RegistryKey<LootTable> SNOW_GOLEM_SHEARING = register("shearing/snow_golem");
+	public static final RegistryKey<LootTable> SHEEP_SHEARING = register("shearing/sheep");
+	public static final Map<DyeColor, RegistryKey<LootTable>> SHEEP_SHEARING_FROM_DYE_COLOR = Util.make(
+		new EnumMap(DyeColor.class), lootTableMap -> registerAllDyeColors(lootTableMap, "shearing/sheep")
+	);
 	public static final RegistryKey<LootTable> DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
 	public static final RegistryKey<LootTable> DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");
 	public static final RegistryKey<LootTable> TRAIL_RUINS_COMMON_ARCHAEOLOGY = register("archaeology/trail_ruins_common");

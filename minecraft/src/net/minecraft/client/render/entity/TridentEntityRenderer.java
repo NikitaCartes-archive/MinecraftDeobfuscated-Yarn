@@ -29,15 +29,11 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity, Trident
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(tridentEntityRenderState.yaw - 90.0F));
 		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tridentEntityRenderState.pitch + 90.0F));
 		VertexConsumer vertexConsumer = ItemRenderer.getItemGlintConsumer(
-			vertexConsumerProvider, this.model.getLayer(this.getTexture(tridentEntityRenderState)), false, tridentEntityRenderState.enchanted
+			vertexConsumerProvider, this.model.getLayer(TEXTURE), false, tridentEntityRenderState.enchanted
 		);
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 		matrixStack.pop();
 		super.render(tridentEntityRenderState, matrixStack, vertexConsumerProvider, i);
-	}
-
-	public Identifier getTexture(TridentEntityRenderState tridentEntityRenderState) {
-		return TEXTURE;
 	}
 
 	public TridentEntityRenderState getRenderState() {

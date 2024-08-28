@@ -5,10 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.state.TntEntityRenderState;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.TntEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
@@ -46,10 +44,6 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity, TntEntityRender
 
 		matrixStack.pop();
 		super.render(tntEntityRenderState, matrixStack, vertexConsumerProvider, i);
-	}
-
-	public Identifier getTexture(TntEntityRenderState tntEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	public TntEntityRenderState getRenderState() {

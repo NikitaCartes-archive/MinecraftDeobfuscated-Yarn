@@ -24,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
@@ -81,7 +80,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 				.getModelRenderer()
 				.render(
 					matrixStack.peek(),
-					vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolidZOffsetForward(this.getTexture(itemFrameEntityRenderState))),
+					vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolidZOffsetForward(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)),
 					null,
 					bakedModelManager.getModel(modelIdentifier),
 					1.0F,
@@ -140,10 +139,6 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		return new Vec3d(
 			(double)((float)itemFrameEntityRenderState.facing.getOffsetX() * 0.3F), -0.25, (double)((float)itemFrameEntityRenderState.facing.getOffsetZ() * 0.3F)
 		);
-	}
-
-	public Identifier getTexture(ItemFrameEntityRenderState itemFrameEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	protected boolean hasLabel(T itemFrameEntity, double d) {

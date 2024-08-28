@@ -126,7 +126,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
-		builder.add(VARIANT, Registries.FROG_VARIANT.entryOf(DEFAULT_VARIANT_KEY));
+		builder.add(VARIANT, Registries.FROG_VARIANT.getOrThrow(DEFAULT_VARIANT_KEY));
 		builder.add(TARGET, OptionalInt.empty());
 	}
 
@@ -171,7 +171,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 		super.readCustomDataFromNbt(nbt);
 		Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
 			.map(variant -> RegistryKey.of(RegistryKeys.FROG_VARIANT, variant))
-			.flatMap(Registries.FROG_VARIANT::getEntry)
+			.flatMap(Registries.FROG_VARIANT::getOptional)
 			.ifPresent(this::setVariant);
 	}
 
@@ -268,11 +268,11 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
 		if (registryEntry.isIn(BiomeTags.SPAWNS_COLD_VARIANT_FROGS)) {
-			this.setVariant(Registries.FROG_VARIANT.entryOf(FrogVariant.COLD));
+			this.setVariant(Registries.FROG_VARIANT.getOrThrow(FrogVariant.COLD));
 		} else if (registryEntry.isIn(BiomeTags.SPAWNS_WARM_VARIANT_FROGS)) {
-			this.setVariant(Registries.FROG_VARIANT.entryOf(FrogVariant.WARM));
+			this.setVariant(Registries.FROG_VARIANT.getOrThrow(FrogVariant.WARM));
 		} else {
-			this.setVariant(Registries.FROG_VARIANT.entryOf(DEFAULT_VARIANT_KEY));
+			this.setVariant(Registries.FROG_VARIANT.getOrThrow(DEFAULT_VARIANT_KEY));
 		}
 
 		FrogBrain.coolDownLongJump(this, world.getRandom());

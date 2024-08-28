@@ -56,9 +56,8 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	@Override
 	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
 		ItemStack itemStack = new ItemStack(Items.IRON_CHESTPLATE);
-		Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional = registries.getWrapperOrThrow(RegistryKeys.TRIM_PATTERN).streamEntries().findFirst();
-		Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional2 = registries.getWrapperOrThrow(RegistryKeys.TRIM_MATERIAL)
-			.getOptional(ArmorTrimMaterials.REDSTONE);
+		Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional = registries.getOrThrow(RegistryKeys.TRIM_PATTERN).streamEntries().findFirst();
+		Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional2 = registries.getOrThrow(RegistryKeys.TRIM_MATERIAL).getOptional(ArmorTrimMaterials.REDSTONE);
 		if (optional.isPresent() && optional2.isPresent()) {
 			itemStack.set(DataComponentTypes.TRIM, new ArmorTrim((RegistryEntry<ArmorTrimMaterial>)optional2.get(), (RegistryEntry<ArmorTrimPattern>)optional.get()));
 		}

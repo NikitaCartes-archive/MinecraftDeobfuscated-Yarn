@@ -17,13 +17,11 @@ public class ChestBlockModel extends Model {
 	private static final String BOTTOM = "bottom";
 	private static final String LID = "lid";
 	private static final String LOCK = "lock";
-	private final ModelPart root;
 	private final ModelPart lid;
 	private final ModelPart lock;
 
 	public ChestBlockModel(ModelPart root) {
-		super(RenderLayer::getEntitySolid);
-		this.root = root;
+		super(root, RenderLayer::getEntitySolid);
 		this.lid = root.getChild("lid");
 		this.lock = root.getChild("lock");
 	}
@@ -58,10 +56,5 @@ public class ChestBlockModel extends Model {
 	public void setLockAndLidPitch(float animationProgress) {
 		this.lid.pitch = -(animationProgress * (float) (Math.PI / 2));
 		this.lock.pitch = this.lid.pitch;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

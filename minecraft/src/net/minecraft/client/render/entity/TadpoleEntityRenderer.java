@@ -16,7 +16,8 @@ public class TadpoleEntityRenderer extends MobEntityRenderer<TadpoleEntity, Livi
 		super(context, new TadpoleEntityModel(context.getPart(EntityModelLayers.TADPOLE)), 0.14F);
 	}
 
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	@Override
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 

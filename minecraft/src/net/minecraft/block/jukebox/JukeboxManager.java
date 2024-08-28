@@ -48,7 +48,7 @@ public class JukeboxManager {
 	public void startPlaying(WorldAccess world, RegistryEntry<JukeboxSong> song) {
 		this.song = song;
 		this.ticksSinceSongStarted = 0L;
-		int i = world.getRegistryManager().get(RegistryKeys.JUKEBOX_SONG).getRawId(this.song.value());
+		int i = world.getRegistryManager().getOrThrow(RegistryKeys.JUKEBOX_SONG).getRawId(this.song.value());
 		world.syncWorldEvent(null, WorldEvents.JUKEBOX_STARTS_PLAYING, this.pos, i);
 		this.changeNotifier.notifyChange();
 	}

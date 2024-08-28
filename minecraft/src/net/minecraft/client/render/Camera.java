@@ -55,7 +55,7 @@ public class Camera {
 		if (focusedEntity.hasVehicle()
 			&& focusedEntity.getVehicle() instanceof MinecartEntity minecartEntity
 			&& minecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController
-			&& experimentalMinecartController.method_61614()) {
+			&& experimentalMinecartController.hasCurrentLerpSteps()) {
 			Vec3d vec3d = minecartEntity.getPassengerRidingPos(focusedEntity)
 				.subtract(minecartEntity.getPos())
 				.subtract(focusedEntity.getVehicleAttachmentPos(minecartEntity))

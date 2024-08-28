@@ -90,7 +90,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			ItemStack itemStack = inventory.getStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
 				this.context.run((world, pos) -> {
-					IndexedIterable<RegistryEntry<Enchantment>> indexedIterable = world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getIndexedEntries();
+					IndexedIterable<RegistryEntry<Enchantment>> indexedIterable = world.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getIndexedEntries();
 					int ix = 0;
 
 					for (BlockPos blockPos : EnchantingTableBlock.POWER_PROVIDER_OFFSETS) {
@@ -186,7 +186,8 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 
 	private List<EnchantmentLevelEntry> generateEnchantments(DynamicRegistryManager registryManager, ItemStack stack, int slot, int level) {
 		this.random.setSeed((long)(this.seed.get() + slot));
-		Optional<RegistryEntryList.Named<Enchantment>> optional = registryManager.get(RegistryKeys.ENCHANTMENT).getEntryList(EnchantmentTags.IN_ENCHANTING_TABLE);
+		Optional<RegistryEntryList.Named<Enchantment>> optional = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT)
+			.getOptional(EnchantmentTags.IN_ENCHANTING_TABLE);
 		if (optional.isEmpty()) {
 			return List.of();
 		} else {

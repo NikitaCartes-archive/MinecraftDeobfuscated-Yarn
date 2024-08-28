@@ -63,7 +63,6 @@ public class BookModel extends Model {
 	 * The key of the right flipping page model part, whose value is {@value}.
 	 */
 	private static final String FLIP_PAGE2 = "flip_page2";
-	private final ModelPart root;
 	private final ModelPart leftCover;
 	private final ModelPart rightCover;
 	private final ModelPart leftPages;
@@ -72,8 +71,7 @@ public class BookModel extends Model {
 	private final ModelPart rightFlippingPage;
 
 	public BookModel(ModelPart root) {
-		super(RenderLayer::getEntitySolid);
-		this.root = root;
+		super(root, RenderLayer::getEntitySolid);
 		this.leftCover = root.getChild(EntityModelPartNames.LEFT_LID);
 		this.rightCover = root.getChild(EntityModelPartNames.RIGHT_LID);
 		this.leftPages = root.getChild("left_pages");
@@ -118,10 +116,5 @@ public class BookModel extends Model {
 		this.rightPages.pivotX = MathHelper.sin(f);
 		this.leftFlippingPage.pivotX = MathHelper.sin(f);
 		this.rightFlippingPage.pivotX = MathHelper.sin(f);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

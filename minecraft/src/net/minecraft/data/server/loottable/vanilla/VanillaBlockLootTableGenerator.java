@@ -99,8 +99,8 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 
 	@Override
 	protected void generate() {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
-		RegistryWrapper.Impl<Item> impl2 = this.registries.getWrapperOrThrow(RegistryKeys.ITEM);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Item> impl2 = this.registries.getOrThrow(RegistryKeys.ITEM);
 		this.addDrop(Blocks.GRANITE);
 		this.addDrop(Blocks.POLISHED_GRANITE);
 		this.addDrop(Blocks.DIORITE);

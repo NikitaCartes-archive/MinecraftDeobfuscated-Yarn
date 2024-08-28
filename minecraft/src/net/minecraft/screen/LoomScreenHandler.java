@@ -107,7 +107,7 @@ public class LoomScreenHandler extends ScreenHandler {
 		});
 		this.addPlayerSlots(playerInventory, 8, 84);
 		this.addProperty(this.selectedPattern);
-		this.bannerPatternLookup = playerInventory.player.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN);
+		this.bannerPatternLookup = playerInventory.player.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN);
 	}
 
 	@Override

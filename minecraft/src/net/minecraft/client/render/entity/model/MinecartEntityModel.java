@@ -39,10 +39,8 @@ import net.minecraft.client.render.entity.state.MinecartEntityRenderState;
  */
 @Environment(EnvType.CLIENT)
 public class MinecartEntityModel extends EntityModel<MinecartEntityRenderState> {
-	private final ModelPart root;
-
-	public MinecartEntityModel(ModelPart root) {
-		this.root = root;
+	public MinecartEntityModel(ModelPart modelPart) {
+		super(modelPart);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -72,13 +70,5 @@ public class MinecartEntityModel extends EntityModel<MinecartEntityRenderState> 
 		);
 		modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F), ModelTransform.pivot(0.0F, 4.0F, 7.0F));
 		return TexturedModelData.of(modelData, 64, 32);
-	}
-
-	public void setAngles(MinecartEntityRenderState minecartEntityRenderState) {
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

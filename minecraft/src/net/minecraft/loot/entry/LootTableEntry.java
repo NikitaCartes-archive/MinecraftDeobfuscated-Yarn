@@ -38,9 +38,7 @@ public class LootTableEntry extends LeafEntry {
 	@Override
 	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
 		this.value
-			.<LootTable>map(
-				key -> (LootTable)context.getLookup().getOptionalEntry(RegistryKeys.LOOT_TABLE, key).map(RegistryEntry::value).orElse(LootTable.EMPTY), table -> table
-			)
+			.<LootTable>map(key -> (LootTable)context.getLookup().getOptionalEntry(key).map(RegistryEntry::value).orElse(LootTable.EMPTY), table -> table)
 			.generateUnprocessedLoot(context, lootConsumer);
 	}
 
@@ -64,7 +62,7 @@ public class LootTableEntry extends LeafEntry {
 		this.value
 			.ifLeft(
 				key -> reporter.getDataLookup()
-						.getOptionalEntry(RegistryKeys.LOOT_TABLE, key)
+						.getOptionalEntry(key)
 						.ifPresentOrElse(
 							entry -> ((LootTable)entry.value()).validate(reporter.makeChild("->{" + key.getValue() + "}", key)),
 							() -> reporter.report("Unknown loot table called " + key.getValue())

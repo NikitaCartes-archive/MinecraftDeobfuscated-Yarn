@@ -47,7 +47,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
-			&& ItemStack.areEqual(itemEntity.getStack(), Raid.createOminousBanner(itemEntity.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+			&& ItemStack.areEqual(itemEntity.getStack(), Raid.createOminousBanner(itemEntity.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN)));
 	@Nullable
 	protected Raid raid;
 	private int wave;
@@ -150,7 +150,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	public boolean isCaptain() {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 		boolean bl = !itemStack.isEmpty()
-			&& ItemStack.areEqual(itemStack, Raid.createOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+			&& ItemStack.areEqual(itemStack, Raid.createOminousBanner(this.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN)));
 		boolean bl2 = this.isPatrolLeader();
 		return bl && bl2;
 	}
@@ -212,9 +212,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
-		if (this.hasActiveRaid()
-			&& !bl
-			&& ItemStack.areEqual(itemStack, Raid.createOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)))) {
+		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.createOminousBanner(this.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN)))
+			)
+		 {
 			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
@@ -547,7 +547,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			} else if (!this.actor.canLead()) {
 				return true;
 			} else if (ItemStack.areEqual(
-				this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.createOminousBanner(this.actor.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN))
+				this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.createOminousBanner(this.actor.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN))
 			)) {
 				return true;
 			} else {

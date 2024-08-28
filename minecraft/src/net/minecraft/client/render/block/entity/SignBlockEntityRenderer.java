@@ -44,15 +44,15 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 	private static final int RENDER_DISTANCE = MathHelper.square(16);
 	private static final float SCALE = 0.6666667F;
 	private static final Vec3d TEXT_OFFSET = new Vec3d(0.0, 0.33333334F, 0.046666667F);
-	private final Map<WoodType, SignBlockEntityRenderer.class_9985> typeToModel;
+	private final Map<WoodType, SignBlockEntityRenderer.SignModelPair> typeToModelPair;
 	private final TextRenderer textRenderer;
 
 	public SignBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		this.typeToModel = (Map<WoodType, SignBlockEntityRenderer.class_9985>)WoodType.stream()
+		this.typeToModelPair = (Map<WoodType, SignBlockEntityRenderer.SignModelPair>)WoodType.stream()
 			.collect(
 				ImmutableMap.toImmutableMap(
 					signType -> signType,
-					signType -> new SignBlockEntityRenderer.class_9985(
+					signType -> new SignBlockEntityRenderer.SignModelPair(
 							createSignModel(ctx.getLayerRenderDispatcher(), signType, true), createSignModel(ctx.getLayerRenderDispatcher(), signType, false)
 						)
 				)
@@ -64,8 +64,8 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		BlockState blockState = signBlockEntity.getCachedState();
 		AbstractSignBlock abstractSignBlock = (AbstractSignBlock)blockState.getBlock();
 		WoodType woodType = AbstractSignBlock.getWoodType(abstractSignBlock);
-		SignBlockEntityRenderer.class_9985 lv = (SignBlockEntityRenderer.class_9985)this.typeToModel.get(woodType);
-		Model model = blockState.getBlock() instanceof SignBlock ? lv.standing() : lv.wall();
+		SignBlockEntityRenderer.SignModelPair signModelPair = (SignBlockEntityRenderer.SignModelPair)this.typeToModelPair.get(woodType);
+		Model model = blockState.getBlock() instanceof SignBlock ? signModelPair.standing() : signModelPair.wall();
 		this.render(signBlockEntity, matrixStack, vertexConsumerProvider, i, j, blockState, abstractSignBlock, woodType, model);
 	}
 
@@ -209,16 +209,16 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		}
 	}
 
-	public static Model createSignModel(EntityModelLoader entityModelLoader, WoodType type, boolean bl) {
-		EntityModelLayer entityModelLayer = bl ? EntityModelLayers.createStandingSign(type) : EntityModelLayers.createWallSign(type);
+	public static Model createSignModel(EntityModelLoader entityModelLoader, WoodType type, boolean standing) {
+		EntityModelLayer entityModelLayer = standing ? EntityModelLayers.createStandingSign(type) : EntityModelLayers.createWallSign(type);
 		return new Model.SinglePartModel(entityModelLoader.getModelPart(entityModelLayer), RenderLayer::getEntityCutoutNoCull);
 	}
 
-	public static TexturedModelData getTexturedModelData(boolean bl) {
+	public static TexturedModelData getTexturedModelData(boolean standing) {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild("sign", ModelPartBuilder.create().uv(0, 0).cuboid(-12.0F, -14.0F, -1.0F, 24.0F, 12.0F, 2.0F), ModelTransform.NONE);
-		if (bl) {
+		if (standing) {
 			modelPartData.addChild("stick", ModelPartBuilder.create().uv(0, 14).cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 14.0F, 2.0F), ModelTransform.NONE);
 		}
 
@@ -226,6 +226,6 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record class_9985(Model standing, Model wall) {
+	static record SignModelPair(Model standing, Model wall) {
 	}
 }

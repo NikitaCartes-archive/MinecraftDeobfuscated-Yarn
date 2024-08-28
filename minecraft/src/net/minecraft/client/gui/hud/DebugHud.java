@@ -421,7 +421,7 @@ public class DebugHud {
 				}
 			}
 
-			Identifier identifier = this.client.gameRenderer.method_62906();
+			Identifier identifier = this.client.gameRenderer.getPostProcessorId();
 			if (identifier != null) {
 				list.add("Post: " + identifier);
 			}

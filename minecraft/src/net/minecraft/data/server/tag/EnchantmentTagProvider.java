@@ -20,7 +20,7 @@ public abstract class EnchantmentTagProvider extends TagProvider<Enchantment> {
 	protected void createTooltipOrderTag(RegistryWrapper.WrapperLookup registries, RegistryKey<Enchantment>... enchantments) {
 		this.getOrCreateTagBuilder(EnchantmentTags.TOOLTIP_ORDER).add(enchantments);
 		Set<RegistryKey<Enchantment>> set = Set.of(enchantments);
-		List<String> list = (List<String>)registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
+		List<String> list = (List<String>)registries.getOrThrow(RegistryKeys.ENCHANTMENT)
 			.streamEntries()
 			.filter(entry -> !set.contains(entry.getKey().get()))
 			.map(RegistryEntry::getIdAsString)

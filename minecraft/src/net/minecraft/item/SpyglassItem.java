@@ -41,8 +41,9 @@ public class SpyglassItem extends Item {
 	}
 
 	@Override
-	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+	public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
 		this.playStopUsingSound(user);
+		return true;
 	}
 
 	private void playStopUsingSound(LivingEntity user) {

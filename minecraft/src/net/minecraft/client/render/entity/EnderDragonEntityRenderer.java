@@ -177,10 +177,6 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity,
 		matrices.pop();
 	}
 
-	public Identifier getTexture(EnderDragonEntityRenderState enderDragonEntityRenderState) {
-		return TEXTURE;
-	}
-
 	public EnderDragonEntityRenderState getRenderState() {
 		return new EnderDragonEntityRenderState();
 	}

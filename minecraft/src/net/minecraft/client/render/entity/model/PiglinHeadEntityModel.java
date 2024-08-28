@@ -14,6 +14,7 @@ public class PiglinHeadEntityModel extends SkullBlockEntityModel {
 	private final ModelPart rightEar;
 
 	public PiglinHeadEntityModel(ModelPart root) {
+		super(root);
 		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.leftEar = this.head.getChild(EntityModelPartNames.LEFT_EAR);
 		this.rightEar = this.head.getChild(EntityModelPartNames.RIGHT_EAR);
@@ -32,10 +33,5 @@ public class PiglinHeadEntityModel extends SkullBlockEntityModel {
 		float f = 1.2F;
 		this.leftEar.roll = (float)(-(Math.cos((double)(animationProgress * (float) Math.PI * 0.2F * 1.2F)) + 2.5)) * 0.2F;
 		this.rightEar.roll = (float)(Math.cos((double)(animationProgress * (float) Math.PI * 0.2F)) + 2.5) * 0.2F;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.head;
 	}
 }

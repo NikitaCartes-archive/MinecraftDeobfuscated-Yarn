@@ -53,7 +53,6 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class LlamaEntityModel extends EntityModel<LlamaEntityRenderState> {
 	public static final ModelTransformer BABY_TRANSFORMER = LlamaEntityModel::transformBaby;
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart rightHindLeg;
 	private final ModelPart leftHindLeg;
@@ -62,15 +61,15 @@ public class LlamaEntityModel extends EntityModel<LlamaEntityRenderState> {
 	private final ModelPart rightChest;
 	private final ModelPart leftChest;
 
-	public LlamaEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.rightChest = root.getChild(EntityModelPartNames.RIGHT_CHEST);
-		this.leftChest = root.getChild(EntityModelPartNames.LEFT_CHEST);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+	public LlamaEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.rightChest = modelPart.getChild(EntityModelPartNames.RIGHT_CHEST);
+		this.leftChest = modelPart.getChild(EntityModelPartNames.LEFT_CHEST);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -139,6 +138,7 @@ public class LlamaEntityModel extends EntityModel<LlamaEntityRenderState> {
 	}
 
 	public void setAngles(LlamaEntityRenderState llamaEntityRenderState) {
+		super.setAngles(llamaEntityRenderState);
 		this.head.pitch = llamaEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.yaw = llamaEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		float f = llamaEntityRenderState.limbAmplitudeMultiplier;
@@ -149,10 +149,5 @@ public class LlamaEntityModel extends EntityModel<LlamaEntityRenderState> {
 		this.leftFrontLeg.pitch = MathHelper.cos(g * 0.6662F) * 1.4F * f;
 		this.rightChest.visible = llamaEntityRenderState.hasChest;
 		this.leftChest.visible = llamaEntityRenderState.hasChest;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

@@ -41,7 +41,7 @@ public class ReferenceLootFunction extends ConditionalLootFunction {
 		} else {
 			super.validate(reporter);
 			reporter.getDataLookup()
-				.getOptionalEntry(RegistryKeys.ITEM_MODIFIER, this.name)
+				.getOptionalEntry(this.name)
 				.ifPresentOrElse(
 					reference -> ((LootFunction)reference.value()).validate(reporter.makeChild(".{" + this.name.getValue() + "}", this.name)),
 					() -> reporter.report("Unknown function table called " + this.name.getValue())
@@ -51,7 +51,7 @@ public class ReferenceLootFunction extends ConditionalLootFunction {
 
 	@Override
 	protected ItemStack process(ItemStack stack, LootContext context) {
-		LootFunction lootFunction = (LootFunction)context.getLookup().getOptionalEntry(RegistryKeys.ITEM_MODIFIER, this.name).map(RegistryEntry::value).orElse(null);
+		LootFunction lootFunction = (LootFunction)context.getLookup().getOptionalEntry(this.name).map(RegistryEntry::value).orElse(null);
 		if (lootFunction == null) {
 			LOGGER.warn("Unknown function: {}", this.name.getValue());
 			return stack;

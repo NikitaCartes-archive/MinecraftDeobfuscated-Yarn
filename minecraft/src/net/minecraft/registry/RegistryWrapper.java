@@ -29,22 +29,19 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 		return this.streamEntries().map(RegistryEntry.Reference::registryKey);
 	}
 
-	/**
-	 * @see Registry#streamTags
-	 */
-	Stream<RegistryEntryList.Named<T>> streamTags();
+	Stream<RegistryEntryList.Named<T>> getTags();
 
 	default Stream<TagKey<T>> streamTagKeys() {
-		return this.streamTags().map(RegistryEntryList.Named::getTag);
+		return this.getTags().map(RegistryEntryList.Named::getTag);
 	}
 
 	public interface Impl<T> extends RegistryWrapper<T>, RegistryEntryOwner<T> {
-		RegistryKey<? extends Registry<? extends T>> getRegistryKey();
+		RegistryKey<? extends Registry<? extends T>> getKey();
 
 		Lifecycle getLifecycle();
 
 		default RegistryWrapper.Impl<T> withFeatureFilter(FeatureSet enabledFeatures) {
-			return ToggleableFeature.FEATURE_ENABLED_REGISTRY_KEYS.contains(this.getRegistryKey())
+			return ToggleableFeature.FEATURE_ENABLED_REGISTRY_KEYS.contains(this.getKey())
 				? this.withPredicateFilter(feature -> ((ToggleableFeature)feature).isEnabled(enabledFeatures))
 				: this;
 		}
@@ -72,8 +69,8 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 			RegistryWrapper.Impl<T> getBase();
 
 			@Override
-			default RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
-				return this.getBase().getRegistryKey();
+			default RegistryKey<? extends Registry<? extends T>> getKey() {
+				return this.getBase().getKey();
 			}
 
 			@Override
@@ -97,23 +94,24 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 			}
 
 			@Override
-			default Stream<RegistryEntryList.Named<T>> streamTags() {
-				return this.getBase().streamTags();
+			default Stream<RegistryEntryList.Named<T>> getTags() {
+				return this.getBase().getTags();
 			}
 		}
 	}
 
-	public interface WrapperLookup {
+	public interface WrapperLookup extends RegistryEntryLookup.RegistryLookup {
 		Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys();
 
 		default Stream<RegistryWrapper.Impl<?>> stream() {
-			return this.streamAllRegistryKeys().map(this::getWrapperOrThrow);
+			return this.streamAllRegistryKeys().map(this::getOrThrow);
 		}
 
-		<T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef);
+		@Override
+		<T> Optional<? extends RegistryWrapper.Impl<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef);
 
-		default <T> RegistryWrapper.Impl<T> getWrapperOrThrow(RegistryKey<? extends Registry<? extends T>> registryRef) {
-			return (RegistryWrapper.Impl<T>)this.getOptionalWrapper(registryRef)
+		default <T> RegistryWrapper.Impl<T> getOrThrow(RegistryKey<? extends Registry<? extends T>> registryRef) {
+			return (RegistryWrapper.Impl<T>)this.getOptional(registryRef)
 				.orElseThrow(() -> new IllegalStateException("Registry " + registryRef.getValue() + " not found"));
 		}
 
@@ -121,18 +119,9 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 			return RegistryOps.of(delegate, this);
 		}
 
-		default RegistryEntryLookup.RegistryLookup createRegistryLookup() {
-			return new RegistryEntryLookup.RegistryLookup() {
-				@Override
-				public <T> Optional<RegistryEntryLookup<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef) {
-					return WrapperLookup.this.getOptionalWrapper(registryRef).map(lookup -> lookup);
-				}
-			};
-		}
-
 		static RegistryWrapper.WrapperLookup of(Stream<RegistryWrapper.Impl<?>> wrappers) {
 			final Map<RegistryKey<? extends Registry<?>>, RegistryWrapper.Impl<?>> map = (Map<RegistryKey<? extends Registry<?>>, RegistryWrapper.Impl<?>>)wrappers.collect(
-				Collectors.toUnmodifiableMap(RegistryWrapper.Impl::getRegistryKey, wrapper -> wrapper)
+				Collectors.toUnmodifiableMap(RegistryWrapper.Impl::getKey, wrapper -> wrapper)
 			);
 			return new RegistryWrapper.WrapperLookup() {
 				@Override
@@ -141,7 +130,7 @@ public interface RegistryWrapper<T> extends RegistryEntryLookup<T> {
 				}
 
 				@Override
-				public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+				public <T> Optional<RegistryWrapper.Impl<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef) {
 					return Optional.ofNullable((RegistryWrapper.Impl)map.get(registryRef));
 				}
 			};

@@ -25,6 +25,6 @@ public record WorldGenSettings(GeneratorOptions generatorOptions, DimensionOptio
 	}
 
 	public static <T> DataResult<T> encode(DynamicOps<T> registryOps, GeneratorOptions generatorOptions, DynamicRegistryManager dynamicRegistryManager) {
-		return encode(registryOps, generatorOptions, new DimensionOptionsRegistryHolder(dynamicRegistryManager.get(RegistryKeys.DIMENSION)));
+		return encode(registryOps, generatorOptions, new DimensionOptionsRegistryHolder(dynamicRegistryManager.getOrThrow(RegistryKeys.DIMENSION)));
 	}
 }

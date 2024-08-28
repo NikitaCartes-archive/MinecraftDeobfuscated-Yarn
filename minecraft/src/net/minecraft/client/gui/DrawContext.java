@@ -291,160 +291,178 @@ public class DrawContext {
 		this.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
 	}
 
-	public void drawGuiTexture(Function<Identifier, RenderLayer> function, Identifier identifier, int i, int j, int height, int k) {
-		this.drawGuiTexture(function, identifier, i, j, height, k, -1);
+	public void drawGuiTexture(Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int x, int y, int width, int height) {
+		this.drawGuiTexture(renderLayers, sprite, x, y, width, height, -1);
 	}
 
-	public void drawGuiTexture(Function<Identifier, RenderLayer> function, Identifier identifier, int i, int j, int k, int l, int m) {
-		Sprite sprite = this.guiAtlasManager.getSprite(identifier);
-		Scaling scaling = this.guiAtlasManager.getScaling(sprite);
+	public void drawGuiTexture(Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int x, int y, int width, int height, int color) {
+		Sprite sprite2 = this.guiAtlasManager.getSprite(sprite);
+		Scaling scaling = this.guiAtlasManager.getScaling(sprite2);
 		if (scaling instanceof Scaling.Stretch) {
-			this.drawSprite(function, sprite, i, j, k, l, m);
+			this.drawSprite(renderLayers, sprite2, x, y, width, height, color);
 		} else if (scaling instanceof Scaling.Tile tile) {
-			this.drawSpriteTiled(function, sprite, i, j, k, l, 0, 0, tile.width(), tile.height(), tile.width(), tile.height(), m);
+			this.drawSpriteTiled(renderLayers, sprite2, x, y, width, height, 0, 0, tile.width(), tile.height(), tile.width(), tile.height(), color);
 		} else if (scaling instanceof Scaling.NineSlice nineSlice) {
-			this.drawSprite(function, sprite, nineSlice, i, j, k, l, m);
+			this.drawSprite(renderLayers, sprite2, nineSlice, x, y, width, height, color);
 		}
 	}
 
-	public void drawGuiTexture(Function<Identifier, RenderLayer> function, Identifier identifier, int i, int j, int k, int l, int m, int n, int o, int p) {
-		Sprite sprite = this.guiAtlasManager.getSprite(identifier);
-		Scaling scaling = this.guiAtlasManager.getScaling(sprite);
+	public void drawGuiTexture(
+		Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height
+	) {
+		Sprite sprite2 = this.guiAtlasManager.getSprite(sprite);
+		Scaling scaling = this.guiAtlasManager.getScaling(sprite2);
 		if (scaling instanceof Scaling.Stretch) {
-			this.drawSprite(function, sprite, i, j, k, l, m, n, o, p, -1);
+			this.drawSprite(renderLayers, sprite2, textureWidth, textureHeight, u, v, x, y, width, height, -1);
 		} else {
-			this.drawGuiTexture(function, sprite, m, n, o, p);
+			this.drawGuiTexture(renderLayers, sprite2, x, y, width, height);
 		}
 	}
 
-	public void drawGuiTexture(Function<Identifier, RenderLayer> function, Sprite sprite, int i, int j, int k, int l) {
-		this.drawSprite(function, sprite, i, j, k, l, -1);
+	public void drawGuiTexture(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height) {
+		this.drawSprite(renderLayers, sprite, x, y, width, height, -1);
 	}
 
-	public void drawSprite(Function<Identifier, RenderLayer> function, Sprite sprite, int y, int z, int width, int height, int i) {
-		if (width != 0 && height != 0) {
-			this.drawTexturedQuad(function, sprite.getAtlasId(), y, y + width, z, z + height, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(), i);
-		}
-	}
-
-	private void drawSprite(Function<Identifier, RenderLayer> function, Sprite sprite, int i, int j, int k, int x, int y, int z, int width, int height, int l) {
+	public void drawSprite(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height, int color) {
 		if (width != 0 && height != 0) {
 			this.drawTexturedQuad(
-				function,
-				sprite.getAtlasId(),
-				y,
-				y + width,
-				z,
-				z + height,
-				sprite.getFrameU((float)k / (float)i),
-				sprite.getFrameU((float)(k + width) / (float)i),
-				sprite.getFrameV((float)x / (float)j),
-				sprite.getFrameV((float)(x + height) / (float)j),
-				l
+				renderLayers, sprite.getAtlasId(), x, x + width, y, y + height, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(), color
 			);
 		}
 	}
 
-	private void drawSprite(Function<Identifier, RenderLayer> function, Sprite sprite, Scaling.NineSlice nineSlice, int y, int z, int width, int height, int i) {
+	private void drawSprite(
+		Function<Identifier, RenderLayer> renderLayers,
+		Sprite sprite,
+		int textureWidth,
+		int textureHeight,
+		int u,
+		int v,
+		int x,
+		int y,
+		int width,
+		int height,
+		int color
+	) {
+		if (width != 0 && height != 0) {
+			this.drawTexturedQuad(
+				renderLayers,
+				sprite.getAtlasId(),
+				x,
+				x + width,
+				y,
+				y + height,
+				sprite.getFrameU((float)u / (float)textureWidth),
+				sprite.getFrameU((float)(u + width) / (float)textureWidth),
+				sprite.getFrameV((float)v / (float)textureHeight),
+				sprite.getFrameV((float)(v + height) / (float)textureHeight),
+				color
+			);
+		}
+	}
+
+	private void drawSprite(
+		Function<Identifier, RenderLayer> renderLayers, Sprite sprite, Scaling.NineSlice nineSlice, int x, int y, int width, int height, int color
+	) {
 		Scaling.NineSlice.Border border = nineSlice.border();
-		int j = Math.min(border.left(), width / 2);
-		int k = Math.min(border.right(), width / 2);
-		int l = Math.min(border.top(), height / 2);
-		int m = Math.min(border.bottom(), height / 2);
+		int i = Math.min(border.left(), width / 2);
+		int j = Math.min(border.right(), width / 2);
+		int k = Math.min(border.top(), height / 2);
+		int l = Math.min(border.bottom(), height / 2);
 		if (width == nineSlice.width() && height == nineSlice.height()) {
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), 0, 0, y, z, width, height, i);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, height, color);
 		} else if (height == nineSlice.height()) {
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), 0, 0, y, z, j, height, i);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, height, color);
 			this.drawSpriteTiled(
-				function, sprite, y + j, z, width - k - j, height, j, 0, nineSlice.width() - k - j, nineSlice.height(), nineSlice.width(), nineSlice.height(), i
+				renderLayers, sprite, x + i, y, width - j - i, height, i, 0, nineSlice.width() - j - i, nineSlice.height(), nineSlice.width(), nineSlice.height(), color
 			);
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - k, 0, y + width - k, z, k, height, i);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, height, color);
 		} else if (width == nineSlice.width()) {
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), 0, 0, y, z, width, l, i);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, k, color);
 			this.drawSpriteTiled(
-				function, sprite, y, z + l, width, height - m - l, 0, l, nineSlice.width(), nineSlice.height() - m - l, nineSlice.width(), nineSlice.height(), i
+				renderLayers, sprite, x, y + k, width, height - l - k, 0, k, nineSlice.width(), nineSlice.height() - l - k, nineSlice.width(), nineSlice.height(), color
 			);
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - m, y, z + height - m, width, m, i);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, width, l, color);
 		} else {
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), 0, 0, y, z, j, l, i);
-			this.drawSpriteTiled(function, sprite, y + j, z, width - k - j, l, j, 0, nineSlice.width() - k - j, l, nineSlice.width(), nineSlice.height(), i);
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - k, 0, y + width - k, z, k, l, i);
-			this.drawSprite(function, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - m, y, z + height - m, j, m, i);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, k, color);
+			this.drawSpriteTiled(renderLayers, sprite, x + i, y, width - j - i, k, i, 0, nineSlice.width() - j - i, k, nineSlice.width(), nineSlice.height(), color);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, k, color);
+			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, i, l, color);
 			this.drawSpriteTiled(
-				function,
+				renderLayers,
 				sprite,
-				y + j,
-				z + height - m,
-				width - k - j,
-				m,
-				j,
-				nineSlice.height() - m,
-				nineSlice.width() - k - j,
-				m,
+				x + i,
+				y + height - l,
+				width - j - i,
+				l,
+				i,
+				nineSlice.height() - l,
+				nineSlice.width() - j - i,
+				l,
 				nineSlice.width(),
 				nineSlice.height(),
-				i
+				color
 			);
 			this.drawSprite(
-				function, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - k, nineSlice.height() - m, y + width - k, z + height - m, k, m, i
+				renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, nineSlice.height() - l, x + width - j, y + height - l, j, l, color
 			);
-			this.drawSpriteTiled(function, sprite, y, z + l, j, height - m - l, 0, l, j, nineSlice.height() - m - l, nineSlice.width(), nineSlice.height(), i);
+			this.drawSpriteTiled(renderLayers, sprite, x, y + k, i, height - l - k, 0, k, i, nineSlice.height() - l - k, nineSlice.width(), nineSlice.height(), color);
 			this.drawSpriteTiled(
-				function,
+				renderLayers,
 				sprite,
-				y + j,
-				z + l,
-				width - k - j,
-				height - m - l,
-				j,
-				l,
-				nineSlice.width() - k - j,
-				nineSlice.height() - m - l,
-				nineSlice.width(),
-				nineSlice.height(),
-				i
-			);
-			this.drawSpriteTiled(
-				function,
-				sprite,
-				y + width - k,
-				z + l,
-				j,
-				height - m - l,
-				nineSlice.width() - k,
-				l,
+				x + i,
+				y + k,
+				width - j - i,
+				height - l - k,
+				i,
 				k,
-				nineSlice.height() - m - l,
+				nineSlice.width() - j - i,
+				nineSlice.height() - l - k,
 				nineSlice.width(),
 				nineSlice.height(),
-				i
+				color
+			);
+			this.drawSpriteTiled(
+				renderLayers,
+				sprite,
+				x + width - j,
+				y + k,
+				i,
+				height - l - k,
+				nineSlice.width() - j,
+				k,
+				j,
+				nineSlice.height() - l - k,
+				nineSlice.width(),
+				nineSlice.height(),
+				color
 			);
 		}
 	}
 
 	private void drawSpriteTiled(
-		Function<Identifier, RenderLayer> function,
+		Function<Identifier, RenderLayer> renderLayers,
 		Sprite sprite,
+		int x,
 		int y,
-		int z,
 		int width,
 		int height,
-		int i,
-		int j,
+		int u,
+		int v,
 		int tileWidth,
 		int tileHeight,
-		int k,
-		int l,
-		int m
+		int textureWidth,
+		int textureHeight,
+		int color
 	) {
 		if (width > 0 && height > 0) {
 			if (tileWidth > 0 && tileHeight > 0) {
-				for (int n = 0; n < width; n += tileWidth) {
-					int o = Math.min(tileWidth, width - n);
+				for (int i = 0; i < width; i += tileWidth) {
+					int j = Math.min(tileWidth, width - i);
 
-					for (int p = 0; p < height; p += tileHeight) {
-						int q = Math.min(tileHeight, height - p);
-						this.drawSprite(function, sprite, k, l, i, j, y + n, z + p, o, q, m);
+					for (int k = 0; k < height; k += tileHeight) {
+						int l = Math.min(tileHeight, height - k);
+						this.drawSprite(renderLayers, sprite, textureWidth, textureHeight, u, v, x + i, y + k, j, l, color);
 					}
 				}
 			} else {
@@ -460,9 +478,19 @@ public class DrawContext {
 	 * the dimensions of the rectangle.
 	 */
 	public void drawTexture(
-		Function<Identifier, RenderLayer> function, Identifier identifier, int i, int j, float u, float v, int k, int l, int m, int textureHeight, int n
+		Function<Identifier, RenderLayer> renderLayers,
+		Identifier sprite,
+		int x,
+		int y,
+		float u,
+		float v,
+		int width,
+		int height,
+		int textureWidth,
+		int textureHeight,
+		int color
 	) {
-		this.drawTexture(function, identifier, i, j, u, v, k, l, k, l, m, textureHeight, n);
+		this.drawTexture(renderLayers, sprite, x, y, u, v, width, height, width, height, textureWidth, textureHeight, color);
 	}
 
 	/**
@@ -471,8 +499,10 @@ public class DrawContext {
 	 * <p>The width and height of the region are the same as
 	 * the dimensions of the rectangle.
 	 */
-	public void drawTexture(Function<Identifier, RenderLayer> function, Identifier identifier, int i, int j, float f, float g, int k, int l, int m, int n) {
-		this.drawTexture(function, identifier, i, j, f, g, k, l, k, l, m, n);
+	public void drawTexture(
+		Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight
+	) {
+		this.drawTexture(renderLayers, sprite, x, y, u, v, width, height, width, height, textureWidth, textureHeight);
 	}
 
 	/**
@@ -484,54 +514,65 @@ public class DrawContext {
 	 * the dimensions of the rectangle.
 	 */
 	public void drawTexture(
-		Function<Identifier, RenderLayer> function, Identifier identifier, int y, int u, float f, float g, int i, int j, int k, int l, int m, int n
+		Function<Identifier, RenderLayer> renderLayers,
+		Identifier sprite,
+		int x,
+		int y,
+		float u,
+		float v,
+		int width,
+		int height,
+		int regionWith,
+		int regionHeight,
+		int textureWidth,
+		int textureHeight
 	) {
-		this.drawTexture(function, identifier, y, u, f, g, i, j, k, l, m, n, -1);
+		this.drawTexture(renderLayers, sprite, x, y, u, v, width, height, regionWith, regionHeight, textureWidth, textureHeight, -1);
 	}
 
 	/**
 	 * Draws a textured rectangle from a region in a texture.
 	 */
 	public void drawTexture(
-		Function<Identifier, RenderLayer> function,
-		Identifier identifier,
-		int i,
-		int j,
-		float f,
+		Function<Identifier, RenderLayer> renderLayers,
+		Identifier sprite,
+		int x,
+		int y,
 		float u,
-		int k,
-		int l,
+		float v,
+		int width,
+		int height,
+		int regionWidth,
 		int regionHeight,
 		int textureWidth,
-		int m,
-		int n,
-		int o
+		int textureHeight,
+		int color
 	) {
 		this.drawTexturedQuad(
-			function,
-			identifier,
-			i,
-			i + k,
-			j,
-			j + l,
-			(f + 0.0F) / (float)m,
-			(f + (float)regionHeight) / (float)m,
-			(u + 0.0F) / (float)n,
-			(u + (float)textureWidth) / (float)n,
-			o
+			renderLayers,
+			sprite,
+			x,
+			x + width,
+			y,
+			y + height,
+			(u + 0.0F) / (float)textureWidth,
+			(u + (float)regionWidth) / (float)textureWidth,
+			(v + 0.0F) / (float)textureHeight,
+			(v + (float)regionHeight) / (float)textureHeight,
+			color
 		);
 	}
 
 	private void drawTexturedQuad(
-		Function<Identifier, RenderLayer> function, Identifier identifier, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, int i
+		Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int color
 	) {
-		RenderLayer renderLayer = (RenderLayer)function.apply(identifier);
+		RenderLayer renderLayer = (RenderLayer)renderLayers.apply(sprite);
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
 		VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(renderLayer);
-		vertexConsumer.vertex(matrix4f, (float)x2, (float)y2, 0.0F).texture(u1, v1).color(i);
-		vertexConsumer.vertex(matrix4f, (float)x2, (float)z, 0.0F).texture(u1, v2).color(i);
-		vertexConsumer.vertex(matrix4f, (float)y1, (float)z, 0.0F).texture(u2, v2).color(i);
-		vertexConsumer.vertex(matrix4f, (float)y1, (float)y2, 0.0F).texture(u2, v1).color(i);
+		vertexConsumer.vertex(matrix4f, (float)x1, (float)y1, 0.0F).texture(u1, v1).color(color);
+		vertexConsumer.vertex(matrix4f, (float)x1, (float)y2, 0.0F).texture(u1, v2).color(color);
+		vertexConsumer.vertex(matrix4f, (float)x2, (float)y2, 0.0F).texture(u2, v2).color(color);
+		vertexConsumer.vertex(matrix4f, (float)x2, (float)y1, 0.0F).texture(u2, v1).color(color);
 	}
 
 	public void drawItem(ItemStack item, int x, int y) {
@@ -674,6 +715,8 @@ public class DrawContext {
 				j += tooltipComponent.getHeight(textRenderer);
 			}
 
+			int l = i;
+			int m = j;
 			Vector2ic vector2ic = positioner.getPosition(this.getScaledWindowWidth(), this.getScaledWindowHeight(), x, y, i, j);
 			int n = vector2ic.x();
 			int o = vector2ic.y();
@@ -693,7 +736,7 @@ public class DrawContext {
 
 			for (int r = 0; r < components.size(); r++) {
 				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(r);
-				tooltipComponent2.drawItems(textRenderer, n, q, this);
+				tooltipComponent2.drawItems(textRenderer, n, q, l, m, this);
 				q += tooltipComponent2.getHeight(textRenderer) + (r == 0 ? 2 : 0);
 			}
 

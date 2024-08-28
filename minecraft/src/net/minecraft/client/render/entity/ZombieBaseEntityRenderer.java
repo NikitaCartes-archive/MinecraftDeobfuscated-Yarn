@@ -26,6 +26,7 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, S extends
 
 	public void updateRenderState(T zombieEntity, S zombieEntityRenderState, float f) {
 		super.updateRenderState(zombieEntity, zombieEntityRenderState, f);
+		zombieEntityRenderState.attacking = zombieEntity.isAttacking();
 		zombieEntityRenderState.convertingInWater = zombieEntity.isConvertingInWater();
 	}
 

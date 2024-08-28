@@ -19,7 +19,7 @@ public record DamageItemEnchantmentEffect(EnchantmentLevelBasedValue amount) imp
 	@Override
 	public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos) {
 		ServerPlayerEntity serverPlayerEntity2 = context.owner() instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null;
-		context.stack().damage((int)this.amount.getValue(level), world, serverPlayerEntity2, context.onBreak());
+		context.stack().damage((int)this.amount.getValue(level), world, serverPlayerEntity2, context.breakCallback());
 	}
 
 	@Override

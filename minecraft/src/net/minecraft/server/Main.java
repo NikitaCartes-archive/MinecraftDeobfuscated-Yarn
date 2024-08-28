@@ -179,7 +179,7 @@ public class Main {
 						applyExecutor -> SaveLoading.load(
 								serverConfig,
 								context -> {
-									Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION);
+									Registry<DimensionOptions> registry = context.dimensionsRegistryManager().getOrThrow(RegistryKeys.DIMENSION);
 									if (dynamic2 != null) {
 										ParsedSaveProperties parsedSaveProperties = LevelStorage.parseSaveProperties(
 											dynamic2, context.dataConfiguration(), registry, context.worldGenRegistryManager()

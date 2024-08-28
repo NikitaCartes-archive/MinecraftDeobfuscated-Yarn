@@ -41,7 +41,7 @@ public class ChunkSection {
 	public ChunkSection(Registry<Biome> biomeRegistry) {
 		this.blockStateContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
 		this.biomeContainer = new PalettedContainer<>(
-			biomeRegistry.getIndexedEntries(), biomeRegistry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME
+			biomeRegistry.getIndexedEntries(), biomeRegistry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME
 		);
 	}
 

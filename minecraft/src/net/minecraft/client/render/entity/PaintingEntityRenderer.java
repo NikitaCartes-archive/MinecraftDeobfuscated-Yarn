@@ -15,7 +15,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -33,8 +32,9 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity, Paint
 		if (paintingVariant != null) {
 			matrixStack.push();
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)(180 - paintingEntityRenderState.facing.getHorizontal() * 90)));
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolidZOffsetForward(this.getTexture(paintingEntityRenderState)));
 			PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
+			Sprite sprite = paintingManager.getBackSprite();
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolidZOffsetForward(sprite.getAtlasId()));
 			this.renderPainting(
 				matrixStack,
 				vertexConsumer,
@@ -42,15 +42,11 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity, Paint
 				paintingVariant.width(),
 				paintingVariant.height(),
 				paintingManager.getPaintingSprite(paintingVariant),
-				paintingManager.getBackSprite()
+				sprite
 			);
 			matrixStack.pop();
 			super.render(paintingEntityRenderState, matrixStack, vertexConsumerProvider, i);
 		}
-	}
-
-	public Identifier getTexture(PaintingEntityRenderState paintingEntityRenderState) {
-		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlasId();
 	}
 
 	public PaintingEntityRenderState getRenderState() {

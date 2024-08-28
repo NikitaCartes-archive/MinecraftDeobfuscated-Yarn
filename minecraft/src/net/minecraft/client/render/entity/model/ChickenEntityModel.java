@@ -56,7 +56,6 @@ public class ChickenEntityModel extends EntityModel<ChickenEntityRenderState> {
 	 */
 	public static final String RED_THING = "red_thing";
 	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(Set.of("head", "beak", "red_thing"));
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
@@ -65,15 +64,15 @@ public class ChickenEntityModel extends EntityModel<ChickenEntityRenderState> {
 	private final ModelPart beak;
 	private final ModelPart wattle;
 
-	public ChickenEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.beak = root.getChild(EntityModelPartNames.BEAK);
-		this.wattle = root.getChild("red_thing");
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
-		this.rightWing = root.getChild(EntityModelPartNames.RIGHT_WING);
-		this.leftWing = root.getChild(EntityModelPartNames.LEFT_WING);
+	public ChickenEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.beak = modelPart.getChild(EntityModelPartNames.BEAK);
+		this.wattle = modelPart.getChild("red_thing");
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
+		this.rightWing = modelPart.getChild(EntityModelPartNames.RIGHT_WING);
+		this.leftWing = modelPart.getChild(EntityModelPartNames.LEFT_WING);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -106,12 +105,8 @@ public class ChickenEntityModel extends EntityModel<ChickenEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(ChickenEntityRenderState chickenEntityRenderState) {
+		super.setAngles(chickenEntityRenderState);
 		float f = (MathHelper.sin(chickenEntityRenderState.flapProgress) + 1.0F) * chickenEntityRenderState.maxWingDeviation;
 		this.head.pitch = chickenEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.yaw = chickenEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);

@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
-import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryInfo;
@@ -85,7 +84,7 @@ public class ReloadableRegistries {
 
 	private static void validate(RegistryWrapper.WrapperLookup registries) {
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, registries.createRegistryLookup());
+		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, registries);
 		LootDataType.stream().forEach(type -> validateLootData(lootTableReporter, type, registries));
 		impl.getErrors().forEach((id, error) -> LOGGER.warn("Found loot table element validation problem in {}: {}", id, error));
 	}
@@ -93,13 +92,11 @@ public class ReloadableRegistries {
 	private static CombinedDynamicRegistries<ServerDynamicRegistryType> with(
 		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistries, List<MutableRegistry<?>> registries
 	) {
-		DynamicRegistryManager dynamicRegistryManager = new DynamicRegistryManager.ImmutableImpl(registries);
-		((MutableRegistry)dynamicRegistryManager.<LootTable>get(RegistryKeys.LOOT_TABLE)).add(LootTables.EMPTY, LootTable.EMPTY, DEFAULT_REGISTRY_ENTRY_INFO);
-		return dynamicRegistries.with(ServerDynamicRegistryType.RELOADABLE, dynamicRegistryManager.toImmutable());
+		return dynamicRegistries.with(ServerDynamicRegistryType.RELOADABLE, new DynamicRegistryManager.ImmutableImpl(registries).toImmutable());
 	}
 
 	private static <T> void validateLootData(LootTableReporter reporter, LootDataType<T> lootDataType, RegistryWrapper.WrapperLookup registries) {
-		RegistryWrapper<T> registryWrapper = registries.getWrapperOrThrow(lootDataType.registryKey());
+		RegistryWrapper<T> registryWrapper = registries.getOrThrow(lootDataType.registryKey());
 		registryWrapper.streamEntries().forEach(entry -> lootDataType.validate(reporter, entry.registryKey(), (T)entry.value()));
 	}
 
@@ -111,16 +108,16 @@ public class ReloadableRegistries {
 		}
 
 		public RegistryEntryLookup.RegistryLookup createRegistryLookup() {
-			return this.registries.createRegistryLookup();
+			return this.registries;
 		}
 
 		public Collection<Identifier> getIds(RegistryKey<? extends Registry<?>> registryRef) {
-			return this.registries.getWrapperOrThrow(registryRef).streamKeys().map(RegistryKey::getValue).toList();
+			return this.registries.getOrThrow(registryRef).streamKeys().map(RegistryKey::getValue).toList();
 		}
 
 		public LootTable getLootTable(RegistryKey<LootTable> key) {
 			return (LootTable)this.registries
-				.getOptionalWrapper(RegistryKeys.LOOT_TABLE)
+				.getOptional(RegistryKeys.LOOT_TABLE)
 				.flatMap(registryEntryLookup -> registryEntryLookup.getOptional(key))
 				.map(RegistryEntry::value)
 				.orElse(LootTable.EMPTY);

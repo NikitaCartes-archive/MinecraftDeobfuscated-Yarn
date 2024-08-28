@@ -19,9 +19,9 @@ public class WindChargeEntityModel extends EntityModel<EntityRenderState> {
 	private final ModelPart windCharge;
 	private final ModelPart wind;
 
-	public WindChargeEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityTranslucent);
-		this.bone = root.getChild(EntityModelPartNames.BONE);
+	public WindChargeEntityModel(ModelPart modelPart) {
+		super(modelPart, RenderLayer::getEntityTranslucent);
+		this.bone = modelPart.getChild(EntityModelPartNames.BONE);
 		this.wind = this.bone.getChild("wind");
 		this.windCharge = this.bone.getChild("wind_charge");
 	}
@@ -47,12 +47,8 @@ public class WindChargeEntityModel extends EntityModel<EntityRenderState> {
 
 	@Override
 	public void setAngles(EntityRenderState state) {
+		super.setAngles(state);
 		this.windCharge.yaw = -state.age * 16.0F * (float) (Math.PI / 180.0);
 		this.wind.yaw = state.age * 16.0F * (float) (Math.PI / 180.0);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.bone;
 	}
 }

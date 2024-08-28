@@ -17,7 +17,7 @@ public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEnt
 	}
 
 	@Override
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 }

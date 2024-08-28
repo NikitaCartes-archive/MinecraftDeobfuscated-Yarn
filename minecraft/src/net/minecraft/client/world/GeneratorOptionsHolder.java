@@ -43,7 +43,7 @@ public record GeneratorOptionsHolder(
 	) {
 		this(
 			generatorOptions,
-			combinedDynamicRegistries.get(ServerDynamicRegistryType.DIMENSIONS).get(RegistryKeys.DIMENSION),
+			combinedDynamicRegistries.get(ServerDynamicRegistryType.DIMENSIONS).getOrThrow(RegistryKeys.DIMENSION),
 			selectedDimensions,
 			combinedDynamicRegistries.with(ServerDynamicRegistryType.DIMENSIONS),
 			dataPackContents,

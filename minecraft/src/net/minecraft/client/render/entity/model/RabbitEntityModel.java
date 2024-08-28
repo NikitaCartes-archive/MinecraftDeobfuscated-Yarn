@@ -77,7 +77,6 @@ public class RabbitEntityModel extends EntityModel<RabbitEntityRenderState> {
 	 * The key of the right haunch model part, whose value is {@value}.
 	 */
 	private static final String RIGHT_HAUNCH = "right_haunch";
-	private final ModelPart field_52932;
 	private final ModelPart leftHindLeg;
 	private final ModelPart rightHindLeg;
 	private final ModelPart leftHaunch;
@@ -89,18 +88,18 @@ public class RabbitEntityModel extends EntityModel<RabbitEntityRenderState> {
 	private final ModelPart leftEar;
 	private final ModelPart nose;
 
-	public RabbitEntityModel(ModelPart root) {
-		this.field_52932 = root;
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_FOOT);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_FOOT);
-		this.leftHaunch = root.getChild("left_haunch");
-		this.rightHaunch = root.getChild("right_haunch");
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.rightEar = root.getChild(EntityModelPartNames.RIGHT_EAR);
-		this.leftEar = root.getChild(EntityModelPartNames.LEFT_EAR);
-		this.nose = root.getChild(EntityModelPartNames.NOSE);
+	public RabbitEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_FOOT);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_FOOT);
+		this.leftHaunch = modelPart.getChild("left_haunch");
+		this.rightHaunch = modelPart.getChild("right_haunch");
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.rightEar = modelPart.getChild(EntityModelPartNames.RIGHT_EAR);
+		this.leftEar = modelPart.getChild(EntityModelPartNames.LEFT_EAR);
+		this.nose = modelPart.getChild(EntityModelPartNames.NOSE);
 	}
 
 	public static TexturedModelData getTexturedModelData(boolean bl) {
@@ -165,12 +164,8 @@ public class RabbitEntityModel extends EntityModel<RabbitEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 32).transform(bl ? field_52931 : field_52930);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.field_52932;
-	}
-
 	public void setAngles(RabbitEntityRenderState rabbitEntityRenderState) {
+		super.setAngles(rabbitEntityRenderState);
 		this.nose.pitch = rabbitEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.pitch = rabbitEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.rightEar.pitch = rabbitEntityRenderState.pitch * (float) (Math.PI / 180.0);

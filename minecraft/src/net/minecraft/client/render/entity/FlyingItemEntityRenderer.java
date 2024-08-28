@@ -7,12 +7,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.state.FlyingItemEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
@@ -68,9 +66,5 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		ItemStack itemStack = entity.getStack();
 		flyingItemEntityRenderState.model = !itemStack.isEmpty() ? this.itemRenderer.getModel(itemStack, entity.getWorld(), null, entity.getId()) : null;
 		flyingItemEntityRenderState.stack = itemStack.copy();
-	}
-
-	public Identifier getTexture(FlyingItemEntityRenderState flyingItemEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 }

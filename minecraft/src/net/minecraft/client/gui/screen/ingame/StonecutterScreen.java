@@ -163,14 +163,18 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		if (this.shouldScroll()) {
-			int i = this.getMaxScroll();
-			float f = (float)verticalAmount / (float)i;
-			this.scrollAmount = MathHelper.clamp(this.scrollAmount - f, 0.0F, 1.0F);
-			this.scrollOffset = (int)((double)(this.scrollAmount * (float)i) + 0.5) * 4;
-		}
+		if (super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) {
+			return true;
+		} else {
+			if (this.shouldScroll()) {
+				int i = this.getMaxScroll();
+				float f = (float)verticalAmount / (float)i;
+				this.scrollAmount = MathHelper.clamp(this.scrollAmount - f, 0.0F, 1.0F);
+				this.scrollOffset = (int)((double)(this.scrollAmount * (float)i) + 0.5) * 4;
+			}
 
-		return true;
+			return true;
+		}
 	}
 
 	private boolean shouldScroll() {

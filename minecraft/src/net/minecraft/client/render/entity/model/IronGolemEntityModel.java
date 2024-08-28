@@ -14,20 +14,19 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemEntityModel extends EntityModel<IronGolemEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart rightArm;
 	private final ModelPart leftArm;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
 
-	public IronGolemEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
-		this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
+	public IronGolemEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.rightArm = modelPart.getChild(EntityModelPartNames.RIGHT_ARM);
+		this.leftArm = modelPart.getChild(EntityModelPartNames.LEFT_ARM);
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -66,12 +65,8 @@ public class IronGolemEntityModel extends EntityModel<IronGolemEntityRenderState
 		return TexturedModelData.of(modelData, 128, 128);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(IronGolemEntityRenderState ironGolemEntityRenderState) {
+		super.setAngles(ironGolemEntityRenderState);
 		float f = ironGolemEntityRenderState.attackTicksLeft;
 		float g = ironGolemEntityRenderState.limbAmplitudeMultiplier;
 		float h = ironGolemEntityRenderState.limbFrequency;

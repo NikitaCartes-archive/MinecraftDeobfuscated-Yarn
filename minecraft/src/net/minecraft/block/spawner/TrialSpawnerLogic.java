@@ -27,6 +27,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -49,13 +50,13 @@ public final class TrialSpawnerLogic {
 	public static final String NORMAL_CONFIG_NBT_KEY = "normal_config";
 	public static final String OMINOUS_CONFIG_NBT_KEY = "ominous_config";
 	public static final int field_47358 = 40;
-	private static final int field_50179 = 36000;
-	private static final int field_50180 = 14;
+	private static final int DEFAULT_COOLDOWN_LENGTH = 36000;
+	private static final int DEFAULT_ENTITY_DETECTION_RANGE = 14;
 	private static final int MAX_ENTITY_DISTANCE = 47;
 	private static final int MAX_ENTITY_DISTANCE_SQUARED = MathHelper.square(47);
-	private static final float field_47361 = 0.02F;
-	private final TrialSpawnerConfig normalConfig;
-	private final TrialSpawnerConfig ominousConfig;
+	private static final float SOUND_RATE_PER_TICK = 0.02F;
+	private final RegistryEntry<TrialSpawnerConfig> normalConfig;
+	private final RegistryEntry<TrialSpawnerConfig> ominousConfig;
 	private final TrialSpawnerData data;
 	private final int entityDetectionRange;
 	private final int cooldownLength;
@@ -68,28 +69,41 @@ public final class TrialSpawnerLogic {
 	public Codec<TrialSpawnerLogic> codec() {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
-						TrialSpawnerConfig.CODEC.optionalFieldOf("normal_config", TrialSpawnerConfig.DEFAULT).forGetter(TrialSpawnerLogic::getNormalConfig),
-						TrialSpawnerConfig.CODEC.optionalFieldOf("ominous_config", TrialSpawnerConfig.DEFAULT).forGetter(TrialSpawnerLogic::getOminousConfigForSerialization),
+						TrialSpawnerConfig.ENTRY_CODEC
+							.optionalFieldOf("normal_config", RegistryEntry.of(TrialSpawnerConfig.DEFAULT))
+							.forGetter(trialSpawnerLogic -> trialSpawnerLogic.normalConfig),
+						TrialSpawnerConfig.ENTRY_CODEC
+							.optionalFieldOf("ominous_config", RegistryEntry.of(TrialSpawnerConfig.DEFAULT))
+							.forGetter(trialSpawnerLogic -> trialSpawnerLogic.ominousConfig),
 						TrialSpawnerData.codec.forGetter(TrialSpawnerLogic::getData),
 						Codec.intRange(0, Integer.MAX_VALUE).optionalFieldOf("target_cooldown_length", 36000).forGetter(TrialSpawnerLogic::getCooldownLength),
 						Codec.intRange(1, 128).optionalFieldOf("required_player_range", 14).forGetter(TrialSpawnerLogic::getDetectionRadius)
 					)
 					.apply(
 						instance,
-						(config, trialSpawnerConfig, trialSpawnerData, integer, integer2) -> new TrialSpawnerLogic(
-								config, trialSpawnerConfig, trialSpawnerData, integer, integer2, this.trialSpawner, this.entityDetector, this.entitySelector
+						(normalConfig, ominousConfig, data, cooldownLength, entityDetectionRange) -> new TrialSpawnerLogic(
+								normalConfig, ominousConfig, data, cooldownLength, entityDetectionRange, this.trialSpawner, this.entityDetector, this.entitySelector
 							)
 					)
 		);
 	}
 
 	public TrialSpawnerLogic(TrialSpawnerLogic.TrialSpawner trialSpawner, EntityDetector entityDetector, EntityDetector.Selector entitySelector) {
-		this(TrialSpawnerConfig.DEFAULT, TrialSpawnerConfig.DEFAULT, new TrialSpawnerData(), 36000, 14, trialSpawner, entityDetector, entitySelector);
+		this(
+			RegistryEntry.of(TrialSpawnerConfig.DEFAULT),
+			RegistryEntry.of(TrialSpawnerConfig.DEFAULT),
+			new TrialSpawnerData(),
+			36000,
+			14,
+			trialSpawner,
+			entityDetector,
+			entitySelector
+		);
 	}
 
 	public TrialSpawnerLogic(
-		TrialSpawnerConfig normalConfig,
-		TrialSpawnerConfig ominousConfig,
+		RegistryEntry<TrialSpawnerConfig> normalConfig,
+		RegistryEntry<TrialSpawnerConfig> ominousConfig,
 		TrialSpawnerData data,
 		int cooldownLength,
 		int entityDetectionRange,
@@ -108,21 +122,17 @@ public final class TrialSpawnerLogic {
 	}
 
 	public TrialSpawnerConfig getConfig() {
-		return this.ominous ? this.ominousConfig : this.normalConfig;
+		return this.ominous ? this.getOminousConfig() : this.getNormalConfig();
 	}
 
 	@VisibleForTesting
 	public TrialSpawnerConfig getNormalConfig() {
-		return this.normalConfig;
+		return this.normalConfig.value();
 	}
 
 	@VisibleForTesting
 	public TrialSpawnerConfig getOminousConfig() {
-		return this.ominousConfig;
-	}
-
-	private TrialSpawnerConfig getOminousConfigForSerialization() {
-		return !this.ominousConfig.equals(this.normalConfig) ? this.ominousConfig : TrialSpawnerConfig.DEFAULT;
+		return this.ominousConfig.value();
 	}
 
 	public void setOminous(ServerWorld world, BlockPos pos) {

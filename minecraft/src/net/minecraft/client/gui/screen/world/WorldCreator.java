@@ -237,7 +237,7 @@ public class WorldCreator {
 	}
 
 	private void updateWorldTypeLists() {
-		Registry<WorldPreset> registry = this.getGeneratorOptionsHolder().getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET);
+		Registry<WorldPreset> registry = this.getGeneratorOptionsHolder().getCombinedRegistryManager().getOrThrow(RegistryKeys.WORLD_PRESET);
 		this.normalWorldTypes.clear();
 		this.normalWorldTypes
 			.addAll((Collection)getWorldPresetList(registry, WorldPresetTags.NORMAL).orElseGet(() -> registry.streamEntries().map(WorldCreator.WorldType::new).toList()));
@@ -252,11 +252,11 @@ public class WorldCreator {
 	}
 
 	private static Optional<RegistryEntry<WorldPreset>> getWorldPreset(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> key) {
-		return key.flatMap(key2 -> generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET).getEntry(key2));
+		return key.flatMap(key2 -> generatorOptionsHolder.getCombinedRegistryManager().getOrThrow(RegistryKeys.WORLD_PRESET).getOptional(key2));
 	}
 
 	private static Optional<List<WorldCreator.WorldType>> getWorldPresetList(Registry<WorldPreset> registry, TagKey<WorldPreset> tag) {
-		return registry.getEntryList(tag)
+		return registry.getOptional(tag)
 			.map(entryList -> entryList.stream().map(WorldCreator.WorldType::new).toList())
 			.filter(worldTypeList -> !worldTypeList.isEmpty());
 	}

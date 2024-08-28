@@ -48,7 +48,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
-		builder.add(VARIANT, (RegistryEntry<PaintingVariant>)this.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
+		builder.add(VARIANT, (RegistryEntry<PaintingVariant>)this.getRegistryManager().getOrThrow(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	public static Optional<PaintingEntity> placePainting(World world, BlockPos pos, Direction facing) {
 		PaintingEntity paintingEntity = new PaintingEntity(world, pos);
 		List<RegistryEntry<PaintingVariant>> list = new ArrayList();
-		world.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
+		world.getRegistryManager().getOrThrow(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
 		if (list.isEmpty()) {
 			return Optional.empty();
 		} else {

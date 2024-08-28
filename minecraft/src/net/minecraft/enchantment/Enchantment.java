@@ -274,6 +274,16 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 		this.modifyValue(EnchantmentEffectComponentTypes.ARMOR_EFFECTIVENESS, world, level, stack, user, damageSource, armorEffectiveness);
 	}
 
+	public void onTargetDamaged(
+		ServerWorld world, int level, EnchantmentEffectContext context, EnchantmentEffectTarget target, Entity user, DamageSource damageSource
+	) {
+		for (TargetedEnchantmentEffect<EnchantmentEntityEffect> targetedEnchantmentEffect : this.getEffect(EnchantmentEffectComponentTypes.POST_ATTACK)) {
+			if (target == targetedEnchantmentEffect.enchanted()) {
+				applyTargetedEffect(targetedEnchantmentEffect, world, level, context, user, damageSource);
+			}
+		}
+	}
+
 	public static void applyTargetedEffect(
 		TargetedEnchantmentEffect<EnchantmentEntityEffect> effect,
 		ServerWorld world,
@@ -290,16 +300,6 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 			};
 			if (entity != null) {
 				effect.effect().apply(world, level, context, entity, entity.getPos());
-			}
-		}
-	}
-
-	public void onTargetDamaged(
-		ServerWorld world, int level, EnchantmentEffectContext context, EnchantmentEffectTarget target, Entity user, DamageSource damageSource
-	) {
-		for (TargetedEnchantmentEffect<EnchantmentEntityEffect> targetedEnchantmentEffect : this.getEffect(EnchantmentEffectComponentTypes.POST_ATTACK)) {
-			if (target == targetedEnchantmentEffect.enchanted()) {
-				applyTargetedEffect(targetedEnchantmentEffect, world, level, context, user, damageSource);
 			}
 		}
 	}

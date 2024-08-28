@@ -18,18 +18,17 @@ public class SnowGolemEntityModel extends EntityModel<LivingEntityRenderState> {
 	 * The key of the upper body model part, whose value is {@value}.
 	 */
 	private static final String UPPER_BODY = "upper_body";
-	private final ModelPart root;
 	private final ModelPart upperBody;
 	private final ModelPart head;
 	private final ModelPart leftArm;
 	private final ModelPart rightArm;
 
-	public SnowGolemEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
-		this.upperBody = root.getChild("upper_body");
+	public SnowGolemEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.leftArm = modelPart.getChild(EntityModelPartNames.LEFT_ARM);
+		this.rightArm = modelPart.getChild(EntityModelPartNames.RIGHT_ARM);
+		this.upperBody = modelPart.getChild("upper_body");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -55,6 +54,7 @@ public class SnowGolemEntityModel extends EntityModel<LivingEntityRenderState> {
 	}
 
 	public void setAngles(LivingEntityRenderState livingEntityRenderState) {
+		super.setAngles(livingEntityRenderState);
 		this.head.yaw = livingEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = livingEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.upperBody.yaw = livingEntityRenderState.yawDegrees * (float) (Math.PI / 180.0) * 0.25F;
@@ -66,11 +66,6 @@ public class SnowGolemEntityModel extends EntityModel<LivingEntityRenderState> {
 		this.leftArm.pivotZ = -f * 5.0F;
 		this.rightArm.pivotX = -g * 5.0F;
 		this.rightArm.pivotZ = f * 5.0F;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 
 	public ModelPart getHead() {

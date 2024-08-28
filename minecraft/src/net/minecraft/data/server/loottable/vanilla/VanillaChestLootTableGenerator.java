@@ -40,7 +40,7 @@ import net.minecraft.text.Text;
 public record VanillaChestLootTableGenerator(RegistryWrapper.WrapperLookup registries) implements LootTableGenerator {
 	@Override
 	public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> lootTableBiConsumer) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		lootTableBiConsumer.accept(
 			LootTables.ABANDONED_MINESHAFT_CHEST,
 			LootTable.builder()
@@ -1116,7 +1116,7 @@ public record VanillaChestLootTableGenerator(RegistryWrapper.WrapperLookup regis
 	}
 
 	public void acceptTrialSpawnerTables(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> lootTableBiConsumer) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		lootTableBiConsumer.accept(
 			LootTables.TRIAL_CHAMBER_KEY_SPAWNER,
 			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.TRIAL_KEY)))
@@ -1629,7 +1629,7 @@ public record VanillaChestLootTableGenerator(RegistryWrapper.WrapperLookup regis
 	}
 
 	public LootTable.Builder createBastionOtherChestTableBuilder() {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
@@ -1811,7 +1811,7 @@ public record VanillaChestLootTableGenerator(RegistryWrapper.WrapperLookup regis
 	}
 
 	public LootTable.Builder createAncientCityChestTableBuilder() {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()

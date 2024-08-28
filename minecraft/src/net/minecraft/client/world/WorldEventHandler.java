@@ -112,7 +112,7 @@ public class WorldEventHandler {
 				}
 				break;
 			case 1010:
-				this.world.getRegistryManager().get(RegistryKeys.JUKEBOX_SONG).getEntry(data).ifPresent(song -> this.playJukeboxSong(song, pos));
+				this.world.getRegistryManager().getOrThrow(RegistryKeys.JUKEBOX_SONG).getEntry(data).ifPresent(song -> this.playJukeboxSong(song, pos));
 				break;
 			case 1011:
 				this.stopJukeboxSongAndUpdate(pos);

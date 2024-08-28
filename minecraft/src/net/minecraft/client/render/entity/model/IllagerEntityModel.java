@@ -17,7 +17,6 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class IllagerEntityModel<S extends IllagerEntityRenderState> extends EntityModel<S> implements ModelWithArms, ModelWithHead {
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart hat;
 	private final ModelPart arms;
@@ -26,16 +25,16 @@ public class IllagerEntityModel<S extends IllagerEntityRenderState> extends Enti
 	private final ModelPart rightArm;
 	private final ModelPart leftArm;
 
-	public IllagerEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public IllagerEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.hat = this.head.getChild(EntityModelPartNames.HAT);
 		this.hat.visible = false;
-		this.arms = root.getChild(EntityModelPartNames.ARMS);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
+		this.arms = modelPart.getChild(EntityModelPartNames.ARMS);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftArm = modelPart.getChild(EntityModelPartNames.LEFT_ARM);
+		this.rightArm = modelPart.getChild(EntityModelPartNames.RIGHT_ARM);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -84,12 +83,8 @@ public class IllagerEntityModel<S extends IllagerEntityRenderState> extends Enti
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(S illagerEntityRenderState) {
+		super.setAngles(illagerEntityRenderState);
 		this.head.yaw = illagerEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = illagerEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		if (illagerEntityRenderState.hasVehicle) {

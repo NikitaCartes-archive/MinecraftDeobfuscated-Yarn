@@ -374,8 +374,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth) {
-		this.neighborUpdater.replaceWithStateForNeighborUpdate(direction, neighborState, pos, neighborPos, flags, maxUpdateDepth);
+	public void replaceWithStateForNeighborUpdate(Direction direction, BlockPos blockPos, BlockPos pos, BlockState blockState, int flags, int maxUpdateDepth) {
+		this.neighborUpdater.replaceWithStateForNeighborUpdate(direction, blockState, blockPos, pos, flags, maxUpdateDepth);
 	}
 
 	@Override
@@ -960,8 +960,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.rainGradient = f;
 	}
 
+	private boolean canHaveWeather() {
+		return this.getDimension().hasSkyLight() && !this.getDimension().hasCeiling();
+	}
+
 	public boolean isThundering() {
-		return this.getDimension().hasSkyLight() && !this.getDimension().hasCeiling() ? (double)this.getThunderGradient(1.0F) > 0.9 : false;
+		return this.canHaveWeather() && (double)this.getThunderGradient(1.0F) > 0.9;
 	}
 
 	/**
@@ -970,7 +974,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @see #hasRain
 	 */
 	public boolean isRaining() {
-		return (double)this.getRainGradient(1.0F) > 0.2;
+		return this.canHaveWeather() && (double)this.getRainGradient(1.0F) > 0.2;
 	}
 
 	/**

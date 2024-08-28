@@ -26,18 +26,18 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameRules;
 
 public class ExperimentalMinecartController extends MinecartController {
-	public static final int field_52527 = 3;
+	public static final int REFRESH_FREQUENCY = 3;
 	public static final double field_52528 = 0.1;
 	public static final double field_53756 = 0.005;
 	@Nullable
-	private ExperimentalMinecartController.InterpolatedStep field_52533;
-	private int field_52534;
-	private float field_52535;
-	private int field_52536 = 0;
-	public final List<ExperimentalMinecartController.Step> lerpSteps = new LinkedList();
-	public final List<ExperimentalMinecartController.Step> field_52530 = new LinkedList();
-	public double field_52531 = 0.0;
-	public ExperimentalMinecartController.Step field_52532 = ExperimentalMinecartController.Step.ZERO;
+	private ExperimentalMinecartController.InterpolatedStep lastReturnedInterpolatedStep;
+	private int lastQueriedTicksToNextRefresh;
+	private float lastQueriedTickDelta;
+	private int ticksToNextRefresh = 0;
+	public final List<ExperimentalMinecartController.Step> stagingLerpSteps = new LinkedList();
+	public final List<ExperimentalMinecartController.Step> currentLerpSteps = new LinkedList();
+	public double totalWeight = 0.0;
+	public ExperimentalMinecartController.Step initialStep = ExperimentalMinecartController.Step.ZERO;
 
 	public ExperimentalMinecartController(AbstractMinecartEntity abstractMinecartEntity) {
 		super(abstractMinecartEntity);
@@ -63,23 +63,23 @@ public class ExperimentalMinecartController extends MinecartController {
 	}
 
 	private void tickClient() {
-		if (--this.field_52536 <= 0) {
-			this.method_61613();
-			this.field_52530.clear();
-			if (!this.lerpSteps.isEmpty()) {
-				this.field_52530.addAll(this.lerpSteps);
-				this.lerpSteps.clear();
-				this.field_52531 = 0.0;
+		if (--this.ticksToNextRefresh <= 0) {
+			this.setInitialStep();
+			this.currentLerpSteps.clear();
+			if (!this.stagingLerpSteps.isEmpty()) {
+				this.currentLerpSteps.addAll(this.stagingLerpSteps);
+				this.stagingLerpSteps.clear();
+				this.totalWeight = 0.0;
 
-				for (ExperimentalMinecartController.Step step : this.field_52530) {
-					this.field_52531 = this.field_52531 + (double)step.weight;
+				for (ExperimentalMinecartController.Step step : this.currentLerpSteps) {
+					this.totalWeight = this.totalWeight + (double)step.weight;
 				}
 
-				this.field_52536 = this.field_52531 == 0.0 ? 0 : 3;
+				this.ticksToNextRefresh = this.totalWeight == 0.0 ? 0 : 3;
 			}
 		}
 
-		if (this.method_61614()) {
+		if (this.hasCurrentLerpSteps()) {
 			this.setPos(this.getLerpedPosition(1.0F));
 			this.setVelocity(this.getLerpedVelocity(1.0F));
 			this.setPitch(this.getLerpedPitch(1.0F));
@@ -87,51 +87,51 @@ public class ExperimentalMinecartController extends MinecartController {
 		}
 	}
 
-	public void method_61613() {
-		this.field_52532 = new ExperimentalMinecartController.Step(this.getPos(), this.getVelocity(), this.getYaw(), this.getPitch(), 0.0F);
+	public void setInitialStep() {
+		this.initialStep = new ExperimentalMinecartController.Step(this.getPos(), this.getVelocity(), this.getYaw(), this.getPitch(), 0.0F);
 	}
 
-	public boolean method_61614() {
-		return !this.field_52530.isEmpty();
+	public boolean hasCurrentLerpSteps() {
+		return !this.currentLerpSteps.isEmpty();
 	}
 
 	public float getLerpedPitch(float tickDelta) {
-		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.method_61612(tickDelta);
+		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.getLerpedStep(tickDelta);
 		return MathHelper.lerpAngleDegrees(interpolatedStep.partialTicksInStep, interpolatedStep.previousStep.xRot, interpolatedStep.currentStep.xRot);
 	}
 
 	public float getLerpedYaw(float tickDelta) {
-		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.method_61612(tickDelta);
+		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.getLerpedStep(tickDelta);
 		return MathHelper.lerpAngleDegrees(interpolatedStep.partialTicksInStep, interpolatedStep.previousStep.yRot, interpolatedStep.currentStep.yRot);
 	}
 
 	public Vec3d getLerpedPosition(float tickDelta) {
-		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.method_61612(tickDelta);
+		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.getLerpedStep(tickDelta);
 		return MathHelper.lerp((double)interpolatedStep.partialTicksInStep, interpolatedStep.previousStep.position, interpolatedStep.currentStep.position);
 	}
 
 	public Vec3d getLerpedVelocity(float tickDelta) {
-		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.method_61612(tickDelta);
+		ExperimentalMinecartController.InterpolatedStep interpolatedStep = this.getLerpedStep(tickDelta);
 		return MathHelper.lerp((double)interpolatedStep.partialTicksInStep, interpolatedStep.previousStep.movement, interpolatedStep.currentStep.movement);
 	}
 
-	private ExperimentalMinecartController.InterpolatedStep method_61612(float tickDelta) {
-		if (tickDelta == this.field_52535 && this.field_52536 == this.field_52534 && this.field_52533 != null) {
-			return this.field_52533;
+	private ExperimentalMinecartController.InterpolatedStep getLerpedStep(float tickDelta) {
+		if (tickDelta == this.lastQueriedTickDelta && this.ticksToNextRefresh == this.lastQueriedTicksToNextRefresh && this.lastReturnedInterpolatedStep != null) {
+			return this.lastReturnedInterpolatedStep;
 		} else {
-			float f = ((float)(3 - this.field_52536) + tickDelta) / 3.0F;
+			float f = ((float)(3 - this.ticksToNextRefresh) + tickDelta) / 3.0F;
 			float g = 0.0F;
 			float h = 1.0F;
 			boolean bl = false;
 
 			int i;
-			for (i = 0; i < this.field_52530.size(); i++) {
-				float j = ((ExperimentalMinecartController.Step)this.field_52530.get(i)).weight;
+			for (i = 0; i < this.currentLerpSteps.size(); i++) {
+				float j = ((ExperimentalMinecartController.Step)this.currentLerpSteps.get(i)).weight;
 				if (!(j <= 0.0F)) {
 					g += j;
-					if ((double)g >= this.field_52531 * (double)f) {
+					if ((double)g >= this.totalWeight * (double)f) {
 						float k = g - j;
-						h = (float)(((double)f * this.field_52531 - (double)k) / (double)j);
+						h = (float)(((double)f * this.totalWeight - (double)k) / (double)j);
 						bl = true;
 						break;
 					}
@@ -139,19 +139,19 @@ public class ExperimentalMinecartController extends MinecartController {
 			}
 
 			if (!bl) {
-				i = this.field_52530.size() - 1;
+				i = this.currentLerpSteps.size() - 1;
 			}
 
-			ExperimentalMinecartController.Step step = (ExperimentalMinecartController.Step)this.field_52530.get(i);
-			ExperimentalMinecartController.Step step2 = i > 0 ? (ExperimentalMinecartController.Step)this.field_52530.get(i - 1) : this.field_52532;
-			this.field_52533 = new ExperimentalMinecartController.InterpolatedStep(h, step, step2);
-			this.field_52534 = this.field_52536;
-			this.field_52535 = tickDelta;
-			return this.field_52533;
+			ExperimentalMinecartController.Step step = (ExperimentalMinecartController.Step)this.currentLerpSteps.get(i);
+			ExperimentalMinecartController.Step step2 = i > 0 ? (ExperimentalMinecartController.Step)this.currentLerpSteps.get(i - 1) : this.initialStep;
+			this.lastReturnedInterpolatedStep = new ExperimentalMinecartController.InterpolatedStep(h, step, step2);
+			this.lastQueriedTicksToNextRefresh = this.ticksToNextRefresh;
+			this.lastQueriedTickDelta = tickDelta;
+			return this.lastReturnedInterpolatedStep;
 		}
 	}
 
-	public void adjustToRail(BlockPos pos, BlockState blockState, boolean bl) {
+	public void adjustToRail(BlockPos pos, BlockState blockState, boolean ignoreWeight) {
 		if (AbstractRailBlock.isRail(blockState)) {
 			RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
 			Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.getAdjacentRailPositionsByShape(railShape);
@@ -169,9 +169,9 @@ public class ExperimentalMinecartController extends MinecartController {
 			float f = 180.0F - (float)(Math.atan2(vec3d3.z, vec3d3.x) * 180.0 / Math.PI);
 			f += this.minecart.isYawFlipped() ? 180.0F : 0.0F;
 			Vec3d vec3d6 = this.getPos();
-			boolean bl2 = vec3d.getX() != vec3d2.getX() && vec3d.getZ() != vec3d2.getZ();
+			boolean bl = vec3d.getX() != vec3d2.getX() && vec3d.getZ() != vec3d2.getZ();
 			Vec3d vec3d10;
-			if (bl2) {
+			if (bl) {
 				Vec3d vec3d7 = vec3d2.subtract(vec3d);
 				Vec3d vec3d8 = vec3d6.subtract(pos.toBottomCenterPos()).subtract(vec3d);
 				Vec3d vec3d9 = vec3d7.multiply(vec3d7.dotProduct(vec3d8) / vec3d7.dotProduct(vec3d7));
@@ -179,16 +179,16 @@ public class ExperimentalMinecartController extends MinecartController {
 				f = 180.0F - (float)(Math.atan2(vec3d9.z, vec3d9.x) * 180.0 / Math.PI);
 				f += this.minecart.isYawFlipped() ? 180.0F : 0.0F;
 			} else {
-				boolean bl3 = vec3d.subtract(vec3d2).x != 0.0;
-				boolean bl4 = vec3d.subtract(vec3d2).z != 0.0;
-				vec3d10 = new Vec3d(bl4 ? pos.toCenterPos().x : vec3d6.x, (double)pos.getY(), bl3 ? pos.toCenterPos().z : vec3d6.z);
+				boolean bl2 = vec3d.subtract(vec3d2).x != 0.0;
+				boolean bl3 = vec3d.subtract(vec3d2).z != 0.0;
+				vec3d10 = new Vec3d(bl3 ? pos.toCenterPos().x : vec3d6.x, (double)pos.getY(), bl2 ? pos.toCenterPos().z : vec3d6.z);
 			}
 
 			Vec3d vec3d7 = vec3d10.subtract(vec3d6);
 			this.setPos(vec3d6.add(vec3d7));
 			float g = 0.0F;
-			boolean bl5 = vec3d.getY() != vec3d2.getY();
-			if (bl5) {
+			boolean bl4 = vec3d.getY() != vec3d2.getY();
+			if (bl4) {
 				Vec3d vec3d11 = pos.toBottomCenterPos().add(vec3d4);
 				double d = vec3d11.distanceTo(this.getPos());
 				this.setPos(this.getPos().add(0.0, d + 0.1, 0.0));
@@ -197,25 +197,26 @@ public class ExperimentalMinecartController extends MinecartController {
 				this.setPos(this.getPos().add(0.0, 0.1, 0.0));
 			}
 
-			this.method_62827(f, g);
+			this.setAngles(f, g);
 			double e = vec3d6.distanceTo(this.getPos());
 			if (e > 0.0) {
-				this.lerpSteps.add(new ExperimentalMinecartController.Step(this.getPos(), this.getVelocity(), this.getYaw(), this.getPitch(), bl ? 0.0F : (float)e));
+				this.stagingLerpSteps
+					.add(new ExperimentalMinecartController.Step(this.getPos(), this.getVelocity(), this.getYaw(), this.getPitch(), ignoreWeight ? 0.0F : (float)e));
 			}
 		}
 	}
 
-	private void method_62827(float f, float g) {
-		double d = (double)Math.abs(f - this.getYaw());
+	private void setAngles(float yaw, float pitch) {
+		double d = (double)Math.abs(yaw - this.getYaw());
 		if (d >= 175.0 && d <= 185.0) {
 			this.minecart.setYawFlipped(!this.minecart.isYawFlipped());
-			f -= 180.0F;
-			g *= -1.0F;
+			yaw -= 180.0F;
+			pitch *= -1.0F;
 		}
 
-		g = Math.clamp(g, -45.0F, 45.0F);
-		this.setPitch(g % 360.0F);
-		this.setYaw(f % 360.0F);
+		pitch = Math.clamp(pitch, -45.0F, 45.0F);
+		this.setPitch(pitch % 360.0F);
+		this.setYaw(yaw % 360.0F);
 	}
 
 	@Override
@@ -270,12 +271,12 @@ public class ExperimentalMinecartController extends MinecartController {
 						: 90.0F - (float)(Math.atan2(vec3d2.horizontalLength(), vec3d2.y) * 180.0 / Math.PI);
 					f += this.minecart.isYawFlipped() ? 180.0F : 0.0F;
 					g *= this.minecart.isYawFlipped() ? -1.0F : 1.0F;
-					this.method_62827(f, g);
+					this.setAngles(f, g);
 				}
 
-				this.lerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)d));
+				this.stagingLerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)d));
 			} else if (vec3d.horizontalLengthSquared() > 0.0) {
-				this.lerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)vec3d.length()));
+				this.stagingLerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)vec3d.length()));
 			}
 
 			if (d > 1.0E-5F || moveIteration.initial) {
@@ -558,29 +559,19 @@ public class ExperimentalMinecartController extends MinecartController {
 	}
 
 	public static record Step(Vec3d position, Vec3d movement, float yRot, float xRot, float weight) {
-		public static final PacketCodec<ByteBuf, Float> DEGREES_AS_BYTE_PACKET_CODEC = PacketCodecs.BYTE
-			.xmap(ExperimentalMinecartController.Step::byteToDegrees, ExperimentalMinecartController.Step::degreesToByte);
 		public static final PacketCodec<ByteBuf, ExperimentalMinecartController.Step> PACKET_CODEC = PacketCodec.tuple(
 			Vec3d.PACKET_CODEC,
 			ExperimentalMinecartController.Step::position,
 			Vec3d.PACKET_CODEC,
 			ExperimentalMinecartController.Step::movement,
-			DEGREES_AS_BYTE_PACKET_CODEC,
+			PacketCodecs.DEGREES,
 			ExperimentalMinecartController.Step::yRot,
-			DEGREES_AS_BYTE_PACKET_CODEC,
+			PacketCodecs.DEGREES,
 			ExperimentalMinecartController.Step::xRot,
 			PacketCodecs.FLOAT,
 			ExperimentalMinecartController.Step::weight,
 			ExperimentalMinecartController.Step::new
 		);
 		public static ExperimentalMinecartController.Step ZERO = new ExperimentalMinecartController.Step(Vec3d.ZERO, Vec3d.ZERO, 0.0F, 0.0F, 0.0F);
-
-		private static byte degreesToByte(float degrees) {
-			return (byte)MathHelper.floor(degrees * 256.0F / 360.0F);
-		}
-
-		private static float byteToDegrees(byte b) {
-			return (float)b * 360.0F / 256.0F;
-		}
 	}
 }

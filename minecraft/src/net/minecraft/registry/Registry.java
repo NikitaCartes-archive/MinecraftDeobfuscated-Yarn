@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.entry.RegistryEntryOwner;
 import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -158,10 +157,8 @@ import net.minecraft.util.math.random.Random;
  * }
  * }</pre>
  */
-public interface Registry<T> extends Keyable, IndexedIterable<T> {
-	/**
-	 * {@return the registry key that identifies this registry}
-	 */
+public interface Registry<T> extends Keyable, RegistryWrapper.Impl<T>, IndexedIterable<T> {
+	@Override
 	RegistryKey<? extends Registry<T>> getKey();
 
 	/**
@@ -234,19 +231,17 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 
 	Optional<RegistryEntryInfo> getEntryInfo(RegistryKey<T> key);
 
-	Lifecycle getLifecycle();
-
 	/**
 	 * {@return the value that is assigned {@code id}, or an empty optional if there is none}
 	 */
-	default Optional<T> getOrEmpty(@Nullable Identifier id) {
+	default Optional<T> getOptionalValue(@Nullable Identifier id) {
 		return Optional.ofNullable(this.get(id));
 	}
 
 	/**
 	 * {@return the value that is assigned {@code key}, or an empty optional if there is none}
 	 */
-	default Optional<T> getOrEmpty(@Nullable RegistryKey<T> key) {
+	default Optional<T> getOptionalValue(@Nullable RegistryKey<T> key) {
 		return Optional.ofNullable(this.get(key));
 	}
 
@@ -257,7 +252,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 * 
 	 * @throws IllegalStateException if there is no value with {@code key} in the registry
 	 */
-	default T getOrThrow(RegistryKey<T> key) {
+	default T getValueOrThrow(RegistryKey<T> key) {
 		T object = this.get(key);
 		if (object == null) {
 			throw new IllegalStateException("Missing key in " + this.getKey() + ": " + key);
@@ -346,46 +341,20 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 */
 	Optional<RegistryEntry.Reference<T>> getEntry(int rawId);
 
+	/**
+	 * {@return the reference registry entry for the value that is assigned {@code id}, or an
+	 * empty optional if there is no such value}
+	 */
 	Optional<RegistryEntry.Reference<T>> getEntry(Identifier id);
 
-	/**
-	 * {@return the reference registry entry for the value assigned {@code key}, or an
-	 * empty optional if there is no such value}
-	 * 
-	 * @see #entryOf
-	 */
-	Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key);
-
 	RegistryEntry<T> getEntry(T value);
-
-	/**
-	 * {@return the reference registry entry for the value assigned {@code key}}
-	 * 
-	 * @throws IllegalStateException if there is no value that is assigned {@code key}
-	 * 
-	 * @see #getEntry(RegistryKey)
-	 */
-	default RegistryEntry.Reference<T> entryOf(RegistryKey<T> key) {
-		return (RegistryEntry.Reference<T>)this.getEntry(key).orElseThrow(() -> new IllegalStateException("Missing key in " + this.getKey() + ": " + key));
-	}
-
-	/**
-	 * {@return a stream of reference registry entries of this registry}
-	 */
-	Stream<RegistryEntry.Reference<T>> streamEntries();
-
-	/**
-	 * {@return the registry entry list of values that are assigned {@code tag}, or an empty
-	 * optional if the tag is not known to the registry}
-	 */
-	Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag);
 
 	/**
 	 * {@return an iterable of values that are assigned {@code tag}, or an empty iterable
 	 * if the tag is not known to the registry}
 	 */
 	default Iterable<RegistryEntry<T>> iterateEntries(TagKey<T> tag) {
-		return DataFixUtils.orElse(this.getEntryList(tag), List.of());
+		return DataFixUtils.orElse(this.getOptional(tag), List.of());
 	}
 
 	/**
@@ -393,7 +362,7 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 * tag is empty}
 	 */
 	default Optional<RegistryEntry<T>> getRandomEntry(TagKey<T> tag, Random random) {
-		return this.getEntryList(tag).flatMap(entryList -> entryList.getRandom(random));
+		return this.getOptional(tag).flatMap(entryList -> entryList.getRandom(random));
 	}
 
 	Stream<RegistryEntryList.Named<T>> streamTags();
@@ -419,14 +388,6 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 			}
 		};
 	}
-
-	RegistryEntryOwner<T> getEntryOwner();
-
-	/**
-	 * {@return a registry wrapper that does not mutate the backing registry under
-	 * any circumstances}
-	 */
-	RegistryWrapper.Impl<T> getReadOnlyWrapper();
 
 	Registry.PendingTagLoad<T> startTagReload(TagGroupLoader.RegistryTags<T> tags);
 

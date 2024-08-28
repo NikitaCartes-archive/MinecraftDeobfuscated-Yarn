@@ -618,7 +618,7 @@ public class RenderSystem {
 	@Nullable
 	public static ShaderProgram setShader(ShaderProgramKey shaderProgramKey) {
 		assertOnRenderThread();
-		ShaderProgram shaderProgram = MinecraftClient.getInstance().method_62887().getOrCreateProgram(shaderProgramKey);
+		ShaderProgram shaderProgram = MinecraftClient.getInstance().getShaderLoader().getOrCreateProgram(shaderProgramKey);
 		shader = shaderProgram;
 		return shaderProgram;
 	}

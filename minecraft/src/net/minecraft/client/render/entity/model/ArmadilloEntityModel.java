@@ -23,7 +23,6 @@ public class ArmadilloEntityModel extends EntityModel<ArmadilloEntityRenderState
 	private static final String HEAD_CUBE = "head_cube";
 	private static final String RIGHT_EAR_CUBE = "right_ear_cube";
 	private static final String LEFT_EAR_CUBE = "left_ear_cube";
-	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart rightHindLeg;
 	private final ModelPart leftHindLeg;
@@ -31,14 +30,14 @@ public class ArmadilloEntityModel extends EntityModel<ArmadilloEntityRenderState
 	private final ModelPart head;
 	private final ModelPart tail;
 
-	public ArmadilloEntityModel(ModelPart root) {
-		this.root = root;
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+	public ArmadilloEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
 		this.head = this.body.getChild(EntityModelPartNames.HEAD);
 		this.tail = this.body.getChild(EntityModelPartNames.TAIL);
-		this.cube = root.getChild(EntityModelPartNames.CUBE);
+		this.cube = modelPart.getChild(EntityModelPartNames.CUBE);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -104,13 +103,8 @@ public class ArmadilloEntityModel extends EntityModel<ArmadilloEntityRenderState
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(ArmadilloEntityRenderState armadilloEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(armadilloEntityRenderState);
 		if (armadilloEntityRenderState.rolledUp) {
 			this.body.hidden = true;
 			this.leftHindLeg.visible = false;

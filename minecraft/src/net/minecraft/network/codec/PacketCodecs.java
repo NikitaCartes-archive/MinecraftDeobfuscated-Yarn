@@ -37,6 +37,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.IndexedIterable;
+import net.minecraft.util.math.MathHelper;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -77,6 +78,7 @@ public interface PacketCodecs {
 			byteBuf.writeByte(byte_);
 		}
 	};
+	PacketCodec<ByteBuf, Float> DEGREES = BYTE.xmap(MathHelper::unpackDegrees, MathHelper::packDegrees);
 	/**
 	 * A codec for a short value.
 	 * 
@@ -189,12 +191,12 @@ public interface PacketCodecs {
 	 * @see net.minecraft.network.PacketByteBuf#writeByteArray(byte[])
 	 */
 	PacketCodec<ByteBuf, byte[]> BYTE_ARRAY = new PacketCodec<ByteBuf, byte[]>() {
-		public byte[] method_59799(ByteBuf byteBuf) {
-			return PacketByteBuf.readByteArray(byteBuf);
+		public byte[] decode(ByteBuf buf) {
+			return PacketByteBuf.readByteArray(buf);
 		}
 
-		public void method_59800(ByteBuf byteBuf, byte[] bs) {
-			PacketByteBuf.writeByteArray(byteBuf, bs);
+		public void encode(ByteBuf buf, byte[] value) {
+			PacketByteBuf.writeByteArray(buf, value);
 		}
 	};
 	/**
@@ -353,11 +355,11 @@ public interface PacketCodecs {
 				return PacketByteBuf.readByteArray(buf, maxLength);
 			}
 
-			public void encode(ByteBuf byteBuf, byte[] bs) {
-				if (bs.length > maxLength) {
-					throw new EncoderException("ByteArray with size " + bs.length + " is bigger than allowed " + maxLength);
+			public void encode(ByteBuf buf, byte[] value) {
+				if (value.length > maxLength) {
+					throw new EncoderException("ByteArray with size " + value.length + " is bigger than allowed " + maxLength);
 				} else {
-					PacketByteBuf.writeByteArray(byteBuf, bs);
+					PacketByteBuf.writeByteArray(buf, value);
 				}
 			}
 		};
@@ -685,7 +687,7 @@ public interface PacketCodecs {
 	) {
 		return new PacketCodec<RegistryByteBuf, R>() {
 			private IndexedIterable<R> getIterable(RegistryByteBuf buf) {
-				return (IndexedIterable<R>)registryTransformer.apply(buf.getRegistryManager().get(registry));
+				return (IndexedIterable<R>)registryTransformer.apply(buf.getRegistryManager().getOrThrow(registry));
 			}
 
 			public R decode(RegistryByteBuf registryByteBuf) {
@@ -754,7 +756,7 @@ public interface PacketCodecs {
 			private static final int DIRECT_ENTRY_MARKER = 0;
 
 			private IndexedIterable<RegistryEntry<T>> getEntries(RegistryByteBuf buf) {
-				return buf.getRegistryManager().get(registry).getIndexedEntries();
+				return buf.getRegistryManager().getOrThrow(registry).getIndexedEntries();
 			}
 
 			public RegistryEntry<T> decode(RegistryByteBuf registryByteBuf) {
@@ -784,8 +786,8 @@ public interface PacketCodecs {
 			public RegistryEntryList<T> decode(RegistryByteBuf registryByteBuf) {
 				int i = VarInts.read(registryByteBuf) - 1;
 				if (i == -1) {
-					Registry<T> registry = registryByteBuf.getRegistryManager().get(registryRef);
-					return (RegistryEntryList<T>)registry.getEntryList(TagKey.of(registryRef, Identifier.PACKET_CODEC.decode(registryByteBuf))).orElseThrow();
+					Registry<T> registry = registryByteBuf.getRegistryManager().getOrThrow(registryRef);
+					return (RegistryEntryList<T>)registry.getOptional(TagKey.of(registryRef, Identifier.PACKET_CODEC.decode(registryByteBuf))).orElseThrow();
 				} else {
 					List<RegistryEntry<T>> list = new ArrayList(Math.min(i, 65536));
 

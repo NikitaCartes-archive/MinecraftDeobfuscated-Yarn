@@ -83,10 +83,8 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	default void updateNeighbors(BlockPos pos, Block block) {
 	}
 
-	default void replaceWithStateForNeighborUpdate(
-		Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth
-	) {
-		NeighborUpdater.replaceWithStateForNeighborUpdate(this, direction, neighborState, pos, neighborPos, flags, maxUpdateDepth - 1);
+	default void replaceWithStateForNeighborUpdate(Direction direction, BlockPos blockPos, BlockPos pos, BlockState blockState, int flags, int maxUpdateDepth) {
+		NeighborUpdater.replaceWithStateForNeighborUpdate(this, direction, blockPos, pos, blockState, flags, maxUpdateDepth - 1);
 	}
 
 	default void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category) {
@@ -121,6 +119,6 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	}
 
 	default void emitGameEvent(RegistryKey<GameEvent> event, BlockPos pos, GameEvent.Emitter emitter) {
-		this.emitGameEvent(this.getRegistryManager().get(RegistryKeys.GAME_EVENT).entryOf(event), pos, emitter);
+		this.emitGameEvent(this.getRegistryManager().getOrThrow(RegistryKeys.GAME_EVENT).getOrThrow(event), pos, emitter);
 	}
 }

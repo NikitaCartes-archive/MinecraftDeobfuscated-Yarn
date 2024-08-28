@@ -70,10 +70,6 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
-	public Identifier getTexture(ExperienceOrbEntityRenderState experienceOrbEntityRenderState) {
-		return TEXTURE;
-	}
-
 	public ExperienceOrbEntityRenderState getRenderState() {
 		return new ExperienceOrbEntityRenderState();
 	}

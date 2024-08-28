@@ -6,6 +6,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.SlimeEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.SlimeEntityModel;
@@ -28,9 +29,9 @@ public class SlimeOverlayFeatureRenderer extends FeatureRenderer<SlimeEntityRend
 		if (!slimeEntityRenderState.invisible || bl) {
 			VertexConsumer vertexConsumer;
 			if (bl) {
-				vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getOutline(this.getTexture(slimeEntityRenderState)));
+				vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SlimeEntityRenderer.TEXTURE));
 			} else {
-				vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(slimeEntityRenderState)));
+				vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(SlimeEntityRenderer.TEXTURE));
 			}
 
 			this.model.setAngles(slimeEntityRenderState);

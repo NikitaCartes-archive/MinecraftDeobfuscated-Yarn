@@ -1384,7 +1384,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 			return null;
 		} else {
-			Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().get(RegistryKeys.STRUCTURE).getEntryList(structureTag);
+			Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE).getOptional(structureTag);
 			if (optional.isEmpty()) {
 				return null;
 			} else {

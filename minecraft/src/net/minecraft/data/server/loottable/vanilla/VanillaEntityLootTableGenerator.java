@@ -49,7 +49,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 
 	@Override
 	public void generate() {
-		RegistryEntryLookup<EntityType<?>> registryEntryLookup = this.registries.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = this.registries.getOrThrow(RegistryKeys.ENTITY_TYPE);
 		this.register(EntityType.ALLAY, LootTable.builder());
 		this.register(EntityType.ARMADILLO, LootTable.builder());
 		this.register(EntityType.ARMOR_STAND, LootTable.builder());
@@ -689,9 +689,16 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 								.apply(EnchantedCountIncreaseLootFunction.builder(this.registries, UniformLootNumberProvider.create(0.0F, 1.0F)))
 						)
 				)
+				.pool(createForSheep(LootTables.SHEEP_DROPS_FROM_DYE_COLOR))
 		);
 		LootTableData.WOOL_FROM_DYE_COLOR
-			.forEach((color, wool) -> this.register(EntityType.SHEEP, (RegistryKey<LootTable>)LootTables.SHEEP_DROPS_FROM_DYE_COLOR.get(color), createForSheep(wool)));
+			.forEach(
+				(color, wool) -> this.register(
+						EntityType.SHEEP,
+						(RegistryKey<LootTable>)LootTables.SHEEP_DROPS_FROM_DYE_COLOR.get(color),
+						LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(wool)))
+					)
+			);
 		this.register(
 			EntityType.SHULKER,
 			LootTable.builder()

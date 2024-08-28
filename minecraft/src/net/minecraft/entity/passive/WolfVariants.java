@@ -45,11 +45,11 @@ public class WolfVariants {
 	}
 
 	public static RegistryEntry<WolfVariant> fromBiome(DynamicRegistryManager dynamicRegistryManager, RegistryEntry<Biome> biome) {
-		Registry<WolfVariant> registry = dynamicRegistryManager.get(RegistryKeys.WOLF_VARIANT);
+		Registry<WolfVariant> registry = dynamicRegistryManager.getOrThrow(RegistryKeys.WOLF_VARIANT);
 		return (RegistryEntry<WolfVariant>)registry.streamEntries()
 			.filter(entry -> ((WolfVariant)entry.value()).getBiomes().contains(biome))
 			.findFirst()
-			.or(() -> registry.getEntry(DEFAULT))
+			.or(() -> registry.getOptional(DEFAULT))
 			.or(registry::getDefaultEntry)
 			.orElseThrow();
 	}

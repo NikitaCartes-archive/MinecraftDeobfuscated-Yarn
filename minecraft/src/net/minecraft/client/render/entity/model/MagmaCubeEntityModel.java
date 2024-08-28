@@ -14,12 +14,11 @@ import net.minecraft.client.render.entity.state.SlimeEntityRenderState;
 @Environment(EnvType.CLIENT)
 public class MagmaCubeEntityModel extends EntityModel<SlimeEntityRenderState> {
 	private static final int SLICES_COUNT = 8;
-	private final ModelPart root;
 	private final ModelPart[] slices = new ModelPart[8];
 
-	public MagmaCubeEntityModel(ModelPart root) {
-		this.root = root;
-		Arrays.setAll(this.slices, index -> root.getChild(getSliceName(index)));
+	public MagmaCubeEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		Arrays.setAll(this.slices, i -> modelPart.getChild(getSliceName(i)));
 	}
 
 	private static String getSliceName(int index) {
@@ -49,15 +48,11 @@ public class MagmaCubeEntityModel extends EntityModel<SlimeEntityRenderState> {
 	}
 
 	public void setAngles(SlimeEntityRenderState slimeEntityRenderState) {
+		super.setAngles(slimeEntityRenderState);
 		float f = Math.max(0.0F, slimeEntityRenderState.stretch);
 
 		for (int i = 0; i < this.slices.length; i++) {
 			this.slices[i].pivotY = (float)(-(4 - i)) * f * 1.7F;
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

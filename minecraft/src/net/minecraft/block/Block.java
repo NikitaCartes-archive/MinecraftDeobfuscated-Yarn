@@ -38,7 +38,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -144,8 +143,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public static final int field_31025 = 512;
 	protected final StateManager<Block, BlockState> stateManager;
 	private BlockState defaultState;
-	@Nullable
-	private String translationKey;
 	@Nullable
 	private Item cachedItem;
 	private static final int FACE_CULL_MAP_SIZE = 256;
@@ -527,22 +524,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	/**
-	 * {@return the translation key for the name of this block}
-	 * 
-	 * <p>By default, it returns {@code block.namespace.path} where {@code
-	 * namespace} and {@code path} are of the identifier used for registering
-	 * this block, but {@code /} in {@code path} is replaced with {@code .}.
-	 * If the block is not registered, it returns {@code block.unregistered_sadface}.
-	 */
-	public String getTranslationKey() {
-		if (this.translationKey == null) {
-			this.translationKey = Util.createTranslationKey("block", Registries.BLOCK.getId(this));
-		}
-
-		return this.translationKey;
-	}
-
-	/**
 	 * Called when the entity lands on the block.
 	 * 
 	 * <p>Default implementation deals fall damage to the entity. Blocks that increase or
@@ -756,34 +737,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		int i = EnchantmentHelper.getBlockExperience(world, tool, experience.get(world.getRandom()));
 		if (i > 0) {
 			this.dropExperience(world, pos, i);
-		}
-	}
-
-	public static final class NeighborGroup {
-		private final BlockState self;
-		private final BlockState other;
-		private final Direction facing;
-
-		public NeighborGroup(BlockState self, BlockState other, Direction facing) {
-			this.self = self;
-			this.other = other;
-			this.facing = facing;
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			} else {
-				return !(o instanceof Block.NeighborGroup neighborGroup)
-					? false
-					: this.self == neighborGroup.self && this.other == neighborGroup.other && this.facing == neighborGroup.facing;
-			}
-		}
-
-		public int hashCode() {
-			int i = this.self.hashCode();
-			i = 31 * i + this.other.hashCode();
-			return 31 * i + this.facing.hashCode();
 		}
 	}
 

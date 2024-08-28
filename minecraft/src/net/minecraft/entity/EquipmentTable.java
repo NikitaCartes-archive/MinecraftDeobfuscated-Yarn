@@ -27,6 +27,10 @@ public record EquipmentTable(RegistryKey<LootTable> lootTable, Map<EquipmentSlot
 				.apply(instance, EquipmentTable::new)
 	);
 
+	public EquipmentTable(RegistryKey<LootTable> lootTable, float slotDropChances) {
+		this(lootTable, createSlotDropChances(slotDropChances));
+	}
+
 	private static Map<EquipmentSlot, Float> createSlotDropChances(float dropChance) {
 		return createSlotDropChances(List.of(EquipmentSlot.values()), dropChance);
 	}

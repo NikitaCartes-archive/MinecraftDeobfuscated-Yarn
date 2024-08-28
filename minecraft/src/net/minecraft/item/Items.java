@@ -1394,7 +1394,7 @@ public class Items {
 	public static final Item ROTTEN_FLESH = register(
 		"rotten_flesh", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH, ConsumableComponents.ROTTEN_FLESH))
 	);
-	public static final Item ENDER_PEARL = register("ender_pearl", new EnderPearlItem(new Item.Settings().maxCount(16)));
+	public static final Item ENDER_PEARL = register("ender_pearl", new EnderPearlItem(new Item.Settings().maxCount(16).useCooldown(1.0F)));
 	public static final Item BLAZE_ROD = register("blaze_rod", new Item(new Item.Settings()));
 	public static final Item GHAST_TEAR = register("ghast_tear", new Item(new Item.Settings()));
 	public static final Item GOLD_NUGGET = register("gold_nugget", new Item(new Item.Settings()));
@@ -1542,7 +1542,7 @@ public class Items {
 		"experience_bottle", new ExperienceBottleItem(new Item.Settings().rarity(Rarity.UNCOMMON).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true))
 	);
 	public static final Item FIRE_CHARGE = register("fire_charge", new FireChargeItem(new Item.Settings()));
-	public static final Item WIND_CHARGE = register("wind_charge", new WindChargeItem(new Item.Settings()));
+	public static final Item WIND_CHARGE = register("wind_charge", new WindChargeItem(new Item.Settings().useCooldown(0.5F)));
 	public static final Item WRITABLE_BOOK = register(
 		"writable_book",
 		new WritableBookItem(new Item.Settings().maxCount(1).component(DataComponentTypes.WRITABLE_BOOK_CONTENT, WritableBookContentComponent.DEFAULT))

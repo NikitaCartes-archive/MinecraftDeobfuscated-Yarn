@@ -1270,7 +1270,7 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			Optional<RegistryEntry<Enchantment>> optional = entity.getWorld()
 				.getRegistryManager()
-				.get(RegistryKeys.ENCHANTMENT)
+				.getOrThrow(RegistryKeys.ENCHANTMENT)
 				.getRandomEntry(this.possibleEnchantments, random);
 			int l;
 			ItemStack itemStack;
@@ -1441,8 +1441,8 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			int i = 5 + random.nextInt(15);
 			DynamicRegistryManager dynamicRegistryManager = entity.getWorld().getRegistryManager();
-			Optional<RegistryEntryList.Named<Enchantment>> optional = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT)
-				.getEntryList(EnchantmentTags.ON_TRADED_EQUIPMENT);
+			Optional<RegistryEntryList.Named<Enchantment>> optional = dynamicRegistryManager.getOrThrow(RegistryKeys.ENCHANTMENT)
+				.getOptional(EnchantmentTags.ON_TRADED_EQUIPMENT);
 			ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, dynamicRegistryManager, optional);
 			int j = Math.min(this.basePrice + i, 64);
 			TradedItem tradedItem = new TradedItem(Items.EMERALD, j);

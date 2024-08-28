@@ -21,13 +21,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -183,7 +181,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 
 				cowEntity.setInvulnerable(this.isInvulnerable());
 				this.getWorld().spawnEntity(cowEntity);
-				this.forEachShearedItem(this.getVariant().getShearingLootTable(), stack -> {
+				this.forEachShearedItem(LootTables.MOOSHROOM_SHEARING, stack -> {
 					for (int i = 0; i < stack.getCount(); i++) {
 						this.getWorld().spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getBodyY(1.0), this.getZ(), stack.copyWithCount(1)));
 					}
@@ -252,18 +250,16 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	}
 
 	public static enum Type implements StringIdentifiable {
-		RED("red", Blocks.RED_MUSHROOM.getDefaultState(), LootTables.MOOSHROOM_RED_SHEARING),
-		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState(), LootTables.MOOSHROOM_BROWN_SHEARING);
+		RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
+		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
 
 		public static final StringIdentifiable.EnumCodec<MooshroomEntity.Type> CODEC = StringIdentifiable.createCodec(MooshroomEntity.Type::values);
 		final String name;
 		private final BlockState mushroom;
-		private final RegistryKey<LootTable> shearingLootTable;
 
-		private Type(final String name, final BlockState mushroom, final RegistryKey<LootTable> shearingLootTable) {
+		private Type(final String name, final BlockState mushroom) {
 			this.name = name;
 			this.mushroom = mushroom;
-			this.shearingLootTable = shearingLootTable;
 		}
 
 		public BlockState getMushroomState() {
@@ -273,10 +269,6 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		@Override
 		public String asString() {
 			return this.name;
-		}
-
-		public RegistryKey<LootTable> getShearingLootTable() {
-			return this.shearingLootTable;
 		}
 
 		static MooshroomEntity.Type fromName(String name) {

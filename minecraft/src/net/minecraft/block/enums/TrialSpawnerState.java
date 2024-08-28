@@ -100,7 +100,7 @@ public enum TrialSpawnerState implements StringIdentifiable {
 							trialSpawnerData.spawnedMobsAlive.add(uuid);
 							trialSpawnerData.totalSpawnedMobs++;
 							trialSpawnerData.nextMobSpawnsAt = world.getTime() + (long)trialSpawnerConfig.ticksBetweenSpawn();
-							trialSpawnerConfig.spawnPotentialsDefinition().getOrEmpty(world.getRandom()).ifPresent(spawnData -> {
+							trialSpawnerConfig.spawnPotentials().getOrEmpty(world.getRandom()).ifPresent(spawnData -> {
 								trialSpawnerData.spawnData = Optional.of((MobSpawnerEntry)spawnData.data());
 								logic.updateListeners();
 							});

@@ -174,7 +174,7 @@ public class StructureLocator {
 					return Object2IntMaps.emptyMap();
 				} else {
 					Object2IntMap<Structure> object2IntMap = new Object2IntOpenHashMap<>();
-					Registry<Structure> registry = this.registryManager.get(RegistryKeys.STRUCTURE);
+					Registry<Structure> registry = this.registryManager.getOrThrow(RegistryKeys.STRUCTURE);
 
 					for (String string : nbtCompound2.getKeys()) {
 						Identifier identifier = Identifier.tryParse(string);

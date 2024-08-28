@@ -40,9 +40,5 @@ public abstract class FeatureRenderer<S extends EntityRenderState, M extends Ent
 		return this.context.getModel();
 	}
 
-	protected Identifier getTexture(S state) {
-		return this.context.getTexture(state);
-	}
-
 	public abstract void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S state, float limbAngle, float limbDistance);
 }

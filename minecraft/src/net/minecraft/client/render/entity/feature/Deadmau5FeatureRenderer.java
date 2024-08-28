@@ -29,7 +29,6 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<PlayerEntityRenderS
 		if ("deadmau5".equals(playerEntityRenderState.name) && !playerEntityRenderState.invisible) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(playerEntityRenderState.skinTextures.texture()));
 			int j = LivingEntityRenderer.getOverlay(playerEntityRenderState, 0.0F);
-			this.getContextModel().copyBipedStateTo(this.model);
 			this.model.setAngles(playerEntityRenderState);
 			this.model.render(matrixStack, vertexConsumer, i, j);
 		}

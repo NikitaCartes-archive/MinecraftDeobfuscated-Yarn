@@ -22,6 +22,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.NarratorMode;
+import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
@@ -72,6 +73,9 @@ public class Keyboard {
 				this.debugFormattedLog("SectionPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
 				return true;
 			case 70:
+				boolean bl2 = BackgroundRenderer.toggleFog();
+				this.debugFormattedLog("Fog: {0}", bl2 ? "enabled" : "disabled");
+				return true;
 			case 71:
 			case 72:
 			case 73:

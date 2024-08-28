@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -32,12 +34,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeyedValue;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -58,7 +60,6 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -371,12 +372,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see #getLootTableKey
 	 * @see #getDroppedStacks
 	 */
-	@Nullable
-	protected RegistryKey<LootTable> lootTableKey;
+	protected final Optional<RegistryKey<LootTable>> lootTableKey;
+	protected final String translationKey;
 
 	public AbstractBlock(AbstractBlock.Settings settings) {
 		this.collidable = settings.collidable;
-		this.lootTableKey = settings.lootTableKey;
+		this.lootTableKey = settings.getLootTableKey();
+		this.translationKey = settings.getTranslationKey();
 		this.resistance = settings.resistance;
 		this.randomTicks = settings.randomTicks;
 		this.soundGroup = settings.soundGroup;
@@ -758,13 +760,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see net.minecraft.loot.context.LootContextParameters
 	 */
 	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-		RegistryKey<LootTable> registryKey = this.getLootTableKey();
-		if (registryKey == LootTables.EMPTY) {
+		if (this.lootTableKey.isEmpty()) {
 			return Collections.emptyList();
 		} else {
 			LootContextParameterSet lootContextParameterSet = builder.add(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContextParameterSet.getWorld();
-			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(registryKey);
+			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)this.lootTableKey.get());
 			return lootTable.generateLoot(lootContextParameterSet);
 		}
 	}
@@ -1073,13 +1074,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		return 0;
 	}
 
-	public final RegistryKey<LootTable> getLootTableKey() {
-		if (this.lootTableKey == null) {
-			Identifier identifier = Registries.BLOCK.getId(this.asBlock());
-			this.lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, identifier.withPrefixedPath("blocks/"));
-		}
-
+	public final Optional<RegistryKey<LootTable>> getLootTableKey() {
 		return this.lootTableKey;
+	}
+
+	public final String getTranslationKey() {
+		return this.translationKey;
 	}
 
 	/**
@@ -1450,7 +1450,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 			for (Direction direction : AbstractBlock.DIRECTIONS) {
 				mutable.set(pos, direction);
-				world.replaceWithStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), mutable, pos, flags, maxUpdateDepth);
+				world.replaceWithStateForNeighborUpdate(direction.getOpposite(), mutable, pos, this.asBlockState(), flags, maxUpdateDepth);
 			}
 		}
 
@@ -1683,6 +1683,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 	}
 
+	@FunctionalInterface
 	public interface ContextPredicate {
 		boolean test(BlockState state, BlockView world, BlockPos pos);
 	}
@@ -1693,6 +1694,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		XYZ;
 	}
 
+	@FunctionalInterface
 	public interface Offsetter {
 		Vec3d evaluate(BlockState state, BlockPos pos);
 	}
@@ -1710,7 +1712,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		float slipperiness = 0.6F;
 		float velocityMultiplier = 1.0F;
 		float jumpVelocityMultiplier = 1.0F;
-		RegistryKey<LootTable> lootTableKey;
+		@Nullable
+		private RegistryKey<Block> registryKey;
+		private RegistryKeyedValue<Block, Optional<RegistryKey<LootTable>>> lootTable = registryKey -> Optional.of(
+				RegistryKey.of(RegistryKeys.LOOT_TABLE, registryKey.getValue().withPrefixedPath("blocks/"))
+			);
+		private RegistryKeyedValue<Block, String> translationKey = registryKey -> Util.createTranslationKey("block", registryKey.getValue());
 		boolean opaque = true;
 		boolean isAir;
 		boolean burnable;
@@ -1753,7 +1760,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			settings.postProcessPredicate = settings2.postProcessPredicate;
 			settings.suffocationPredicate = settings2.suffocationPredicate;
 			settings.blockVisionPredicate = settings2.blockVisionPredicate;
-			settings.lootTableKey = settings2.lootTableKey;
+			settings.lootTable = settings2.lootTable;
+			settings.translationKey = settings2.translationKey;
 			return settings;
 		}
 
@@ -1884,18 +1892,17 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public AbstractBlock.Settings dropsNothing() {
-			this.lootTableKey = LootTables.EMPTY;
+			this.lootTable = RegistryKeyedValue.fixed(Optional.empty());
 			return this;
 		}
 
-		/**
-		 * Specifies that a block should drop the same items as a provided block.
-		 * 
-		 * @param source the block to copy item drops from
-		 */
-		public AbstractBlock.Settings dropsLike(Block source) {
-			this.lootTableKey = source.getLootTableKey();
+		public AbstractBlock.Settings lootTable(Optional<RegistryKey<LootTable>> lootTableKey) {
+			this.lootTable = RegistryKeyedValue.fixed(lootTableKey);
 			return this;
+		}
+
+		protected Optional<RegistryKey<LootTable>> getLootTableKey() {
+			return this.lootTable.get((RegistryKey<Block>)Objects.requireNonNull(this.registryKey, "Block id not set"));
 		}
 
 		public AbstractBlock.Settings burnable() {
@@ -2025,8 +2032,23 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.replaceable = true;
 			return this;
 		}
+
+		public AbstractBlock.Settings registryKey(RegistryKey<Block> registryKey) {
+			this.registryKey = registryKey;
+			return this;
+		}
+
+		public AbstractBlock.Settings overrideTranslationKey(String translationKey) {
+			this.translationKey = RegistryKeyedValue.fixed(translationKey);
+			return this;
+		}
+
+		protected String getTranslationKey() {
+			return this.translationKey.get((RegistryKey<Block>)Objects.requireNonNull(this.registryKey, "Block id not set"));
+		}
 	}
 
+	@FunctionalInterface
 	public interface TypedContextPredicate<A> {
 		boolean test(BlockState state, BlockView world, BlockPos pos, A type);
 	}

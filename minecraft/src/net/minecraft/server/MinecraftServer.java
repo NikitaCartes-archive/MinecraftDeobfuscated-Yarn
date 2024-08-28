@@ -319,7 +319,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		super("Server");
 		this.combinedDynamicRegistries = saveLoader.combinedDynamicRegistries();
 		this.saveProperties = saveLoader.saveProperties();
-		if (!this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION).contains(DimensionOptions.OVERWORLD)) {
+		if (!this.combinedDynamicRegistries.getCombinedRegistryManager().getOrThrow(RegistryKeys.DIMENSION).contains(DimensionOptions.OVERWORLD)) {
 			throw new IllegalStateException("Missing Overworld dimension data");
 		} else {
 			this.proxy = proxy;
@@ -339,8 +339,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.dataPackContents.getFunctionLoader());
 			RegistryEntryLookup<Block> registryEntryLookup = this.combinedDynamicRegistries
 				.getCombinedRegistryManager()
-				.get(RegistryKeys.BLOCK)
-				.getReadOnlyWrapper()
+				.getOrThrow(RegistryKeys.BLOCK)
 				.withFeatureFilter(this.saveProperties.getEnabledFeatures());
 			this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, registryEntryLookup);
 			this.serverThread = serverThread;
@@ -394,7 +393,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		boolean bl = this.saveProperties.isDebugWorld();
-		Registry<DimensionOptions> registry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION);
+		Registry<DimensionOptions> registry = this.combinedDynamicRegistries.getCombinedRegistryManager().getOrThrow(RegistryKeys.DIMENSION);
 		GeneratorOptions generatorOptions = this.saveProperties.getGeneratorOptions();
 		long l = generatorOptions.getSeed();
 		long m = BiomeAccess.hashSeed(l);
@@ -505,7 +504,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			if (bonusChest) {
 				world.getRegistryManager()
 					.getOptional(RegistryKeys.CONFIGURED_FEATURE)
-					.flatMap(featureRegistry -> featureRegistry.getEntry(MiscConfiguredFeatures.BONUS_CHEST))
+					.flatMap(featureRegistry -> featureRegistry.getOptional(MiscConfiguredFeatures.BONUS_CHEST))
 					.ifPresent(
 						feature -> ((ConfiguredFeature)feature.value()).generate(world, serverChunkManager.getChunkGenerator(), world.random, worldProperties.getSpawnPos())
 					);

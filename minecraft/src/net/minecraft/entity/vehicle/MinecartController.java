@@ -13,7 +13,7 @@ public abstract class MinecartController {
 		this.minecart = minecart;
 	}
 
-	public void setPos(double x, double y, double z, float yaw, float pitch, int i) {
+	public void setPos(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.setPos(x, y, z);
 		this.setYaw(yaw % 360.0F);
 		this.setPitch(pitch % 360.0F);

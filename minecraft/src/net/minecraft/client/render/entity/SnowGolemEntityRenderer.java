@@ -21,7 +21,8 @@ public class SnowGolemEntityRenderer extends MobEntityRenderer<SnowGolemEntity, 
 		this.addFeature(new SnowGolemPumpkinFeatureRenderer(this, context.getBlockRenderManager(), context.getItemRenderer()));
 	}
 
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	@Override
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 

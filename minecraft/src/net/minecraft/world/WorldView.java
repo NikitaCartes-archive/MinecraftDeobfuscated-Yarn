@@ -249,7 +249,7 @@ public interface WorldView extends BlockRenderView, CollisionView, RedstoneView,
 	FeatureSet getEnabledFeatures();
 
 	default <T> RegistryWrapper<T> createCommandRegistryWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
-		Registry<T> registry = this.getRegistryManager().get(registryRef);
-		return registry.getReadOnlyWrapper().withFeatureFilter(this.getEnabledFeatures());
+		Registry<T> registry = this.getRegistryManager().getOrThrow(registryRef);
+		return registry.withFeatureFilter(this.getEnabledFeatures());
 	}
 }

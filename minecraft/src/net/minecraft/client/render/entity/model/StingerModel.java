@@ -13,11 +13,8 @@ import net.minecraft.client.render.RenderLayer;
 
 @Environment(EnvType.CLIENT)
 public class StingerModel extends Model {
-	private final ModelPart root;
-
 	public StingerModel(ModelPart root) {
-		super(RenderLayer::getEntityCutout);
-		this.root = root;
+		super(root, RenderLayer::getEntityCutout);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -27,10 +24,5 @@ public class StingerModel extends Model {
 		modelPartData.addChild("cross_1", modelPartBuilder, ModelTransform.rotation((float) (Math.PI / 4), 0.0F, 0.0F));
 		modelPartData.addChild("cross_2", modelPartBuilder, ModelTransform.rotation((float) (Math.PI * 3.0 / 4.0), 0.0F, 0.0F));
 		return TexturedModelData.of(modelData, 16, 16);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

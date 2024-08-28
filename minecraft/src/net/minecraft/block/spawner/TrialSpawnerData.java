@@ -113,7 +113,7 @@ public class TrialSpawnerData {
 
 	public boolean hasSpawnData(TrialSpawnerLogic logic, Random random) {
 		boolean bl = this.getSpawnData(logic, random).getNbt().contains("id", NbtElement.STRING_TYPE);
-		return bl || !logic.getConfig().spawnPotentialsDefinition().isEmpty();
+		return bl || !logic.getConfig().spawnPotentials().isEmpty();
 	}
 
 	public boolean hasSpawnedAllMobs(TrialSpawnerConfig config, int additionalPlayers) {
@@ -204,7 +204,7 @@ public class TrialSpawnerData {
 				entity.remove(Entity.RemovalReason.DISCARDED);
 			}
 		});
-		if (!logic.getOminousConfig().spawnPotentialsDefinition().isEmpty()) {
+		if (!logic.getOminousConfig().spawnPotentials().isEmpty()) {
 			this.spawnData = Optional.empty();
 		}
 
@@ -247,7 +247,7 @@ public class TrialSpawnerData {
 		if (this.spawnData.isPresent()) {
 			return (MobSpawnerEntry)this.spawnData.get();
 		} else {
-			DataPool<MobSpawnerEntry> dataPool = logic.getConfig().spawnPotentialsDefinition();
+			DataPool<MobSpawnerEntry> dataPool = logic.getConfig().spawnPotentials();
 			Optional<MobSpawnerEntry> optional = dataPool.isEmpty() ? this.spawnData : dataPool.getOrEmpty(random).map(Weighted.Present::data);
 			this.spawnData = Optional.of((MobSpawnerEntry)optional.orElseGet(MobSpawnerEntry::new));
 			logic.updateListeners();

@@ -46,13 +46,12 @@ public class EvokerFangsEntityModel extends EntityModel<EvokerFangsEntityRenderS
 	 * The key of the lower jaw model part, whose value is {@value}.
 	 */
 	private static final String LOWER_JAW = "lower_jaw";
-	private final ModelPart root;
 	private final ModelPart base;
 	private final ModelPart upperJaw;
 	private final ModelPart lowerJaw;
 
 	public EvokerFangsEntityModel(ModelPart modelPart) {
-		this.root = modelPart;
+		super(modelPart);
 		this.base = modelPart.getChild("base");
 		this.upperJaw = this.base.getChild("upper_jaw");
 		this.lowerJaw = this.base.getChild("lower_jaw");
@@ -71,7 +70,7 @@ public class EvokerFangsEntityModel extends EntityModel<EvokerFangsEntityRenderS
 	}
 
 	public void setAngles(EvokerFangsEntityRenderState evokerFangsEntityRenderState) {
-		this.root.traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(evokerFangsEntityRenderState);
 		float f = evokerFangsEntityRenderState.animationProgress;
 		float g = Math.min(f * 2.0F, 1.0F);
 		g = 1.0F - g * g * g;
@@ -87,10 +86,5 @@ public class EvokerFangsEntityModel extends EntityModel<EvokerFangsEntityRenderS
 		this.root.xScale = h;
 		this.root.yScale = h;
 		this.root.zScale = h;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

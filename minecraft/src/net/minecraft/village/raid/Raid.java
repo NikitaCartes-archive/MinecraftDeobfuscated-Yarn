@@ -61,13 +61,12 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class Raid {
+	public static final SpawnLocation RAVAGER_SPAWN_LOCATION = SpawnRestriction.getLocation(EntityType.RAVAGER);
+	private static final int field_53977 = 7;
 	private static final int field_30676 = 2;
-	private static final int field_30677 = 0;
-	private static final int field_30678 = 1;
-	private static final int field_30679 = 2;
 	private static final int field_30680 = 32;
 	private static final int field_30681 = 48000;
-	private static final int field_30682 = 3;
+	private static final int field_30682 = 5;
 	private static final Text OMINOUS_BANNER_TRANSLATION_KEY = Text.translatable("block.minecraft.ominous_banner");
 	private static final String RAIDERS_REMAINING_TRANSLATION_KEY = "event.minecraft.raid.raiders_remaining";
 	public static final int field_30669 = 16;
@@ -83,6 +82,7 @@ public class Raid {
 	private static final Text VICTORY_TITLE = Text.translatable("event.minecraft.raid.victory.full");
 	private static final Text DEFEAT_TITLE = Text.translatable("event.minecraft.raid.defeat.full");
 	private static final int MAX_ACTIVE_TICKS = 48000;
+	private static final int field_53978 = 96;
 	public static final int field_30674 = 9216;
 	public static final int SQUARED_MAX_RAIDER_DISTANCE = 12544;
 	private final Map<Integer, RaiderEntity> waveToCaptain = Maps.<Integer, RaiderEntity>newHashMap();
@@ -225,16 +225,16 @@ public class Raid {
 		this.badOmenLevel = badOmenLevel;
 	}
 
-	public boolean start(ServerPlayerEntity serverPlayerEntity) {
-		StatusEffectInstance statusEffectInstance = serverPlayerEntity.getStatusEffect(StatusEffects.RAID_OMEN);
+	public boolean start(ServerPlayerEntity player) {
+		StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.RAID_OMEN);
 		if (statusEffectInstance == null) {
 			return false;
 		} else {
 			this.badOmenLevel = this.badOmenLevel + statusEffectInstance.getAmplifier() + 1;
 			this.badOmenLevel = MathHelper.clamp(this.badOmenLevel, 0, this.getMaxAcceptableBadOmenLevel());
 			if (!this.hasSpawned()) {
-				serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);
-				Criteria.VOLUNTARY_EXILE.trigger(serverPlayerEntity);
+				player.incrementStat(Stats.RAID_TRIGGER);
+				Criteria.VOLUNTARY_EXILE.trigger(player);
 			}
 
 			return true;
@@ -299,14 +299,7 @@ public class Raid {
 						}
 
 						if (bl3) {
-							int j = 0;
-							if (this.preRaidTicks < 100) {
-								j = 1;
-							} else if (this.preRaidTicks < 40) {
-								j = 2;
-							}
-
-							this.preCalculatedRaidersSpawnLocation = this.getRaidersSpawnLocation(j);
+							this.preCalculatedRaidersSpawnLocation = this.getRaidersSpawnLocation();
 						}
 
 						if (this.preRaidTicks == 300 || this.preRaidTicks % 20 == 0) {
@@ -333,12 +326,10 @@ public class Raid {
 				}
 
 				boolean bl2x = false;
-				int k = 0;
+				int j = 0;
 
 				while (this.canSpawnRaiders()) {
-					BlockPos blockPos = this.preCalculatedRaidersSpawnLocation.isPresent()
-						? (BlockPos)this.preCalculatedRaidersSpawnLocation.get()
-						: this.findRandomRaidersSpawnLocation(k, 20);
+					BlockPos blockPos = (BlockPos)this.preCalculatedRaidersSpawnLocation.orElseGet(() -> this.findRandomRaidersSpawnLocation(20));
 					if (blockPos != null) {
 						this.started = true;
 						this.spawnNextWave(blockPos);
@@ -347,10 +338,10 @@ public class Raid {
 							bl2x = true;
 						}
 					} else {
-						k++;
+						j++;
 					}
 
-					if (k > 3) {
+					if (j > 5) {
 						this.invalidate();
 						break;
 					}
@@ -408,15 +399,9 @@ public class Raid {
 			.ifPresent(this::setCenter);
 	}
 
-	private Optional<BlockPos> getRaidersSpawnLocation(int proximity) {
-		for (int i = 0; i < 3; i++) {
-			BlockPos blockPos = this.findRandomRaidersSpawnLocation(proximity, 1);
-			if (blockPos != null) {
-				return Optional.of(blockPos);
-			}
-		}
-
-		return Optional.empty();
+	private Optional<BlockPos> getRaidersSpawnLocation() {
+		BlockPos blockPos = this.findRandomRaidersSpawnLocation(8);
+		return blockPos != null ? Optional.of(blockPos) : Optional.empty();
 	}
 
 	private boolean shouldSpawnMoreGroups() {
@@ -633,24 +618,25 @@ public class Raid {
 	}
 
 	@Nullable
-	private BlockPos findRandomRaidersSpawnLocation(int proximity, int tries) {
-		int i = proximity == 0 ? 2 : 2 - proximity;
+	private BlockPos findRandomRaidersSpawnLocation(int proximity) {
+		int i = this.preRaidTicks / 20;
+		float f = 0.22F * (float)i - 0.24F;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		SpawnLocation spawnLocation = SpawnRestriction.getLocation(EntityType.RAVAGER);
+		float g = this.world.random.nextFloat() * (float) (Math.PI * 2);
 
-		for (int j = 0; j < tries; j++) {
-			float f = this.world.random.nextFloat() * (float) (Math.PI * 2);
-			int k = this.center.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F * (float)i) + this.world.random.nextInt(5);
-			int l = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F * (float)i) + this.world.random.nextInt(5);
+		for (int j = 0; j < proximity; j++) {
+			float h = g + (float) Math.PI * (float)j / 8.0F;
+			int k = this.center.getX() + MathHelper.floor(MathHelper.cos(h) * 32.0F * f) + this.world.random.nextInt(3) * MathHelper.floor(f);
+			int l = this.center.getZ() + MathHelper.floor(MathHelper.sin(h) * 32.0F * f) + this.world.random.nextInt(3) * MathHelper.floor(f);
 			int m = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, k, l);
-			if (MathHelper.abs(m - this.center.getY()) <= 32 * i) {
+			if (MathHelper.abs(m - this.center.getY()) <= 96) {
 				mutable.set(k, m, l);
-				if (!this.world.isNearOccupiedPointOfInterest(mutable) || proximity >= 2) {
+				if (!this.world.isNearOccupiedPointOfInterest(mutable) || i <= 7) {
 					int n = 10;
 					if (this.world.isRegionLoaded(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10)
 						&& this.world.shouldTickEntity(mutable)
 						&& (
-							spawnLocation.isSpawnPositionOk(this.world, mutable, EntityType.RAVAGER)
+							RAVAGER_SPAWN_LOCATION.isSpawnPositionOk(this.world, mutable, EntityType.RAVAGER)
 								|| this.world.getBlockState(mutable.down()).isOf(Blocks.SNOW) && this.world.getBlockState(mutable).isAir()
 						)) {
 						return mutable;
@@ -695,7 +681,7 @@ public class Raid {
 
 	public void setWaveCaptain(int wave, RaiderEntity entity) {
 		this.waveToCaptain.put(wave, entity);
-		entity.equipStack(EquipmentSlot.HEAD, createOminousBanner(entity.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN)));
+		entity.equipStack(EquipmentSlot.HEAD, createOminousBanner(entity.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN)));
 		entity.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 

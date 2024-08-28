@@ -180,7 +180,7 @@ public class ClientWorld extends World {
 		WorldRenderer worldRenderer,
 		boolean debugWorld,
 		long seed,
-		int i
+		int seaLevel
 	) {
 		super(properties, registryRef, networkHandler.getRegistryManager(), dimensionType, profiler, true, debugWorld, seed, 1000000);
 		this.networkHandler = networkHandler;
@@ -188,7 +188,7 @@ public class ClientWorld extends World {
 		this.tickManager = new TickManager();
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
-		this.seaLevel = i;
+		this.seaLevel = seaLevel;
 		this.worldEventHandler = new WorldEventHandler(this.client, this, worldRenderer);
 		this.dimensionEffects = DimensionEffects.byDimensionType(dimensionType.value());
 		this.setSpawnPos(new BlockPos(8, 64, 8), 0.0F);
@@ -316,11 +316,11 @@ public class ClientWorld extends World {
 	public void resetChunkColor(ChunkPos chunkPos) {
 		this.colorCache.forEach((resolver, cache) -> cache.reset(chunkPos.x, chunkPos.z));
 		this.entityManager.startTicking(chunkPos);
-		this.worldRenderer.method_52815(chunkPos);
+		this.worldRenderer.scheduleNeighborUpdates(chunkPos);
 	}
 
-	public void method_62895(long l) {
-		this.worldRenderer.method_62908(l);
+	public void onChunkUnload(long sectionPos) {
+		this.worldRenderer.onChunkUnload(sectionPos);
 	}
 
 	public void reloadColor() {
@@ -598,11 +598,11 @@ public class ClientWorld extends World {
 	}
 
 	public void scheduleBlockRenders(int x, int y, int z) {
-		this.worldRenderer.scheduleBlockRenders(x, y, z);
+		this.worldRenderer.scheduleChunkRenders3x3x3(x, y, z);
 	}
 
 	public void method_62146(int i, int j, int k, int l, int m, int n) {
-		this.worldRenderer.method_62219(i, j, k, l, m, n);
+		this.worldRenderer.scheduleChunkRenders(i, j, k, l, m, n);
 	}
 
 	@Override
@@ -659,7 +659,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.PLAINS);
+		return this.getRegistryManager().getOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.PLAINS);
 	}
 
 	public float getSkyBrightness(float tickDelta) {

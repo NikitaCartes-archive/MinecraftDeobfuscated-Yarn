@@ -941,7 +941,7 @@ public class TestContext {
 		BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ);
 		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX, box.maxY, box.maxZ);
 		Either<Integer, CommandSyntaxException> either = FillBiomeCommand.fillBiome(
-			this.getWorld(), blockPos, blockPos2, this.getWorld().getRegistryManager().get(RegistryKeys.BIOME).entryOf(biome)
+			this.getWorld(), blockPos, blockPos2, this.getWorld().getRegistryManager().getOrThrow(RegistryKeys.BIOME).getOrThrow(biome)
 		);
 		if (either.right().isPresent()) {
 			this.throwGameTestException("Failed to set biome for test");

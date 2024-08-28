@@ -172,8 +172,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	private boolean canPickUpLoot;
 	private boolean persistent;
 	private final Map<PathNodeType, Float> pathfindingPenalties = Maps.newEnumMap(PathNodeType.class);
-	@Nullable
-	private RegistryKey<LootTable> lootTable;
+	private Optional<RegistryKey<LootTable>> lootTable = Optional.empty();
 	private long lootTableSeed;
 	@Nullable
 	private Leashable.LeashData leashData;
@@ -465,8 +464,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 		this.writeLeashDataToNbt(nbt, this.leashData);
 		nbt.putBoolean("LeftHanded", this.isLeftHanded());
-		if (this.lootTable != null) {
-			nbt.putString("DeathLootTable", this.lootTable.getValue().toString());
+		if (this.lootTable.isPresent()) {
+			nbt.putString("DeathLootTable", ((RegistryKey)this.lootTable.get()).getValue().toString());
 			if (this.lootTableSeed != 0L) {
 				nbt.putLong("DeathLootTableSeed", this.lootTableSeed);
 			}
@@ -529,7 +528,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		this.leashData = this.readLeashDataFromNbt(nbt);
 		this.setLeftHanded(nbt.getBoolean("LeftHanded"));
 		if (nbt.contains("DeathLootTable", NbtElement.STRING_TYPE)) {
-			this.lootTable = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(nbt.getString("DeathLootTable")));
+			this.lootTable = Optional.of(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(nbt.getString("DeathLootTable"))));
 			this.lootTableSeed = nbt.getLong("DeathLootTableSeed");
 		}
 
@@ -539,16 +538,12 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
 		super.dropLoot(damageSource, causedByPlayer);
-		this.lootTable = null;
+		this.lootTable = Optional.empty();
 	}
 
 	@Override
-	public final RegistryKey<LootTable> getLootTable() {
-		return this.lootTable == null ? this.getLootTableId() : this.lootTable;
-	}
-
-	protected RegistryKey<LootTable> getLootTableId() {
-		return super.getLootTable();
+	public final Optional<RegistryKey<LootTable>> getLootTable() {
+		return this.lootTable.isPresent() ? this.lootTable : super.getLootTable();
 	}
 
 	@Override
@@ -1236,6 +1231,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		}
 	}
 
+	@Override
 	public boolean canPickUpLoot() {
 		return this.canPickUpLoot;
 	}

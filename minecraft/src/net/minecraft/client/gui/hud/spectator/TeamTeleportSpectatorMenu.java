@@ -58,8 +58,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public void renderIcon(DrawContext context, float brightness, float f) {
-		context.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(f, brightness, brightness, brightness));
+	public void renderIcon(DrawContext context, float brightness, float alpha) {
+		context.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(alpha, brightness, brightness, brightness));
 	}
 
 	@Override
@@ -109,16 +109,16 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public void renderIcon(DrawContext context, float brightness, float f) {
+		public void renderIcon(DrawContext context, float brightness, float alpha) {
 			Integer integer = this.team.getColor().getColorValue();
 			if (integer != null) {
-				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
-				float h = (float)(integer >> 8 & 0xFF) / 255.0F;
-				float i = (float)(integer & 0xFF) / 255.0F;
-				context.fill(1, 1, 15, 15, ColorHelper.fromFloats(f, g * brightness, h * brightness, i * brightness));
+				float f = (float)(integer >> 16 & 0xFF) / 255.0F;
+				float g = (float)(integer >> 8 & 0xFF) / 255.0F;
+				float h = (float)(integer & 0xFF) / 255.0F;
+				context.fill(1, 1, 15, 15, ColorHelper.fromFloats(alpha, f * brightness, g * brightness, h * brightness));
 			}
 
-			PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12, ColorHelper.fromFloats(f, brightness, brightness, brightness));
+			PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12, ColorHelper.fromFloats(alpha, brightness, brightness, brightness));
 		}
 
 		@Override

@@ -175,7 +175,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 		BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
 			builder.addDynamicDrop(SHERDS_DYNAMIC_DROP_ID, lootConsumer -> {
-				for (Item item : decoratedPotBlockEntity.getSherds().stream()) {
+				for (Item item : decoratedPotBlockEntity.getSherds().toList()) {
 					lootConsumer.accept(item.getDefaultStack());
 				}
 			});

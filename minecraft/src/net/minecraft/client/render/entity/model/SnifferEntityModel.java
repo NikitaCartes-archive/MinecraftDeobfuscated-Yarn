@@ -17,12 +17,11 @@ public class SnifferEntityModel extends EntityModel<SnifferEntityRenderState> {
 	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
 	private static final float LIMB_ANGLE_SCALE = 9.0F;
 	private static final float LIMB_DISTANCE_SCALE = 100.0F;
-	private final ModelPart root;
 	private final ModelPart head;
 
-	public SnifferEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.BONE).getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
+	public SnifferEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.BONE).getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -103,7 +102,7 @@ public class SnifferEntityModel extends EntityModel<SnifferEntityRenderState> {
 	}
 
 	public void setAngles(SnifferEntityRenderState snifferEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(snifferEntityRenderState);
 		this.head.pitch = snifferEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.yaw = snifferEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		if (snifferEntityRenderState.searching) {
@@ -120,10 +119,5 @@ public class SnifferEntityModel extends EntityModel<SnifferEntityRenderState> {
 		if (snifferEntityRenderState.baby) {
 			this.animate(SnifferAnimations.BABY_GROWTH);
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

@@ -39,11 +39,11 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 	private static final float MODEL_SCALE = 1.0F;
 	private static final float TEXT_SCALE = 0.9F;
 	private static final Vec3d TEXT_OFFSET = new Vec3d(0.0, -0.32F, 0.073F);
-	private final Map<WoodType, HangingSignBlockEntityRenderer.HangingSignModel> MODELS;
+	private final Map<WoodType, HangingSignBlockEntityRenderer.HangingSignModel> models;
 
 	public HangingSignBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
 		super(context);
-		this.MODELS = (Map<WoodType, HangingSignBlockEntityRenderer.HangingSignModel>)WoodType.stream()
+		this.models = (Map<WoodType, HangingSignBlockEntityRenderer.HangingSignModel>)WoodType.stream()
 			.collect(
 				ImmutableMap.toImmutableMap(
 					woodType -> woodType, type -> new HangingSignBlockEntityRenderer.HangingSignModel(context.getLayerModelPart(EntityModelLayers.createHangingSign(type)))
@@ -66,7 +66,7 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 		BlockState blockState = signBlockEntity.getCachedState();
 		AbstractSignBlock abstractSignBlock = (AbstractSignBlock)blockState.getBlock();
 		WoodType woodType = AbstractSignBlock.getWoodType(abstractSignBlock);
-		HangingSignBlockEntityRenderer.HangingSignModel hangingSignModel = (HangingSignBlockEntityRenderer.HangingSignModel)this.MODELS.get(woodType);
+		HangingSignBlockEntityRenderer.HangingSignModel hangingSignModel = (HangingSignBlockEntityRenderer.HangingSignModel)this.models.get(woodType);
 		hangingSignModel.updateVisibleParts(blockState);
 		this.render(signBlockEntity, matrixStack, vertexConsumerProvider, i, j, blockState, abstractSignBlock, woodType, hangingSignModel);
 	}
@@ -120,14 +120,12 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 
 	@Environment(EnvType.CLIENT)
 	public static final class HangingSignModel extends Model {
-		public final ModelPart root;
 		public final ModelPart plank;
 		public final ModelPart vChains;
 		public final ModelPart normalChains;
 
 		public HangingSignModel(ModelPart root) {
-			super(RenderLayer::getEntityCutoutNoCull);
-			this.root = root;
+			super(root, RenderLayer::getEntityCutoutNoCull);
 			this.plank = root.getChild("plank");
 			this.normalChains = root.getChild("normalChains");
 			this.vChains = root.getChild("vChains");
@@ -143,11 +141,6 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 				this.normalChains.visible = !bl2;
 				this.vChains.visible = bl2;
 			}
-		}
-
-		@Override
-		public ModelPart getPart() {
-			return this.root;
 		}
 	}
 }

@@ -7,11 +7,9 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.state.FireworkRocketEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
@@ -47,10 +45,6 @@ public class FireworkRocketEntityRenderer extends EntityRenderer<FireworkRocketE
 			);
 		matrixStack.pop();
 		super.render(fireworkRocketEntityRenderState, matrixStack, vertexConsumerProvider, i);
-	}
-
-	public Identifier getTexture(FireworkRocketEntityRenderState fireworkRocketEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	public FireworkRocketEntityRenderState getRenderState() {

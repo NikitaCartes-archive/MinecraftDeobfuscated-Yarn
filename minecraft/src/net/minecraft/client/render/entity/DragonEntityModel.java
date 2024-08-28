@@ -18,7 +18,6 @@ import net.minecraft.util.math.MathHelper;
 public class DragonEntityModel extends EntityModel<EnderDragonEntityRenderState> {
 	private static final int NUM_NECK_PARTS = 5;
 	private static final int NUM_TAIL_PARTS = 12;
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart[] neckParts = new ModelPart[5];
 	private final ModelPart[] tailParts = new ModelPart[12];
@@ -49,20 +48,20 @@ public class DragonEntityModel extends EntityModel<EnderDragonEntityRenderState>
 		return "tail" + id;
 	}
 
-	public DragonEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public DragonEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.jaw = this.head.getChild(EntityModelPartNames.JAW);
 
 		for (int i = 0; i < this.neckParts.length; i++) {
-			this.neckParts[i] = root.getChild(neck(i));
+			this.neckParts[i] = modelPart.getChild(neck(i));
 		}
 
 		for (int i = 0; i < this.tailParts.length; i++) {
-			this.tailParts[i] = root.getChild(tail(i));
+			this.tailParts[i] = modelPart.getChild(tail(i));
 		}
 
-		this.body = root.getChild(EntityModelPartNames.BODY);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
 		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
 		this.leftWingTip = this.leftWing.getChild(EntityModelPartNames.LEFT_WING_TIP);
 		this.leftFrontLeg = this.body.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
@@ -216,7 +215,7 @@ public class DragonEntityModel extends EntityModel<EnderDragonEntityRenderState>
 	}
 
 	public void setAngles(EnderDragonEntityRenderState enderDragonEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(enderDragonEntityRenderState);
 		float f = enderDragonEntityRenderState.wingPosition * (float) (Math.PI * 2);
 		this.jaw.pitch = (MathHelper.sin(f) + 1.0F) * 0.2F;
 		float g = MathHelper.sin(f - 1.0F) + 1.0F;
@@ -296,10 +295,5 @@ public class DragonEntityModel extends EntityModel<EnderDragonEntityRenderState>
 		frontLeg.pitch = 1.3F + offset * 0.1F;
 		frontLegTip.pitch = -0.5F - offset * 0.1F;
 		frontFoot.pitch = 0.75F + offset * 0.1F;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

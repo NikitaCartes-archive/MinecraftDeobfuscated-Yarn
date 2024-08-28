@@ -19,16 +19,15 @@ public class EndCrystalEntityModel extends EntityModel<EndCrystalEntityRenderSta
 	private static final String INNER_GLASS = "inner_glass";
 	private static final String BASE = "base";
 	private static final float field_52906 = (float)Math.sin(Math.PI / 4);
-	private final ModelPart root;
 	public final ModelPart base;
 	public final ModelPart outerGlass;
 	public final ModelPart innerGlass;
 	public final ModelPart cube;
 
-	public EndCrystalEntityModel(ModelPart root) {
-		this.root = root;
-		this.base = root.getChild("base");
-		this.outerGlass = root.getChild("outer_glass");
+	public EndCrystalEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.base = modelPart.getChild("base");
+		this.outerGlass = modelPart.getChild("outer_glass");
 		this.innerGlass = this.outerGlass.getChild("inner_glass");
 		this.cube = this.innerGlass.getChild(EntityModelPartNames.CUBE);
 	}
@@ -48,7 +47,7 @@ public class EndCrystalEntityModel extends EntityModel<EndCrystalEntityRenderSta
 	}
 
 	public void setAngles(EndCrystalEntityRenderState endCrystalEntityRenderState) {
-		this.root.traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(endCrystalEntityRenderState);
 		this.base.visible = endCrystalEntityRenderState.baseVisible;
 		float f = endCrystalEntityRenderState.age * 3.0F;
 		float g = EndCrystalEntityRenderer.getYOffset(endCrystalEntityRenderState.age) * 16.0F;
@@ -56,10 +55,5 @@ public class EndCrystalEntityModel extends EntityModel<EndCrystalEntityRenderSta
 		this.outerGlass.method_62132(RotationAxis.POSITIVE_Y.rotationDegrees(f).rotateAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906));
 		this.innerGlass.method_62132(new Quaternionf().setAngleAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906).rotateY(f * (float) (Math.PI / 180.0)));
 		this.cube.method_62132(new Quaternionf().setAngleAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906).rotateY(f * (float) (Math.PI / 180.0)));
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

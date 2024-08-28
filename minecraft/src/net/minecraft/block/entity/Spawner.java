@@ -35,7 +35,7 @@ public interface Spawner {
 		Identifier identifier = getSpawnedEntityId(nbtCompound, spawnDataKey);
 		return identifier != null
 			? (Text)Registries.ENTITY_TYPE
-				.getOrEmpty(identifier)
+				.getOptionalValue(identifier)
 				.map(entityType -> Text.translatable(entityType.getTranslationKey()).formatted(Formatting.GRAY))
 				.orElse(null)
 			: null;

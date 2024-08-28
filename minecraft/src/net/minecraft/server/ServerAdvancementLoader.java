@@ -65,7 +65,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 
 	private void validate(Identifier id, Advancement advancement) {
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		advancement.validate(impl, this.registries.createRegistryLookup());
+		advancement.validate(impl, this.registries);
 		impl.getErrorsAsString().ifPresent(string -> LOGGER.warn("Found validation problems in advancement {}: \n{}", id, string));
 	}
 

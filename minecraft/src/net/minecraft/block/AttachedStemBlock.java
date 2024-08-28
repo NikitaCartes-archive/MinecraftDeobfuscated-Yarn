@@ -73,7 +73,7 @@ public class AttachedStemBlock extends PlantBlock {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (!neighborState.matchesKey(this.gourdBlock) && direction == state.get(FACING)) {
-			Optional<Block> optional = world.getRegistryManager().get(RegistryKeys.BLOCK).getOrEmpty(this.stemBlock);
+			Optional<Block> optional = world.getRegistryManager().getOrThrow(RegistryKeys.BLOCK).getOptionalValue(this.stemBlock);
 			if (optional.isPresent()) {
 				return ((Block)optional.get()).getDefaultState().withIfExists(StemBlock.AGE, Integer.valueOf(7));
 			}
@@ -89,7 +89,7 @@ public class AttachedStemBlock extends PlantBlock {
 
 	@Override
 	public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-		return new ItemStack(DataFixUtils.orElse(world.getRegistryManager().get(RegistryKeys.ITEM).getOrEmpty(this.pickBlockItem), this));
+		return new ItemStack(DataFixUtils.orElse(world.getRegistryManager().getOrThrow(RegistryKeys.ITEM).getOptionalValue(this.pickBlockItem), this));
 	}
 
 	@Override

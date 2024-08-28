@@ -560,8 +560,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			double f = packet.getZ();
 			entity.updateTrackedPosition(d, e, f);
 			if (!entity.isLogicalSideForUpdatingMovement()) {
-				float g = (float)(packet.getYaw() * 360) / 256.0F;
-				float h = (float)(packet.getPitch() * 360) / 256.0F;
+				float g = packet.getYaw();
+				float h = packet.getPitch();
 				if (this.world.hasEntity(entity)) {
 					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3);
 				} else {
@@ -610,13 +610,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 					TrackedPosition trackedPosition = entity.getTrackedPosition();
 					Vec3d vec3d = trackedPosition.withDelta((long)packet.getDeltaX(), (long)packet.getDeltaY(), (long)packet.getDeltaZ());
 					trackedPosition.setPos(vec3d);
-					float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0F : entity.getLerpTargetYaw();
-					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.getLerpTargetPitch();
+					float f = packet.hasRotation() ? packet.getYaw() : entity.getLerpTargetYaw();
+					float g = packet.hasRotation() ? packet.getPitch() : entity.getLerpTargetPitch();
 					entity.updateTrackedPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), f, g, 3);
 				} else if (packet.hasRotation()) {
-					float h = (float)(packet.getYaw() * 360) / 256.0F;
-					float i = (float)(packet.getPitch() * 360) / 256.0F;
-					entity.updateTrackedPositionAndAngles(entity.getLerpTargetX(), entity.getLerpTargetY(), entity.getLerpTargetZ(), h, i, 3);
+					entity.updateTrackedPositionAndAngles(entity.getLerpTargetX(), entity.getLerpTargetY(), entity.getLerpTargetZ(), packet.getYaw(), packet.getPitch(), 3);
 				}
 
 				entity.setOnGround(packet.isOnGround());
@@ -631,7 +629,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		if (entity instanceof AbstractMinecartEntity abstractMinecartEntity) {
 			if (!entity.isLogicalSideForUpdatingMovement()
 				&& abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController) {
-				experimentalMinecartController.lerpSteps.addAll(packet.lerpSteps());
+				experimentalMinecartController.stagingLerpSteps.addAll(packet.lerpSteps());
 			}
 		}
 	}
@@ -641,8 +639,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = packet.getEntity(this.world);
 		if (entity != null) {
-			float f = (float)(packet.getHeadYaw() * 360) / 256.0F;
-			entity.updateTrackedHeadRotation(f, 3);
+			entity.updateTrackedHeadRotation(packet.getHeadYaw(), 3);
 		}
 	}
 
@@ -767,7 +764,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			for (int i = -1; i <= 1; i++) {
 				for (int j = -1; j <= 1; j++) {
 					for (int k = this.world.getBottomSectionCoord(); k <= this.world.getTopSectionCoord(); k++) {
-						this.client.worldRenderer.scheduleBlockRender(serialized.pos().x + i, k, serialized.pos().z + j);
+						this.client.worldRenderer.scheduleChunkRender(serialized.pos().x + i, k, serialized.pos().z + j);
 					}
 				}
 			}
@@ -1621,7 +1618,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	private <T> Registry.PendingTagLoad<T> method_62148(RegistryKey<? extends Registry<? extends T>> registryKey, TagPacketSerializer.Serialized serialized) {
-		Registry<T> registry = this.combinedDynamicRegistries.get(registryKey);
+		Registry<T> registry = this.combinedDynamicRegistries.getOrThrow(registryKey);
 		return registry.startTagReload(serialized.toRegistryTags(registry));
 	}
 

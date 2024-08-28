@@ -7,12 +7,14 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.explosion.Explosion;
 
 public abstract class VehicleEntity extends Entity {
 	protected static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(VehicleEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -50,6 +52,11 @@ public abstract class VehicleEntity extends Entity {
 
 	boolean shouldAlwaysKill(DamageSource source) {
 		return false;
+	}
+
+	@Override
+	public boolean isImmuneToExplosion(Explosion explosion) {
+		return explosion.getCausingEntity() instanceof MobEntity && !this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 	}
 
 	public void killAndDropItem(Item selfAsItem) {

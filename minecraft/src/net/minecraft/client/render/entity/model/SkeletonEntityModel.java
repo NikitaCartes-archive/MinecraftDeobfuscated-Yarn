@@ -75,7 +75,7 @@ public class SkeletonEntityModel<S extends SkeletonEntityRenderState> extends Bi
 
 	@Override
 	public void setArmAngle(Arm arm, MatrixStack matrices) {
-		this.getPart().rotate(matrices);
+		this.getRootPart().rotate(matrices);
 		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		ModelPart modelPart = this.getArm(arm);
 		modelPart.pivotX += f;

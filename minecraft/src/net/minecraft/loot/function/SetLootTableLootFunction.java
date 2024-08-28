@@ -63,7 +63,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		if (!reporter.canUseReferences()) {
 			reporter.report("Uses reference to " + this.lootTable.getValue() + ", but references are not allowed");
 		} else {
-			if (reporter.getDataLookup().getOptionalEntry(RegistryKeys.LOOT_TABLE, this.lootTable).isEmpty()) {
+			if (reporter.getDataLookup().getOptionalEntry(this.lootTable).isEmpty()) {
 				reporter.report("Missing loot table used for container: " + this.lootTable.getValue());
 			}
 		}

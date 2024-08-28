@@ -11,9 +11,9 @@ import net.minecraft.world.World;
 public abstract class AbstractChestBlock<E extends BlockEntity> extends BlockWithEntity {
 	protected final Supplier<BlockEntityType<? extends E>> entityTypeRetriever;
 
-	protected AbstractChestBlock(AbstractBlock.Settings settings, Supplier<BlockEntityType<? extends E>> entityTypeSupplier) {
+	protected AbstractChestBlock(AbstractBlock.Settings settings, Supplier<BlockEntityType<? extends E>> entityTypeRetriever) {
 		super(settings);
-		this.entityTypeRetriever = entityTypeSupplier;
+		this.entityTypeRetriever = entityTypeRetriever;
 	}
 
 	@Override

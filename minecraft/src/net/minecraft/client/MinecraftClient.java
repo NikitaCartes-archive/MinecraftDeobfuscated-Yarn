@@ -312,11 +312,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 * @see net.minecraft.client.util.Window#throwGlError(int, long)
 	 */
 	public static final String GL_ERROR_DIALOGUE = "Please make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).";
-	private final long field_46550 = Double.doubleToLongBits(Math.PI);
+	private final long UNIVERSE = Double.doubleToLongBits(Math.PI);
 	private final Path resourcePackDir;
 	private final CompletableFuture<com.mojang.authlib.yggdrasil.ProfileResult> gameProfileFuture;
 	private final TextureManager textureManager;
-	private final ShaderLoader field_53831;
+	private final ShaderLoader shaderLoader;
 	private final DataFixer dataFixer;
 	private final WindowProvider windowProvider;
 	private final Window window;
@@ -584,8 +584,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.languageManager);
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.registerReloader(this.textureManager);
-		this.field_53831 = new ShaderLoader(this.textureManager);
-		this.resourceManager.registerReloader(this.field_53831);
+		this.shaderLoader = new ShaderLoader(this.textureManager, this::onShaderResourceReloadFailure);
+		this.resourceManager.registerReloader(this.shaderLoader);
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, file.toPath().resolve("skins"), this.sessionService, this);
 		this.levelStorage = new LevelStorage(path.resolve("saves"), path.resolve("backups"), this.symlinkFinder, this.dataFixer);
 		this.commandHistoryManager = new CommandHistoryManager(path);
@@ -869,6 +869,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void showResourceReloadFailureToast(@Nullable Text description) {
 		ToastManager toastManager = this.getToastManager();
 		SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.translatable("resourcePack.load_fail"), description);
+	}
+
+	public void onShaderResourceReloadFailure(Exception exception) {
+		if (this.getResourcePackManager().getEnabledIds().size() <= 1) {
+			LOGGER.error(LogUtils.FATAL_MARKER, exception.getMessage(), (Throwable)exception);
+			this.printCrashReport(new CrashReport(exception.getMessage(), exception));
+		} else {
+			this.onResourceReloadFailure(exception, Text.translatable("resourcePack.runtime_failure"), null);
+		}
 	}
 
 	public void run() {
@@ -1202,7 +1211,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.bakedModelManager.close();
 			this.fontManager.close();
 			this.gameRenderer.close();
-			this.field_53831.close();
+			this.shaderLoader.close();
 			this.worldRenderer.close();
 			this.soundManager.close();
 			this.particleManager.clearAtlas();
@@ -1807,8 +1816,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			if (!this.paused) {
 				this.world.tickEntities();
 			}
-		} else if (this.gameRenderer.method_62906() != null) {
-			this.gameRenderer.method_62905();
+		} else if (this.gameRenderer.getPostProcessorId() != null) {
+			this.gameRenderer.clearPostProcessor();
 		}
 
 		if (!this.paused) {
@@ -2398,7 +2407,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			"GL debug messages", (Supplier<String>)(() -> GlDebug.isDebugMessageEnabled() ? String.join("\n", GlDebug.collectDebugMessages()) : "<disabled>")
 		);
 		systemDetails.addSection("Is Modded", (Supplier<String>)(() -> getModStatus().getMessage()));
-		systemDetails.addSection("Universe", (Supplier<String>)(() -> client != null ? Long.toHexString(client.field_46550) : "404"));
+		systemDetails.addSection("Universe", (Supplier<String>)(() -> client != null ? Long.toHexString(client.UNIVERSE) : "404"));
 		systemDetails.addSection("Type", "Client (map_client.txt)");
 		if (options != null) {
 			if (client != null) {
@@ -2494,8 +2503,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.textureManager;
 	}
 
-	public ShaderLoader method_62887() {
-		return this.field_53831;
+	public ShaderLoader getShaderLoader() {
+		return this.shaderLoader;
 	}
 
 	public ResourceManager getResourceManager() {

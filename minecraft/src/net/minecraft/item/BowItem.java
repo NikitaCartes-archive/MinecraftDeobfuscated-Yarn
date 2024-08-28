@@ -24,13 +24,19 @@ public class BowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-		if (user instanceof PlayerEntity playerEntity) {
+	public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+		if (!(user instanceof PlayerEntity playerEntity)) {
+			return false;
+		} else {
 			ItemStack itemStack = playerEntity.getProjectileType(stack);
-			if (!itemStack.isEmpty()) {
+			if (itemStack.isEmpty()) {
+				return false;
+			} else {
 				int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
 				float f = getPullProgress(i);
-				if (!((double)f < 0.1)) {
+				if ((double)f < 0.1) {
+					return false;
+				} else {
 					List<ItemStack> list = load(stack, itemStack, playerEntity);
 					if (world instanceof ServerWorld serverWorld && !list.isEmpty()) {
 						this.shootAll(serverWorld, playerEntity, playerEntity.getActiveHand(), stack, list, f * 3.0F, 1.0F, f == 1.0F, null);
@@ -47,6 +53,7 @@ public class BowItem extends RangedWeaponItem {
 						1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F
 					);
 					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+					return true;
 				}
 			}
 		}

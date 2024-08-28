@@ -36,13 +36,13 @@ public class DefaultMinecartController extends MinecartController {
 	}
 
 	@Override
-	public void setPos(double x, double y, double z, float yaw, float pitch, int i) {
+	public void setPos(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.yaw = (double)yaw;
 		this.pitch = (double)pitch;
-		this.step = i + 2;
+		this.step = interpolationSteps + 2;
 		this.setVelocity(this.velocity);
 	}
 

@@ -43,7 +43,7 @@ public class ArmorTrimMaterials {
 	}
 
 	public static Optional<RegistryEntry.Reference<ArmorTrimMaterial>> get(RegistryWrapper.WrapperLookup registries, ItemStack stack) {
-		return registries.getWrapperOrThrow(RegistryKeys.TRIM_MATERIAL)
+		return registries.getOrThrow(RegistryKeys.TRIM_MATERIAL)
 			.streamEntries()
 			.filter(recipe -> stack.itemMatches(((ArmorTrimMaterial)recipe.value()).ingredient()))
 			.findFirst();

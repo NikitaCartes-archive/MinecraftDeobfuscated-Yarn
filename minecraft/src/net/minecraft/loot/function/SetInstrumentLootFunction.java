@@ -34,7 +34,7 @@ public class SetInstrumentLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Registry<Instrument> registry = context.getWorld().getRegistryManager().get(RegistryKeys.INSTRUMENT);
+		Registry<Instrument> registry = context.getWorld().getRegistryManager().getOrThrow(RegistryKeys.INSTRUMENT);
 		Optional<RegistryEntry<Instrument>> optional = registry.getRandomEntry(this.options, context.getRandom());
 		if (optional.isPresent()) {
 			stack.set(DataComponentTypes.INSTRUMENT, (RegistryEntry<Instrument>)optional.get());

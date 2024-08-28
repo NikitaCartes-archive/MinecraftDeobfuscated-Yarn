@@ -101,7 +101,7 @@ public class GoatEntity extends AnimalEntity {
 		TagKey<Instrument> tagKey = this.isScreaming() ? InstrumentTags.SCREAMING_GOAT_HORNS : InstrumentTags.REGULAR_GOAT_HORNS;
 		return (ItemStack)this.getWorld()
 			.getRegistryManager()
-			.get(RegistryKeys.INSTRUMENT)
+			.getOrThrow(RegistryKeys.INSTRUMENT)
 			.getRandomEntry(tagKey, random)
 			.map(registryEntry -> GoatHornItem.getStackForInstrument(Items.GOAT_HORN, registryEntry))
 			.orElseGet(() -> new ItemStack(Items.GOAT_HORN));

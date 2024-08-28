@@ -79,8 +79,12 @@ public class UpgradeData {
 			}
 		}
 
-		addNeighborTicks(nbt, "neighbor_block_ticks", id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Blocks.AIR)), this.blockTicks);
-		addNeighborTicks(nbt, "neighbor_fluid_ticks", id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks);
+		addNeighborTicks(
+			nbt, "neighbor_block_ticks", id -> Registries.BLOCK.getOptionalValue(Identifier.tryParse(id)).or(() -> Optional.of(Blocks.AIR)), this.blockTicks
+		);
+		addNeighborTicks(
+			nbt, "neighbor_fluid_ticks", id -> Registries.FLUID.getOptionalValue(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks
+		);
 	}
 
 	private UpgradeData(UpgradeData data) {

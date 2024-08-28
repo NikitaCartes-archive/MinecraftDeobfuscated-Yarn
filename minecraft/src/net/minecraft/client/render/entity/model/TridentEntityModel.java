@@ -42,11 +42,9 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class TridentEntityModel extends Model {
 	public static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/trident.png");
-	private final ModelPart root;
 
 	public TridentEntityModel(ModelPart root) {
-		super(RenderLayer::getEntitySolid);
-		this.root = root;
+		super(root, RenderLayer::getEntitySolid);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -60,10 +58,5 @@ public class TridentEntityModel extends Model {
 		modelPartData2.addChild("middle_spike", ModelPartBuilder.create().uv(0, 0).cuboid(-0.5F, -4.0F, -0.5F, 1.0F, 4.0F, 1.0F), ModelTransform.NONE);
 		modelPartData2.addChild("right_spike", ModelPartBuilder.create().uv(4, 3).mirrored().cuboid(1.5F, -3.0F, -0.5F, 1.0F, 4.0F, 1.0F), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 32, 32);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -43,14 +44,13 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 	private static final ResourceFinder SHADERS_FINDER = ResourceFinder.json("shaders");
 	private static final ResourceFinder POST_EFFECT_FINDER = ResourceFinder.json("post_effect");
 	public static final int field_53936 = 32768;
-	private final TextureManager textureManager;
-	private ShaderLoader.Definitions definitions = ShaderLoader.Definitions.EMPTY;
-	private final Map<ShaderProgramKey, Optional<ShaderProgram>> programs = new HashMap();
-	private final Map<ShaderLoader.ShaderKey, CompiledShader> shaders = new HashMap();
-	private final Map<Identifier, Optional<PostEffectProcessor>> postEffects = new HashMap();
+	final TextureManager textureManager;
+	private final Consumer<Exception> onError;
+	private ShaderLoader.Cache cache = new ShaderLoader.Cache(ShaderLoader.Definitions.EMPTY);
 
-	public ShaderLoader(TextureManager textureManager) {
+	public ShaderLoader(TextureManager textureManager, Consumer<Exception> onError) {
 		this.textureManager = textureManager;
+		this.onError = onError;
 	}
 
 	protected ShaderLoader.Definitions prepare(ResourceManager resourceManager, Profiler profiler) {
@@ -231,19 +231,19 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 	}
 
 	protected void apply(ShaderLoader.Definitions definitions, ResourceManager resourceManager, Profiler profiler) {
-		this.closeLoader();
-		this.definitions = definitions;
+		ShaderLoader.Cache cache = new ShaderLoader.Cache(definitions);
 		Map<ShaderProgramKey, ShaderLoader.LoadException> map = new HashMap();
 
 		for (ShaderProgramKey shaderProgramKey : ShaderProgramKeys.getAll()) {
 			try {
-				this.programs.put(shaderProgramKey, Optional.of(this.createProgram(shaderProgramKey)));
-			} catch (ShaderLoader.LoadException var8) {
-				map.put(shaderProgramKey, var8);
+				cache.shaderPrograms.put(shaderProgramKey, Optional.of(cache.loadProgram(shaderProgramKey)));
+			} catch (ShaderLoader.LoadException var9) {
+				map.put(shaderProgramKey, var9);
 			}
 		}
 
 		if (!map.isEmpty()) {
+			cache.close();
 			throw new RuntimeException(
 				"Failed to load required shader programs:\n"
 					+ (String)map.entrySet()
@@ -251,6 +251,9 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 						.map(entry -> " - " + entry.getKey() + ": " + ((ShaderLoader.LoadException)entry.getValue()).getMessage())
 						.collect(Collectors.joining("\n"))
 			);
+		} else {
+			this.cache.close();
+			this.cache = cache;
 		}
 	}
 
@@ -270,8 +273,8 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 				Defines defines = shaderProgramDefinition.defines().withMerged(shaderProgramKey.defines());
 				CompiledShader compiledShader = this.compileShader(factory, shaderProgramDefinition.vertex(), CompiledShader.Type.VERTEX, defines);
 				CompiledShader compiledShader2 = this.compileShader(factory, shaderProgramDefinition.fragment(), CompiledShader.Type.FRAGMENT, defines);
-				ShaderProgram shaderProgram = this.createProgram(shaderProgramKey, shaderProgramDefinition, compiledShader, compiledShader2);
-				this.programs.put(shaderProgramKey, Optional.of(shaderProgram));
+				ShaderProgram shaderProgram = createProgram(shaderProgramKey, shaderProgramDefinition, compiledShader, compiledShader2);
+				this.cache.shaderPrograms.put(shaderProgramKey, Optional.of(shaderProgram));
 			} catch (Throwable var16) {
 				if (reader != null) {
 					try {
@@ -299,7 +302,7 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 			String string = IOUtils.toString(reader);
 			String string2 = GlImportProcessor.addDefines(string, defines);
 			CompiledShader compiledShader = CompiledShader.compile(id, type, string2);
-			this.shaders.put(new ShaderLoader.ShaderKey(id, type, defines), compiledShader);
+			this.cache.compiledShaders.put(new ShaderLoader.ShaderKey(id, type, defines), compiledShader);
 			var10 = compiledShader;
 		} catch (Throwable var12) {
 			if (reader != null) {
@@ -322,99 +325,131 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 
 	@Nullable
 	public ShaderProgram getOrCreateProgram(ShaderProgramKey key) {
-		Optional<ShaderProgram> optional = (Optional<ShaderProgram>)this.programs.get(key);
-		if (optional != null) {
-			return (ShaderProgram)optional.orElse(null);
-		} else {
-			try {
-				ShaderProgram shaderProgram = this.createProgram(key);
-				this.programs.put(key, Optional.of(shaderProgram));
-				return shaderProgram;
-			} catch (ShaderLoader.LoadException var4) {
-				LOGGER.error("Failed to load shader program: {}", key, var4);
-				this.programs.put(key, Optional.empty());
-				return null;
-			}
+		try {
+			return this.cache.getOrLoadProgram(key);
+		} catch (ShaderLoader.LoadException var3) {
+			LOGGER.error("Failed to load shader program: {}", key, var3);
+			this.onError.accept(var3);
+			return null;
 		}
 	}
 
-	private ShaderProgram createProgram(ShaderProgramKey key) throws ShaderLoader.LoadException {
-		ShaderProgramDefinition shaderProgramDefinition = (ShaderProgramDefinition)this.definitions.programs.get(key.configId());
-		if (shaderProgramDefinition == null) {
-			throw new ShaderLoader.LoadException("Could not find program with id: " + key.configId());
-		} else {
-			Defines defines = shaderProgramDefinition.defines().withMerged(key.defines());
-			CompiledShader compiledShader = this.compile(shaderProgramDefinition.vertex(), CompiledShader.Type.VERTEX, defines);
-			CompiledShader compiledShader2 = this.compile(shaderProgramDefinition.fragment(), CompiledShader.Type.FRAGMENT, defines);
-			return this.createProgram(key, shaderProgramDefinition, compiledShader, compiledShader2);
-		}
-	}
-
-	private ShaderProgram createProgram(ShaderProgramKey key, ShaderProgramDefinition definition, CompiledShader vertexShader, CompiledShader fragmentShader) throws ShaderLoader.LoadException {
+	static ShaderProgram createProgram(ShaderProgramKey key, ShaderProgramDefinition definition, CompiledShader vertexShader, CompiledShader fragmentShader) throws ShaderLoader.LoadException {
 		ShaderProgram shaderProgram = ShaderProgram.create(vertexShader, fragmentShader, key.vertexFormat());
 		shaderProgram.set(definition.uniforms(), definition.samplers());
 		return shaderProgram;
 	}
 
-	private CompiledShader compile(Identifier id, CompiledShader.Type type, Defines defines) throws ShaderLoader.LoadException {
-		ShaderLoader.ShaderKey shaderKey = new ShaderLoader.ShaderKey(id, type, defines);
-		CompiledShader compiledShader = (CompiledShader)this.shaders.get(shaderKey);
-		if (compiledShader == null) {
-			compiledShader = this.compile(shaderKey);
-			this.shaders.put(shaderKey, compiledShader);
-		}
-
-		return compiledShader;
-	}
-
-	private CompiledShader compile(ShaderLoader.ShaderKey key) throws ShaderLoader.LoadException {
-		String string = (String)this.definitions.shaderSources.get(new ShaderLoader.ShaderSourceKey(key.id, key.type));
-		if (string == null) {
-			throw new ShaderLoader.LoadException("Could not find shader: " + key);
-		} else {
-			String string2 = GlImportProcessor.addDefines(string, key.defines);
-			return CompiledShader.compile(key.id, key.type, string2);
-		}
-	}
-
 	@Nullable
 	public PostEffectProcessor loadPostEffect(Identifier id, Set<Identifier> availableExternalTargets) {
-		Optional<PostEffectProcessor> optional = (Optional<PostEffectProcessor>)this.postEffects.get(id);
-		if (optional != null) {
-			return (PostEffectProcessor)optional.orElse(null);
-		} else {
-			try {
-				PostEffectProcessor postEffectProcessor = this.parsePostEffect(id, availableExternalTargets);
-				this.postEffects.put(id, Optional.of(postEffectProcessor));
-				return postEffectProcessor;
-			} catch (ShaderLoader.LoadException var5) {
-				LOGGER.error("Failed to load post chain: {}", id, var5);
-				this.postEffects.put(id, Optional.empty());
-				return null;
-			}
+		try {
+			return this.cache.getOrLoadProcessor(id, availableExternalTargets);
+		} catch (ShaderLoader.LoadException var4) {
+			LOGGER.error("Failed to load post chain: {}", id, var4);
+			this.onError.accept(var4);
+			return null;
 		}
-	}
-
-	private PostEffectProcessor parsePostEffect(Identifier id, Set<Identifier> availableExternalTargets) throws ShaderLoader.LoadException {
-		PostEffectPipeline postEffectPipeline = (PostEffectPipeline)this.definitions.postChains.get(id);
-		if (postEffectPipeline == null) {
-			throw new ShaderLoader.LoadException("Could not find post chain with id: " + id);
-		} else {
-			return PostEffectProcessor.parseEffect(postEffectPipeline, this.textureManager, this, availableExternalTargets);
-		}
-	}
-
-	private void closeLoader() {
-		RenderSystem.assertOnRenderThread();
-		this.programs.values().forEach(program -> program.ifPresent(ShaderProgram::close));
-		this.shaders.values().forEach(CompiledShader::close);
-		this.programs.clear();
-		this.shaders.clear();
-		this.postEffects.clear();
 	}
 
 	public void close() {
-		this.closeLoader();
+		this.cache.close();
+	}
+
+	@Environment(EnvType.CLIENT)
+	class Cache implements AutoCloseable {
+		private final ShaderLoader.Definitions definitions;
+		final Map<ShaderProgramKey, Optional<ShaderProgram>> shaderPrograms = new HashMap();
+		final Map<ShaderLoader.ShaderKey, CompiledShader> compiledShaders = new HashMap();
+		private final Map<Identifier, Optional<PostEffectProcessor>> postEffectProcessors = new HashMap();
+
+		Cache(final ShaderLoader.Definitions definitions) {
+			this.definitions = definitions;
+		}
+
+		@Nullable
+		public ShaderProgram getOrLoadProgram(ShaderProgramKey key) throws ShaderLoader.LoadException {
+			Optional<ShaderProgram> optional = (Optional<ShaderProgram>)this.shaderPrograms.get(key);
+			if (optional != null) {
+				return (ShaderProgram)optional.orElse(null);
+			} else {
+				try {
+					ShaderProgram shaderProgram = this.loadProgram(key);
+					this.shaderPrograms.put(key, Optional.of(shaderProgram));
+					return shaderProgram;
+				} catch (ShaderLoader.LoadException var4) {
+					this.shaderPrograms.put(key, Optional.empty());
+					throw var4;
+				}
+			}
+		}
+
+		ShaderProgram loadProgram(ShaderProgramKey key) throws ShaderLoader.LoadException {
+			ShaderProgramDefinition shaderProgramDefinition = (ShaderProgramDefinition)this.definitions.programs.get(key.configId());
+			if (shaderProgramDefinition == null) {
+				throw new ShaderLoader.LoadException("Could not find program with id: " + key.configId());
+			} else {
+				Defines defines = shaderProgramDefinition.defines().withMerged(key.defines());
+				CompiledShader compiledShader = this.loadShader(shaderProgramDefinition.vertex(), CompiledShader.Type.VERTEX, defines);
+				CompiledShader compiledShader2 = this.loadShader(shaderProgramDefinition.fragment(), CompiledShader.Type.FRAGMENT, defines);
+				return ShaderLoader.createProgram(key, shaderProgramDefinition, compiledShader, compiledShader2);
+			}
+		}
+
+		private CompiledShader loadShader(Identifier id, CompiledShader.Type type, Defines defines) throws ShaderLoader.LoadException {
+			ShaderLoader.ShaderKey shaderKey = new ShaderLoader.ShaderKey(id, type, defines);
+			CompiledShader compiledShader = (CompiledShader)this.compiledShaders.get(shaderKey);
+			if (compiledShader == null) {
+				compiledShader = this.compileShader(shaderKey);
+				this.compiledShaders.put(shaderKey, compiledShader);
+			}
+
+			return compiledShader;
+		}
+
+		private CompiledShader compileShader(ShaderLoader.ShaderKey key) throws ShaderLoader.LoadException {
+			String string = (String)this.definitions.shaderSources.get(new ShaderLoader.ShaderSourceKey(key.id, key.type));
+			if (string == null) {
+				throw new ShaderLoader.LoadException("Could not find shader: " + key);
+			} else {
+				String string2 = GlImportProcessor.addDefines(string, key.defines);
+				return CompiledShader.compile(key.id, key.type, string2);
+			}
+		}
+
+		@Nullable
+		public PostEffectProcessor getOrLoadProcessor(Identifier id, Set<Identifier> availableExternalTargets) throws ShaderLoader.LoadException {
+			Optional<PostEffectProcessor> optional = (Optional<PostEffectProcessor>)this.postEffectProcessors.get(id);
+			if (optional != null) {
+				return (PostEffectProcessor)optional.orElse(null);
+			} else {
+				try {
+					PostEffectProcessor postEffectProcessor = this.loadProcessor(id, availableExternalTargets);
+					this.postEffectProcessors.put(id, Optional.of(postEffectProcessor));
+					return postEffectProcessor;
+				} catch (ShaderLoader.LoadException var5) {
+					this.postEffectProcessors.put(id, Optional.empty());
+					throw var5;
+				}
+			}
+		}
+
+		private PostEffectProcessor loadProcessor(Identifier id, Set<Identifier> availableExternalTargets) throws ShaderLoader.LoadException {
+			PostEffectPipeline postEffectPipeline = (PostEffectPipeline)this.definitions.postChains.get(id);
+			if (postEffectPipeline == null) {
+				throw new ShaderLoader.LoadException("Could not find post chain with id: " + id);
+			} else {
+				return PostEffectProcessor.parseEffect(postEffectPipeline, ShaderLoader.this.textureManager, ShaderLoader.this, availableExternalTargets);
+			}
+		}
+
+		public void close() {
+			RenderSystem.assertOnRenderThread();
+			this.shaderPrograms.values().forEach(program -> program.ifPresent(ShaderProgram::close));
+			this.compiledShaders.values().forEach(CompiledShader::close);
+			this.shaderPrograms.clear();
+			this.compiledShaders.clear();
+			this.postEffectProcessors.clear();
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

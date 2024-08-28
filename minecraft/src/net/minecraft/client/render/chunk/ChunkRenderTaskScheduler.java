@@ -12,16 +12,13 @@ public class ChunkRenderTaskScheduler {
 	private static final int field_53953 = 2;
 	private int remainingPrioritizableTasks = 2;
 	private final List<ChunkBuilder.BuiltChunk.Task> queue = new ObjectArrayList<>();
-	private final Object lock = new Object();
 
-	public void enqueue(ChunkBuilder.BuiltChunk.Task task) {
-		synchronized (this.lock) {
-			this.queue.add(task);
-		}
+	public synchronized void enqueue(ChunkBuilder.BuiltChunk.Task task) {
+		this.queue.add(task);
 	}
 
 	@Nullable
-	public ChunkBuilder.BuiltChunk.Task dequeueNearest(Vec3d pos) {
+	public synchronized ChunkBuilder.BuiltChunk.Task dequeueNearest(Vec3d pos) {
 		int i = -1;
 		int j = -1;
 		double d = Double.MAX_VALUE;
@@ -58,22 +55,14 @@ public class ChunkRenderTaskScheduler {
 
 	@Nullable
 	private ChunkBuilder.BuiltChunk.Task remove(int index) {
-		if (index >= 0) {
-			synchronized (this.lock) {
-				return (ChunkBuilder.BuiltChunk.Task)this.queue.remove(index);
-			}
-		} else {
-			return null;
-		}
+		return index >= 0 ? (ChunkBuilder.BuiltChunk.Task)this.queue.remove(index) : null;
 	}
 
-	public void cancelAll() {
-		synchronized (this.lock) {
-			for (ChunkBuilder.BuiltChunk.Task task : this.queue) {
-				task.cancel();
-			}
-
-			this.queue.clear();
+	public synchronized void cancelAll() {
+		for (ChunkBuilder.BuiltChunk.Task task : this.queue) {
+			task.cancel();
 		}
+
+		this.queue.clear();
 	}
 }

@@ -7,6 +7,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -27,8 +28,8 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		this.x = vec3d.x;
 		this.y = vec3d.y;
 		this.z = vec3d.z;
-		this.yaw = (byte)((int)(entity.getYaw() * 256.0F / 360.0F));
-		this.pitch = (byte)((int)(entity.getPitch() * 256.0F / 360.0F));
+		this.yaw = MathHelper.packDegrees(entity.getYaw());
+		this.pitch = MathHelper.packDegrees(entity.getPitch());
 		this.onGround = entity.isOnGround();
 	}
 
@@ -77,12 +78,12 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		return this.z;
 	}
 
-	public byte getYaw() {
-		return this.yaw;
+	public float getYaw() {
+		return MathHelper.unpackDegrees(this.yaw);
 	}
 
-	public byte getPitch() {
-		return this.pitch;
+	public float getPitch() {
+		return MathHelper.unpackDegrees(this.pitch);
 	}
 
 	public boolean isOnGround() {

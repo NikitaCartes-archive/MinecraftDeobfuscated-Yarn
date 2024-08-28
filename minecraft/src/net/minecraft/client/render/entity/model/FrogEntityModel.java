@@ -17,28 +17,18 @@ public class FrogEntityModel extends EntityModel<FrogEntityRenderState> {
 	private static final float WALKING_LIMB_ANGLE_SCALE = 1.5F;
 	private static final float SWIMMING_LIMB_ANGLE_SCALE = 1.0F;
 	private static final float LIMB_DISTANCE_SCALE = 2.5F;
-	private final ModelPart root;
-	private final ModelPart body;
-	private final ModelPart head;
-	private final ModelPart eyes;
-	private final ModelPart tongue;
-	private final ModelPart leftArm;
-	private final ModelPart rightArm;
-	private final ModelPart leftLeg;
-	private final ModelPart rightLeg;
-	private final ModelPart croakingBody;
+	private final ModelPart body = this.root.getChild(EntityModelPartNames.BODY);
+	private final ModelPart head = this.body.getChild(EntityModelPartNames.HEAD);
+	private final ModelPart eyes = this.head.getChild(EntityModelPartNames.EYES);
+	private final ModelPart tongue = this.body.getChild(EntityModelPartNames.TONGUE);
+	private final ModelPart leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
+	private final ModelPart rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
+	private final ModelPart leftLeg = this.root.getChild(EntityModelPartNames.LEFT_LEG);
+	private final ModelPart rightLeg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
+	private final ModelPart croakingBody = this.body.getChild(EntityModelPartNames.CROAKING_BODY);
 
-	public FrogEntityModel(ModelPart root) {
-		this.root = root.getChild(EntityModelPartNames.ROOT);
-		this.body = this.root.getChild(EntityModelPartNames.BODY);
-		this.head = this.body.getChild(EntityModelPartNames.HEAD);
-		this.eyes = this.head.getChild(EntityModelPartNames.EYES);
-		this.tongue = this.body.getChild(EntityModelPartNames.TONGUE);
-		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
-		this.leftLeg = this.root.getChild(EntityModelPartNames.LEFT_LEG);
-		this.rightLeg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.croakingBody = this.body.getChild(EntityModelPartNames.CROAKING_BODY);
+	public FrogEntityModel(ModelPart modelPart) {
+		super(modelPart.getChild(EntityModelPartNames.ROOT));
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -98,7 +88,7 @@ public class FrogEntityModel extends EntityModel<FrogEntityRenderState> {
 	}
 
 	public void setAngles(FrogEntityRenderState frogEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(frogEntityRenderState);
 		this.animate(frogEntityRenderState.longJumpingAnimationState, FrogAnimations.LONG_JUMPING, frogEntityRenderState.age);
 		this.animate(frogEntityRenderState.croakingAnimationState, FrogAnimations.CROAKING, frogEntityRenderState.age);
 		this.animate(frogEntityRenderState.usingTongueAnimationState, FrogAnimations.USING_TONGUE, frogEntityRenderState.age);
@@ -110,10 +100,5 @@ public class FrogEntityModel extends EntityModel<FrogEntityRenderState> {
 
 		this.animate(frogEntityRenderState.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, frogEntityRenderState.age);
 		this.croakingBody.visible = frogEntityRenderState.croakingAnimationState.isRunning();
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

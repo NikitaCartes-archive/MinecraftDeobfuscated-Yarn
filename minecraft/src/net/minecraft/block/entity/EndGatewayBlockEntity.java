@@ -169,7 +169,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 			LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", blockPos2);
 			world.getRegistryManager()
 				.getOptional(RegistryKeys.CONFIGURED_FEATURE)
-				.flatMap(registry -> registry.getEntry(EndConfiguredFeatures.END_ISLAND))
+				.flatMap(registry -> registry.getOptional(EndConfiguredFeatures.END_ISLAND))
 				.ifPresent(
 					reference -> ((ConfiguredFeature)reference.value())
 							.generate(world, world.getChunkManager().getChunkGenerator(), Random.create(blockPos2.asLong()), blockPos2)

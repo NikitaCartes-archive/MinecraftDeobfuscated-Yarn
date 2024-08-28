@@ -43,6 +43,7 @@ public class EntitySubPredicateTypes {
 	public static final MapCodec<PlayerPredicate> PLAYER = register("player", PlayerPredicate.CODEC);
 	public static final MapCodec<SlimePredicate> SLIME = register("slime", SlimePredicate.CODEC);
 	public static final MapCodec<RaiderPredicate> RAIDER = register("raider", RaiderPredicate.CODEC);
+	public static final MapCodec<SheepPredicate> SHEEP = register("sheep", SheepPredicate.CODEC);
 	public static final EntitySubPredicateTypes.VariantType<AxolotlEntity.Variant> AXOLOTL = register(
 		"axolotl",
 		EntitySubPredicateTypes.VariantType.create(

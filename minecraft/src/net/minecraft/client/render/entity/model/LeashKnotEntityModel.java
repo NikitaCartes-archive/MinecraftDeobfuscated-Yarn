@@ -31,12 +31,11 @@ public class LeashKnotEntityModel extends EntityModel<EntityRenderState> {
 	 * The key of the knot model part, whose value is {@value}.
 	 */
 	private static final String KNOT = "knot";
-	private final ModelPart root;
 	private final ModelPart knot;
 
-	public LeashKnotEntityModel(ModelPart root) {
-		this.root = root;
-		this.knot = root.getChild("knot");
+	public LeashKnotEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.knot = modelPart.getChild("knot");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -44,14 +43,5 @@ public class LeashKnotEntityModel extends EntityModel<EntityRenderState> {
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild("knot", ModelPartBuilder.create().uv(0, 0).cuboid(-3.0F, -8.0F, -3.0F, 6.0F, 8.0F, 6.0F), ModelTransform.NONE);
 		return TexturedModelData.of(modelData, 32, 32);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
-	@Override
-	public void setAngles(EntityRenderState state) {
 	}
 }

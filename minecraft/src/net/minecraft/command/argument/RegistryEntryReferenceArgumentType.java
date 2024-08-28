@@ -48,7 +48,7 @@ public class RegistryEntryReferenceArgumentType<T> implements ArgumentType<Regis
 
 	public RegistryEntryReferenceArgumentType(CommandRegistryAccess registryAccess, RegistryKey<? extends Registry<T>> registryRef) {
 		this.registryRef = registryRef;
-		this.registryWrapper = registryAccess.getWrapperOrThrow(registryRef);
+		this.registryWrapper = registryAccess.getOrThrow(registryRef);
 	}
 
 	public static <T> RegistryEntryReferenceArgumentType<T> registryEntry(CommandRegistryAccess registryAccess, RegistryKey<? extends Registry<T>> registryRef) {

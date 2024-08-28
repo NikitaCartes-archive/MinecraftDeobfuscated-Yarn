@@ -55,8 +55,10 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public void renderIcon(DrawContext context, float brightness, float f) {
-		context.drawGuiTexture(RenderLayer::getGuiTextured, TELEPORT_TO_PLAYER_TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(f, brightness, brightness, brightness));
+	public void renderIcon(DrawContext context, float brightness, float alpha) {
+		context.drawGuiTexture(
+			RenderLayer::getGuiTextured, TELEPORT_TO_PLAYER_TEXTURE, 0, 0, 16, 16, ColorHelper.fromFloats(alpha, brightness, brightness, brightness)
+		);
 	}
 
 	@Override

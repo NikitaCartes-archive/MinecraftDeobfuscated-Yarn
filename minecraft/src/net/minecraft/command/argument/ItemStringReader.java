@@ -62,7 +62,7 @@ public class ItemStringReader {
 	final DynamicOps<NbtElement> nbtOps;
 
 	public ItemStringReader(RegistryWrapper.WrapperLookup registries) {
-		this.itemRegistry = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+		this.itemRegistry = registries.getOrThrow(RegistryKeys.ITEM);
 		this.nbtOps = registries.getOps(NbtOps.INSTANCE);
 	}
 

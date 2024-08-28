@@ -43,7 +43,7 @@ public class WrapperProtoChunk extends ProtoChunk {
 			wrapped.getPos(),
 			UpgradeData.NO_UPGRADE_DATA,
 			wrapped.heightLimitView,
-			wrapped.getWorld().getRegistryManager().get(RegistryKeys.BIOME),
+			wrapped.getWorld().getRegistryManager().getOrThrow(RegistryKeys.BIOME),
 			wrapped.getBlendingData()
 		);
 		this.wrapped = wrapped;

@@ -115,9 +115,9 @@ public class GoatEntityModel extends QuadrupedEntityModel<GoatEntityRenderState>
 	}
 
 	public void setAngles(GoatEntityRenderState goatEntityRenderState) {
+		super.setAngles(goatEntityRenderState);
 		this.head.getChild(EntityModelPartNames.LEFT_HORN).visible = goatEntityRenderState.hasLeftHorn;
 		this.head.getChild(EntityModelPartNames.RIGHT_HORN).visible = goatEntityRenderState.hasRightHorn;
-		super.setAngles(goatEntityRenderState);
 		if (goatEntityRenderState.headPitch != 0.0F) {
 			this.head.pitch = goatEntityRenderState.headPitch;
 		}

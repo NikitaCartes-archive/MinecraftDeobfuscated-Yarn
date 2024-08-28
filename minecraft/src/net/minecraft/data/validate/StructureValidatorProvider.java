@@ -29,7 +29,7 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 		}
 
 		NbtCompound nbtCompound = DataFixTypes.STRUCTURE.update(Schemas.getFixer(), nbt, i);
-		structureTemplate.readNbt(Registries.BLOCK.getReadOnlyWrapper(), nbtCompound);
+		structureTemplate.readNbt(Registries.BLOCK, nbtCompound);
 		return structureTemplate.writeNbt(new NbtCompound());
 	}
 }

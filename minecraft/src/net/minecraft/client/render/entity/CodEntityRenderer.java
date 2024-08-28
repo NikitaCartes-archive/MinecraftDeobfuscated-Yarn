@@ -19,7 +19,8 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, LivingEntity
 		super(context, new CodEntityModel(context.getPart(EntityModelLayers.COD)), 0.3F);
 	}
 
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	@Override
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 

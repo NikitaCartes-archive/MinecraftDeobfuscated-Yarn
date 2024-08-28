@@ -31,7 +31,6 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.condition.LocationCheckLootCondition;
 import net.minecraft.loot.condition.LootCondition;
@@ -82,7 +81,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 
 	protected LootCondition.Builder createSilkTouchCondition() {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return MatchToolLootCondition.builder(
 			ItemPredicate.Builder.create()
 				.subPredicate(
@@ -97,7 +96,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootCondition.Builder createWithShearsCondition() {
-		return MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(this.registries.getWrapperOrThrow(RegistryKeys.ITEM), Items.SHEARS));
+		return MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(this.registries.getOrThrow(RegistryKeys.ITEM), Items.SHEARS));
 	}
 
 	private LootCondition.Builder createWithShearsOrSilkTouchCondition() {
@@ -262,7 +261,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder copperOreDrops(Block drop) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			drop,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -275,7 +274,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder lapisOreDrops(Block drop) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			drop,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -288,7 +287,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder redstoneOreDrops(Block drop) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			drop,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -361,7 +360,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder oreDrops(Block withSilkTouch, Item withoutSilkTouch) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouch(
 			withSilkTouch,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -383,7 +382,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder shortPlantDrops(Block withShears) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithShears(
 			withShears,
 			(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
@@ -455,7 +454,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder leavesDrops(Block leaves, Block sapling, float... saplingChance) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouchOrShears(
 				leaves,
 				((LeafEntry.Builder)this.addSurvivesExplosionCondition(leaves, ItemEntry.builder(sapling)))
@@ -475,7 +474,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder oakLeavesDrops(Block leaves, Block sapling, float... saplingChance) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.leavesDrops(leaves, sapling, saplingChance)
 			.pool(
 				LootPool.builder()
@@ -489,7 +488,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder mangroveLeavesDrops(Block leaves) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.dropsWithSilkTouchOrShears(
 			leaves,
 			((LeafEntry.Builder)this.applyExplosionDecay(
@@ -500,7 +499,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder cropDrops(Block crop, Item product, Item seeds, LootCondition.Builder condition) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		return this.applyExplosionDecay(
 			crop,
 			LootTable.builder()
@@ -523,7 +522,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder tallPlantDrops(Block tallPlant, Block shortPlant) {
-		RegistryWrapper.Impl<Block> impl = this.registries.getWrapperOrThrow(RegistryKeys.BLOCK);
+		RegistryWrapper.Impl<Block> impl = this.registries.getOrThrow(RegistryKeys.BLOCK);
 		LootPoolEntry.Builder<?> builder = ItemEntry.builder(shortPlant)
 			.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
 			.conditionally(this.createWithShearsCondition())
@@ -624,15 +623,16 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 
 		for (Block block : Registries.BLOCK) {
 			if (block.isEnabled(this.requiredFeatures)) {
-				RegistryKey<LootTable> registryKey = block.getLootTableKey();
-				if (registryKey != LootTables.EMPTY && set.add(registryKey)) {
-					LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(registryKey);
-					if (builder == null) {
-						throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", registryKey.getValue(), Registries.BLOCK.getId(block)));
-					}
+				block.getLootTableKey().ifPresent(registryKey -> {
+					if (set.add(registryKey)) {
+						LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(registryKey);
+						if (builder == null) {
+							throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", registryKey.getValue(), Registries.BLOCK.getId(block)));
+						}
 
-					lootTableBiConsumer.accept(registryKey, builder);
-				}
+						lootTableBiConsumer.accept(registryKey, builder);
+					}
+				});
 			}
 		}
 
@@ -642,7 +642,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected void addVinePlantDrop(Block vine, Block vinePlant) {
-		RegistryWrapper.Impl<Enchantment> impl = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryWrapper.Impl<Enchantment> impl = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		LootTable.Builder builder = this.dropsWithSilkTouchOrShears(
 			vine, ItemEntry.builder(vine).conditionally(TableBonusLootCondition.builder(impl.getOrThrow(Enchantments.FORTUNE), 0.33F, 0.55F, 0.77F, 1.0F))
 		);
@@ -679,6 +679,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected void addDrop(Block block, LootTable.Builder lootTable) {
-		this.lootTables.put(block.getLootTableKey(), lootTable);
+		this.lootTables
+			.put((RegistryKey)block.getLootTableKey().orElseThrow(() -> new IllegalStateException("Block " + block + " does not have loot table")), lootTable);
 	}
 }

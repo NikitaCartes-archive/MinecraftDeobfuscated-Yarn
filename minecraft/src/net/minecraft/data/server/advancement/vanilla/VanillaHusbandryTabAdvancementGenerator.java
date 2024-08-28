@@ -132,10 +132,10 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup registries, Consumer<AdvancementEntry> exporter) {
-		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getWrapperOrThrow(RegistryKeys.ENTITY_TYPE);
-		RegistryEntryLookup<Item> registryEntryLookup2 = registries.getWrapperOrThrow(RegistryKeys.ITEM);
-		RegistryEntryLookup<Block> registryEntryLookup3 = registries.getWrapperOrThrow(RegistryKeys.BLOCK);
-		RegistryWrapper.Impl<Enchantment> impl = registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+		RegistryEntryLookup<EntityType<?>> registryEntryLookup = registries.getOrThrow(RegistryKeys.ENTITY_TYPE);
+		RegistryEntryLookup<Item> registryEntryLookup2 = registries.getOrThrow(RegistryKeys.ITEM);
+		RegistryEntryLookup<Block> registryEntryLookup3 = registries.getOrThrow(RegistryKeys.BLOCK);
+		RegistryWrapper.Impl<Enchantment> impl = registries.getOrThrow(RegistryKeys.ENCHANTMENT);
 		AdvancementEntry advancementEntry = Advancement.Builder.create()
 			.display(
 				Blocks.HAY_BLOCK,
@@ -755,7 +755,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 	}
 
 	private static Advancement.Builder requireAllWolvesTamed(Advancement.Builder builder, RegistryWrapper.WrapperLookup registries) {
-		RegistryWrapper.Impl<WolfVariant> impl = registries.getWrapperOrThrow(RegistryKeys.WOLF_VARIANT);
+		RegistryWrapper.Impl<WolfVariant> impl = registries.getOrThrow(RegistryKeys.WOLF_VARIANT);
 		impl.streamKeys()
 			.sorted(Comparator.comparing(RegistryKey::getValue))
 			.forEach(

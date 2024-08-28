@@ -51,11 +51,6 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 	}
 
 	@Override
-	public Identifier getTexture(EntityRenderState state) {
-		return TEXTURE;
-	}
-
-	@Override
 	public EntityRenderState getRenderState() {
 		return new EntityRenderState();
 	}

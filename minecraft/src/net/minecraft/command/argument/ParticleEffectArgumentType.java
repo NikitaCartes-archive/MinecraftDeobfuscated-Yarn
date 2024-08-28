@@ -57,7 +57,7 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 	}
 
 	public static ParticleEffect readParameters(StringReader reader, RegistryWrapper.WrapperLookup registries) throws CommandSyntaxException {
-		ParticleType<?> particleType = getType(reader, registries.getWrapperOrThrow(RegistryKeys.PARTICLE_TYPE));
+		ParticleType<?> particleType = getType(reader, registries.getOrThrow(RegistryKeys.PARTICLE_TYPE));
 		return readParameters(reader, (ParticleType<ParticleEffect>)particleType, registries);
 	}
 
@@ -82,7 +82,7 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		RegistryWrapper.Impl<ParticleType<?>> impl = this.registries.getWrapperOrThrow(RegistryKeys.PARTICLE_TYPE);
+		RegistryWrapper.Impl<ParticleType<?>> impl = this.registries.getOrThrow(RegistryKeys.PARTICLE_TYPE);
 		return CommandSource.suggestIdentifiers(impl.streamKeys().map(RegistryKey::getValue), builder);
 	}
 }

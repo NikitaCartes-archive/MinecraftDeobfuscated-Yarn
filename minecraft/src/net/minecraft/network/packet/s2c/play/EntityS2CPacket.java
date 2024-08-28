@@ -8,6 +8,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -63,12 +64,12 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 		return this.deltaZ;
 	}
 
-	public byte getYaw() {
-		return this.yaw;
+	public float getYaw() {
+		return MathHelper.unpackDegrees(this.yaw);
 	}
 
-	public byte getPitch() {
-		return this.pitch;
+	public float getPitch() {
+		return MathHelper.unpackDegrees(this.pitch);
 	}
 
 	public boolean hasRotation() {

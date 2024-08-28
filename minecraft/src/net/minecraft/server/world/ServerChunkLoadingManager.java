@@ -172,15 +172,13 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
 		long l = world.getSeed();
 		if (chunkGenerator instanceof NoiseChunkGenerator noiseChunkGenerator) {
-			this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.getSettings().value(), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.NOISE_PARAMETERS), l);
+			this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.getSettings().value(), dynamicRegistryManager.getOrThrow(RegistryKeys.NOISE_PARAMETERS), l);
 		} else {
-			this.noiseConfig = NoiseConfig.create(
-				ChunkGeneratorSettings.createMissingSettings(), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.NOISE_PARAMETERS), l
-			);
+			this.noiseConfig = NoiseConfig.create(ChunkGeneratorSettings.createMissingSettings(), dynamicRegistryManager.getOrThrow(RegistryKeys.NOISE_PARAMETERS), l);
 		}
 
 		this.structurePlacementCalculator = chunkGenerator.createStructurePlacementCalculator(
-			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET), this.noiseConfig, l
+			dynamicRegistryManager.getOrThrow(RegistryKeys.STRUCTURE_SET), this.noiseConfig, l
 		);
 		this.mainThreadExecutor = mainThreadExecutor;
 		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
@@ -585,7 +583,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 
 	private Chunk getProtoChunk(ChunkPos chunkPos) {
 		this.markAsProtoChunk(chunkPos);
-		return new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(RegistryKeys.BIOME), null);
+		return new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().getOrThrow(RegistryKeys.BIOME), null);
 	}
 
 	private void markAsProtoChunk(ChunkPos pos) {

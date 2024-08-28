@@ -10,10 +10,8 @@ import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.state.FallingBlockEntityRenderState;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
@@ -55,10 +53,6 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 			matrixStack.pop();
 			super.render(fallingBlockEntityRenderState, matrixStack, vertexConsumerProvider, i);
 		}
-	}
-
-	public Identifier getTexture(FallingBlockEntityRenderState fallingBlockEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	public FallingBlockEntityRenderState getRenderState() {

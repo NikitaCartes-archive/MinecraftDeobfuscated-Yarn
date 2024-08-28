@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.LightBlock;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.DataComponentTypes;
@@ -53,6 +54,12 @@ public class ModelPredicateProviderRegistry {
 
 	private static void register(Item item, Identifier id, ClampedModelPredicateProvider provider) {
 		((Map)ITEM_SPECIFIC.computeIfAbsent(item, key -> Maps.newHashMap())).put(id, provider);
+	}
+
+	private static int getHoneyLevel(ItemStack stack) {
+		BlockStateComponent blockStateComponent = stack.getOrDefault(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT);
+		Integer integer = blockStateComponent.getValue(BeehiveBlock.HONEY_LEVEL);
+		return integer != null && integer == 5 ? 1 : 0;
 	}
 
 	@Nullable
@@ -220,5 +227,7 @@ public class ModelPredicateProviderRegistry {
 			Identifier.ofVanilla("tooting"),
 			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
+		register(Items.BEE_NEST, Identifier.ofVanilla("honey_level"), (stack, world, entity, seed) -> (float)getHoneyLevel(stack));
+		register(Items.BEEHIVE, Identifier.ofVanilla("honey_level"), (stack, workd, entity, seed) -> (float)getHoneyLevel(stack));
 	}
 }

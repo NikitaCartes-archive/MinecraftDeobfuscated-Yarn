@@ -52,7 +52,6 @@ public abstract class AbstractHorseEntityModel<T extends LivingHorseEntityRender
 	 */
 	private static final String MOUTH_SADDLE_WRAP = "mouth_saddle_wrap";
 	protected static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(true, 16.2F, 1.36F, 2.7272F, 2.0F, 20.0F, Set.of("head_parts"));
-	private final ModelPart root;
 	protected final ModelPart body;
 	protected final ModelPart head;
 	private final ModelPart rightHindLeg;
@@ -63,24 +62,24 @@ public abstract class AbstractHorseEntityModel<T extends LivingHorseEntityRender
 	private final ModelPart[] saddle;
 	private final ModelPart[] straps;
 
-	public AbstractHorseEntityModel(ModelPart root) {
-		this.root = root;
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.head = root.getChild("head_parts");
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+	public AbstractHorseEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
+		this.head = modelPart.getChild("head_parts");
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 		this.tail = this.body.getChild(EntityModelPartNames.TAIL);
-		ModelPart modelPart = this.body.getChild("saddle");
-		ModelPart modelPart2 = this.head.getChild("left_saddle_mouth");
-		ModelPart modelPart3 = this.head.getChild("right_saddle_mouth");
-		ModelPart modelPart4 = this.head.getChild("left_saddle_line");
-		ModelPart modelPart5 = this.head.getChild("right_saddle_line");
-		ModelPart modelPart6 = this.head.getChild("head_saddle");
-		ModelPart modelPart7 = this.head.getChild("mouth_saddle_wrap");
-		this.saddle = new ModelPart[]{modelPart, modelPart2, modelPart3, modelPart6, modelPart7};
-		this.straps = new ModelPart[]{modelPart4, modelPart5};
+		ModelPart modelPart2 = this.body.getChild("saddle");
+		ModelPart modelPart3 = this.head.getChild("left_saddle_mouth");
+		ModelPart modelPart4 = this.head.getChild("right_saddle_mouth");
+		ModelPart modelPart5 = this.head.getChild("left_saddle_line");
+		ModelPart modelPart6 = this.head.getChild("right_saddle_line");
+		ModelPart modelPart7 = this.head.getChild("head_saddle");
+		ModelPart modelPart8 = this.head.getChild("mouth_saddle_wrap");
+		this.saddle = new ModelPart[]{modelPart2, modelPart3, modelPart4, modelPart7, modelPart8};
+		this.straps = new ModelPart[]{modelPart5, modelPart6};
 	}
 
 	public static ModelData getModelData(Dilation dilation) {
@@ -193,21 +192,15 @@ public abstract class AbstractHorseEntityModel<T extends LivingHorseEntityRender
 		return modelData;
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(T livingHorseEntityRenderState) {
-		boolean bl = livingHorseEntityRenderState.saddled;
-		boolean bl2 = livingHorseEntityRenderState.hasPassengers;
+		super.setAngles(livingHorseEntityRenderState);
 
 		for (ModelPart modelPart : this.saddle) {
-			modelPart.visible = bl;
+			modelPart.visible = livingHorseEntityRenderState.saddled;
 		}
 
 		for (ModelPart modelPart : this.straps) {
-			modelPart.visible = bl2 && bl;
+			modelPart.visible = livingHorseEntityRenderState.hasPassengers && livingHorseEntityRenderState.saddled;
 		}
 
 		float f = MathHelper.clamp(livingHorseEntityRenderState.yawDegrees, -20.0F, 20.0F);
@@ -222,9 +215,7 @@ public abstract class AbstractHorseEntityModel<T extends LivingHorseEntityRender
 		float k = livingHorseEntityRenderState.angryAnimationProgress;
 		float l = 1.0F - k;
 		float m = livingHorseEntityRenderState.eatingAnimationProgress;
-		boolean bl3 = livingHorseEntityRenderState.waggingTail;
-		this.head.resetTransform();
-		this.body.pitch = 0.0F;
+		boolean bl = livingHorseEntityRenderState.waggingTail;
 		this.head.pitch = (float) (Math.PI / 6) + g;
 		this.head.yaw = f * (float) (Math.PI / 180.0);
 		float n = livingHorseEntityRenderState.touchingWater ? 0.2F : 1.0F;
@@ -239,10 +230,8 @@ public abstract class AbstractHorseEntityModel<T extends LivingHorseEntityRender
 		this.body.pitch = k * (float) (-Math.PI / 4) + l * this.body.pitch;
 		float s = (float) (Math.PI / 12) * k;
 		float t = MathHelper.cos(livingHorseEntityRenderState.age * 0.6F + (float) Math.PI);
-		this.leftFrontLeg.resetTransform();
 		this.leftFrontLeg.pivotY -= 12.0F * r * k;
 		this.leftFrontLeg.pivotZ += 4.0F * r * k;
-		this.rightFrontLeg.resetTransform();
 		this.rightFrontLeg.pivotY = this.leftFrontLeg.pivotY;
 		this.rightFrontLeg.pivotZ = this.leftFrontLeg.pivotZ;
 		float u = ((float) (-Math.PI / 3) + t) * k + p * l;
@@ -251,11 +240,10 @@ public abstract class AbstractHorseEntityModel<T extends LivingHorseEntityRender
 		this.rightHindLeg.pitch = s + o * 0.5F * h * l;
 		this.leftFrontLeg.pitch = u;
 		this.rightFrontLeg.pitch = v;
-		this.tail.resetTransform();
 		this.tail.pitch = (float) (Math.PI / 6) + h * 0.75F;
 		this.tail.pivotY += h * r;
 		this.tail.pivotZ += h * 2.0F * r;
-		if (bl3) {
+		if (bl) {
 			this.tail.yaw = MathHelper.cos(livingHorseEntityRenderState.age * 0.7F);
 		} else {
 			this.tail.yaw = 0.0F;

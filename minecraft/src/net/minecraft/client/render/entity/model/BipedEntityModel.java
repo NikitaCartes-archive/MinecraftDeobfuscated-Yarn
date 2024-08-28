@@ -66,7 +66,6 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 	private static final float field_46724 = (float) (Math.PI / 6);
 	public static final float field_39069 = 1.4835298F;
 	public static final float field_39070 = (float) (Math.PI / 6);
-	private final ModelPart root;
 	public final ModelPart head;
 	public final ModelPart hat;
 	public final ModelPart body;
@@ -75,20 +74,19 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 	public final ModelPart rightLeg;
 	public final ModelPart leftLeg;
 
-	public BipedEntityModel(ModelPart root) {
-		this(root, RenderLayer::getEntityCutoutNoCull);
+	public BipedEntityModel(ModelPart modelPart) {
+		this(modelPart, RenderLayer::getEntityCutoutNoCull);
 	}
 
-	public BipedEntityModel(ModelPart root, Function<Identifier, RenderLayer> renderLayerFactory) {
-		super(renderLayerFactory);
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public BipedEntityModel(ModelPart modelPart, Function<Identifier, RenderLayer> function) {
+		super(modelPart, function);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.hat = this.head.getChild(EntityModelPartNames.HAT);
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.rightArm = root.getChild(EntityModelPartNames.RIGHT_ARM);
-		this.leftArm = root.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
+		this.rightArm = modelPart.getChild(EntityModelPartNames.RIGHT_ARM);
+		this.leftArm = modelPart.getChild(EntityModelPartNames.LEFT_ARM);
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static ModelData getModelData(Dilation dilation, float pivotOffsetY) {
@@ -130,26 +128,15 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 		return modelData;
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	protected BipedEntityModel.ArmPose getArmPose(T state, Arm arm) {
 		return BipedEntityModel.ArmPose.EMPTY;
 	}
 
 	public void setAngles(T bipedEntityRenderState) {
+		super.setAngles(bipedEntityRenderState);
 		BipedEntityModel.ArmPose armPose = this.getArmPose(bipedEntityRenderState, Arm.LEFT);
 		BipedEntityModel.ArmPose armPose2 = this.getArmPose(bipedEntityRenderState, Arm.RIGHT);
 		float f = bipedEntityRenderState.leaningPitch;
-		this.body.resetTransform();
-		this.head.resetTransform();
-		this.hat.resetTransform();
-		this.rightLeg.resetTransform();
-		this.leftLeg.resetTransform();
-		this.rightArm.resetTransform();
-		this.leftArm.resetTransform();
 		boolean bl = bipedEntityRenderState.isFallFlying;
 		this.head.yaw = bipedEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		if (bl) {
@@ -385,15 +372,6 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 
 	private float method_2807(float f) {
 		return -65.0F * f + f * f;
-	}
-
-	public void copyBipedStateTo(BipedEntityModel<T> model) {
-		model.head.copyTransform(this.head);
-		model.body.copyTransform(this.body);
-		model.rightArm.copyTransform(this.rightArm);
-		model.leftArm.copyTransform(this.leftArm);
-		model.rightLeg.copyTransform(this.rightLeg);
-		model.leftLeg.copyTransform(this.leftLeg);
 	}
 
 	public void setVisible(boolean visible) {

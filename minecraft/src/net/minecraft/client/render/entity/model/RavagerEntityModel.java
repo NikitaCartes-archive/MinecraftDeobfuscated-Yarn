@@ -13,7 +13,6 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RavagerEntityModel extends EntityModel<RavagerEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart jaw;
 	private final ModelPart rightHindLeg;
@@ -22,15 +21,15 @@ public class RavagerEntityModel extends EntityModel<RavagerEntityRenderState> {
 	private final ModelPart leftFrontLeg;
 	private final ModelPart neck;
 
-	public RavagerEntityModel(ModelPart root) {
-		this.root = root;
-		this.neck = root.getChild(EntityModelPartNames.NECK);
+	public RavagerEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.neck = modelPart.getChild(EntityModelPartNames.NECK);
 		this.head = this.neck.getChild(EntityModelPartNames.HEAD);
 		this.jaw = this.head.getChild(EntityModelPartNames.MOUTH);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -86,12 +85,8 @@ public class RavagerEntityModel extends EntityModel<RavagerEntityRenderState> {
 		return TexturedModelData.of(modelData, 128, 128);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(RavagerEntityRenderState ravagerEntityRenderState) {
+		super.setAngles(ravagerEntityRenderState);
 		float f = ravagerEntityRenderState.stunTick;
 		float g = ravagerEntityRenderState.attackTick;
 		int i = 10;

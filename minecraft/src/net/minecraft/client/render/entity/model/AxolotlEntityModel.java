@@ -61,7 +61,6 @@ public class AxolotlEntityModel extends EntityModel<AxolotlEntityRenderState> {
 	 */
 	public static final float MOVING_IN_WATER_LEG_PITCH = 1.8849558F;
 	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
-	private final ModelPart root;
 	private final ModelPart tail;
 	private final ModelPart leftHindLeg;
 	private final ModelPart rightHindLeg;
@@ -73,9 +72,9 @@ public class AxolotlEntityModel extends EntityModel<AxolotlEntityRenderState> {
 	private final ModelPart leftGills;
 	private final ModelPart rightGills;
 
-	public AxolotlEntityModel(ModelPart root) {
-		this.root = root;
-		this.body = root.getChild(EntityModelPartNames.BODY);
+	public AxolotlEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
 		this.head = this.body.getChild(EntityModelPartNames.HEAD);
 		this.rightHindLeg = this.body.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
 		this.leftHindLeg = this.body.getChild(EntityModelPartNames.LEFT_HIND_LEG);
@@ -120,7 +119,7 @@ public class AxolotlEntityModel extends EntityModel<AxolotlEntityRenderState> {
 	}
 
 	public void setAngles(AxolotlEntityRenderState axolotlEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(axolotlEntityRenderState);
 		float f = axolotlEntityRenderState.playingDeadValue;
 		float g = axolotlEntityRenderState.inWaterValue;
 		float h = axolotlEntityRenderState.onGroundValue;
@@ -258,10 +257,5 @@ public class AxolotlEntityModel extends EntityModel<AxolotlEntityRenderState> {
 			var2 = this.rightFrontLeg;
 			var2.roll = var2.roll + -this.leftFrontLeg.roll * f;
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

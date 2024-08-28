@@ -544,7 +544,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.setCritical(nbt.getBoolean("crit"));
 		this.setPierceLevel(nbt.getByte("PierceLevel"));
 		if (nbt.contains("SoundEvent", NbtElement.STRING_TYPE)) {
-			this.sound = (SoundEvent)Registries.SOUND_EVENT.getOrEmpty(Identifier.of(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
+			this.sound = (SoundEvent)Registries.SOUND_EVENT.getOptionalValue(Identifier.of(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
 		}
 
 		if (nbt.contains("item", NbtElement.COMPOUND_TYPE)) {

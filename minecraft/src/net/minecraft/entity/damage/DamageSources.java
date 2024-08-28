@@ -44,7 +44,7 @@ public class DamageSources {
 	private final DamageSource genericKill;
 
 	public DamageSources(DynamicRegistryManager registryManager) {
-		this.registry = registryManager.get(RegistryKeys.DAMAGE_TYPE);
+		this.registry = registryManager.getOrThrow(RegistryKeys.DAMAGE_TYPE);
 		this.inFire = this.create(DamageTypes.IN_FIRE);
 		this.campfire = this.create(DamageTypes.CAMPFIRE);
 		this.lightningBolt = this.create(DamageTypes.LIGHTNING_BOLT);
@@ -73,15 +73,15 @@ public class DamageSources {
 	}
 
 	private DamageSource create(RegistryKey<DamageType> key) {
-		return new DamageSource(this.registry.entryOf(key));
+		return new DamageSource(this.registry.getOrThrow(key));
 	}
 
 	private DamageSource create(RegistryKey<DamageType> key, @Nullable Entity attacker) {
-		return new DamageSource(this.registry.entryOf(key), attacker);
+		return new DamageSource(this.registry.getOrThrow(key), attacker);
 	}
 
 	private DamageSource create(RegistryKey<DamageType> key, @Nullable Entity source, @Nullable Entity attacker) {
-		return new DamageSource(this.registry.entryOf(key), source, attacker);
+		return new DamageSource(this.registry.getOrThrow(key), source, attacker);
 	}
 
 	public DamageSource inFire() {
@@ -261,7 +261,7 @@ public class DamageSources {
 	}
 
 	public DamageSource badRespawnPoint(Vec3d position) {
-		return new DamageSource(this.registry.entryOf(DamageTypes.BAD_RESPAWN_POINT), position);
+		return new DamageSource(this.registry.getOrThrow(DamageTypes.BAD_RESPAWN_POINT), position);
 	}
 
 	public DamageSource outsideBorder() {

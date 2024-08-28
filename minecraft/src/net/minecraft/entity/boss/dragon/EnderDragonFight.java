@@ -399,7 +399,7 @@ public class EnderDragonFight {
 		this.world
 			.getRegistryManager()
 			.getOptional(RegistryKeys.CONFIGURED_FEATURE)
-			.flatMap(registry -> registry.getEntry(EndConfiguredFeatures.END_GATEWAY_DELAYED))
+			.flatMap(registry -> registry.getOptional(EndConfiguredFeatures.END_GATEWAY_DELAYED))
 			.ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(this.world, this.world.getChunkManager().getChunkGenerator(), Random.create(), pos));
 	}
 

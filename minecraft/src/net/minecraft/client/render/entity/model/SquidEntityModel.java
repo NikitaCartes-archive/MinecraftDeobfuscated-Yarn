@@ -55,11 +55,10 @@ import net.minecraft.client.render.entity.state.SquidEntityRenderState;
 public class SquidEntityModel extends EntityModel<SquidEntityRenderState> {
 	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
 	private final ModelPart[] tentacles = new ModelPart[8];
-	private final ModelPart root;
 
-	public SquidEntityModel(ModelPart root) {
-		this.root = root;
-		Arrays.setAll(this.tentacles, index -> root.getChild(getTentacleName(index)));
+	public SquidEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		Arrays.setAll(this.tentacles, i -> modelPart.getChild(getTentacleName(i)));
 	}
 
 	private static String getTentacleName(int index) {
@@ -93,15 +92,10 @@ public class SquidEntityModel extends EntityModel<SquidEntityRenderState> {
 	}
 
 	public void setAngles(SquidEntityRenderState squidEntityRenderState) {
-		float f = squidEntityRenderState.tentacleAngle;
+		super.setAngles(squidEntityRenderState);
 
 		for (ModelPart modelPart : this.tentacles) {
-			modelPart.pitch = f;
+			modelPart.pitch = squidEntityRenderState.tentacleAngle;
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

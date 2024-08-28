@@ -26,12 +26,6 @@ public class ZombieEntityRenderer extends ZombieBaseEntityRenderer<ZombieEntity,
 		return new ZombieEntityRenderState();
 	}
 
-	@Override
-	public void updateRenderState(ZombieEntity zombieEntity, ZombieEntityRenderState zombieEntityRenderState, float f) {
-		super.updateRenderState(zombieEntity, zombieEntityRenderState, f);
-		zombieEntityRenderState.attacking = zombieEntity.isAttacking();
-	}
-
 	public ZombieEntityRenderer(
 		EntityRendererFactory.Context ctx,
 		EntityModelLayer layer,

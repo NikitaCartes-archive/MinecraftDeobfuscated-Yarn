@@ -73,7 +73,7 @@ public class LootTableProvider implements DataProvider {
 			}));
 		mutableRegistry.freeze();
 		ErrorReporter.Impl impl = new ErrorReporter.Impl();
-		RegistryEntryLookup.RegistryLookup registryLookup = new DynamicRegistryManager.ImmutableImpl(List.of(mutableRegistry)).toImmutable().createRegistryLookup();
+		RegistryEntryLookup.RegistryLookup registryLookup = new DynamicRegistryManager.ImmutableImpl(List.of(mutableRegistry)).toImmutable();
 		LootTableReporter lootTableReporter = new LootTableReporter(impl, LootContextTypes.GENERIC, registryLookup);
 
 		for (RegistryKey<LootTable> registryKey : Sets.difference(this.lootTableIds, mutableRegistry.getKeys())) {

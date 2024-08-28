@@ -883,7 +883,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 			ServerWorld serverWorld = teleportTarget.world();
 			ServerWorld serverWorld2 = this.getServerWorld();
 			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
-			this.setPosition(teleportTarget);
 			if (serverWorld.getRegistryKey() == registryKey) {
 				this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
 				this.networkHandler.syncWithPlayerPosition();
@@ -903,6 +902,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 					this.enteredNetherPos = this.getPos();
 				}
 
+				this.setPosition(teleportTarget);
 				serverWorld2.getProfiler().pop();
 				serverWorld2.getProfiler().push("placing");
 				this.setServerWorld(serverWorld);

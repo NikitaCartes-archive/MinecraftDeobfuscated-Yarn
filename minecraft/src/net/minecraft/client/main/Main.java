@@ -161,7 +161,7 @@ public class Main {
 			String string7 = getOption(optionSet, optionSpec27);
 			File file2 = optionSet.has(optionSpec7) ? getOption(optionSet, optionSpec7) : new File(file, "assets/");
 			File file3 = optionSet.has(optionSpec8) ? getOption(optionSet, optionSpec8) : new File(file, "resourcepacks/");
-			UUID uUID = method_62729(optionSpec14, optionSet, logger)
+			UUID uUID = isUuidSetAndValid(optionSpec14, optionSet, logger)
 				? UndashedUuid.fromStringLenient(optionSpec14.value(optionSet))
 				: Uuids.getOfflinePlayerUuid(optionSpec13.value(optionSet));
 			String string8 = optionSet.has(optionSpec25) ? optionSpec25.value(optionSet) : null;
@@ -268,16 +268,16 @@ public class Main {
 		return s != null && !s.isEmpty();
 	}
 
-	private static boolean method_62729(OptionSpec<String> optionSpec, OptionSet optionSet, Logger logger) {
-		return optionSet.has(optionSpec) && method_62730(optionSpec, optionSet, logger);
+	private static boolean isUuidSetAndValid(OptionSpec<String> uuidOption, OptionSet optionSet, Logger logger) {
+		return optionSet.has(uuidOption) && isUuidValid(uuidOption, optionSet, logger);
 	}
 
-	private static boolean method_62730(OptionSpec<String> optionSpec, OptionSet optionSet, Logger logger) {
+	private static boolean isUuidValid(OptionSpec<String> uuidOption, OptionSet optionSet, Logger logger) {
 		try {
-			UndashedUuid.fromStringLenient(optionSpec.value(optionSet));
+			UndashedUuid.fromStringLenient(uuidOption.value(optionSet));
 			return true;
 		} catch (IllegalArgumentException var4) {
-			logger.warn("Invalid UUID: '{}", optionSpec.value(optionSet));
+			logger.warn("Invalid UUID: '{}", uuidOption.value(optionSet));
 			return false;
 		}
 	}

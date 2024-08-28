@@ -15,7 +15,7 @@ public class ArrowEntityRenderer extends ProjectileEntityRenderer<ArrowEntity, A
 		super(context);
 	}
 
-	public Identifier getTexture(ArrowEntityRenderState arrowEntityRenderState) {
+	protected Identifier getTexture(ArrowEntityRenderState arrowEntityRenderState) {
 		return arrowEntityRenderState.tipped ? TIPPED_TEXTURE : TEXTURE;
 	}
 

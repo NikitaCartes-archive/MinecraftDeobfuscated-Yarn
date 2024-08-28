@@ -52,11 +52,6 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public String getTranslationKey() {
-		return this.asItem().getTranslationKey();
-	}
-
-	@Override
 	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return getBoundingShape(state);
 	}

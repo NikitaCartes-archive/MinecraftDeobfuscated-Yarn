@@ -90,7 +90,7 @@ public class CrossbowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+	public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
 		int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
 		float f = getPullProgress(i, stack, user);
 		if (f >= 1.0F && !isCharged(stack) && loadProjectiles(user, stack)) {
@@ -108,6 +108,9 @@ public class CrossbowItem extends RangedWeaponItem {
 							1.0F / (world.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F
 						)
 				);
+			return true;
+		} else {
+			return false;
 		}
 	}
 

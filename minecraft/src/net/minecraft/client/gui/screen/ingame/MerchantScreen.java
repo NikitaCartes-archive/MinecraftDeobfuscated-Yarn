@@ -245,13 +245,17 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		int i = this.handler.getRecipes().size();
-		if (this.canScroll(i)) {
-			int j = i - 7;
-			this.indexStartOffset = MathHelper.clamp((int)((double)this.indexStartOffset - verticalAmount), 0, j);
-		}
+		if (super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) {
+			return true;
+		} else {
+			int i = this.handler.getRecipes().size();
+			if (this.canScroll(i)) {
+				int j = i - 7;
+				this.indexStartOffset = MathHelper.clamp((int)((double)this.indexStartOffset - verticalAmount), 0, j);
+			}
 
-		return true;
+			return true;
+		}
 	}
 
 	@Override

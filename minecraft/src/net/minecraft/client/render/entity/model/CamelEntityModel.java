@@ -21,16 +21,15 @@ public class CamelEntityModel extends EntityModel<CamelEntityRenderState> {
 	private static final String SADDLE = "saddle";
 	private static final String BRIDLE = "bridle";
 	private static final String REINS = "reins";
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart[] saddleAndBridle;
 	private final ModelPart[] reins;
 
-	public CamelEntityModel(ModelPart root) {
-		this.root = root;
-		ModelPart modelPart = root.getChild(EntityModelPartNames.BODY);
-		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
-		this.saddleAndBridle = new ModelPart[]{modelPart.getChild("saddle"), this.head.getChild("bridle")};
+	public CamelEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		ModelPart modelPart2 = modelPart.getChild(EntityModelPartNames.BODY);
+		this.head = modelPart2.getChild(EntityModelPartNames.HEAD);
+		this.saddleAndBridle = new ModelPart[]{modelPart2.getChild("saddle"), this.head.getChild("bridle")};
 		this.reins = new ModelPart[]{this.head.getChild("reins")};
 	}
 
@@ -126,7 +125,7 @@ public class CamelEntityModel extends EntityModel<CamelEntityRenderState> {
 	}
 
 	public void setAngles(CamelEntityRenderState camelEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(camelEntityRenderState);
 		this.setHeadAngles(camelEntityRenderState, camelEntityRenderState.yawDegrees, camelEntityRenderState.pitch);
 		this.updateVisibleParts(camelEntityRenderState);
 		this.animateWalking(CamelAnimations.WALKING, camelEntityRenderState.limbFrequency, camelEntityRenderState.limbAmplitudeMultiplier, 2.0F, 2.5F);
@@ -160,10 +159,5 @@ public class CamelEntityModel extends EntityModel<CamelEntityRenderState> {
 		for (ModelPart modelPart : this.reins) {
 			modelPart.visible = bl2 && bl;
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

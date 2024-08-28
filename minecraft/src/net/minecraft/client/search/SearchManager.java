@@ -53,7 +53,7 @@ public class SearchManager {
 			RECIPE_OUTPUT,
 			() -> {
 				List<RecipeResultCollection> list = recipeBook.getOrderedResults();
-				Registry<Item> registry = registryManager.get(RegistryKeys.ITEM);
+				Registry<Item> registry = registryManager.getOrThrow(RegistryKeys.ITEM);
 				Item.TooltipContext tooltipContext = Item.TooltipContext.create(registryManager);
 				TooltipType tooltipType = TooltipType.Default.BASIC;
 				CompletableFuture<?> completableFuture = this.recipeOutputReloadFuture;

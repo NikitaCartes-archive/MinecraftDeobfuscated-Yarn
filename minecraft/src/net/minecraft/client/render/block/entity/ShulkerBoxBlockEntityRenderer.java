@@ -19,10 +19,10 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBoxBlockEntityRenderer implements BlockEntityRenderer<ShulkerBoxBlockEntity> {
-	private final ShulkerBoxBlockEntityRenderer.class_9984 model;
+	private final ShulkerBoxBlockEntityRenderer.ShulkerBoxBlockModel model;
 
 	public ShulkerBoxBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		this.model = new ShulkerBoxBlockEntityRenderer.class_9984(ctx.getLayerModelPart(EntityModelLayers.SHULKER_BOX));
+		this.model = new ShulkerBoxBlockEntityRenderer.ShulkerBoxBlockModel(ctx.getLayerModelPart(EntityModelLayers.SHULKER_BOX));
 	}
 
 	public void render(ShulkerBoxBlockEntity shulkerBoxBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -49,31 +49,24 @@ public class ShulkerBoxBlockEntityRenderer implements BlockEntityRenderer<Shulke
 		matrixStack.multiply(direction.getRotationQuaternion());
 		matrixStack.scale(1.0F, -1.0F, -1.0F);
 		matrixStack.translate(0.0F, -1.0F, 0.0F);
-		this.model.method_62341(shulkerBoxBlockEntity, f);
+		this.model.animateLid(shulkerBoxBlockEntity, f);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, this.model::getLayer);
 		this.model.render(matrixStack, vertexConsumer, i, j);
 		matrixStack.pop();
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_9984 extends Model {
-		private final ModelPart field_53168;
-		private final ModelPart field_53169;
+	static class ShulkerBoxBlockModel extends Model {
+		private final ModelPart lid;
 
-		public class_9984(ModelPart modelPart) {
-			super(RenderLayer::getEntityCutoutNoCull);
-			this.field_53168 = modelPart;
-			this.field_53169 = modelPart.getChild("lid");
+		public ShulkerBoxBlockModel(ModelPart root) {
+			super(root, RenderLayer::getEntityCutoutNoCull);
+			this.lid = root.getChild("lid");
 		}
 
-		public void method_62341(ShulkerBoxBlockEntity shulkerBoxBlockEntity, float f) {
-			this.field_53169.setPivot(0.0F, 24.0F - shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5F * 16.0F, 0.0F);
-			this.field_53169.yaw = 270.0F * shulkerBoxBlockEntity.getAnimationProgress(f) * (float) (Math.PI / 180.0);
-		}
-
-		@Override
-		public ModelPart getPart() {
-			return this.field_53168;
+		public void animateLid(ShulkerBoxBlockEntity blockEntity, float delta) {
+			this.lid.setPivot(0.0F, 24.0F - blockEntity.getAnimationProgress(delta) * 0.5F * 16.0F, 0.0F);
+			this.lid.yaw = 270.0F * blockEntity.getAnimationProgress(delta) * (float) (Math.PI / 180.0);
 		}
 	}
 }

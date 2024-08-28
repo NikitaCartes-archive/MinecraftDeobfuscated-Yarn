@@ -147,10 +147,10 @@ public record SerializedChunk(
 			}
 
 			List<Tick<Block>> list = Tick.tick(
-				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
+				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.BLOCK.getOptionalValue(Identifier.tryParse(id)), chunkPos
 			);
 			List<Tick<Fluid>> list2 = Tick.tick(
-				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
+				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.FLUID.getOptionalValue(Identifier.tryParse(id)), chunkPos
 			);
 			Chunk.TickSchedulers tickSchedulers = new Chunk.TickSchedulers(list, list2);
 			NbtList nbtList = nbt.getList("PostProcessing", NbtElement.LIST_TYPE);
@@ -172,7 +172,7 @@ public record SerializedChunk(
 			NbtCompound nbtCompound2 = nbt.getCompound("structures");
 			NbtList nbtList3 = nbt.getList("sections", NbtElement.COMPOUND_TYPE);
 			List<SerializedChunk.SectionData> list5 = new ArrayList(nbtList3.size());
-			Registry<Biome> registry = registryManager.get(RegistryKeys.BIOME);
+			Registry<Biome> registry = registryManager.getOrThrow(RegistryKeys.BIOME);
 			Codec<ReadableContainer<RegistryEntry<Biome>>> codec = createCodec(registry);
 
 			for (int k = 0; k < nbtList3.size(); k++) {
@@ -195,7 +195,7 @@ public record SerializedChunk(
 							.promotePartial(error -> logRecoverableError(chunkPos, n, error))
 							.getOrThrow(SerializedChunk.ChunkLoadingException::new);
 					} else {
-						readableContainer = new PalettedContainer<>(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
+						readableContainer = new PalettedContainer<>(registry.getIndexedEntries(), registry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
 					}
 
 					chunkSection = new ChunkSection(palettedContainer, readableContainer);
@@ -246,7 +246,7 @@ public record SerializedChunk(
 		boolean bl = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
-		Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME);
+		Registry<Biome> registry = world.getRegistryManager().getOrThrow(RegistryKeys.BIOME);
 		boolean bl2 = false;
 
 		for (SerializedChunk.SectionData sectionData : this.sectionData) {
@@ -355,7 +355,7 @@ public record SerializedChunk(
 
 	private static Codec<ReadableContainer<RegistryEntry<Biome>>> createCodec(Registry<Biome> biomeRegistry) {
 		return PalettedContainer.createReadableContainerCodec(
-			biomeRegistry.getIndexedEntries(), biomeRegistry.getEntryCodec(), PalettedContainer.PaletteProvider.BIOME, biomeRegistry.entryOf(BiomeKeys.PLAINS)
+			biomeRegistry.getIndexedEntries(), biomeRegistry.getEntryCodec(), PalettedContainer.PaletteProvider.BIOME, biomeRegistry.getOrThrow(BiomeKeys.PLAINS)
 		);
 	}
 
@@ -413,7 +413,7 @@ public record SerializedChunk(
 			.toArray(ShortList[]::new);
 		NbtCompound nbtCompound2 = writeStructures(StructureContext.from(world), chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences());
 		return new SerializedChunk(
-			world.getRegistryManager().get(RegistryKeys.BIOME),
+			world.getRegistryManager().getOrThrow(RegistryKeys.BIOME),
 			chunkPos,
 			chunk.getBottomSectionCoord(),
 			world.getTime(),
@@ -557,7 +557,7 @@ public record SerializedChunk(
 	private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<Structure, StructureStart> starts, Map<Structure, LongSet> references) {
 		NbtCompound nbtCompound = new NbtCompound();
 		NbtCompound nbtCompound2 = new NbtCompound();
-		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
+		Registry<Structure> registry = context.registryManager().getOrThrow(RegistryKeys.STRUCTURE);
 
 		for (Entry<Structure, StructureStart> entry : starts.entrySet()) {
 			Identifier identifier = registry.getId((Structure)entry.getKey());
@@ -580,7 +580,7 @@ public record SerializedChunk(
 
 	private static Map<Structure, StructureStart> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
 		Map<Structure, StructureStart> map = Maps.<Structure, StructureStart>newHashMap();
-		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
+		Registry<Structure> registry = context.registryManager().getOrThrow(RegistryKeys.STRUCTURE);
 		NbtCompound nbtCompound = nbt.getCompound("starts");
 
 		for (String string : nbtCompound.getKeys()) {
@@ -601,7 +601,7 @@ public record SerializedChunk(
 
 	private static Map<Structure, LongSet> readStructureReferences(DynamicRegistryManager registryManager, ChunkPos pos, NbtCompound nbt) {
 		Map<Structure, LongSet> map = Maps.<Structure, LongSet>newHashMap();
-		Registry<Structure> registry = registryManager.get(RegistryKeys.STRUCTURE);
+		Registry<Structure> registry = registryManager.getOrThrow(RegistryKeys.STRUCTURE);
 		NbtCompound nbtCompound = nbt.getCompound("References");
 
 		for (String string : nbtCompound.getKeys()) {

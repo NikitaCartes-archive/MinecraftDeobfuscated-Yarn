@@ -14,7 +14,8 @@ public class SpectralArrowEntityRenderer extends ProjectileEntityRenderer<Spectr
 		super(context);
 	}
 
-	public Identifier getTexture(ProjectileEntityRenderState projectileEntityRenderState) {
+	@Override
+	protected Identifier getTexture(ProjectileEntityRenderState state) {
 		return TEXTURE;
 	}
 

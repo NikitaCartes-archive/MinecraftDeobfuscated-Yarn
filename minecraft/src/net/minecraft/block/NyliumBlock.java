@@ -56,7 +56,7 @@ public class NyliumBlock extends Block implements Fertilizable {
 		BlockState blockState = world.getBlockState(pos);
 		BlockPos blockPos = pos.up();
 		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
-		Registry<ConfiguredFeature<?, ?>> registry = world.getRegistryManager().get(RegistryKeys.CONFIGURED_FEATURE);
+		Registry<ConfiguredFeature<?, ?>> registry = world.getRegistryManager().getOrThrow(RegistryKeys.CONFIGURED_FEATURE);
 		if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
 			this.generate(registry, NetherConfiguredFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL, world, chunkGenerator, random, blockPos);
 		} else if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
@@ -76,7 +76,7 @@ public class NyliumBlock extends Block implements Fertilizable {
 		Random random,
 		BlockPos pos
 	) {
-		registry.getEntry(key).ifPresent(entry -> ((ConfiguredFeature)entry.value()).generate(world, chunkGenerator, random, pos));
+		registry.getOptional(key).ifPresent(entry -> ((ConfiguredFeature)entry.value()).generate(world, chunkGenerator, random, pos));
 	}
 
 	@Override

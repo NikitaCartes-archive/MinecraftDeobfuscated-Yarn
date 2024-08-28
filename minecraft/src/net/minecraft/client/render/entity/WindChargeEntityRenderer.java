@@ -36,11 +36,6 @@ public class WindChargeEntityRenderer extends EntityRenderer<AbstractWindChargeE
 	}
 
 	@Override
-	public Identifier getTexture(EntityRenderState state) {
-		return TEXTURE;
-	}
-
-	@Override
 	public EntityRenderState getRenderState() {
 		return new EntityRenderState();
 	}

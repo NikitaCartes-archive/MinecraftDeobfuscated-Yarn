@@ -50,7 +50,6 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 
 		float j = h * 4.3F * MathHelper.sin(i * 0.6F * salmonEntityRenderState.age);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
-		matrixStack.translate(0.0F, 0.0F, -0.4F);
 		if (!salmonEntityRenderState.touchingWater) {
 			matrixStack.translate(0.2F, 0.1F, 0.0F);
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));

@@ -41,13 +41,11 @@ public class ShieldEntityModel extends Model {
 	private static final String HANDLE = "handle";
 	private static final int field_32551 = 10;
 	private static final int field_32552 = 20;
-	private final ModelPart root;
 	private final ModelPart plate;
 	private final ModelPart handle;
 
 	public ShieldEntityModel(ModelPart root) {
-		super(RenderLayer::getEntitySolid);
-		this.root = root;
+		super(root, RenderLayer::getEntitySolid);
 		this.plate = root.getChild("plate");
 		this.handle = root.getChild("handle");
 	}
@@ -66,10 +64,5 @@ public class ShieldEntityModel extends Model {
 
 	public ModelPart getHandle() {
 		return this.handle;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

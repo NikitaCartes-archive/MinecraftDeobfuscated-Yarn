@@ -53,6 +53,7 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
+			bipedEntityRenderState,
 			bipedEntityRenderState.equippedChestStack,
 			EquipmentSlot.CHEST,
 			i,
@@ -61,6 +62,7 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
+			bipedEntityRenderState,
 			bipedEntityRenderState.equippedLegsStack,
 			EquipmentSlot.LEGS,
 			i,
@@ -69,6 +71,7 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
+			bipedEntityRenderState,
 			bipedEntityRenderState.equippedFeetStack,
 			EquipmentSlot.FEET,
 			i,
@@ -77,6 +80,7 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
+			bipedEntityRenderState,
 			bipedEntityRenderState.headEquippedStack,
 			EquipmentSlot.HEAD,
 			i,
@@ -84,27 +88,27 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		);
 	}
 
-	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, ItemStack stack, EquipmentSlot armorSlot, int light, A model) {
+	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, S state, ItemStack stack, EquipmentSlot slot, int light, A armorModel) {
 		if (stack.getItem() instanceof ArmorItem armorItem) {
-			if (armorItem.getSlotType() == armorSlot) {
-				this.getContextModel().copyBipedStateTo(model);
-				this.setVisible(model, armorSlot);
-				boolean bl = this.usesInnerModel(armorSlot);
+			if (armorItem.getSlotType() == slot) {
+				armorModel.setAngles(state);
+				this.setVisible(armorModel, slot);
+				boolean bl = this.usesInnerModel(slot);
 				ArmorMaterial armorMaterial = armorItem.getMaterial().value();
 				int i = stack.isIn(ItemTags.DYEABLE) ? ColorHelper.fullAlpha(DyedColorComponent.getColor(stack, -6265536)) : Colors.WHITE;
 
 				for (ArmorMaterial.Layer layer : armorMaterial.layers()) {
 					int j = layer.isDyeable() ? i : -1;
-					this.renderArmorParts(matrices, vertexConsumers, light, model, j, layer.getTexture(bl));
+					this.renderArmorParts(matrices, vertexConsumers, light, armorModel, j, layer.getTexture(bl));
 				}
 
 				ArmorTrim armorTrim = stack.get(DataComponentTypes.TRIM);
 				if (armorTrim != null) {
-					this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, armorTrim, model, bl);
+					this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, armorTrim, armorModel, bl);
 				}
 
 				if (stack.hasGlint()) {
-					this.renderGlint(matrices, vertexConsumers, light, model);
+					this.renderGlint(matrices, vertexConsumers, light, armorModel);
 				}
 			}
 		}

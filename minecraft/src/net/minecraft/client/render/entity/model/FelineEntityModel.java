@@ -67,7 +67,6 @@ public class FelineEntityModel<T extends FelineEntityRenderState> extends Entity
 	 * The key of the lower tail model part, whose value is {@value}.
 	 */
 	private static final String TAIL2 = "tail2";
-	protected final ModelPart root;
 	protected final ModelPart leftHindLeg;
 	protected final ModelPart rightHindLeg;
 	protected final ModelPart leftFrontLeg;
@@ -77,16 +76,16 @@ public class FelineEntityModel<T extends FelineEntityRenderState> extends Entity
 	protected final ModelPart head;
 	protected final ModelPart body;
 
-	public FelineEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.upperTail = root.getChild("tail1");
-		this.lowerTail = root.getChild("tail2");
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+	public FelineEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
+		this.upperTail = modelPart.getChild("tail1");
+		this.lowerTail = modelPart.getChild("tail2");
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
 	}
 
 	public static ModelData getModelData(Dilation dilation) {
@@ -123,14 +122,7 @@ public class FelineEntityModel<T extends FelineEntityRenderState> extends Entity
 	}
 
 	public void setAngles(T felineEntityRenderState) {
-		this.body.resetTransform();
-		this.head.resetTransform();
-		this.upperTail.resetTransform();
-		this.lowerTail.resetTransform();
-		this.leftFrontLeg.resetTransform();
-		this.rightFrontLeg.resetTransform();
-		this.leftHindLeg.resetTransform();
-		this.rightHindLeg.resetTransform();
+		super.setAngles(felineEntityRenderState);
 		if (felineEntityRenderState.inSneakingPose) {
 			this.body.pivotY++;
 			this.head.pivotY += 2.0F;
@@ -217,10 +209,5 @@ public class FelineEntityModel<T extends FelineEntityRenderState> extends Entity
 		if (felineEntityRenderState.headDownAnimationProgress > 0.0F) {
 			this.head.pitch = MathHelper.lerpAngleDegrees(felineEntityRenderState.headDownAnimationProgress, this.head.pitch, -0.58177644F);
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

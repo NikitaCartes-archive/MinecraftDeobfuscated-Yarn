@@ -43,7 +43,6 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class QuadrupedEntityModel<T extends LivingEntityRenderState> extends EntityModel<T> {
-	protected final ModelPart root;
 	protected final ModelPart head;
 	protected final ModelPart body;
 	protected final ModelPart rightHindLeg;
@@ -52,7 +51,7 @@ public class QuadrupedEntityModel<T extends LivingEntityRenderState> extends Ent
 	protected final ModelPart leftFrontLeg;
 
 	protected QuadrupedEntityModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.head = root.getChild(EntityModelPartNames.HEAD);
 		this.body = root.getChild(EntityModelPartNames.BODY);
 		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
@@ -83,6 +82,7 @@ public class QuadrupedEntityModel<T extends LivingEntityRenderState> extends Ent
 	}
 
 	public void setAngles(T livingEntityRenderState) {
+		super.setAngles(livingEntityRenderState);
 		this.head.pitch = livingEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.yaw = livingEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		float f = livingEntityRenderState.limbFrequency;
@@ -91,10 +91,5 @@ public class QuadrupedEntityModel<T extends LivingEntityRenderState> extends Ent
 		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 		this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 		this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

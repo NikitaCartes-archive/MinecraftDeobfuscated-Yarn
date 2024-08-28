@@ -87,10 +87,6 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity, BoatEntityRen
 		super.render(boatEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public Identifier getTexture(BoatEntityRenderState boatEntityRenderState) {
-		return (Identifier)((Pair)this.texturesAndModels.get(boatEntityRenderState.variant)).getFirst();
-	}
-
 	public BoatEntityRenderState getRenderState() {
 		return new BoatEntityRenderState();
 	}

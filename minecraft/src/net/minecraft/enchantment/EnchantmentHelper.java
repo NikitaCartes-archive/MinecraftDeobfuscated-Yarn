@@ -212,6 +212,12 @@ public class EnchantmentHelper {
 	}
 
 	public static void onTargetDamaged(ServerWorld world, Entity target, DamageSource damageSource, @Nullable ItemStack weapon) {
+		onTargetDamaged(world, target, damageSource, weapon, null);
+	}
+
+	public static void onTargetDamaged(
+		ServerWorld world, Entity target, DamageSource damageSource, @Nullable ItemStack weapon, @Nullable java.util.function.Consumer<Item> breakCallback
+	) {
 		if (target instanceof LivingEntity livingEntity) {
 			forEachEnchantment(
 				livingEntity,
@@ -219,13 +225,22 @@ public class EnchantmentHelper {
 			);
 		}
 
-		if (weapon != null && damageSource.getAttacker() instanceof LivingEntity livingEntity) {
-			forEachEnchantment(
-				weapon,
-				EquipmentSlot.MAINHAND,
-				livingEntity,
-				(enchantment, level, context) -> enchantment.value().onTargetDamaged(world, level, context, EnchantmentEffectTarget.ATTACKER, target, damageSource)
-			);
+		if (weapon != null) {
+			if (damageSource.getAttacker() instanceof LivingEntity livingEntity) {
+				forEachEnchantment(
+					weapon,
+					EquipmentSlot.MAINHAND,
+					livingEntity,
+					(enchantment, level, context) -> enchantment.value().onTargetDamaged(world, level, context, EnchantmentEffectTarget.ATTACKER, target, damageSource)
+				);
+			} else if (breakCallback != null) {
+				EnchantmentEffectContext enchantmentEffectContext = new EnchantmentEffectContext(weapon, null, null, breakCallback);
+				forEachEnchantment(
+					weapon,
+					(enchantment, level) -> enchantment.value()
+							.onTargetDamaged(world, level, enchantmentEffectContext, EnchantmentEffectTarget.ATTACKER, target, damageSource)
+				);
+			}
 		}
 	}
 
@@ -497,7 +512,7 @@ public class EnchantmentHelper {
 			stack,
 			level,
 			(Stream<RegistryEntry<Enchantment>>)enchantments.map(RegistryEntryList::stream)
-				.orElseGet(() -> dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).streamEntries().map(reference -> reference))
+				.orElseGet(() -> dynamicRegistryManager.getOrThrow(RegistryKeys.ENCHANTMENT).streamEntries().map(reference -> reference))
 		);
 	}
 
@@ -601,7 +616,7 @@ public class EnchantmentHelper {
 	public static void applyEnchantmentProvider(
 		ItemStack stack, DynamicRegistryManager registryManager, RegistryKey<EnchantmentProvider> providerKey, LocalDifficulty localDifficulty, Random random
 	) {
-		EnchantmentProvider enchantmentProvider = registryManager.get(RegistryKeys.ENCHANTMENT_PROVIDER).get(providerKey);
+		EnchantmentProvider enchantmentProvider = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT_PROVIDER).get(providerKey);
 		if (enchantmentProvider != null) {
 			apply(stack, componentBuilder -> enchantmentProvider.provideEnchantments(stack, componentBuilder, random, localDifficulty));
 		}

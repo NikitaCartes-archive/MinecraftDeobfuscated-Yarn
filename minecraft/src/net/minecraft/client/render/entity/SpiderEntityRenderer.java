@@ -28,7 +28,8 @@ public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRende
 		return 180.0F;
 	}
 
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	@Override
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 

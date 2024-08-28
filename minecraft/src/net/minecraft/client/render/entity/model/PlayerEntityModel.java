@@ -195,7 +195,7 @@ public class PlayerEntityModel extends BipedEntityModel<PlayerEntityRenderState>
 
 	@Override
 	public void setArmAngle(Arm arm, MatrixStack matrices) {
-		this.getPart().rotate(matrices);
+		this.getRootPart().rotate(matrices);
 		ModelPart modelPart = this.getArm(arm);
 		if (this.thinArms) {
 			float f = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);

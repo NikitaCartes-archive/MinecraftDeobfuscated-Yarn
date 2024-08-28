@@ -33,7 +33,8 @@ public class WalkToNearestVisibleWantedItemTask {
 								if (context.getOptionalValue(itemPickupCooldownTicks).isEmpty()
 									&& startCondition.test(entity)
 									&& itemEntity.isInRange(entity, (double)radius)
-									&& entity.getWorld().getWorldBorder().contains(itemEntity.getBlockPos())) {
+									&& entity.getWorld().getWorldBorder().contains(itemEntity.getBlockPos())
+									&& entity.canPickUpLoot()) {
 									WalkTarget walkTargetx = new WalkTarget(new EntityLookTarget(itemEntity, false), speed, 0);
 									lookTarget.remember(new EntityLookTarget(itemEntity, true));
 									walkTarget.remember(walkTargetx);

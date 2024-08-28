@@ -83,7 +83,7 @@ public class PointOfInterestTypes {
 	) {
 		PointOfInterestType pointOfInterestType = new PointOfInterestType(states, ticketCount, searchDistance);
 		Registry.register(registry, key, pointOfInterestType);
-		registerStates(registry.entryOf(key), states);
+		registerStates(registry.getOrThrow(key), states);
 		return pointOfInterestType;
 	}
 

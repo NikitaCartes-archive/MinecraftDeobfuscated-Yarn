@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.registry.RegistryKey;
 
@@ -27,24 +26,22 @@ public interface EquipmentHolder {
 	}
 
 	default void setEquipmentFromTable(RegistryKey<LootTable> lootTable, LootContextParameterSet parameters, long seed, Map<EquipmentSlot, Float> slotDropChances) {
-		if (!lootTable.equals(LootTables.EMPTY)) {
-			LootTable lootTable2 = parameters.getWorld().getServer().getReloadableRegistries().getLootTable(lootTable);
-			if (lootTable2 != LootTable.EMPTY) {
-				List<ItemStack> list = lootTable2.generateLoot(parameters, seed);
-				List<EquipmentSlot> list2 = new ArrayList();
+		LootTable lootTable2 = parameters.getWorld().getServer().getReloadableRegistries().getLootTable(lootTable);
+		if (lootTable2 != LootTable.EMPTY) {
+			List<ItemStack> list = lootTable2.generateLoot(parameters, seed);
+			List<EquipmentSlot> list2 = new ArrayList();
 
-				for (ItemStack itemStack : list) {
-					EquipmentSlot equipmentSlot = this.getSlotForStack(itemStack, list2);
-					if (equipmentSlot != null) {
-						ItemStack itemStack2 = equipmentSlot.split(itemStack);
-						this.equipStack(equipmentSlot, itemStack2);
-						Float float_ = (Float)slotDropChances.get(equipmentSlot);
-						if (float_ != null) {
-							this.setEquipmentDropChance(equipmentSlot, float_);
-						}
-
-						list2.add(equipmentSlot);
+			for (ItemStack itemStack : list) {
+				EquipmentSlot equipmentSlot = this.getSlotForStack(itemStack, list2);
+				if (equipmentSlot != null) {
+					ItemStack itemStack2 = equipmentSlot.split(itemStack);
+					this.equipStack(equipmentSlot, itemStack2);
+					Float float_ = (Float)slotDropChances.get(equipmentSlot);
+					if (float_ != null) {
+						this.setEquipmentDropChance(equipmentSlot, float_);
 					}
+
+					list2.add(equipmentSlot);
 				}
 			}
 		}

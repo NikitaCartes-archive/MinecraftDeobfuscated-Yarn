@@ -15,11 +15,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ArrowEntityModel extends EntityModel<ProjectileEntityRenderState> {
-	private final ModelPart root;
-
-	public ArrowEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityCutout);
-		this.root = root;
+	public ArrowEntityModel(ModelPart modelPart) {
+		super(modelPart, RenderLayer::getEntityCutout);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -37,15 +34,10 @@ public class ArrowEntityModel extends EntityModel<ProjectileEntityRenderState> {
 	}
 
 	public void setAngles(ProjectileEntityRenderState projectileEntityRenderState) {
-		this.root.resetTransform();
+		super.setAngles(projectileEntityRenderState);
 		if (projectileEntityRenderState.shake > 0.0F) {
 			float f = -MathHelper.sin(projectileEntityRenderState.shake * 3.0F) * projectileEntityRenderState.shake;
 			this.root.roll += f * (float) (Math.PI / 180.0);
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

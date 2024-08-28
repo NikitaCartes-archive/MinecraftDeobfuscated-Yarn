@@ -45,7 +45,6 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class CreeperEntityModel extends EntityModel<CreeperEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart leftHindLeg;
 	private final ModelPart rightHindLeg;
@@ -53,13 +52,13 @@ public class CreeperEntityModel extends EntityModel<CreeperEntityRenderState> {
 	private final ModelPart rightFrontLeg;
 	private static final int HEAD_AND_BODY_Y_PIVOT = 6;
 
-	public CreeperEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+	public CreeperEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -83,12 +82,8 @@ public class CreeperEntityModel extends EntityModel<CreeperEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(CreeperEntityRenderState creeperEntityRenderState) {
+		super.setAngles(creeperEntityRenderState);
 		this.head.yaw = creeperEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = creeperEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		float f = creeperEntityRenderState.limbAmplitudeMultiplier;

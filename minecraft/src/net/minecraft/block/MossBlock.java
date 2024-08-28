@@ -36,7 +36,7 @@ public class MossBlock extends Block implements Fertilizable {
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		world.getRegistryManager()
 			.getOptional(RegistryKeys.CONFIGURED_FEATURE)
-			.flatMap(key -> key.getEntry(UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL))
+			.flatMap(key -> key.getOptional(UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL))
 			.ifPresent(entry -> ((ConfiguredFeature)entry.value()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up()));
 	}
 

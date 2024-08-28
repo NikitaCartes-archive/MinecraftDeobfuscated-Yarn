@@ -94,7 +94,7 @@ public class SupportingBlockDebugRenderer implements DebugRenderer.Renderer {
 		double h = e + 1.0 + 4.0 * dilation;
 		double i = f + 1.0 + 4.0 * dilation;
 		VertexRendering.drawBox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), d, e, f, g, h, i, red, green, blue, 0.4F);
-		DebugRenderer.method_62350(
+		DebugRenderer.drawVoxelShapeOutlines(
 			matrices,
 			vertexConsumers.getBuffer(RenderLayer.getLines()),
 			this.client

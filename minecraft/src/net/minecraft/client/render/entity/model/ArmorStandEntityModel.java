@@ -70,10 +70,8 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 
 	@Override
 	public void setAngles(ArmorStandEntityRenderState armorStandEntityRenderState) {
-		this.basePlate.pitch = 0.0F;
-		this.basePlate.yaw = (float) (Math.PI / 180.0) * -armorStandEntityRenderState.yaw;
-		this.basePlate.roll = 0.0F;
 		super.setAngles(armorStandEntityRenderState);
+		this.basePlate.yaw = (float) (Math.PI / 180.0) * -armorStandEntityRenderState.yaw;
 		this.leftArm.visible = armorStandEntityRenderState.showArms;
 		this.rightArm.visible = armorStandEntityRenderState.showArms;
 		this.basePlate.visible = armorStandEntityRenderState.showBasePlate;

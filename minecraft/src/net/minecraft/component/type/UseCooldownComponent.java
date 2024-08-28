@@ -16,7 +16,7 @@ public record UseCooldownComponent(float seconds, Optional<Identifier> cooldownG
 	public static final Codec<UseCooldownComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.POSITIVE_FLOAT.fieldOf("seconds").forGetter(UseCooldownComponent::seconds),
-					Identifier.CODEC.optionalFieldOf("cooldownGroup").forGetter(UseCooldownComponent::cooldownGroup)
+					Identifier.CODEC.optionalFieldOf("cooldown_group").forGetter(UseCooldownComponent::cooldownGroup)
 				)
 				.apply(instance, UseCooldownComponent::new)
 	);

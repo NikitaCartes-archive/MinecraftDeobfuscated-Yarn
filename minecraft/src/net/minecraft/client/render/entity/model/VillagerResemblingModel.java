@@ -52,20 +52,19 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class VillagerResemblingModel extends EntityModel<VillagerEntityRenderState> implements ModelWithHead, ModelWithHat {
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart hat;
 	private final ModelPart hatRim;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
 
-	public VillagerResemblingModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public VillagerResemblingModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.hat = this.head.getChild(EntityModelPartNames.HAT);
 		this.hatRim = this.hat.getChild(EntityModelPartNames.HAT_RIM);
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static ModelData getModelData() {
@@ -114,12 +113,8 @@ public class VillagerResemblingModel extends EntityModel<VillagerEntityRenderSta
 		return modelData;
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(VillagerEntityRenderState villagerEntityRenderState) {
+		super.setAngles(villagerEntityRenderState);
 		this.head.yaw = villagerEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = villagerEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		if (villagerEntityRenderState.headRolling) {

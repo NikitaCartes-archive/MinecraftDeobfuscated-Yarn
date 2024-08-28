@@ -4,6 +4,7 @@ import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.util.Identifier;
@@ -25,13 +26,15 @@ import net.minecraft.util.Identifier;
 public abstract class EntityModel<T extends EntityRenderState> extends Model {
 	public static final float field_52908 = -1.501F;
 
-	protected EntityModel() {
-		this(RenderLayer::getEntityCutoutNoCull);
+	protected EntityModel(ModelPart root) {
+		this(root, RenderLayer::getEntityCutoutNoCull);
 	}
 
-	protected EntityModel(Function<Identifier, RenderLayer> function) {
-		super(function);
+	protected EntityModel(ModelPart modelPart, Function<Identifier, RenderLayer> function) {
+		super(modelPart, function);
 	}
 
-	public abstract void setAngles(T state);
+	public void setAngles(T state) {
+		this.resetTransforms();
+	}
 }

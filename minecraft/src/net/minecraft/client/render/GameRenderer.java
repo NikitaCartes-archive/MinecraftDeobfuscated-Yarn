@@ -111,9 +111,9 @@ public class GameRenderer implements AutoCloseable {
 	private int floatingItemTimeLeft;
 	private float floatingItemWidth;
 	private float floatingItemHeight;
-	private final Pool field_53066 = new Pool(3);
+	private final Pool pool = new Pool(3);
 	@Nullable
-	private Identifier field_53898;
+	private Identifier postProcessorId;
 	private boolean postProcessorEnabled;
 	private final Camera camera = new Camera();
 
@@ -128,7 +128,7 @@ public class GameRenderer implements AutoCloseable {
 	public void close() {
 		this.lightmapTextureManager.close();
 		this.overlayTexture.close();
-		this.field_53066.close();
+		this.pool.close();
 	}
 
 	public void setRenderHand(boolean renderHand) {
@@ -147,8 +147,8 @@ public class GameRenderer implements AutoCloseable {
 		return this.renderingPanorama;
 	}
 
-	public void method_62905() {
-		this.field_53898 = null;
+	public void clearPostProcessor() {
+		this.postProcessorId = null;
 	}
 
 	public void togglePostProcessorEnabled() {
@@ -156,28 +156,28 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	public void onCameraEntitySet(@Nullable Entity entity) {
-		this.field_53898 = null;
+		this.postProcessorId = null;
 		if (entity instanceof CreeperEntity) {
-			this.method_62904(Identifier.ofVanilla("creeper"));
+			this.setPostProcessor(Identifier.ofVanilla("creeper"));
 		} else if (entity instanceof SpiderEntity) {
-			this.method_62904(Identifier.ofVanilla("spider"));
+			this.setPostProcessor(Identifier.ofVanilla("spider"));
 		} else if (entity instanceof EndermanEntity) {
-			this.method_62904(Identifier.ofVanilla("invert"));
+			this.setPostProcessor(Identifier.ofVanilla("invert"));
 		}
 	}
 
-	private void method_62904(Identifier identifier) {
-		this.field_53898 = identifier;
+	private void setPostProcessor(Identifier id) {
+		this.postProcessorId = id;
 		this.postProcessorEnabled = true;
 	}
 
 	public void renderBlur() {
 		float f = (float)this.client.options.getMenuBackgroundBlurrinessValue();
 		if (!(f < 1.0F)) {
-			PostEffectProcessor postEffectProcessor = this.client.method_62887().loadPostEffect(field_53899, DefaultFramebufferSet.field_53902);
+			PostEffectProcessor postEffectProcessor = this.client.getShaderLoader().loadPostEffect(field_53899, DefaultFramebufferSet.MAIN_ONLY);
 			if (postEffectProcessor != null) {
 				postEffectProcessor.setUniforms("Radius", f);
-				postEffectProcessor.render(this.client.getFramebuffer(), this.field_53066);
+				postEffectProcessor.render(this.client.getFramebuffer(), this.pool);
 			}
 		}
 	}
@@ -185,7 +185,7 @@ public class GameRenderer implements AutoCloseable {
 	public void preloadPrograms(ResourceFactory factory) {
 		try {
 			this.client
-				.method_62887()
+				.getShaderLoader()
 				.preload(factory, ShaderProgramKeys.RENDERTYPE_GUI, ShaderProgramKeys.RENDERTYPE_GUI_OVERLAY, ShaderProgramKeys.POSITION_TEX_COLOR);
 		} catch (ShaderLoader.LoadException | IOException var3) {
 			throw new RuntimeException("Could not preload shaders for loading UI", var3);
@@ -203,7 +203,7 @@ public class GameRenderer implements AutoCloseable {
 		this.firstPersonRenderer.updateHeldItems();
 		this.ticks++;
 		if (this.client.world.getTickManager().shouldTick()) {
-			this.client.worldRenderer.method_62209(this.camera);
+			this.client.worldRenderer.addWeatherParticlesAndSound(this.camera);
 			this.lastSkyDarkness = this.skyDarkness;
 			if (this.client.inGameHud.getBossBarHud().shouldDarkenSky()) {
 				this.skyDarkness += 0.05F;
@@ -224,12 +224,12 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	@Nullable
-	public Identifier method_62906() {
-		return this.field_53898;
+	public Identifier getPostProcessorId() {
+		return this.postProcessorId;
 	}
 
 	public void onResized(int width, int height) {
-		this.field_53066.clear();
+		this.pool.clear();
 		this.client.worldRenderer.onResized(width, height);
 	}
 
@@ -403,7 +403,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	public Matrix4f getBasicProjectionMatrix(float f) {
+	public Matrix4f getBasicProjectionMatrix(float fovDegrees) {
 		Matrix4f matrix4f = new Matrix4f();
 		if (this.zoom != 1.0F) {
 			matrix4f.translate(this.zoomX, -this.zoomY, 0.0F);
@@ -411,7 +411,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		return matrix4f.perspective(
-			f * (float) (Math.PI / 180.0),
+			fovDegrees * (float) (Math.PI / 180.0),
 			(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
 			0.05F,
 			this.getFarPlaneDistance()
@@ -450,13 +450,13 @@ public class GameRenderer implements AutoCloseable {
 				this.renderWorld(tickCounter);
 				this.updateWorldIcon();
 				this.client.worldRenderer.drawEntityOutlinesFramebuffer();
-				if (this.field_53898 != null && this.postProcessorEnabled) {
+				if (this.postProcessorId != null && this.postProcessorEnabled) {
 					RenderSystem.disableBlend();
 					RenderSystem.disableDepthTest();
 					RenderSystem.resetTextureMatrix();
-					PostEffectProcessor postEffectProcessor = this.client.method_62887().loadPostEffect(this.field_53898, DefaultFramebufferSet.field_53902);
+					PostEffectProcessor postEffectProcessor = this.client.getShaderLoader().loadPostEffect(this.postProcessorId, DefaultFramebufferSet.MAIN_ONLY);
 					if (postEffectProcessor != null) {
-						postEffectProcessor.render(this.client.getFramebuffer(), this.field_53066);
+						postEffectProcessor.render(this.client.getFramebuffer(), this.pool);
 					}
 				}
 
@@ -551,7 +551,7 @@ public class GameRenderer implements AutoCloseable {
 
 			drawContext.draw();
 			matrix4fStack.popMatrix();
-			this.field_53066.decrementLifespan();
+			this.pool.decrementLifespan();
 		}
 	}
 
@@ -618,7 +618,7 @@ public class GameRenderer implements AutoCloseable {
 						bl = blockState.createScreenHandlerFactory(this.client.world, blockPos) != null;
 					} else {
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
-						Registry<Block> registry = this.client.world.getRegistryManager().get(RegistryKeys.BLOCK);
+						Registry<Block> registry = this.client.world.getRegistryManager().getOrThrow(RegistryKeys.BLOCK);
 						bl = !itemStack.isEmpty() && (itemStack.canBreak(cachedBlockPosition) || itemStack.canPlaceOn(cachedBlockPosition));
 					}
 				}
@@ -673,7 +673,7 @@ public class GameRenderer implements AutoCloseable {
 		Matrix4f matrix4f3 = new Matrix4f().rotation(quaternionf);
 		this.client.worldRenderer.setupFrustum(camera.getPos(), matrix4f3, matrix4f2);
 		this.client.getFramebuffer().beginWrite(true);
-		this.client.worldRenderer.render(this.field_53066, renderTickCounter, bl, camera, this, this.lightmapTextureManager, matrix4f3, matrix4f);
+		this.client.worldRenderer.render(this.pool, renderTickCounter, bl, camera, this, this.lightmapTextureManager, matrix4f3, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(256);

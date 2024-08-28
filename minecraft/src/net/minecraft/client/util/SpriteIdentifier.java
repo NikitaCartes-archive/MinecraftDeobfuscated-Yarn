@@ -51,8 +51,8 @@ public class SpriteIdentifier {
 		return this.getSprite().getTextureSpecificVertexConsumer(vertexConsumers.getBuffer(this.getRenderLayer(layerFactory)));
 	}
 
-	public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Function<Identifier, RenderLayer> layerFactory, boolean bl, boolean bl2) {
-		return this.getSprite().getTextureSpecificVertexConsumer(ItemRenderer.getItemGlintConsumer(vertexConsumers, this.getRenderLayer(layerFactory), bl, bl2));
+	public VertexConsumer getVertexConsumer(VertexConsumerProvider vertexConsumers, Function<Identifier, RenderLayer> layerFactory, boolean solid, boolean glint) {
+		return this.getSprite().getTextureSpecificVertexConsumer(ItemRenderer.getItemGlintConsumer(vertexConsumers, this.getRenderLayer(layerFactory), solid, glint));
 	}
 
 	public boolean equals(Object o) {

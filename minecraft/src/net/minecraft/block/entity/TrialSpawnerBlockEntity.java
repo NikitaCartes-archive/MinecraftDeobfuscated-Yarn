@@ -32,12 +32,7 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 	@Override
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		super.readNbt(nbt, registries);
-		if (nbt.contains("normal_config")) {
-			NbtCompound nbtCompound = nbt.getCompound("normal_config").copy();
-			nbt.put("ominous_config", nbtCompound.copyFrom(nbt.getCompound("ominous_config")));
-		}
-
-		this.spawner.codec().parse(NbtOps.INSTANCE, nbt).resultOrPartial(LOGGER::error).ifPresent(spawner -> this.spawner = spawner);
+		this.spawner.codec().parse(registries.getOps(NbtOps.INSTANCE), nbt).resultOrPartial(LOGGER::error).ifPresent(spawner -> this.spawner = spawner);
 		if (this.world != null) {
 			this.updateListeners();
 		}
@@ -48,7 +43,7 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements Spawner, Tri
 		super.writeNbt(nbt, registries);
 		this.spawner
 			.codec()
-			.encodeStart(NbtOps.INSTANCE, this.spawner)
+			.encodeStart(registries.getOps(NbtOps.INSTANCE), this.spawner)
 			.ifSuccess(nbtx -> nbt.copyFrom((NbtCompound)nbtx))
 			.ifError(error -> LOGGER.warn("Failed to encode TrialSpawner {}", error.message()));
 	}

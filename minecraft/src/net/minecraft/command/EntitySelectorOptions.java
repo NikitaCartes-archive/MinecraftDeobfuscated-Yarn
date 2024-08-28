@@ -289,7 +289,7 @@ public class EntitySelectorOptions {
 						reader.addPredicate(entity -> entity.getType().isIn(tagKey) != bl);
 					} else {
 						Identifier identifier = Identifier.fromCommandInput(reader.getReader());
-						EntityType<?> entityType = (EntityType<?>)Registries.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
+						EntityType<?> entityType = (EntityType<?>)Registries.ENTITY_TYPE.getOptionalValue(identifier).orElseThrow(() -> {
 							reader.getReader().setCursor(i);
 							return INVALID_TYPE_EXCEPTION.createWithContext(reader.getReader(), identifier.toString());
 						});
@@ -465,7 +465,7 @@ public class EntitySelectorOptions {
 								Optional<LootCondition> optional = serverWorld.getServer()
 									.getReloadableRegistries()
 									.createRegistryLookup()
-									.getOptionalEntry(RegistryKeys.PREDICATE, registryKey)
+									.getOptionalEntry(registryKey)
 									.map(RegistryEntry::value);
 								if (optional.isEmpty()) {
 									return false;

@@ -37,16 +37,14 @@ public class GuardianEntityModel extends EntityModel<GuardianEntityRenderState> 
 	 * The key of the tail2 model part, whose value is {@value}.
 	 */
 	private static final String TAIL2 = "tail2";
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart eye;
-	private final ModelPart[] spikes;
+	private final ModelPart[] spikes = new ModelPart[12];
 	private final ModelPart[] tail;
 
-	public GuardianEntityModel(ModelPart root) {
-		this.root = root;
-		this.spikes = new ModelPart[12];
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public GuardianEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 
 		for (int i = 0; i < this.spikes.length; i++) {
 			this.spikes[i] = this.head.getChild(getSpikeName(i));
@@ -112,12 +110,8 @@ public class GuardianEntityModel extends EntityModel<GuardianEntityRenderState> 
 		return getTexturedModelData().transform(ELDER_TRANSFORMER);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(GuardianEntityRenderState guardianEntityRenderState) {
+		super.setAngles(guardianEntityRenderState);
 		this.head.yaw = guardianEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = guardianEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		float f = (1.0F - guardianEntityRenderState.spikesExtension) * 0.55F;

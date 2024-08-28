@@ -139,8 +139,8 @@ public record MessageType(Decoration chat, Decoration narration) {
 	}
 
 	public static MessageType.Parameters params(RegistryKey<MessageType> typeKey, DynamicRegistryManager registryManager, Text name) {
-		Registry<MessageType> registry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
-		return new MessageType.Parameters(registry.entryOf(typeKey), name);
+		Registry<MessageType> registry = registryManager.getOrThrow(RegistryKeys.MESSAGE_TYPE);
+		return new MessageType.Parameters(registry.getOrThrow(typeKey), name);
 	}
 
 	/**

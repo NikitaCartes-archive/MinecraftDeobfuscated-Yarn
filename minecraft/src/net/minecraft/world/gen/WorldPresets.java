@@ -64,11 +64,11 @@ public class WorldPresets {
 	}
 
 	public static DimensionOptionsRegistryHolder createDemoOptions(RegistryWrapper.WrapperLookup registries) {
-		return registries.getWrapperOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(DEFAULT).value().createDimensionsRegistryHolder();
+		return registries.getOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(DEFAULT).value().createDimensionsRegistryHolder();
 	}
 
 	public static DimensionOptions getDefaultOverworldOptions(RegistryWrapper.WrapperLookup registries) {
-		return (DimensionOptions)registries.getWrapperOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(DEFAULT).value().getOverworld().orElseThrow();
+		return (DimensionOptions)registries.getOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(DEFAULT).value().getOverworld().orElseThrow();
 	}
 
 	static class Registrar {

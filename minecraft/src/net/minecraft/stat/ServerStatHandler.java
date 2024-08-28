@@ -101,7 +101,7 @@ public class ServerStatHandler extends StatHandler {
 							String string = (String)var7.next();
 							if (nbtCompound2.contains(string, NbtElement.COMPOUND_TYPE)) {
 								Util.ifPresentOrElse(
-									Registries.STAT_TYPE.getOrEmpty(Identifier.of(string)),
+									Registries.STAT_TYPE.getOptionalValue(Identifier.of(string)),
 									statType -> {
 										NbtCompound nbtCompound2x = nbtCompound2.getCompound(string);
 
@@ -145,7 +145,7 @@ public class ServerStatHandler extends StatHandler {
 	}
 
 	private <T> Optional<Stat<T>> createStat(StatType<T> type, String id) {
-		return Optional.ofNullable(Identifier.tryParse(id)).flatMap(type.getRegistry()::getOrEmpty).map(type::getOrCreateStat);
+		return Optional.ofNullable(Identifier.tryParse(id)).flatMap(type.getRegistry()::getOptionalValue).map(type::getOrCreateStat);
 	}
 
 	private static NbtCompound jsonToCompound(JsonObject json) {

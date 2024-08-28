@@ -41,7 +41,6 @@ public class PlayerCapeModel<T extends PlayerEntityRenderState> extends BipedEnt
 
 	public void setAngles(T playerEntityRenderState) {
 		super.setAngles(playerEntityRenderState);
-		this.cape.resetTransform();
 		if (!playerEntityRenderState.equippedChestStack.isEmpty()) {
 			this.cape.pivotZ++;
 			this.cape.pivotY -= 0.85F;

@@ -47,23 +47,15 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class VexEntityModel extends EntityModel<VexEntityRenderState> implements ModelWithArms {
-	private final ModelPart root;
-	private final ModelPart body;
-	private final ModelPart rightArm;
-	private final ModelPart leftArm;
-	private final ModelPart rightWing;
-	private final ModelPart leftWing;
-	private final ModelPart head;
+	private final ModelPart body = this.root.getChild(EntityModelPartNames.BODY);
+	private final ModelPart rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
+	private final ModelPart leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
+	private final ModelPart rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
+	private final ModelPart leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
+	private final ModelPart head = this.root.getChild(EntityModelPartNames.HEAD);
 
-	public VexEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityTranslucent);
-		this.root = root.getChild(EntityModelPartNames.ROOT);
-		this.body = this.root.getChild(EntityModelPartNames.BODY);
-		this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
-		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
-		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
-		this.head = this.root.getChild(EntityModelPartNames.HEAD);
+	public VexEntityModel(ModelPart modelPart) {
+		super(modelPart.getChild(EntityModelPartNames.ROOT), RenderLayer::getEntityTranslucent);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -108,7 +100,7 @@ public class VexEntityModel extends EntityModel<VexEntityRenderState> implements
 	}
 
 	public void setAngles(VexEntityRenderState vexEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(vexEntityRenderState);
 		this.head.yaw = vexEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = vexEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		float f = MathHelper.cos(vexEntityRenderState.age * 5.5F * (float) (Math.PI / 180.0)) * 0.1F;
@@ -150,11 +142,6 @@ public class VexEntityModel extends EntityModel<VexEntityRenderState> implements
 				this.leftArm.roll = 0.47123888F + f;
 			}
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 
 	@Override

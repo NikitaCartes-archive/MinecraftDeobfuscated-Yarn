@@ -100,7 +100,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		}
 
 		private Optional<RegistryOps.RegistryInfo<Object>> compute(RegistryKey<? extends Registry<?>> registryRef) {
-			return this.registries.getOptionalWrapper(registryRef).map(RegistryOps.RegistryInfo::fromWrapper);
+			return this.registries.getOptional(registryRef).map(RegistryOps.RegistryInfo::fromWrapper);
 		}
 
 		public boolean equals(Object o) {

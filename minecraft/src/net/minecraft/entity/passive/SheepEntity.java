@@ -32,13 +32,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -133,11 +131,6 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	public RegistryKey<LootTable> getLootTableId() {
-		return this.isSheared() ? this.getType().getLootTableId() : (RegistryKey)LootTables.SHEEP_DROPS_FROM_DYE_COLOR.get(this.getColor());
-	}
-
-	@Override
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART) {
 			this.eatGrassTimer = 40;
@@ -185,9 +178,8 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	@Override
 	public void sheared(SoundCategory shearedSoundCategory) {
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
-		this.setSheared(true);
 		this.forEachShearedItem(
-			(RegistryKey<LootTable>)LootTables.SHEEP_SHEARING_FROM_DYE_COLOR.get(this.getColor()),
+			LootTables.SHEEP_SHEARING,
 			stack -> {
 				for (int i = 0; i < stack.getCount(); i++) {
 					ItemEntity itemEntity = this.dropStack(stack.copyWithCount(1), 1.0F);
@@ -204,6 +196,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 				}
 			}
 		);
+		this.setSheared(true);
 	}
 
 	@Override

@@ -53,6 +53,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
 import net.minecraft.nbt.NbtElement;
@@ -66,6 +67,7 @@ import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -5264,7 +5266,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		if (!Float.isFinite(pitch)) {
 			Util.logErrorOrPause("Invalid entity rotation: " + pitch + ", discarding.");
 		} else {
-			this.pitch = pitch;
+			this.pitch = Math.clamp(pitch % 360.0F, -90.0F, 90.0F);
 		}
 	}
 
@@ -5397,6 +5399,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	@Nullable
 	public ItemStack getWeaponStack() {
 		return null;
+	}
+
+	public Optional<RegistryKey<LootTable>> getLootTable() {
+		return this.type.getLootTable();
 	}
 
 	/**

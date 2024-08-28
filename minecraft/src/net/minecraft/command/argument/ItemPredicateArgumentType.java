@@ -131,9 +131,9 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		private final RegistryOps<NbtElement> nbtOps;
 
 		Context(RegistryWrapper.WrapperLookup registries) {
-			this.itemRegistryWrapper = registries.getWrapperOrThrow(RegistryKeys.ITEM);
-			this.dataComponentTypeRegistryWrapper = registries.getWrapperOrThrow(RegistryKeys.DATA_COMPONENT_TYPE);
-			this.itemSubPredicateTypeRegistryWrapper = registries.getWrapperOrThrow(RegistryKeys.ITEM_SUB_PREDICATE_TYPE);
+			this.itemRegistryWrapper = registries.getOrThrow(RegistryKeys.ITEM);
+			this.dataComponentTypeRegistryWrapper = registries.getOrThrow(RegistryKeys.DATA_COMPONENT_TYPE);
+			this.itemSubPredicateTypeRegistryWrapper = registries.getOrThrow(RegistryKeys.ITEM_SUB_PREDICATE_TYPE);
 			this.nbtOps = registries.getOps(NbtOps.INSTANCE);
 		}
 

@@ -102,7 +102,7 @@ public class IntegratedServerLoader {
 						DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = ((DimensionOptionsRegistryHolder)dimensionsRegistrySupplier.apply(
 								context.worldGenRegistryManager()
 							))
-							.toConfig(context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION));
+							.toConfig(context.dimensionsRegistryManager().getOrThrow(RegistryKeys.DIMENSION));
 						return new SaveLoading.LoadContext<>(
 							new LevelProperties(levelInfo, dynamicRegistryManager, dimensionsConfig.specialWorldProperty(), dimensionsConfig.getLifecycle()),
 							dimensionsConfig.toDynamicRegistryManager()
@@ -156,7 +156,7 @@ public class IntegratedServerLoader {
 		return this.load(
 			dataPacks,
 			context -> {
-				Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION);
+				Registry<DimensionOptions> registry = context.dimensionsRegistryManager().getOrThrow(RegistryKeys.DIMENSION);
 				ParsedSaveProperties parsedSaveProperties = LevelStorage.parseSaveProperties(
 					levelProperties, context.dataConfiguration(), registry, context.worldGenRegistryManager()
 				);
@@ -345,7 +345,7 @@ public class IntegratedServerLoader {
 		try {
 			saveLoader = this.load(levelProperties, safeMode, resourcePackManager);
 
-			for (DimensionOptions dimensionOptions : saveLoader.combinedDynamicRegistries().getCombinedRegistryManager().get(RegistryKeys.DIMENSION)) {
+			for (DimensionOptions dimensionOptions : saveLoader.combinedDynamicRegistries().getCombinedRegistryManager().getOrThrow(RegistryKeys.DIMENSION)) {
 				dimensionOptions.chunkGenerator().initializeIndexedFeaturesList();
 			}
 		} catch (Exception var9) {

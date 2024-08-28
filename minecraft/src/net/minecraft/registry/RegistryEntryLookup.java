@@ -19,15 +19,15 @@ public interface RegistryEntryLookup<T> {
 	}
 
 	public interface RegistryLookup {
-		<T> Optional<RegistryEntryLookup<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef);
+		<T> Optional<? extends RegistryEntryLookup<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef);
 
 		default <T> RegistryEntryLookup<T> getOrThrow(RegistryKey<? extends Registry<? extends T>> registryRef) {
 			return (RegistryEntryLookup<T>)this.getOptional(registryRef)
 				.orElseThrow(() -> new IllegalStateException("Registry " + registryRef.getValue() + " not found"));
 		}
 
-		default <T> Optional<RegistryEntry.Reference<T>> getOptionalEntry(RegistryKey<? extends Registry<? extends T>> registryRef, RegistryKey<T> key) {
-			return this.getOptional(registryRef).flatMap(registryEntryLookup -> registryEntryLookup.getOptional(key));
+		default <T> Optional<RegistryEntry.Reference<T>> getOptionalEntry(RegistryKey<T> registryRef) {
+			return this.getOptional(registryRef.getRegistryRef()).flatMap(registryEntryLookup -> registryEntryLookup.getOptional(registryRef));
 		}
 	}
 }

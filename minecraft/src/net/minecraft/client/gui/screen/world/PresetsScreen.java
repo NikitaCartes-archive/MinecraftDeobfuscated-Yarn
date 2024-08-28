@@ -191,10 +191,10 @@ public class PresetsScreen extends Screen {
 		GeneratorOptionsHolder generatorOptionsHolder = this.parent.parent.getWorldCreator().getGeneratorOptionsHolder();
 		DynamicRegistryManager dynamicRegistryManager = generatorOptionsHolder.getCombinedRegistryManager();
 		FeatureSet featureSet = generatorOptionsHolder.dataConfiguration().enabledFeatures();
-		RegistryEntryLookup<Biome> registryEntryLookup = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME);
-		RegistryEntryLookup<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET);
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
-		RegistryEntryLookup<Block> registryEntryLookup4 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BLOCK).withFeatureFilter(featureSet);
+		RegistryEntryLookup<Biome> registryEntryLookup = dynamicRegistryManager.getOrThrow(RegistryKeys.BIOME);
+		RegistryEntryLookup<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getOrThrow(RegistryKeys.STRUCTURE_SET);
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getOrThrow(RegistryKeys.PLACED_FEATURE);
+		RegistryEntryLookup<Block> registryEntryLookup4 = dynamicRegistryManager.getOrThrow(RegistryKeys.BLOCK).withFeatureFilter(featureSet);
 		this.customPresetField.setText(getGeneratorConfigString(this.parent.getConfig()));
 		this.config = this.parent.getConfig();
 		this.addSelectableChild(this.customPresetField);
@@ -257,7 +257,7 @@ public class PresetsScreen extends Screen {
 		public SuperflatPresetsListWidget(final DynamicRegistryManager dynamicRegistryManager, final FeatureSet featureSet) {
 			super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height - 117, 80, 24);
 
-			for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET)
+			for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.getOrThrow(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET)
 				.iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {
 				Set<Block> set = (Set<Block>)registryEntry.value()
 					.settings()

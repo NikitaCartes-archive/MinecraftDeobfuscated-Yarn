@@ -74,14 +74,13 @@ public class BoatEntityModel extends EntityModel<BoatEntityRenderState> {
 	 * The key of the left model part, whose value is {@value}.
 	 */
 	private static final String LEFT = "left";
-	private final ModelPart root;
 	private final ModelPart leftPaddle;
 	private final ModelPart rightPaddle;
 
-	public BoatEntityModel(ModelPart root) {
-		this.root = root;
-		this.leftPaddle = root.getChild(EntityModelPartNames.LEFT_PADDLE);
-		this.rightPaddle = root.getChild(EntityModelPartNames.RIGHT_PADDLE);
+	public BoatEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.leftPaddle = modelPart.getChild(EntityModelPartNames.LEFT_PADDLE);
+		this.rightPaddle = modelPart.getChild(EntityModelPartNames.RIGHT_PADDLE);
 	}
 
 	private static void addParts(ModelPartData modelPartData) {
@@ -166,13 +165,9 @@ public class BoatEntityModel extends EntityModel<BoatEntityRenderState> {
 	}
 
 	public void setAngles(BoatEntityRenderState boatEntityRenderState) {
+		super.setAngles(boatEntityRenderState);
 		setPaddleAngle(boatEntityRenderState.leftPaddleAngle, 0, this.leftPaddle);
 		setPaddleAngle(boatEntityRenderState.rightPaddleAngle, 1, this.rightPaddle);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 
 	private static void setPaddleAngle(float angle, int sigma, ModelPart part) {

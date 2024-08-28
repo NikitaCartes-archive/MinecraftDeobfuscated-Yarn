@@ -18,7 +18,7 @@ public class BuiltChunkStorage {
 	protected int sizeX;
 	protected int sizeZ;
 	private int viewDistance;
-	private ChunkSectionPos field_53952;
+	private ChunkSectionPos sectionPos;
 	public ChunkBuilder.BuiltChunk[] chunks;
 
 	public BuiltChunkStorage(ChunkBuilder chunkBuilder, World world, int viewDistance, WorldRenderer worldRenderer) {
@@ -26,7 +26,7 @@ public class BuiltChunkStorage {
 		this.world = world;
 		this.setViewDistance(viewDistance);
 		this.createChunks(chunkBuilder);
-		this.field_53952 = ChunkSectionPos.from(this.viewDistance + 1, 0, this.viewDistance + 1);
+		this.sectionPos = ChunkSectionPos.from(this.viewDistance + 1, 0, this.viewDistance + 1);
 	}
 
 	protected void createChunks(ChunkBuilder chunkBuilder) {
@@ -73,36 +73,36 @@ public class BuiltChunkStorage {
 		return this.world;
 	}
 
-	public void updateCameraPosition(ChunkSectionPos chunkSectionPos) {
+	public void updateCameraPosition(ChunkSectionPos sectionPos) {
 		for (int i = 0; i < this.sizeX; i++) {
-			int j = chunkSectionPos.getSectionX() - this.viewDistance;
+			int j = sectionPos.getSectionX() - this.viewDistance;
 			int k = j + Math.floorMod(i - j, this.sizeX);
 
 			for (int l = 0; l < this.sizeZ; l++) {
-				int m = chunkSectionPos.getSectionZ() - this.viewDistance;
+				int m = sectionPos.getSectionZ() - this.viewDistance;
 				int n = m + Math.floorMod(l - m, this.sizeZ);
 
 				for (int o = 0; o < this.sizeY; o++) {
 					int p = this.world.getBottomSectionCoord() + o;
 					ChunkBuilder.BuiltChunk builtChunk = this.chunks[this.getChunkIndex(i, o, l)];
-					long q = builtChunk.method_62975();
+					long q = builtChunk.getSectionPos();
 					if (q != ChunkSectionPos.asLong(k, p, n)) {
-						builtChunk.method_62973(ChunkSectionPos.asLong(k, p, n));
+						builtChunk.setSectionPos(ChunkSectionPos.asLong(k, p, n));
 					}
 				}
 			}
 		}
 
-		this.field_53952 = chunkSectionPos;
+		this.sectionPos = sectionPos;
 		this.worldRenderer.getChunkRenderingDataPreparer().scheduleTerrainUpdate();
 	}
 
-	public ChunkSectionPos method_62966() {
-		return this.field_53952;
+	public ChunkSectionPos getSectionPos() {
+		return this.sectionPos;
 	}
 
 	public void scheduleRebuild(int x, int y, int z, boolean important) {
-		ChunkBuilder.BuiltChunk builtChunk = this.method_62964(x, y, z);
+		ChunkBuilder.BuiltChunk builtChunk = this.getRenderedChunk(x, y, z);
 		if (builtChunk != null) {
 			builtChunk.scheduleRebuild(important);
 		}
@@ -110,34 +110,34 @@ public class BuiltChunkStorage {
 
 	@Nullable
 	protected ChunkBuilder.BuiltChunk getRenderedChunk(BlockPos blockPos) {
-		return this.method_62963(ChunkSectionPos.toLong(blockPos));
+		return this.getRenderedChunk(ChunkSectionPos.toLong(blockPos));
 	}
 
 	@Nullable
-	protected ChunkBuilder.BuiltChunk method_62963(long l) {
-		int i = ChunkSectionPos.unpackX(l);
-		int j = ChunkSectionPos.unpackY(l);
-		int k = ChunkSectionPos.unpackZ(l);
-		return this.method_62964(i, j, k);
+	protected ChunkBuilder.BuiltChunk getRenderedChunk(long sectionPos) {
+		int i = ChunkSectionPos.unpackX(sectionPos);
+		int j = ChunkSectionPos.unpackY(sectionPos);
+		int k = ChunkSectionPos.unpackZ(sectionPos);
+		return this.getRenderedChunk(i, j, k);
 	}
 
 	@Nullable
-	private ChunkBuilder.BuiltChunk method_62964(int i, int j, int k) {
-		if (!this.method_62965(i, j, k)) {
+	private ChunkBuilder.BuiltChunk getRenderedChunk(int sectionX, int sectionY, int sectionZ) {
+		if (!this.isSectionWithinViewDistance(sectionX, sectionY, sectionZ)) {
 			return null;
 		} else {
-			int l = j - this.world.getBottomSectionCoord();
-			int m = Math.floorMod(i, this.sizeX);
-			int n = Math.floorMod(k, this.sizeZ);
-			return this.chunks[this.getChunkIndex(m, l, n)];
+			int i = sectionY - this.world.getBottomSectionCoord();
+			int j = Math.floorMod(sectionX, this.sizeX);
+			int k = Math.floorMod(sectionZ, this.sizeZ);
+			return this.chunks[this.getChunkIndex(j, i, k)];
 		}
 	}
 
-	private boolean method_62965(int i, int j, int k) {
-		if (j >= this.world.getBottomSectionCoord() && j <= this.world.getTopSectionCoord()) {
-			return i < this.field_53952.getSectionX() - this.viewDistance || i > this.field_53952.getSectionX() + this.viewDistance
+	private boolean isSectionWithinViewDistance(int sectionX, int sectionY, int sectionZ) {
+		if (sectionY >= this.world.getBottomSectionCoord() && sectionY <= this.world.getTopSectionCoord()) {
+			return sectionX < this.sectionPos.getSectionX() - this.viewDistance || sectionX > this.sectionPos.getSectionX() + this.viewDistance
 				? false
-				: k >= this.field_53952.getSectionZ() - this.viewDistance && k <= this.field_53952.getSectionZ() + this.viewDistance;
+				: sectionZ >= this.sectionPos.getSectionZ() - this.viewDistance && sectionZ <= this.sectionPos.getSectionZ() + this.viewDistance;
 		} else {
 			return false;
 		}

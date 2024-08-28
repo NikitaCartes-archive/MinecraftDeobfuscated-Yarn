@@ -17,8 +17,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class WindChargeItem extends Item implements ProjectileItem {
-	private static final int COOLDOWN = 10;
-
 	public WindChargeItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -48,7 +46,6 @@ public class WindChargeItem extends Item implements ProjectileItem {
 			0.5F,
 			0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 		);
-		user.getItemCooldownManager().set(itemStack, 10);
 		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		itemStack.decrementUnlessCreative(1, user);
 		return ActionResult.SUCCESS;

@@ -24,26 +24,15 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
 
 public record VanillaEquipmentLootTableGenerator(RegistryWrapper.WrapperLookup registries) implements LootTableGenerator {
 	@Override
 	public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> lootTableBiConsumer) {
-		RegistryWrapper.Impl<ArmorTrimPattern> impl = (RegistryWrapper.Impl<ArmorTrimPattern>)this.registries
-			.getOptionalWrapper(RegistryKeys.TRIM_PATTERN)
-			.orElseThrow();
-		RegistryWrapper.Impl<ArmorTrimMaterial> impl2 = (RegistryWrapper.Impl<ArmorTrimMaterial>)this.registries
-			.getOptionalWrapper(RegistryKeys.TRIM_MATERIAL)
-			.orElseThrow();
-		RegistryWrapper.Impl<Enchantment> impl3 = this.registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
-		ArmorTrim armorTrim = new ArmorTrim(
-			(RegistryEntry<ArmorTrimMaterial>)impl2.getOptional(ArmorTrimMaterials.COPPER).orElseThrow(),
-			(RegistryEntry<ArmorTrimPattern>)impl.getOptional(ArmorTrimPatterns.FLOW).orElseThrow()
-		);
-		ArmorTrim armorTrim2 = new ArmorTrim(
-			(RegistryEntry<ArmorTrimMaterial>)impl2.getOptional(ArmorTrimMaterials.COPPER).orElseThrow(),
-			(RegistryEntry<ArmorTrimPattern>)impl.getOptional(ArmorTrimPatterns.BOLT).orElseThrow()
-		);
+		RegistryWrapper.Impl<ArmorTrimPattern> impl = this.registries.getOrThrow(RegistryKeys.TRIM_PATTERN);
+		RegistryWrapper.Impl<ArmorTrimMaterial> impl2 = this.registries.getOrThrow(RegistryKeys.TRIM_MATERIAL);
+		RegistryWrapper.Impl<Enchantment> impl3 = this.registries.getOrThrow(RegistryKeys.ENCHANTMENT);
+		ArmorTrim armorTrim = new ArmorTrim(impl2.getOrThrow(ArmorTrimMaterials.COPPER), impl.getOrThrow(ArmorTrimPatterns.FLOW));
+		ArmorTrim armorTrim2 = new ArmorTrim(impl2.getOrThrow(ArmorTrimMaterials.COPPER), impl.getOrThrow(ArmorTrimPatterns.BOLT));
 		lootTableBiConsumer.accept(
 			LootTables.TRIAL_CHAMBER_EQUIPMENT,
 			LootTable.builder()

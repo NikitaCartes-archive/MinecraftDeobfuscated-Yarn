@@ -34,7 +34,7 @@ public class ChunkDebugRenderer implements DebugRenderer.Renderer {
 			ChunkRenderingDataPreparer chunkRenderingDataPreparer = worldRenderer.getChunkRenderingDataPreparer();
 
 			for (ChunkBuilder.BuiltChunk builtChunk : worldRenderer.getBuiltChunks()) {
-				ChunkRenderingDataPreparer.ChunkInfo chunkInfo = chunkRenderingDataPreparer.method_52837(builtChunk);
+				ChunkRenderingDataPreparer.ChunkInfo chunkInfo = chunkRenderingDataPreparer.getInfo(builtChunk);
 				if (chunkInfo != null) {
 					BlockPos blockPos = builtChunk.getOrigin();
 					matrices.push();
@@ -62,7 +62,7 @@ public class ChunkDebugRenderer implements DebugRenderer.Renderer {
 						}
 					}
 
-					if (this.client.debugChunkOcclusion && builtChunk.getData().method_62972()) {
+					if (this.client.debugChunkOcclusion && builtChunk.getData().hasNonEmptyLayers()) {
 						VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 						int i = 0;
 
@@ -124,54 +124,54 @@ public class ChunkDebugRenderer implements DebugRenderer.Renderer {
 		Frustum frustum = worldRenderer.getCapturedFrustum();
 		if (frustum != null) {
 			matrices.push();
-			matrices.translate((float)(frustum.method_62343() - cameraX), (float)(frustum.method_62344() - cameraY), (float)(frustum.method_62345() - cameraZ));
+			matrices.translate((float)(frustum.getX() - cameraX), (float)(frustum.getY() - cameraY), (float)(frustum.getZ() - cameraZ));
 			Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
-			Vector4f[] vector4fs = frustum.method_62342();
+			Vector4f[] vector4fs = frustum.getBoundaryPoints();
 			VertexConsumer vertexConsumer3 = vertexConsumers.getBuffer(RenderLayer.getDebugQuads());
-			this.method_62347(vertexConsumer3, matrix4f2, vector4fs, 0, 1, 2, 3, 0, 1, 1);
-			this.method_62347(vertexConsumer3, matrix4f2, vector4fs, 4, 5, 6, 7, 1, 0, 0);
-			this.method_62347(vertexConsumer3, matrix4f2, vector4fs, 0, 1, 5, 4, 1, 1, 0);
-			this.method_62347(vertexConsumer3, matrix4f2, vector4fs, 2, 3, 7, 6, 0, 0, 1);
-			this.method_62347(vertexConsumer3, matrix4f2, vector4fs, 0, 4, 7, 3, 0, 1, 0);
-			this.method_62347(vertexConsumer3, matrix4f2, vector4fs, 1, 5, 6, 2, 1, 0, 1);
+			this.addFace(vertexConsumer3, matrix4f2, vector4fs, 0, 1, 2, 3, 0, 1, 1);
+			this.addFace(vertexConsumer3, matrix4f2, vector4fs, 4, 5, 6, 7, 1, 0, 0);
+			this.addFace(vertexConsumer3, matrix4f2, vector4fs, 0, 1, 5, 4, 1, 1, 0);
+			this.addFace(vertexConsumer3, matrix4f2, vector4fs, 2, 3, 7, 6, 0, 0, 1);
+			this.addFace(vertexConsumer3, matrix4f2, vector4fs, 0, 4, 7, 3, 0, 1, 0);
+			this.addFace(vertexConsumer3, matrix4f2, vector4fs, 1, 5, 6, 2, 1, 0, 1);
 			VertexConsumer vertexConsumer4 = vertexConsumers.getBuffer(RenderLayer.getLines());
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[0]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[1]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[1]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[2]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[2]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[3]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[3]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[0]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[4]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[5]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[5]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[6]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[6]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[7]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[7]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[4]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[0]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[4]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[1]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[5]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[2]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[6]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[3]);
-			this.method_62346(vertexConsumer4, matrix4f2, vector4fs[7]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[0]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[1]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[1]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[2]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[2]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[3]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[3]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[0]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[4]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[5]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[5]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[6]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[6]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[7]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[7]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[4]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[0]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[4]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[1]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[5]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[2]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[6]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[3]);
+			this.addEndpoint(vertexConsumer4, matrix4f2, vector4fs[7]);
 			matrices.pop();
 		}
 	}
 
-	private void method_62346(VertexConsumer vertexConsumer, Matrix4f matrix4f, Vector4f vector4f) {
-		vertexConsumer.vertex(matrix4f, vector4f.x(), vector4f.y(), vector4f.z()).color(Colors.BLACK).normal(0.0F, 0.0F, -1.0F);
+	private void addEndpoint(VertexConsumer vertexConsumer, Matrix4f positionMatrix, Vector4f vertex) {
+		vertexConsumer.vertex(positionMatrix, vertex.x(), vertex.y(), vertex.z()).color(Colors.BLACK).normal(0.0F, 0.0F, -1.0F);
 	}
 
-	private void method_62347(VertexConsumer vertexConsumer, Matrix4f matrix4f, Vector4f[] vector4fs, int i, int j, int k, int l, int m, int n, int o) {
+	private void addFace(VertexConsumer vertexConsumer, Matrix4f positionMatrix, Vector4f[] vertices, int i1, int i2, int i3, int i4, int r, int g, int b) {
 		float f = 0.25F;
-		vertexConsumer.vertex(matrix4f, vector4fs[i].x(), vector4fs[i].y(), vector4fs[i].z()).color((float)m, (float)n, (float)o, 0.25F);
-		vertexConsumer.vertex(matrix4f, vector4fs[j].x(), vector4fs[j].y(), vector4fs[j].z()).color((float)m, (float)n, (float)o, 0.25F);
-		vertexConsumer.vertex(matrix4f, vector4fs[k].x(), vector4fs[k].y(), vector4fs[k].z()).color((float)m, (float)n, (float)o, 0.25F);
-		vertexConsumer.vertex(matrix4f, vector4fs[l].x(), vector4fs[l].y(), vector4fs[l].z()).color((float)m, (float)n, (float)o, 0.25F);
+		vertexConsumer.vertex(positionMatrix, vertices[i1].x(), vertices[i1].y(), vertices[i1].z()).color((float)r, (float)g, (float)b, 0.25F);
+		vertexConsumer.vertex(positionMatrix, vertices[i2].x(), vertices[i2].y(), vertices[i2].z()).color((float)r, (float)g, (float)b, 0.25F);
+		vertexConsumer.vertex(positionMatrix, vertices[i3].x(), vertices[i3].y(), vertices[i3].z()).color((float)r, (float)g, (float)b, 0.25F);
+		vertexConsumer.vertex(positionMatrix, vertices[i4].x(), vertices[i4].y(), vertices[i4].z()).color((float)r, (float)g, (float)b, 0.25F);
 	}
 }

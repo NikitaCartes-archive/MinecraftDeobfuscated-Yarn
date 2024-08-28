@@ -3,6 +3,7 @@ package net.minecraft.registry;
 import java.util.List;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.jukebox.JukeboxSongs;
+import net.minecraft.block.spawner.TrialSpawnerConfigs;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.provider.EnchantmentProviders;
 import net.minecraft.entity.damage.DamageTypes;
@@ -55,6 +56,7 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap)
 		.addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::bootstrap)
 		.addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap)
+		.addRegistry(RegistryKeys.TRIAL_SPAWNER, TrialSpawnerConfigs::bootstrap)
 		.addRegistry(RegistryKeys.WOLF_VARIANT, WolfVariants::bootstrap)
 		.addRegistry(RegistryKeys.PAINTING_VARIANT, PaintingVariants::bootstrap)
 		.addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap)
@@ -65,7 +67,7 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.INSTRUMENT, Instruments::bootstrap);
 
 	private static void validate(RegistryWrapper.WrapperLookup registries) {
-		validate(registries.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), registries.getWrapperOrThrow(RegistryKeys.BIOME));
+		validate(registries.getOrThrow(RegistryKeys.PLACED_FEATURE), registries.getOrThrow(RegistryKeys.BIOME));
 	}
 
 	public static void validate(RegistryEntryLookup<PlacedFeature> placedFeatureLookup, RegistryWrapper<Biome> biomeLookup) {

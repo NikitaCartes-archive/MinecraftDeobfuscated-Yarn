@@ -58,7 +58,6 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class FoxEntityModel extends EntityModel<FoxEntityRenderState> {
 	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(true, 8.0F, 3.35F, Set.of("head"));
-	private final ModelPart root;
 	public final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart rightHindLeg;
@@ -71,14 +70,14 @@ public class FoxEntityModel extends EntityModel<FoxEntityRenderState> {
 	private static final float LEG_Y_PIVOT = 17.5F;
 	private float legPitchModifier;
 
-	public FoxEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+	public FoxEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
 		this.tail = this.body.getChild(EntityModelPartNames.TAIL);
 	}
 
@@ -111,17 +110,8 @@ public class FoxEntityModel extends EntityModel<FoxEntityRenderState> {
 		return TexturedModelData.of(modelData, 48, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(FoxEntityRenderState foxEntityRenderState) {
-		this.body.resetTransform();
-		this.head.resetTransform();
-		this.tail.resetTransform();
-		this.rightHindLeg.resetTransform();
-		this.leftHindLeg.resetTransform();
+		super.setAngles(foxEntityRenderState);
 		float f = foxEntityRenderState.limbAmplitudeMultiplier;
 		float g = foxEntityRenderState.limbFrequency;
 		this.rightHindLeg.pitch = MathHelper.cos(g * 0.6662F) * 1.4F * f;

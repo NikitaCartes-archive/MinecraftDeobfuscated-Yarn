@@ -479,7 +479,9 @@ public final class ItemStack implements ComponentHolder {
 		boolean bl = this.getMaxUseTime(user) <= 0;
 		ActionResult actionResult = this.getItem().use(world, user, hand);
 		return (ActionResult)(bl && actionResult instanceof ActionResult.Success success
-			? success.withNewHandStack(this.applyRemainderAndCooldown(user, itemStack))
+			? success.withNewHandStack(
+				success.getNewHandStack() == null ? this.applyRemainderAndCooldown(user, itemStack) : success.getNewHandStack().applyRemainderAndCooldown(user, itemStack)
+			)
 			: actionResult);
 	}
 
@@ -952,10 +954,11 @@ public final class ItemStack implements ComponentHolder {
 
 	public void onStoppedUsing(World world, LivingEntity user, int remainingUseTicks) {
 		ItemStack itemStack = this.copy();
-		this.getItem().onStoppedUsing(this, world, user, remainingUseTicks);
-		ItemStack itemStack2 = this.applyRemainderAndCooldown(user, itemStack);
-		if (itemStack2 != this) {
-			user.setStackInHand(user.getActiveHand(), itemStack2);
+		if (this.getItem().onStoppedUsing(this, world, user, remainingUseTicks)) {
+			ItemStack itemStack2 = this.applyRemainderAndCooldown(user, itemStack);
+			if (itemStack2 != this) {
+				user.setStackInHand(user.getActiveHand(), itemStack2);
+			}
 		}
 	}
 
@@ -1074,6 +1077,15 @@ public final class ItemStack implements ComponentHolder {
 		}
 	}
 
+	public Text getFormattedName() {
+		MutableText mutableText = Text.empty().append(this.getName()).formatted(this.getRarity().getFormatting());
+		if (this.contains(DataComponentTypes.CUSTOM_NAME)) {
+			mutableText.formatted(Formatting.ITALIC);
+		}
+
+		return mutableText;
+	}
+
 	private <T extends TooltipAppender> void appendTooltip(
 		ComponentType<T> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type
 	) {
@@ -1088,12 +1100,7 @@ public final class ItemStack implements ComponentHolder {
 			return List.of();
 		} else {
 			List<Text> list = Lists.<Text>newArrayList();
-			MutableText mutableText = Text.empty().append(this.getName()).formatted(this.getRarity().getFormatting());
-			if (this.contains(DataComponentTypes.CUSTOM_NAME)) {
-				mutableText.formatted(Formatting.ITALIC);
-			}
-
-			list.add(mutableText);
+			list.add(this.getFormattedName());
 			if (!type.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME) && this.isOf(Items.FILLED_MAP)) {
 				MapIdComponent mapIdComponent = this.get(DataComponentTypes.MAP_ID);
 				if (mapIdComponent != null) {

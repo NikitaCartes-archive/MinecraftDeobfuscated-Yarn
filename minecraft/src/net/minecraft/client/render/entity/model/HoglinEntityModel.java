@@ -63,7 +63,6 @@ public class HoglinEntityModel extends EntityModel<HoglinEntityRenderState> {
 	public static final ModelTransformer BABY_TRANSFORMER = new BabyModelTransformer(true, 8.0F, 6.0F, 1.9F, 2.0F, 24.0F, Set.of("head"));
 	private static final float HEAD_PITCH_START = 0.87266463F;
 	private static final float HEAD_PITCH_END = (float) (-Math.PI / 9);
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart rightEar;
 	private final ModelPart leftEar;
@@ -74,17 +73,17 @@ public class HoglinEntityModel extends EntityModel<HoglinEntityRenderState> {
 	private final ModelPart leftHindLeg;
 	private final ModelPart mane;
 
-	public HoglinEntityModel(ModelPart root) {
-		this.root = root;
-		this.body = root.getChild(EntityModelPartNames.BODY);
+	public HoglinEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
 		this.mane = this.body.getChild(EntityModelPartNames.MANE);
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.rightEar = this.head.getChild(EntityModelPartNames.RIGHT_EAR);
 		this.leftEar = this.head.getChild(EntityModelPartNames.LEFT_EAR);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
 	}
 
 	private static ModelData getModelData() {
@@ -164,14 +163,8 @@ public class HoglinEntityModel extends EntityModel<HoglinEntityRenderState> {
 		return TexturedModelData.of(modelData, 128, 64).transform(BABY_TRANSFORMER);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(HoglinEntityRenderState hoglinEntityRenderState) {
-		this.head.resetTransform();
-		this.mane.resetTransform();
+		super.setAngles(hoglinEntityRenderState);
 		float f = hoglinEntityRenderState.limbAmplitudeMultiplier;
 		float g = hoglinEntityRenderState.limbFrequency;
 		this.rightEar.roll = (float) (-Math.PI * 2.0 / 9.0) - f * MathHelper.sin(g);

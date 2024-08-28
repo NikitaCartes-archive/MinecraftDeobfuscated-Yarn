@@ -56,14 +56,13 @@ import net.minecraft.util.math.random.Random;
  */
 @Environment(EnvType.CLIENT)
 public class GhastEntityModel extends EntityModel<GhastEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart[] tentacles = new ModelPart[9];
 
-	public GhastEntityModel(ModelPart root) {
-		this.root = root;
+	public GhastEntityModel(ModelPart modelPart) {
+		super(modelPart);
 
 		for (int i = 0; i < this.tentacles.length; i++) {
-			this.tentacles[i] = root.getChild(getTentacleName(i));
+			this.tentacles[i] = modelPart.getChild(getTentacleName(i));
 		}
 	}
 
@@ -92,13 +91,10 @@ public class GhastEntityModel extends EntityModel<GhastEntityRenderState> {
 	}
 
 	public void setAngles(GhastEntityRenderState ghastEntityRenderState) {
+		super.setAngles(ghastEntityRenderState);
+
 		for (int i = 0; i < this.tentacles.length; i++) {
 			this.tentacles[i].pitch = 0.2F * MathHelper.sin(ghastEntityRenderState.age * 0.3F + (float)i) + 0.4F;
 		}
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

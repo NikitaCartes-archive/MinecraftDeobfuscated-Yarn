@@ -16,7 +16,7 @@ public class SimpleNeighborUpdater implements NeighborUpdater {
 
 	@Override
 	public void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth) {
-		NeighborUpdater.replaceWithStateForNeighborUpdate(this.world, direction, neighborState, pos, neighborPos, flags, maxUpdateDepth - 1);
+		NeighborUpdater.replaceWithStateForNeighborUpdate(this.world, direction, pos, neighborPos, neighborState, flags, maxUpdateDepth - 1);
 	}
 
 	@Override

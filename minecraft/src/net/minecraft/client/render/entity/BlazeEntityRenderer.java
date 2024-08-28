@@ -21,7 +21,8 @@ public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, LivingEn
 		return 15;
 	}
 
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	@Override
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 

@@ -73,7 +73,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 			ItemEnchantmentsComponent itemEnchantmentsComponent2 = EnchantmentHelper.getEnchantments(itemStack2);
 			EnchantmentHelper.apply(
 				itemStack3,
-				builder -> wrapperLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
+				builder -> wrapperLookup.getOrThrow(RegistryKeys.ENCHANTMENT)
 						.streamEntries()
 						.filter(enchantment -> enchantment.isIn(EnchantmentTags.CURSE))
 						.forEach(enchantment -> {

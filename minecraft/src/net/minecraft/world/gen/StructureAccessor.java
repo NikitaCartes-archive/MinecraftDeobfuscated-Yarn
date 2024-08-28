@@ -125,7 +125,7 @@ public class StructureAccessor {
 	}
 
 	public StructureStart getStructureContaining(BlockPos pos, Predicate<RegistryEntry<Structure>> predicate) {
-		Registry<Structure> registry = this.getRegistryManager().get(RegistryKeys.STRUCTURE);
+		Registry<Structure> registry = this.getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
 
 		for (StructureStart structureStart : this.getStructureStarts(
 			new ChunkPos(pos), structure -> (Boolean)registry.getEntry(registry.getRawId(structure)).map(predicate::test).orElse(false)

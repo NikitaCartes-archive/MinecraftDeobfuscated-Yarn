@@ -82,9 +82,9 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.pitch = (byte)MathHelper.floor(pitch * 256.0F / 360.0F);
-		this.yaw = (byte)MathHelper.floor(yaw * 256.0F / 360.0F);
-		this.headYaw = (byte)MathHelper.floor(headYaw * 256.0 / 360.0);
+		this.pitch = MathHelper.packDegrees(pitch);
+		this.yaw = MathHelper.packDegrees(yaw);
+		this.headYaw = MathHelper.packDegrees((float)headYaw);
 		this.entityType = entityType;
 		this.entityData = entityData;
 		this.velocityX = (int)(MathHelper.clamp(velocity.x, -3.9, 3.9) * 8000.0);
@@ -170,15 +170,15 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public float getPitch() {
-		return (float)(this.pitch * 360) / 256.0F;
+		return MathHelper.unpackDegrees(this.pitch);
 	}
 
 	public float getYaw() {
-		return (float)(this.yaw * 360) / 256.0F;
+		return MathHelper.unpackDegrees(this.yaw);
 	}
 
 	public float getHeadYaw() {
-		return (float)(this.headYaw * 360) / 256.0F;
+		return MathHelper.unpackDegrees(this.headYaw);
 	}
 
 	public int getEntityData() {

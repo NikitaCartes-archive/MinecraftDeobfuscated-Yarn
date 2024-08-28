@@ -57,7 +57,7 @@ public class PlayerHeldItemFeatureRenderer<S extends PlayerEntityRenderState, M 
 
 	private void renderSpyglass(BakedModel model, ItemStack stack, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		matrices.push();
-		this.getContextModel().getPart().rotate(matrices);
+		this.getContextModel().getRootPart().rotate(matrices);
 		ModelPart modelPart = this.getContextModel().getHead();
 		float f = modelPart.pitch;
 		modelPart.pitch = MathHelper.clamp(modelPart.pitch, (float) (-Math.PI / 6), (float) (Math.PI / 2));

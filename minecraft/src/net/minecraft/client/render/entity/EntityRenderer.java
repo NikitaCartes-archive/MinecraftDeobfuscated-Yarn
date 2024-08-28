@@ -19,7 +19,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.ExperimentalMinecartController;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -201,8 +200,6 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
 		return entity.shouldRenderName() || entity.hasCustomName() && entity == this.dispatcher.targetedEntity;
 	}
 
-	public abstract Identifier getTexture(S state);
-
 	public TextRenderer getTextRenderer() {
 		return this.textRenderer;
 	}
@@ -261,7 +258,7 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
 		if (entity.hasVehicle()
 			&& entity.getVehicle() instanceof AbstractMinecartEntity abstractMinecartEntity
 			&& abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController
-			&& experimentalMinecartController.method_61614()) {
+			&& experimentalMinecartController.hasCurrentLerpSteps()) {
 			double d = MathHelper.lerp((double)tickDelta, abstractMinecartEntity.lastRenderX, abstractMinecartEntity.getX());
 			double e = MathHelper.lerp((double)tickDelta, abstractMinecartEntity.lastRenderY, abstractMinecartEntity.getY());
 			double f = MathHelper.lerp((double)tickDelta, abstractMinecartEntity.lastRenderZ, abstractMinecartEntity.getZ());

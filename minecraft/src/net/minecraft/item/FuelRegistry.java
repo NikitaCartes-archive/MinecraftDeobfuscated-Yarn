@@ -106,7 +106,7 @@ public class FuelRegistry {
 		private final Object2IntSortedMap<Item> fuelValues = new Object2IntLinkedOpenHashMap<>();
 
 		public Builder(RegistryWrapper.WrapperLookup registries, FeatureSet enabledFeatures) {
-			this.itemLookup = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+			this.itemLookup = registries.getOrThrow(RegistryKeys.ITEM);
 			this.enabledFeatures = enabledFeatures;
 		}
 

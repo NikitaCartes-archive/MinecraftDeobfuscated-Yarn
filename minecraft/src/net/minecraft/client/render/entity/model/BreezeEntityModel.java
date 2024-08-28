@@ -19,7 +19,6 @@ public class BreezeEntityModel extends EntityModel<BreezeEntityRenderState> {
 	private static final float field_47431 = 0.6F;
 	private static final float field_47432 = 0.8F;
 	private static final float field_47433 = 1.0F;
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart eyes;
 	private final ModelPart windBody;
@@ -28,16 +27,15 @@ public class BreezeEntityModel extends EntityModel<BreezeEntityRenderState> {
 	private final ModelPart windBottom;
 	private final ModelPart rods;
 
-	public BreezeEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityTranslucent);
-		this.root = root;
-		this.windBody = root.getChild(EntityModelPartNames.WIND_BODY);
+	public BreezeEntityModel(ModelPart modelPart) {
+		super(modelPart, RenderLayer::getEntityTranslucent);
+		this.windBody = modelPart.getChild(EntityModelPartNames.WIND_BODY);
 		this.windBottom = this.windBody.getChild(EntityModelPartNames.WIND_BOTTOM);
 		this.windMid = this.windBottom.getChild(EntityModelPartNames.WIND_MID);
 		this.windTop = this.windMid.getChild(EntityModelPartNames.WIND_TOP);
-		this.head = root.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
+		this.head = modelPart.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
 		this.eyes = this.head.getChild(EntityModelPartNames.EYES);
-		this.rods = root.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.RODS);
+		this.rods = modelPart.getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.RODS);
 	}
 
 	public static TexturedModelData getTexturedModelData(int textureWidth, int textureHeight) {
@@ -110,7 +108,7 @@ public class BreezeEntityModel extends EntityModel<BreezeEntityRenderState> {
 	}
 
 	public void setAngles(BreezeEntityRenderState breezeEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(breezeEntityRenderState);
 		float f = breezeEntityRenderState.age * (float) Math.PI * -0.1F;
 		this.windTop.pivotX = MathHelper.cos(f) * 1.0F * 0.6F;
 		this.windTop.pivotZ = MathHelper.sin(f) * 1.0F * 0.6F;
@@ -125,11 +123,6 @@ public class BreezeEntityModel extends EntityModel<BreezeEntityRenderState> {
 		this.animate(breezeEntityRenderState.slidingBackAnimationState, BreezeAnimations.SLIDING_BACK, breezeEntityRenderState.age);
 		this.animate(breezeEntityRenderState.inhalingAnimationState, BreezeAnimations.INHALING, breezeEntityRenderState.age);
 		this.animate(breezeEntityRenderState.longJumpingAnimationState, BreezeAnimations.LONG_JUMPING, breezeEntityRenderState.age);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 
 	public ModelPart getHead() {

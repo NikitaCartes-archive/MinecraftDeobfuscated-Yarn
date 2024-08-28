@@ -85,7 +85,7 @@ public abstract class RecipeGenerator {
 
 	protected RecipeGenerator(RegistryWrapper.WrapperLookup registries, RecipeExporter exporter) {
 		this.registries = registries;
-		this.itemLookup = registries.getWrapperOrThrow(RegistryKeys.ITEM);
+		this.itemLookup = registries.getOrThrow(RegistryKeys.ITEM);
 		this.exporter = exporter;
 	}
 

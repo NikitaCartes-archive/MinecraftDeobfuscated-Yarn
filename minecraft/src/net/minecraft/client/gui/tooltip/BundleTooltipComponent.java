@@ -8,17 +8,17 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.component.type.BundleContentsComponent;
-import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.math.Fraction;
 
 @Environment(EnvType.CLIENT)
 public class BundleTooltipComponent implements TooltipComponent {
-	private static final Identifier BUNDLE_PROGRESSBAR_BORDER_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_border");
+	private static final Identifier BUNDLE_PROGRESS_BAR_BORDER_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_border");
+	private static final Identifier BUNDLE_PROGRESS_BAR_FILL_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_fill");
+	private static final Identifier BUNDLE_PROGRESS_BAR_FULL_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_full");
 	private static final int SLOTS_PER_ROW = 4;
 	private static final int SLOT_DIMENSION = 24;
 	private static final int ROW_WIDTH = 96;
@@ -63,6 +63,10 @@ public class BundleTooltipComponent implements TooltipComponent {
 		return this.getRows() * 24;
 	}
 
+	private int getXMargin(int width) {
+		return (width - 96) / 2;
+	}
+
 	private int getRows() {
 		return MathHelper.ceilDiv(this.getNumVisibleSlots(), 4);
 	}
@@ -72,23 +76,23 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	@Override
-	public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+	public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
 		if (this.bundleContents.isEmpty()) {
-			this.drawEmptyTooltip(textRenderer, x, y, context);
+			this.drawEmptyTooltip(textRenderer, x, y, width, height, context);
 		} else {
-			this.drawNonEmptyTooltip(textRenderer, x, y, context);
+			this.drawNonEmptyTooltip(textRenderer, x, y, width, height, context);
 		}
 	}
 
-	private void drawEmptyTooltip(TextRenderer textRenderer, int x, int y, DrawContext drawContext) {
-		drawEmptyDescription(x, y, textRenderer, drawContext);
-		this.drawProgressBar(x, y + getDescriptionHeight(textRenderer) + 4, textRenderer, drawContext);
+	private void drawEmptyTooltip(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
+		drawEmptyDescription(x + this.getXMargin(width), y, textRenderer, context);
+		this.drawProgressBar(x + this.getXMargin(width), y + getDescriptionHeight(textRenderer) + 4, textRenderer, context);
 	}
 
-	private void drawNonEmptyTooltip(TextRenderer textRenderer, int x, int y, DrawContext drawContext) {
+	private void drawNonEmptyTooltip(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
 		boolean bl = this.bundleContents.size() > 12;
 		List<ItemStack> list = this.firstStacksInContents(this.bundleContents.getNumberOfStacksShown());
-		int i = x + 96;
+		int i = x + this.getXMargin(width) + 96;
 		int j = y + this.getRows() * 24;
 		int k = 1;
 
@@ -97,16 +101,16 @@ public class BundleTooltipComponent implements TooltipComponent {
 				int n = i - m * 24;
 				int o = j - l * 24;
 				if (shouldDrawExtraItemsCount(bl, m, l)) {
-					drawExtraItemsCount(n, o, this.numContentItemsAfter(list), textRenderer, drawContext);
+					drawExtraItemsCount(n, o, this.numContentItemsAfter(list), textRenderer, context);
 				} else if (shouldDrawItem(list, k)) {
-					this.drawItem(k, n, o, list, k, textRenderer, drawContext);
+					this.drawItem(k, n, o, list, k, textRenderer, context);
 					k++;
 				}
 			}
 		}
 
-		this.drawSelectedItemTooltip(textRenderer, drawContext, x, y);
-		this.drawProgressBar(x, y + this.getRowsHeight() + 4, textRenderer, drawContext);
+		this.drawSelectedItemTooltip(textRenderer, context, x, y, width);
+		this.drawProgressBar(x + this.getXMargin(width), y + this.getRowsHeight() + 4, textRenderer, context);
 	}
 
 	private List<ItemStack> firstStacksInContents(int numberOfStacksShown) {
@@ -144,21 +148,19 @@ public class BundleTooltipComponent implements TooltipComponent {
 		}
 	}
 
-	private void drawSelectedItemTooltip(TextRenderer textRenderer, DrawContext drawContext, int x, int y) {
+	private void drawSelectedItemTooltip(TextRenderer textRenderer, DrawContext drawContext, int x, int y, int width) {
 		if (this.bundleContents.hasSelectedStack()) {
 			ItemStack itemStack = this.bundleContents.get(this.bundleContents.getSelectedStackIndex());
-			Text text = itemStack.getName();
+			Text text = itemStack.getFormattedName();
 			int i = textRenderer.getWidth(text.asOrderedText());
-			int j = x + this.getWidth(textRenderer) / 2 - 12;
+			int j = x + width / 2 - 12;
 			drawContext.drawTooltip(textRenderer, text, j - i / 2, y - 15);
 		}
 	}
 
 	private void drawProgressBar(int x, int y, TextRenderer textRenderer, DrawContext drawContext) {
-		drawContext.fill(
-			RenderLayer.getGui(), x + 1, y, x + 1 + this.getProgressBarFill(), y + 13, BundleItem.getItemBarColor(this.bundleContents.getOccupancy()) | Colors.BLACK
-		);
-		drawContext.drawGuiTexture(RenderLayer::getGuiTextured, BUNDLE_PROGRESSBAR_BORDER_TEXTURE, x, y, 96, 13);
+		drawContext.drawGuiTexture(RenderLayer::getGuiTextured, this.getProgressBarFillTexture(), x + 1, y, this.getProgressBarFill(), 13);
+		drawContext.drawGuiTexture(RenderLayer::getGuiTextured, BUNDLE_PROGRESS_BAR_BORDER_TEXTURE, x, y, 96, 13);
 		Text text = this.getProgressBarLabel();
 		if (text != null) {
 			drawContext.drawCenteredTextWithShadow(textRenderer, text, x + 48, y + 3, 16777215);
@@ -174,7 +176,11 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	private int getProgressBarFill() {
-		return MathHelper.multiplyFraction(this.bundleContents.getOccupancy(), 94);
+		return MathHelper.clamp(MathHelper.multiplyFraction(this.bundleContents.getOccupancy(), 94), 0, 94);
+	}
+
+	private Identifier getProgressBarFillTexture() {
+		return this.bundleContents.getOccupancy().compareTo(Fraction.ONE) >= 0 ? BUNDLE_PROGRESS_BAR_FULL_TEXTURE : BUNDLE_PROGRESS_BAR_FILL_TEXTURE;
 	}
 
 	@Nullable

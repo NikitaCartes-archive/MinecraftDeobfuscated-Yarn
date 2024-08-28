@@ -13,14 +13,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MediumPufferfishEntityModel extends EntityModel<EntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart leftBlueFin;
 	private final ModelPart rightBlueFin;
 
-	public MediumPufferfishEntityModel(ModelPart root) {
-		this.root = root;
-		this.leftBlueFin = root.getChild(EntityModelPartNames.LEFT_BLUE_FIN);
-		this.rightBlueFin = root.getChild(EntityModelPartNames.RIGHT_BLUE_FIN);
+	public MediumPufferfishEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.leftBlueFin = modelPart.getChild(EntityModelPartNames.LEFT_BLUE_FIN);
+		this.rightBlueFin = modelPart.getChild(EntityModelPartNames.RIGHT_BLUE_FIN);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -82,12 +81,8 @@ public class MediumPufferfishEntityModel extends EntityModel<EntityRenderState> 
 	}
 
 	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
-	@Override
 	public void setAngles(EntityRenderState state) {
+		super.setAngles(state);
 		this.rightBlueFin.roll = -0.2F + 0.4F * MathHelper.sin(state.age * 0.2F);
 		this.leftBlueFin.roll = 0.2F - 0.4F * MathHelper.sin(state.age * 0.2F);
 	}

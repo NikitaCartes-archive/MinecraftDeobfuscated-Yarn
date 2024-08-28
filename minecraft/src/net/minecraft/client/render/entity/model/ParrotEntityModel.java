@@ -8,9 +8,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.state.ParrotEntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -20,7 +18,6 @@ public class ParrotEntityModel extends EntityModel<ParrotEntityRenderState> {
 	 * The key of the feather model part, whose value is {@value}.
 	 */
 	private static final String FEATHER = "feather";
-	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart tail;
 	private final ModelPart leftWing;
@@ -29,15 +26,15 @@ public class ParrotEntityModel extends EntityModel<ParrotEntityRenderState> {
 	private final ModelPart leftLeg;
 	private final ModelPart rightLeg;
 
-	public ParrotEntityModel(ModelPart root) {
-		this.root = root;
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.tail = root.getChild(EntityModelPartNames.TAIL);
-		this.leftWing = root.getChild(EntityModelPartNames.LEFT_WING);
-		this.rightWing = root.getChild(EntityModelPartNames.RIGHT_WING);
-		this.head = root.getChild(EntityModelPartNames.HEAD);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
+	public ParrotEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
+		this.tail = modelPart.getChild(EntityModelPartNames.TAIL);
+		this.leftWing = modelPart.getChild(EntityModelPartNames.LEFT_WING);
+		this.rightWing = modelPart.getChild(EntityModelPartNames.RIGHT_WING);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -78,71 +75,48 @@ public class ParrotEntityModel extends EntityModel<ParrotEntityRenderState> {
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(ParrotEntityRenderState parrotEntityRenderState) {
+		super.setAngles(parrotEntityRenderState);
 		this.animateModel(parrotEntityRenderState.parrotPose);
-		float f = parrotEntityRenderState.limbFrequency;
-		float g = parrotEntityRenderState.limbAmplitudeMultiplier;
-		this.setAngles(
-			parrotEntityRenderState.parrotPose,
-			parrotEntityRenderState.age,
-			f,
-			g,
-			parrotEntityRenderState.flapAngle,
-			parrotEntityRenderState.yawDegrees,
-			parrotEntityRenderState.pitch
-		);
-	}
-
-	public void poseOnShoulder(
-		MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float limbAngle, float limbDistance, float headYaw, float headPitch, float age
-	) {
-		this.animateModel(ParrotEntityModel.Pose.ON_SHOULDER);
-		this.setAngles(ParrotEntityModel.Pose.ON_SHOULDER, age, limbAngle, limbDistance, 0.0F, headYaw, headPitch);
-		this.root.render(matrices, vertexConsumer, light, overlay);
-	}
-
-	private void setAngles(ParrotEntityModel.Pose pose, float age, float limbAngle, float limbDistance, float flapAngle, float headYaw, float headPitch) {
-		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
-		switch (pose) {
+		this.head.pitch = parrotEntityRenderState.pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = parrotEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
+		switch (parrotEntityRenderState.parrotPose) {
 			case STANDING:
-				this.leftLeg.pitch = this.leftLeg.pitch + MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-				this.rightLeg.pitch = this.rightLeg.pitch + MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+				this.leftLeg.pitch = this.leftLeg.pitch
+					+ MathHelper.cos(parrotEntityRenderState.limbFrequency * 0.6662F) * 1.4F * parrotEntityRenderState.limbAmplitudeMultiplier;
+				this.rightLeg.pitch = this.rightLeg.pitch
+					+ MathHelper.cos(parrotEntityRenderState.limbFrequency * 0.6662F + (float) Math.PI) * 1.4F * parrotEntityRenderState.limbAmplitudeMultiplier;
 			case FLYING:
 			case ON_SHOULDER:
 			default:
-				float h = flapAngle * 0.3F;
+				float h = parrotEntityRenderState.flapAngle * 0.3F;
 				this.head.pivotY += h;
-				this.tail.pitch = this.tail.pitch + MathHelper.cos(limbAngle * 0.6662F) * 0.3F * limbDistance;
+				this.tail.pitch = this.tail.pitch
+					+ MathHelper.cos(parrotEntityRenderState.limbFrequency * 0.6662F) * 0.3F * parrotEntityRenderState.limbAmplitudeMultiplier;
 				this.tail.pivotY += h;
 				this.body.pivotY += h;
-				this.leftWing.roll = -0.0873F - flapAngle;
+				this.leftWing.roll = -0.0873F - parrotEntityRenderState.flapAngle;
 				this.leftWing.pivotY += h;
-				this.rightWing.roll = 0.0873F + flapAngle;
+				this.rightWing.roll = 0.0873F + parrotEntityRenderState.flapAngle;
 				this.rightWing.pivotY += h;
 				this.leftLeg.pivotY += h;
 				this.rightLeg.pivotY += h;
 			case SITTING:
 				break;
 			case PARTY:
-				float f = MathHelper.cos(age);
-				float g = MathHelper.sin(age);
+				float f = MathHelper.cos(parrotEntityRenderState.age);
+				float g = MathHelper.sin(parrotEntityRenderState.age);
 				this.head.pivotX += f;
 				this.head.pivotY += g;
 				this.head.pitch = 0.0F;
 				this.head.yaw = 0.0F;
-				this.head.roll = MathHelper.sin(age) * 0.4F;
+				this.head.roll = MathHelper.sin(parrotEntityRenderState.age) * 0.4F;
 				this.body.pivotX += f;
 				this.body.pivotY += g;
-				this.leftWing.roll = -0.0873F - flapAngle;
+				this.leftWing.roll = -0.0873F - parrotEntityRenderState.flapAngle;
 				this.leftWing.pivotX += f;
 				this.leftWing.pivotY += g;
-				this.rightWing.roll = 0.0873F + flapAngle;
+				this.rightWing.roll = 0.0873F + parrotEntityRenderState.flapAngle;
 				this.rightWing.pivotX += f;
 				this.rightWing.pivotY += g;
 				this.tail.pivotX += f;
@@ -151,13 +125,6 @@ public class ParrotEntityModel extends EntityModel<ParrotEntityRenderState> {
 	}
 
 	private void animateModel(ParrotEntityModel.Pose pose) {
-		this.body.resetTransform();
-		this.head.resetTransform();
-		this.tail.resetTransform();
-		this.rightWing.resetTransform();
-		this.leftWing.resetTransform();
-		this.leftLeg.resetTransform();
-		this.rightLeg.resetTransform();
 		switch (pose) {
 			case FLYING:
 				this.leftLeg.pitch += (float) (Math.PI * 2.0 / 9.0);

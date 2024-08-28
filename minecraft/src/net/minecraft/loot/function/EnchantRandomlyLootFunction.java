@@ -57,7 +57,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		boolean bl2 = !bl && this.onlyCompatible;
 		Stream<RegistryEntry<Enchantment>> stream = ((Stream)this.options
 				.map(RegistryEntryList::stream)
-				.orElseGet(() -> context.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).streamEntries().map(Function.identity())))
+				.orElseGet(() -> context.getWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).streamEntries().map(Function.identity())))
 			.filter(entry -> !bl2 || ((Enchantment)entry.value()).isAcceptableItem(stack));
 		List<RegistryEntry<Enchantment>> list = stream.toList();
 		Optional<RegistryEntry<Enchantment>> optional = Util.getRandomOrEmpty(list, random);
@@ -84,7 +84,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	}
 
 	public static EnchantRandomlyLootFunction.Builder builder(RegistryWrapper.WrapperLookup registries) {
-		return create().options(registries.getWrapperOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(EnchantmentTags.ON_RANDOM_LOOT));
+		return create().options(registries.getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(EnchantmentTags.ON_RANDOM_LOOT));
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<EnchantRandomlyLootFunction.Builder> {

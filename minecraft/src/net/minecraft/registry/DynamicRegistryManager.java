@@ -21,20 +21,10 @@ public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 	Logger LOGGER = LogUtils.getLogger();
 	DynamicRegistryManager.Immutable EMPTY = new DynamicRegistryManager.ImmutableImpl(Map.of()).toImmutable();
 
-	<E> Optional<Registry<E>> getOptional(RegistryKey<? extends Registry<? extends E>> key);
-
 	@Override
-	default <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
-		return this.getOptional(registryRef).map(Registry::getReadOnlyWrapper);
-	}
+	<E> Optional<Registry<E>> getOptional(RegistryKey<? extends Registry<? extends E>> registryRef);
 
-	/**
-	 * Retrieves a registry from this manager, or throws an exception when the registry
-	 * does not exist.
-	 * 
-	 * @throws IllegalStateException if the registry does not exist
-	 */
-	default <E> Registry<E> get(RegistryKey<? extends Registry<? extends E>> key) {
+	default <E> Registry<E> getOrThrow(RegistryKey<? extends Registry<? extends E>> key) {
 		return (Registry<E>)this.getOptional(key).orElseThrow(() -> new IllegalStateException("Missing registry: " + key));
 	}
 
@@ -42,15 +32,15 @@ public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 
 	@Override
 	default Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
-		return this.streamAllRegistries().map(entry -> entry.key);
+		return this.streamAllRegistries().map(registry -> registry.key);
 	}
 
 	static DynamicRegistryManager.Immutable of(Registry<? extends Registry<?>> registries) {
 		return new DynamicRegistryManager.Immutable() {
 			@Override
-			public <T> Optional<Registry<T>> getOptional(RegistryKey<? extends Registry<? extends T>> key) {
+			public <T> Optional<Registry<T>> getOptional(RegistryKey<? extends Registry<? extends T>> registryRef) {
 				Registry<Registry<T>> registry = (Registry<Registry<T>>)registries;
-				return registry.getOrEmpty((RegistryKey<Registry<T>>)key);
+				return registry.getOptionalValue((RegistryKey<Registry<T>>)registryRef);
 			}
 
 			@Override
@@ -114,8 +104,8 @@ public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 		}
 
 		@Override
-		public <E> Optional<Registry<E>> getOptional(RegistryKey<? extends Registry<? extends E>> key) {
-			return Optional.ofNullable((Registry)this.registries.get(key)).map(registry -> registry);
+		public <E> Optional<Registry<E>> getOptional(RegistryKey<? extends Registry<? extends E>> registryRef) {
+			return Optional.ofNullable((Registry)this.registries.get(registryRef)).map(registry -> registry);
 		}
 
 		@Override

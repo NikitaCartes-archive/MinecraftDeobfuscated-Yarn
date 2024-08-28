@@ -31,10 +31,9 @@ public class LlamaSpitEntityModel extends EntityModel<EntityRenderState> {
 	 * The key of the main model part, whose value is {@value}.
 	 */
 	private static final String MAIN = "main";
-	private final ModelPart root;
 
-	public LlamaSpitEntityModel(ModelPart root) {
-		this.root = root;
+	public LlamaSpitEntityModel(ModelPart modelPart) {
+		super(modelPart);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -55,14 +54,5 @@ public class LlamaSpitEntityModel extends EntityModel<EntityRenderState> {
 			ModelTransform.NONE
 		);
 		return TexturedModelData.of(modelData, 64, 32);
-	}
-
-	@Override
-	public void setAngles(EntityRenderState state) {
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

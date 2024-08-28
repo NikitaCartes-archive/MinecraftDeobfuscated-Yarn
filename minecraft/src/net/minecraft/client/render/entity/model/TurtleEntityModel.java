@@ -77,32 +77,26 @@ public class TurtleEntityModel extends QuadrupedEntityModel<TurtleEntityRenderSt
 		super.setAngles(turtleEntityRenderState);
 		float f = turtleEntityRenderState.limbFrequency;
 		float g = turtleEntityRenderState.limbAmplitudeMultiplier;
-		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
-		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
-		this.rightFrontLeg.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
-		this.leftFrontLeg.roll = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
-		this.rightFrontLeg.pitch = 0.0F;
-		this.leftFrontLeg.pitch = 0.0F;
-		this.rightFrontLeg.yaw = 0.0F;
-		this.leftFrontLeg.yaw = 0.0F;
-		this.rightHindLeg.yaw = 0.0F;
-		this.leftHindLeg.yaw = 0.0F;
 		if (turtleEntityRenderState.onLand) {
 			float h = turtleEntityRenderState.diggingSand ? 4.0F : 1.0F;
 			float i = turtleEntityRenderState.diggingSand ? 2.0F : 1.0F;
-			float j = 5.0F;
-			this.rightFrontLeg.yaw = MathHelper.cos(h * f * 5.0F + (float) Math.PI) * 8.0F * g * i;
-			this.rightFrontLeg.roll = 0.0F;
-			this.leftFrontLeg.yaw = MathHelper.cos(h * f * 5.0F) * 8.0F * g * i;
-			this.leftFrontLeg.roll = 0.0F;
-			this.rightHindLeg.yaw = MathHelper.cos(f * 5.0F + (float) Math.PI) * 3.0F * g;
-			this.rightHindLeg.pitch = 0.0F;
-			this.leftHindLeg.yaw = MathHelper.cos(f * 5.0F) * 3.0F * g;
-			this.leftHindLeg.pitch = 0.0F;
+			float j = f * 5.0F;
+			float k = MathHelper.cos(h * j);
+			float l = MathHelper.cos(j);
+			this.rightFrontLeg.yaw = -k * 8.0F * g * i;
+			this.leftFrontLeg.yaw = k * 8.0F * g * i;
+			this.rightHindLeg.yaw = -l * 3.0F * g;
+			this.leftHindLeg.yaw = l * 3.0F * g;
+		} else {
+			float h = 0.5F * g;
+			float i = MathHelper.cos(f * 0.6662F * 0.6F) * h;
+			this.rightHindLeg.pitch = i;
+			this.leftHindLeg.pitch = -i;
+			this.rightFrontLeg.roll = -i;
+			this.leftFrontLeg.roll = i;
 		}
 
 		this.plastron.visible = turtleEntityRenderState.hasEgg;
-		this.root.resetTransform();
 		if (this.plastron.visible) {
 			this.root.pivotY--;
 		}

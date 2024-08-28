@@ -21,7 +21,6 @@ public class PhantomEntityModel extends EntityModel<PhantomEntityRenderState> {
 	 * The key of the tail tip model part, whose value is {@value}.
 	 */
 	private static final String TAIL_TIP = "tail_tip";
-	private final ModelPart root;
 	private final ModelPart leftWingBase;
 	private final ModelPart leftWingTip;
 	private final ModelPart rightWingBase;
@@ -29,14 +28,14 @@ public class PhantomEntityModel extends EntityModel<PhantomEntityRenderState> {
 	private final ModelPart tailBase;
 	private final ModelPart tailTip;
 
-	public PhantomEntityModel(ModelPart root) {
-		this.root = root;
-		ModelPart modelPart = root.getChild(EntityModelPartNames.BODY);
-		this.tailBase = modelPart.getChild("tail_base");
+	public PhantomEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		ModelPart modelPart2 = modelPart.getChild(EntityModelPartNames.BODY);
+		this.tailBase = modelPart2.getChild("tail_base");
 		this.tailTip = this.tailBase.getChild("tail_tip");
-		this.leftWingBase = modelPart.getChild(EntityModelPartNames.LEFT_WING_BASE);
+		this.leftWingBase = modelPart2.getChild(EntityModelPartNames.LEFT_WING_BASE);
 		this.leftWingTip = this.leftWingBase.getChild(EntityModelPartNames.LEFT_WING_TIP);
-		this.rightWingBase = modelPart.getChild(EntityModelPartNames.RIGHT_WING_BASE);
+		this.rightWingBase = modelPart2.getChild(EntityModelPartNames.RIGHT_WING_BASE);
 		this.rightWingTip = this.rightWingBase.getChild(EntityModelPartNames.RIGHT_WING_TIP);
 	}
 
@@ -78,12 +77,8 @@ public class PhantomEntityModel extends EntityModel<PhantomEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(PhantomEntityRenderState phantomEntityRenderState) {
+		super.setAngles(phantomEntityRenderState);
 		float f = phantomEntityRenderState.wingFlapProgress * 7.448451F * (float) (Math.PI / 180.0);
 		float g = 16.0F;
 		this.leftWingBase.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);

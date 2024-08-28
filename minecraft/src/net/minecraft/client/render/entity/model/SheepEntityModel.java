@@ -35,9 +35,8 @@ public class SheepEntityModel extends QuadrupedEntityModel<SheepEntityRenderStat
 	}
 
 	public void setAngles(SheepEntityRenderState sheepEntityRenderState) {
-		this.head.resetTransform();
-		this.head.pivotY = this.head.pivotY + sheepEntityRenderState.neckAngle * 9.0F * sheepEntityRenderState.ageScale;
 		super.setAngles(sheepEntityRenderState);
+		this.head.pivotY = this.head.pivotY + sheepEntityRenderState.neckAngle * 9.0F * sheepEntityRenderState.ageScale;
 		this.head.pitch = sheepEntityRenderState.headAngle;
 	}
 }

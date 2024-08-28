@@ -613,8 +613,6 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		} else if (this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
 			this.close();
 			return true;
-		} else if (this.submenuKeyPressed(keyCode, scanCode)) {
-			return true;
 		} else {
 			this.handleHotbarKeyPressed(keyCode, scanCode);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
@@ -627,19 +625,6 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 			return true;
 		}
-	}
-
-	boolean submenuKeyPressed(int keyCode, int scanCode) {
-		if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
-			for (TooltipSubmenuHandler tooltipSubmenuHandler : this.tooltipSubmenuHandlers) {
-				if (tooltipSubmenuHandler.isApplicableTo(this.focusedSlot)
-					&& tooltipSubmenuHandler.onKeyPressed(this.focusedSlot.getStack(), this.focusedSlot.id, keyCode, scanCode)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	protected boolean handleHotbarKeyPressed(int keyCode, int scanCode) {

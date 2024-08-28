@@ -21,7 +21,7 @@ public class WitchHeldItemFeatureRenderer extends VillagerHeldItemFeatureRendere
 	) {
 		matrixStack.push();
 		if (witchEntityRenderState.rightHandStack.isOf(Items.POTION)) {
-			this.getContextModel().getPart().rotate(matrixStack);
+			this.getContextModel().getRootPart().rotate(matrixStack);
 			this.getContextModel().getHead().rotate(matrixStack);
 			this.getContextModel().getNose().rotate(matrixStack);
 			matrixStack.translate(0.0625F, 0.25F, 0.0F);

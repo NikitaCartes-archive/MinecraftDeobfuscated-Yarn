@@ -132,8 +132,8 @@ public final class SaplingGenerator {
 		RegistryKey<ConfiguredFeature<?, ?>> registryKey = this.getMegaTreeFeature(random);
 		if (registryKey != null) {
 			RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = (RegistryEntry<ConfiguredFeature<?, ?>>)world.getRegistryManager()
-				.get(RegistryKeys.CONFIGURED_FEATURE)
-				.getEntry(registryKey)
+				.getOrThrow(RegistryKeys.CONFIGURED_FEATURE)
+				.getOptional(registryKey)
 				.orElse(null);
 			if (registryEntry != null) {
 				for (int i = 0; i >= -1; i--) {
@@ -165,8 +165,8 @@ public final class SaplingGenerator {
 			return false;
 		} else {
 			RegistryEntry<ConfiguredFeature<?, ?>> registryEntry2 = (RegistryEntry<ConfiguredFeature<?, ?>>)world.getRegistryManager()
-				.get(RegistryKeys.CONFIGURED_FEATURE)
-				.getEntry(registryKey2)
+				.getOrThrow(RegistryKeys.CONFIGURED_FEATURE)
+				.getOptional(registryKey2)
 				.orElse(null);
 			if (registryEntry2 == null) {
 				return false;

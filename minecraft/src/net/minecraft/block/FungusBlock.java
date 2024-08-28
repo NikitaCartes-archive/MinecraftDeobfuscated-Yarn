@@ -53,7 +53,7 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 	}
 
 	private Optional<? extends RegistryEntry<ConfiguredFeature<?, ?>>> getFeatureEntry(WorldView world) {
-		return world.getRegistryManager().get(RegistryKeys.CONFIGURED_FEATURE).getEntry(this.featureKey);
+		return world.getRegistryManager().getOrThrow(RegistryKeys.CONFIGURED_FEATURE).getOptional(this.featureKey);
 	}
 
 	@Override

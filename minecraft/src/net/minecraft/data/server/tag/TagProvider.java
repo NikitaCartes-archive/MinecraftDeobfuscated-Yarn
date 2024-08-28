@@ -68,7 +68,7 @@ public abstract class TagProvider<T> implements DataProvider {
 			.thenCombineAsync(this.parentTagLookupFuture, (registries, parent) -> new RegistryInfo(registries, parent), Util.getMainWorkerExecutor())
 			.thenCompose(
 				info -> {
-					RegistryWrapper.Impl<T> impl = info.contents.getWrapperOrThrow(this.registryRef);
+					RegistryWrapper.Impl<T> impl = info.contents.getOrThrow(this.registryRef);
 					Predicate<Identifier> predicate = id -> impl.getOptional(RegistryKey.of(this.registryRef, id)).isPresent();
 					Predicate<Identifier> predicate2 = id -> this.tagBuilders.containsKey(id) || info.parent.contains(TagKey.of(this.registryRef, id));
 					return CompletableFuture.allOf(

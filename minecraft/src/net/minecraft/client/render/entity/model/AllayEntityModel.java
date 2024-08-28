@@ -18,31 +18,18 @@ import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class AllayEntityModel extends EntityModel<AllayEntityRenderState> implements ModelWithArms {
-	private final ModelPart root;
-	private final ModelPart head;
-	private final ModelPart body;
-	private final ModelPart rightArm;
-	private final ModelPart leftArm;
-	private final ModelPart rightWing;
-	private final ModelPart leftWing;
+	private final ModelPart head = this.root.getChild(EntityModelPartNames.HEAD);
+	private final ModelPart body = this.root.getChild(EntityModelPartNames.BODY);
+	private final ModelPart rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
+	private final ModelPart leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
+	private final ModelPart rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
+	private final ModelPart leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
 	private static final float field_38999 = (float) (Math.PI / 4);
 	private static final float field_39000 = -1.134464F;
 	private static final float field_39001 = (float) (-Math.PI / 3);
 
-	public AllayEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityTranslucent);
-		this.root = root.getChild(EntityModelPartNames.ROOT);
-		this.head = this.root.getChild(EntityModelPartNames.HEAD);
-		this.body = this.root.getChild(EntityModelPartNames.BODY);
-		this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
-		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
-		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
+	public AllayEntityModel(ModelPart modelPart) {
+		super(modelPart.getChild(EntityModelPartNames.ROOT), RenderLayer::getEntityTranslucent);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -87,7 +74,7 @@ public class AllayEntityModel extends EntityModel<AllayEntityRenderState> implem
 	}
 
 	public void setAngles(AllayEntityRenderState allayEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(allayEntityRenderState);
 		float f = allayEntityRenderState.limbAmplitudeMultiplier;
 		float g = allayEntityRenderState.limbFrequency;
 		float h = allayEntityRenderState.age * 20.0F * (float) (Math.PI / 180.0) + g;

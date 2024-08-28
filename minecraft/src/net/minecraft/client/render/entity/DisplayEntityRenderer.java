@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -18,13 +19,12 @@ import net.minecraft.client.render.entity.state.ItemDisplayEntityRenderState;
 import net.minecraft.client.render.entity.state.TextDisplayEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
@@ -47,8 +47,19 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S, ST exten
 		return displayEntity.shouldRender();
 	}
 
-	public Identifier getTexture(DisplayEntityRenderState displayEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+	private static int getBrightnessOverride(DisplayEntity entity) {
+		DisplayEntity.RenderState renderState = entity.getRenderState();
+		return renderState != null ? renderState.brightnessOverride() : -1;
+	}
+
+	protected int getSkyLight(T displayEntity, BlockPos blockPos) {
+		int i = getBrightnessOverride(displayEntity);
+		return i != -1 ? LightmapTextureManager.getSkyLightCoordinates(i) : super.getSkyLight(displayEntity, blockPos);
+	}
+
+	protected int getBlockLight(T displayEntity, BlockPos blockPos) {
+		int i = getBrightnessOverride(displayEntity);
+		return i != -1 ? LightmapTextureManager.getBlockLightCoordinates(i) : super.getBlockLight(displayEntity, blockPos);
 	}
 
 	public void render(ST displayEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -58,14 +69,12 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S, ST exten
 				float f = displayEntityRenderState.lerpProgress;
 				this.shadowRadius = renderState.shadowRadius().lerp(f);
 				this.shadowOpacity = renderState.shadowStrength().lerp(f);
-				int j = renderState.brightnessOverride();
-				int k = j != -1 ? j : i;
-				super.render(displayEntityRenderState, matrixStack, vertexConsumerProvider, k);
+				super.render(displayEntityRenderState, matrixStack, vertexConsumerProvider, i);
 				matrixStack.push();
 				matrixStack.multiply(this.getBillboardRotation(renderState, displayEntityRenderState, new Quaternionf()));
 				AffineTransformation affineTransformation = renderState.transformation().interpolate(f);
 				matrixStack.multiplyPositionMatrix(affineTransformation.getMatrix());
-				this.render(displayEntityRenderState, matrixStack, vertexConsumerProvider, k, f);
+				this.render(displayEntityRenderState, matrixStack, vertexConsumerProvider, i, f);
 				matrixStack.pop();
 			}
 		}

@@ -399,9 +399,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			} else {
 				return super.keyPressed(keyCode, scanCode, modifiers);
 			}
-		} else if (super.submenuKeyPressed(keyCode, scanCode)) {
-			this.ignoreTypedCharacter = true;
-			return true;
 		} else {
 			boolean bl = !this.isCreativeInventorySlot(this.focusedSlot) || this.focusedSlot.hasStack();
 			boolean bl2 = InputUtil.fromKeyCode(keyCode, scanCode).toInt().isPresent();

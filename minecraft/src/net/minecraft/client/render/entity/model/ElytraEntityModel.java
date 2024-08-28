@@ -32,14 +32,13 @@ import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 @Environment(EnvType.CLIENT)
 public class ElytraEntityModel extends EntityModel<BipedEntityRenderState> {
 	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
-	private final ModelPart root;
 	private final ModelPart rightWing;
 	private final ModelPart leftWing;
 
-	public ElytraEntityModel(ModelPart root) {
-		this.root = root;
-		this.leftWing = root.getChild(EntityModelPartNames.LEFT_WING);
-		this.rightWing = root.getChild(EntityModelPartNames.RIGHT_WING);
+	public ElytraEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.leftWing = modelPart.getChild(EntityModelPartNames.LEFT_WING);
+		this.rightWing = modelPart.getChild(EntityModelPartNames.RIGHT_WING);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -60,6 +59,7 @@ public class ElytraEntityModel extends EntityModel<BipedEntityRenderState> {
 	}
 
 	public void setAngles(BipedEntityRenderState bipedEntityRenderState) {
+		super.setAngles(bipedEntityRenderState);
 		this.leftWing.pivotY = bipedEntityRenderState.isInSneakingPose ? 3.0F : 0.0F;
 		this.leftWing.pitch = bipedEntityRenderState.leftWingPitch;
 		this.leftWing.roll = bipedEntityRenderState.leftWingRoll;
@@ -68,10 +68,5 @@ public class ElytraEntityModel extends EntityModel<BipedEntityRenderState> {
 		this.rightWing.pivotY = this.leftWing.pivotY;
 		this.rightWing.pitch = this.leftWing.pitch;
 		this.rightWing.roll = -this.leftWing.roll;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

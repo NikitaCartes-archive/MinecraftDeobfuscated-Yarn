@@ -39,7 +39,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	public ClientChunkManager(ClientWorld world, int loadDistance) {
 		this.world = world;
-		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0), world.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.PLAINS));
+		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0), world.getRegistryManager().getOrThrow(RegistryKeys.BIOME).getOrThrow(BiomeKeys.PLAINS));
 		this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
 		this.chunks = new ClientChunkManager.ClientChunkMap(getChunkMapRadius(loadDistance));
 	}
@@ -63,7 +63,7 @@ public class ClientChunkManager extends ChunkManager {
 			int i = this.chunks.getIndex(pos.x, pos.z);
 			WorldChunk worldChunk = this.chunks.getChunk(i);
 			if (positionEquals(worldChunk, pos.x, pos.z)) {
-				this.chunks.method_62893(i, worldChunk);
+				this.chunks.unloadChunk(i, worldChunk);
 			}
 		}
 	}
@@ -168,22 +168,22 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public void onLightUpdate(LightType type, ChunkSectionPos pos) {
-		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(pos.getSectionX(), pos.getSectionY(), pos.getSectionZ());
+		MinecraftClient.getInstance().worldRenderer.scheduleChunkRender(pos.getSectionX(), pos.getSectionY(), pos.getSectionZ());
 	}
 
 	public LongOpenHashSet method_62890() {
-		return this.chunks.field_53836;
+		return this.chunks.activeSections;
 	}
 
 	@Override
 	public void onSectionStatusChanged(int x, int sectionY, int z, boolean previouslyEmpty) {
-		this.chunks.method_62891(x, sectionY, z, previouslyEmpty);
+		this.chunks.onSectionStatusChanged(x, sectionY, z, previouslyEmpty);
 	}
 
 	@Environment(EnvType.CLIENT)
 	final class ClientChunkMap {
 		final AtomicReferenceArray<WorldChunk> chunks;
-		final LongOpenHashSet field_53836 = new LongOpenHashSet();
+		final LongOpenHashSet activeSections = new LongOpenHashSet();
 		final int radius;
 		private final int diameter;
 		volatile int centerChunkX;
@@ -204,53 +204,53 @@ public class ClientChunkManager extends ChunkManager {
 			WorldChunk worldChunk = (WorldChunk)this.chunks.getAndSet(index, chunk);
 			if (worldChunk != null) {
 				this.loadedChunkCount--;
-				this.method_62892(worldChunk);
+				this.unloadChunkSections(worldChunk);
 				ClientChunkManager.this.world.unloadBlockEntities(worldChunk);
 			}
 
 			if (chunk != null) {
 				this.loadedChunkCount++;
-				this.method_62894(chunk);
+				this.loadChunkSections(chunk);
 			}
 		}
 
-		void method_62893(int i, WorldChunk worldChunk) {
-			if (this.chunks.compareAndSet(i, worldChunk, null)) {
+		void unloadChunk(int index, WorldChunk chunk) {
+			if (this.chunks.compareAndSet(index, chunk, null)) {
 				this.loadedChunkCount--;
-				this.method_62892(worldChunk);
+				this.unloadChunkSections(chunk);
 			}
 
-			ClientChunkManager.this.world.unloadBlockEntities(worldChunk);
+			ClientChunkManager.this.world.unloadBlockEntities(chunk);
 		}
 
-		public void method_62891(int i, int j, int k, boolean bl) {
-			if (this.isInRadius(i, k)) {
-				long l = ChunkSectionPos.asLong(i, j, k);
-				if (bl) {
-					this.field_53836.add(l);
-				} else if (this.field_53836.remove(l)) {
-					ClientChunkManager.this.world.method_62895(l);
+		public void onSectionStatusChanged(int x, int sectionY, int z, boolean previouslyEmpty) {
+			if (this.isInRadius(x, z)) {
+				long l = ChunkSectionPos.asLong(x, sectionY, z);
+				if (previouslyEmpty) {
+					this.activeSections.add(l);
+				} else if (this.activeSections.remove(l)) {
+					ClientChunkManager.this.world.onChunkUnload(l);
 				}
 			}
 		}
 
-		private void method_62892(WorldChunk worldChunk) {
-			ChunkSection[] chunkSections = worldChunk.getSectionArray();
+		private void unloadChunkSections(WorldChunk chunk) {
+			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < chunkSections.length; i++) {
-				ChunkPos chunkPos = worldChunk.getPos();
-				this.field_53836.remove(ChunkSectionPos.asLong(chunkPos.x, worldChunk.sectionIndexToCoord(i), chunkPos.z));
+				ChunkPos chunkPos = chunk.getPos();
+				this.activeSections.remove(ChunkSectionPos.asLong(chunkPos.x, chunk.sectionIndexToCoord(i), chunkPos.z));
 			}
 		}
 
-		private void method_62894(WorldChunk worldChunk) {
-			ChunkSection[] chunkSections = worldChunk.getSectionArray();
+		private void loadChunkSections(WorldChunk chunk) {
+			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < chunkSections.length; i++) {
 				ChunkSection chunkSection = chunkSections[i];
 				if (chunkSection.isEmpty()) {
-					ChunkPos chunkPos = worldChunk.getPos();
-					this.field_53836.add(ChunkSectionPos.asLong(chunkPos.x, worldChunk.sectionIndexToCoord(i), chunkPos.z));
+					ChunkPos chunkPos = chunk.getPos();
+					this.activeSections.add(ChunkSectionPos.asLong(chunkPos.x, chunk.sectionIndexToCoord(i), chunkPos.z));
 				}
 			}
 		}

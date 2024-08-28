@@ -95,7 +95,7 @@ public class ItemEnchantmentsComponent implements TooltipAppender {
 		@Nullable RegistryWrapper.WrapperLookup registries, RegistryKey<Registry<T>> registryRef, TagKey<T> tooltipOrderTag
 	) {
 		if (registries != null) {
-			Optional<RegistryEntryList.Named<T>> optional = registries.getWrapperOrThrow(registryRef).getOptional(tooltipOrderTag);
+			Optional<RegistryEntryList.Named<T>> optional = registries.getOrThrow(registryRef).getOptional(tooltipOrderTag);
 			if (optional.isPresent()) {
 				return (RegistryEntryList<T>)optional.get();
 			}

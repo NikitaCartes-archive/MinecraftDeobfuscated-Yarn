@@ -27,7 +27,6 @@ public class WolfEntityModel extends EntityModel<WolfEntityRenderState> {
 	 * The key of the real tail model part, whose value is {@value}.
 	 */
 	private static final String REAL_TAIL = "real_tail";
-	private final ModelPart root;
 	/**
 	 * The main bone used to animate the head. Contains {@link #realHead} as one of its children.
 	 */
@@ -46,17 +45,17 @@ public class WolfEntityModel extends EntityModel<WolfEntityRenderState> {
 	private final ModelPart neck;
 	private static final int field_32580 = 8;
 
-	public WolfEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public WolfEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.realHead = this.head.getChild("real_head");
-		this.torso = root.getChild(EntityModelPartNames.BODY);
-		this.neck = root.getChild("upper_body");
-		this.rightHindLeg = root.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = root.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = root.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
-		this.tail = root.getChild(EntityModelPartNames.TAIL);
+		this.torso = modelPart.getChild(EntityModelPartNames.BODY);
+		this.neck = modelPart.getChild("upper_body");
+		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = modelPart.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
+		this.tail = modelPart.getChild(EntityModelPartNames.TAIL);
 		this.realTail = this.tail.getChild("real_tail");
 	}
 
@@ -101,13 +100,7 @@ public class WolfEntityModel extends EntityModel<WolfEntityRenderState> {
 	}
 
 	public void setAngles(WolfEntityRenderState wolfEntityRenderState) {
-		this.torso.resetTransform();
-		this.neck.resetTransform();
-		this.tail.resetTransform();
-		this.rightHindLeg.resetTransform();
-		this.leftHindLeg.resetTransform();
-		this.rightFrontLeg.resetTransform();
-		this.leftFrontLeg.resetTransform();
+		super.setAngles(wolfEntityRenderState);
 		float f = wolfEntityRenderState.limbFrequency;
 		float g = wolfEntityRenderState.limbAmplitudeMultiplier;
 		if (wolfEntityRenderState.angerTime) {
@@ -152,10 +145,5 @@ public class WolfEntityModel extends EntityModel<WolfEntityRenderState> {
 		this.head.pitch = wolfEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.yaw = wolfEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.tail.pitch = wolfEntityRenderState.tailAngle;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

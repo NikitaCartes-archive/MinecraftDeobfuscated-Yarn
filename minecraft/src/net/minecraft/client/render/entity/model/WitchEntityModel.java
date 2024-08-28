@@ -63,21 +63,20 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class WitchEntityModel extends EntityModel<WitchEntityRenderState> implements ModelWithHead, ModelWithHat {
 	protected final ModelPart nose;
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart hat;
 	private final ModelPart hatRim;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
 
-	public WitchEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public WitchEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.hat = this.head.getChild(EntityModelPartNames.HAT);
 		this.hatRim = this.hat.getChild(EntityModelPartNames.HAT_RIM);
 		this.nose = this.head.getChild(EntityModelPartNames.NOSE);
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -112,20 +111,16 @@ public class WitchEntityModel extends EntityModel<WitchEntityRenderState> implem
 	}
 
 	public void setAngles(WitchEntityRenderState witchEntityRenderState) {
+		super.setAngles(witchEntityRenderState);
 		this.head.yaw = witchEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		this.head.pitch = witchEntityRenderState.pitch * (float) (Math.PI / 180.0);
-		this.head.roll = 0.0F;
 		this.rightLeg.pitch = MathHelper.cos(witchEntityRenderState.limbFrequency * 0.6662F) * 1.4F * witchEntityRenderState.limbAmplitudeMultiplier * 0.5F;
 		this.leftLeg.pitch = MathHelper.cos(witchEntityRenderState.limbFrequency * 0.6662F + (float) Math.PI)
 			* 1.4F
 			* witchEntityRenderState.limbAmplitudeMultiplier
 			* 0.5F;
-		this.rightLeg.yaw = 0.0F;
-		this.leftLeg.yaw = 0.0F;
-		this.nose.setPivot(0.0F, -2.0F, 0.0F);
 		float f = 0.01F * (float)(witchEntityRenderState.id % 10);
 		this.nose.pitch = MathHelper.sin(witchEntityRenderState.age * f) * 4.5F * (float) (Math.PI / 180.0);
-		this.nose.yaw = 0.0F;
 		this.nose.roll = MathHelper.cos(witchEntityRenderState.age * f) * 2.5F * (float) (Math.PI / 180.0);
 		if (witchEntityRenderState.holdingItem) {
 			this.nose.setPivot(0.0F, 1.0F, -1.5F);
@@ -135,11 +130,6 @@ public class WitchEntityModel extends EntityModel<WitchEntityRenderState> implem
 
 	public ModelPart getNose() {
 		return this.nose;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 
 	@Override

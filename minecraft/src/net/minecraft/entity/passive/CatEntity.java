@@ -162,7 +162,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 	@Override
 	protected void initDataTracker(DataTracker.Builder builder) {
 		super.initDataTracker(builder);
-		builder.add(CAT_VARIANT, Registries.CAT_VARIANT.entryOf(DEFAULT_VARIANT));
+		builder.add(CAT_VARIANT, Registries.CAT_VARIANT.getOrThrow(DEFAULT_VARIANT));
 		builder.add(IN_SLEEPING_POSE, false);
 		builder.add(HEAD_DOWN, false);
 		builder.add(COLLAR_COLOR, DyeColor.RED.getId());
@@ -180,7 +180,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 		super.readCustomDataFromNbt(nbt);
 		Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
 			.map(id -> RegistryKey.of(RegistryKeys.CAT_VARIANT, id))
-			.flatMap(Registries.CAT_VARIANT::getEntry)
+			.flatMap(Registries.CAT_VARIANT::getOptional)
 			.ifPresent(this::setVariant);
 		if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
 			this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
@@ -361,7 +361,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 		Registries.CAT_VARIANT.getRandomEntry(tagKey, world.getRandom()).ifPresent(this::setVariant);
 		ServerWorld serverWorld = world.toServerWorld();
 		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
-			this.setVariant(Registries.CAT_VARIANT.entryOf(CatVariant.ALL_BLACK));
+			this.setVariant(Registries.CAT_VARIANT.getOrThrow(CatVariant.ALL_BLACK));
 			this.setPersistent();
 		}
 

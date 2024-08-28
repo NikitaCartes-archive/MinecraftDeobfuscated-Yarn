@@ -204,7 +204,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater() && this.isTargetingUnderwater()) {
+		if (this.isLogicalSideForUpdatingMovement() && this.isSubmergedInWater() && this.isTargetingUnderwater()) {
 			this.updateVelocity(0.01F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -216,7 +216,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	@Override
 	public void updateSwimming() {
 		if (!this.getWorld().isClient) {
-			if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
+			if (this.canMoveVoluntarily() && this.isSubmergedInWater() && this.isTargetingUnderwater()) {
 				this.navigation = this.waterNavigation;
 				this.setSwimming(true);
 			} else {

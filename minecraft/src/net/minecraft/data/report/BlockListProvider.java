@@ -36,7 +36,7 @@ public class BlockListProvider implements DataProvider {
 				registries -> {
 					JsonObject jsonObject = new JsonObject();
 					RegistryOps<JsonElement> registryOps = registries.getOps(JsonOps.INSTANCE);
-					registries.getWrapperOrThrow(RegistryKeys.BLOCK)
+					registries.getOrThrow(RegistryKeys.BLOCK)
 						.streamEntries()
 						.forEach(
 							entry -> {

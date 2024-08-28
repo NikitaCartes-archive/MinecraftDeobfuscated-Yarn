@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -103,7 +102,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	private static final int field_30605 = 10;
 	private static final int field_30606 = 1200;
 	private static final int field_30607 = 24000;
-	private static final int field_30608 = 25;
 	private static final int field_30609 = 10;
 	private static final int field_30610 = 5;
 	private static final long field_30611 = 24000L;
@@ -387,11 +385,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		return true;
 	}
 
-	@Override
-	public boolean isClient() {
-		return this.getWorld().isClient;
-	}
-
 	public void restock() {
 		this.updateDemandBonus();
 
@@ -616,14 +609,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (offer.shouldRewardPlayerExperience()) {
 			this.getWorld().spawnEntity(new ExperienceOrbEntity(this.getWorld(), this.getX(), this.getY() + 0.5, this.getZ(), i));
 		}
-	}
-
-	public void method_35201(boolean bl) {
-		this.field_30612 = bl;
-	}
-
-	public boolean method_35200() {
-		return this.field_30612;
 	}
 
 	@Override
@@ -907,7 +892,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (this.canSummonGolem(time)) {
 			Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
 			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
-			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
+			List<VillagerEntity> list2 = list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).toList();
 			if (list2.size() >= requiredCount) {
 				if (!LargeEntitySpawnHelper.trySpawnAt(
 						EntityType.IRON_GOLEM, SpawnReason.MOB_SUMMONED, world, this.getBlockPos(), 10, 8, 6, LargeEntitySpawnHelper.Requirements.IRON_GOLEM
@@ -981,6 +966,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	private boolean hasRecentlySlept(long worldTime) {
 		Optional<Long> optional = this.brain.getOptionalRegisteredMemory(MemoryModuleType.LAST_SLEPT);
-		return optional.isPresent() ? worldTime - (Long)optional.get() < 24000L : false;
+		return optional.filter(lastSlept -> worldTime - lastSlept < 24000L).isPresent();
 	}
 }

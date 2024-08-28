@@ -31,7 +31,7 @@ public record ReferenceLootCondition(RegistryKey<LootCondition> id) implements L
 		} else {
 			LootCondition.super.validate(reporter);
 			reporter.getDataLookup()
-				.getOptionalEntry(RegistryKeys.PREDICATE, this.id)
+				.getOptionalEntry(this.id)
 				.ifPresentOrElse(
 					entry -> ((LootCondition)entry.value()).validate(reporter.makeChild(".{" + this.id.getValue() + "}", this.id)),
 					() -> reporter.report("Unknown condition table called " + this.id.getValue())
@@ -40,10 +40,7 @@ public record ReferenceLootCondition(RegistryKey<LootCondition> id) implements L
 	}
 
 	public boolean test(LootContext lootContext) {
-		LootCondition lootCondition = (LootCondition)lootContext.getLookup()
-			.getOptionalEntry(RegistryKeys.PREDICATE, this.id)
-			.map(RegistryEntry.Reference::value)
-			.orElse(null);
+		LootCondition lootCondition = (LootCondition)lootContext.getLookup().getOptionalEntry(this.id).map(RegistryEntry.Reference::value).orElse(null);
 		if (lootCondition == null) {
 			LOGGER.warn("Tried using unknown condition table called {}", this.id.getValue());
 			return false;

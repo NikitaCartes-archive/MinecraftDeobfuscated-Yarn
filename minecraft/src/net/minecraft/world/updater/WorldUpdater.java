@@ -80,7 +80,7 @@ public class WorldUpdater implements AutoCloseable {
 	public WorldUpdater(
 		LevelStorage.Session session, DataFixer dataFixer, DynamicRegistryManager dynamicRegistryManager, boolean eraseCache, boolean recreateRegionFiles
 	) {
-		this.dimensionOptionsRegistry = dynamicRegistryManager.get(RegistryKeys.DIMENSION);
+		this.dimensionOptionsRegistry = dynamicRegistryManager.getOrThrow(RegistryKeys.DIMENSION);
 		this.worldKeys = (Set<RegistryKey<World>>)this.dimensionOptionsRegistry
 			.getKeys()
 			.stream()
@@ -238,7 +238,7 @@ public class WorldUpdater implements AutoCloseable {
 			NbtCompound nbtCompound = (NbtCompound)((Optional)versionedChunkStorage.getNbt(chunkPos).join()).orElse(null);
 			if (nbtCompound != null) {
 				int i = VersionedChunkStorage.getDataVersion(nbtCompound);
-				ChunkGenerator chunkGenerator = WorldUpdater.this.dimensionOptionsRegistry.getOrThrow(RegistryKeys.toDimensionKey(registryKey)).chunkGenerator();
+				ChunkGenerator chunkGenerator = WorldUpdater.this.dimensionOptionsRegistry.getValueOrThrow(RegistryKeys.toDimensionKey(registryKey)).chunkGenerator();
 				NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(
 					registryKey, () -> WorldUpdater.this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey()
 				);

@@ -21,7 +21,8 @@ public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, 
 		return 180.0F;
 	}
 
-	public Identifier getTexture(LivingEntityRenderState livingEntityRenderState) {
+	@Override
+	public Identifier getTexture(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 

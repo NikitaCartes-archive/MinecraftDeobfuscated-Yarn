@@ -31,12 +31,11 @@ import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
  */
 @Environment(EnvType.CLIENT)
 public class SkullEntityModel extends SkullBlockEntityModel {
-	private final ModelPart root;
 	protected final ModelPart head;
 
-	public SkullEntityModel(ModelPart root) {
-		this.root = root;
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public SkullEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 	}
 
 	public static ModelData getModelData() {
@@ -65,10 +64,5 @@ public class SkullEntityModel extends SkullBlockEntityModel {
 	public void setHeadRotation(float animationProgress, float yaw, float pitch) {
 		this.head.yaw = yaw * (float) (Math.PI / 180.0);
 		this.head.pitch = pitch * (float) (Math.PI / 180.0);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

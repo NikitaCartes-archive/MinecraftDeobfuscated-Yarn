@@ -392,9 +392,9 @@ public class CreateWorldScreen extends Screen {
 		SaveLoading.<CreateWorldScreen.WorldCreationSettings, GeneratorOptionsHolder>load(
 				serverConfig,
 				context -> {
-					if (context.worldGenRegistryManager().getWrapperOrThrow(RegistryKeys.WORLD_PRESET).streamEntries().findAny().isEmpty()) {
+					if (context.worldGenRegistryManager().getOrThrow(RegistryKeys.WORLD_PRESET).streamEntries().findAny().isEmpty()) {
 						throw new IllegalStateException("Needs at least one world preset to continue");
-					} else if (context.worldGenRegistryManager().getWrapperOrThrow(RegistryKeys.BIOME).streamEntries().findAny().isEmpty()) {
+					} else if (context.worldGenRegistryManager().getOrThrow(RegistryKeys.BIOME).streamEntries().findAny().isEmpty()) {
 						throw new IllegalStateException("Needs at least one biome continue");
 					} else {
 						GeneratorOptionsHolder generatorOptionsHolder = this.worldCreator.getGeneratorOptionsHolder();

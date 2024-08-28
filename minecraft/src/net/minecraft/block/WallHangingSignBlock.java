@@ -79,11 +79,6 @@ public class WallHangingSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public String getTranslationKey() {
-		return this.asItem().getTranslationKey();
-	}
-
-	@Override
 	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return (VoxelShape)OUTLINE_SHAPES.get(state.get(FACING));
 	}

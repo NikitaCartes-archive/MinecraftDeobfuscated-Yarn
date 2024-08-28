@@ -52,7 +52,7 @@ public class SimpleDefaultedRegistry<T> extends SimpleRegistry<T> implements Def
 	}
 
 	@Override
-	public Optional<T> getOrEmpty(@Nullable Identifier id) {
+	public Optional<T> getOptionalValue(@Nullable Identifier id) {
 		return Optional.ofNullable(super.get(id));
 	}
 

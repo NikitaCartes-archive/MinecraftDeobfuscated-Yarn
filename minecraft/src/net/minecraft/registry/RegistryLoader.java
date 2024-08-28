@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.jukebox.JukeboxSong;
+import net.minecraft.block.spawner.TrialSpawnerConfig;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.provider.EnchantmentProvider;
 import net.minecraft.entity.damage.DamageType;
@@ -93,6 +94,7 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.TRIAL_SPAWNER, TrialSpawnerConfig.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.WOLF_VARIANT, WolfVariant.CODEC, true),
 		new RegistryLoader.Entry<>(RegistryKeys.PAINTING_VARIANT, PaintingVariant.CODEC, true),
 		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
@@ -165,7 +167,7 @@ public class RegistryLoader {
 
 	private static RegistryOps.RegistryInfoGetter createInfoGetter(List<RegistryWrapper.Impl<?>> registries, List<RegistryLoader.Loader<?>> additionalRegistries) {
 		final Map<RegistryKey<? extends Registry<?>>, RegistryOps.RegistryInfo<?>> map = new HashMap();
-		registries.forEach(registry -> map.put(registry.getRegistryKey(), createInfo(registry)));
+		registries.forEach(registry -> map.put(registry.getKey(), createInfo(registry)));
 		additionalRegistries.forEach(loader -> map.put(loader.registry.getKey(), createInfo(loader.registry)));
 		return new RegistryOps.RegistryInfoGetter() {
 			@Override
@@ -176,7 +178,7 @@ public class RegistryLoader {
 	}
 
 	private static <T> RegistryOps.RegistryInfo<T> createInfo(MutableRegistry<T> registry) {
-		return new RegistryOps.RegistryInfo<>(registry.getReadOnlyWrapper(), registry.createMutableEntryLookup(), registry.getLifecycle());
+		return new RegistryOps.RegistryInfo<>(registry, registry.createMutableEntryLookup(), registry.getLifecycle());
 	}
 
 	private static <T> RegistryOps.RegistryInfo<T> createInfo(RegistryWrapper.Impl<T> registry) {

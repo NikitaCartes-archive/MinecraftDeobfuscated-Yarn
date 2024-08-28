@@ -529,7 +529,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * <p>{@code user} might not be a player in some cases. For example, this occurs when
 	 * an entity uses a crossbow.
 	 */
-	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+	public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+		return false;
 	}
 
 	/**

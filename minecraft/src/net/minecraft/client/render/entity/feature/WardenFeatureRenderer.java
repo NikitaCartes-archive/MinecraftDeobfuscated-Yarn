@@ -48,12 +48,12 @@ public class WardenFeatureRenderer extends FeatureRenderer<WardenEntityRenderSta
 
 	private void updateModelPartVisibility() {
 		List<ModelPart> list = this.modelPartVisibility.getPartsToDraw(this.getContextModel());
-		this.getContextModel().getPart().traverse().forEach(part -> part.hidden = true);
+		this.getContextModel().getParts().forEach(part -> part.hidden = true);
 		list.forEach(part -> part.hidden = false);
 	}
 
 	private void unhideAllModelParts() {
-		this.getContextModel().getPart().traverse().forEach(part -> part.hidden = false);
+		this.getContextModel().getParts().forEach(part -> part.hidden = false);
 	}
 
 	@Environment(EnvType.CLIENT)

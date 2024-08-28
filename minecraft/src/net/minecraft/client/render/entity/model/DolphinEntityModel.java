@@ -50,14 +50,13 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class DolphinEntityModel extends EntityModel<DolphinEntityRenderState> {
 	public static final ModelTransformer BABY_TRANSFORMER = ModelTransformer.scaling(0.5F);
-	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart tail;
 	private final ModelPart tailFin;
 
-	public DolphinEntityModel(ModelPart root) {
-		this.root = root;
-		this.body = root.getChild(EntityModelPartNames.BODY);
+	public DolphinEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
 		this.tail = this.body.getChild(EntityModelPartNames.TAIL);
 		this.tailFin = this.tail.getChild(EntityModelPartNames.TAIL_FIN);
 	}
@@ -100,12 +99,8 @@ public class DolphinEntityModel extends EntityModel<DolphinEntityRenderState> {
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(DolphinEntityRenderState dolphinEntityRenderState) {
+		super.setAngles(dolphinEntityRenderState);
 		this.body.pitch = dolphinEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.body.yaw = dolphinEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		if (dolphinEntityRenderState.moving) {

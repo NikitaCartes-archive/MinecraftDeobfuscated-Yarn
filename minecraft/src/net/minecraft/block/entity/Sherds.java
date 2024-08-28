@@ -17,10 +17,10 @@ import net.minecraft.registry.RegistryKeys;
 
 public record Sherds(Optional<Item> back, Optional<Item> left, Optional<Item> right, Optional<Item> front) {
 	public static final Sherds DEFAULT = new Sherds(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
-	public static final Codec<Sherds> CODEC = Registries.ITEM.getCodec().sizeLimitedListOf(4).xmap(Sherds::new, Sherds::stream);
+	public static final Codec<Sherds> CODEC = Registries.ITEM.getCodec().sizeLimitedListOf(4).xmap(Sherds::new, Sherds::toList);
 	public static final PacketCodec<RegistryByteBuf, Sherds> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.ITEM)
 		.collect(PacketCodecs.toList(4))
-		.xmap(Sherds::new, Sherds::stream);
+		.xmap(Sherds::new, Sherds::toList);
 
 	private Sherds(List<Item> sherds) {
 		this(getSherd(sherds, 0), getSherd(sherds, 1), getSherd(sherds, 2), getSherd(sherds, 3));
@@ -48,7 +48,7 @@ public record Sherds(Optional<Item> back, Optional<Item> left, Optional<Item> ri
 		}
 	}
 
-	public List<Item> stream() {
+	public List<Item> toList() {
 		return Stream.of(this.back, this.left, this.right, this.front).map(item -> (Item)item.orElse(Items.BRICK)).toList();
 	}
 

@@ -48,7 +48,6 @@ public class ZombieVillagerEntityRenderer
 		super.updateRenderState(zombieVillagerEntity, zombieVillagerRenderState, f);
 		zombieVillagerRenderState.convertingInWater = zombieVillagerEntity.isConverting();
 		zombieVillagerRenderState.villagerData = zombieVillagerEntity.getVillagerData();
-		zombieVillagerRenderState.attacking = zombieVillagerEntity.isAttacking();
 	}
 
 	protected boolean isShaking(ZombieVillagerRenderState zombieVillagerRenderState) {

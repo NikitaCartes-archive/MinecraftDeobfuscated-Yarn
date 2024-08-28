@@ -50,7 +50,6 @@ import net.minecraft.client.render.entity.state.BatEntityRenderState;
  */
 @Environment(EnvType.CLIENT)
 public class BatEntityModel extends EntityModel<BatEntityRenderState> {
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart rightWing;
@@ -59,11 +58,10 @@ public class BatEntityModel extends EntityModel<BatEntityRenderState> {
 	private final ModelPart leftWingTip;
 	private final ModelPart feet;
 
-	public BatEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityCutout);
-		this.root = root;
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.head = root.getChild(EntityModelPartNames.HEAD);
+	public BatEntityModel(ModelPart modelPart) {
+		super(modelPart, RenderLayer::getEntityCutout);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
+		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
 		this.rightWingTip = this.rightWing.getChild(EntityModelPartNames.RIGHT_WING_TIP);
 		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
@@ -106,13 +104,8 @@ public class BatEntityModel extends EntityModel<BatEntityRenderState> {
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
-
 	public void setAngles(BatEntityRenderState batEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(batEntityRenderState);
 		if (batEntityRenderState.roosting) {
 			this.setRoostingHeadAngles(batEntityRenderState.yawDegrees);
 		}

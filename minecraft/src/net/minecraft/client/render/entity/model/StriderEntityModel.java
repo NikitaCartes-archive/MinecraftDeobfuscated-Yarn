@@ -37,7 +37,6 @@ public class StriderEntityModel extends EntityModel<StriderEntityRenderState> {
 	 * The key of the left bottom bristle model part, whose value is {@value}.
 	 */
 	private static final String LEFT_BOTTOM_BRISTLE = "left_bottom_bristle";
-	private final ModelPart root;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
 	private final ModelPart body;
@@ -48,11 +47,11 @@ public class StriderEntityModel extends EntityModel<StriderEntityRenderState> {
 	private final ModelPart leftMiddleBristle;
 	private final ModelPart leftBottomBristle;
 
-	public StriderEntityModel(ModelPart root) {
-		this.root = root;
-		this.rightLeg = root.getChild(EntityModelPartNames.RIGHT_LEG);
-		this.leftLeg = root.getChild(EntityModelPartNames.LEFT_LEG);
-		this.body = root.getChild(EntityModelPartNames.BODY);
+	public StriderEntityModel(ModelPart modelPart) {
+		super(modelPart);
+		this.rightLeg = modelPart.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.leftLeg = modelPart.getChild(EntityModelPartNames.LEFT_LEG);
+		this.body = modelPart.getChild(EntityModelPartNames.BODY);
 		this.rightBottomBristle = this.body.getChild("right_bottom_bristle");
 		this.rightMiddleBristle = this.body.getChild("right_middle_bristle");
 		this.rightTopBristle = this.body.getChild("right_top_bristle");
@@ -107,6 +106,7 @@ public class StriderEntityModel extends EntityModel<StriderEntityRenderState> {
 	}
 
 	public void setAngles(StriderEntityRenderState striderEntityRenderState) {
+		super.setAngles(striderEntityRenderState);
 		float f = striderEntityRenderState.limbFrequency;
 		float g = Math.min(striderEntityRenderState.limbAmplitudeMultiplier, 0.25F);
 		if (!striderEntityRenderState.hasPassengers) {
@@ -148,10 +148,5 @@ public class StriderEntityModel extends EntityModel<StriderEntityRenderState> {
 		this.leftTopBristle.roll = this.leftTopBristle.roll + 0.1F * MathHelper.sin(striderEntityRenderState.age * 1.0F * 0.4F);
 		this.leftMiddleBristle.roll = this.leftMiddleBristle.roll + 0.1F * MathHelper.sin(striderEntityRenderState.age * 1.0F * 0.2F);
 		this.leftBottomBristle.roll = this.leftBottomBristle.roll + 0.05F * MathHelper.sin(striderEntityRenderState.age * 1.0F * -0.4F);
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 }

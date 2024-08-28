@@ -345,11 +345,15 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	boolean canEnterHive() {
 		if (this.cannotEnterHiveTicks <= 0 && !this.pollinateGoal.isRunning() && !this.hasStung() && this.getTarget() == null) {
-			boolean bl = this.failedPollinatingTooLong() || this.getWorld().isRaining() || this.getWorld().isNight() || this.hasNectar();
+			boolean bl = this.failedPollinatingTooLong() || isNightOrRaining(this.getWorld()) || this.hasNectar();
 			return bl && !this.isHiveNearFire();
 		} else {
 			return false;
 		}
+	}
+
+	public static boolean isNightOrRaining(World world) {
+		return world.getDimension().hasSkyLight() && (world.isNight() || world.isRaining());
 	}
 
 	public void setCannotEnterHiveTicks(int cannotEnterHiveTicks) {

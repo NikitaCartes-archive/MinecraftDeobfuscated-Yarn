@@ -19,7 +19,6 @@ import net.minecraft.util.math.MathHelper;
 public class WardenEntityModel extends EntityModel<WardenEntityRenderState> {
 	private static final float field_38324 = 13.0F;
 	private static final float field_38325 = 1.0F;
-	private final ModelPart root;
 	protected final ModelPart bone;
 	protected final ModelPart body;
 	protected final ModelPart head;
@@ -36,10 +35,9 @@ public class WardenEntityModel extends EntityModel<WardenEntityRenderState> {
 	private final List<ModelPart> headAndLimbs;
 	private final List<ModelPart> bodyHeadAndLimbs;
 
-	public WardenEntityModel(ModelPart root) {
-		super(RenderLayer::getEntityCutoutNoCull);
-		this.root = root;
-		this.bone = root.getChild(EntityModelPartNames.BONE);
+	public WardenEntityModel(ModelPart modelPart) {
+		super(modelPart, RenderLayer::getEntityCutoutNoCull);
+		this.bone = modelPart.getChild(EntityModelPartNames.BONE);
 		this.body = this.bone.getChild(EntityModelPartNames.BODY);
 		this.head = this.body.getChild(EntityModelPartNames.HEAD);
 		this.rightLeg = this.bone.getChild(EntityModelPartNames.RIGHT_LEG);
@@ -106,7 +104,7 @@ public class WardenEntityModel extends EntityModel<WardenEntityRenderState> {
 	}
 
 	public void setAngles(WardenEntityRenderState wardenEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		super.setAngles(wardenEntityRenderState);
 		this.setHeadAngle(wardenEntityRenderState.yawDegrees, wardenEntityRenderState.pitch);
 		this.setLimbAngles(wardenEntityRenderState.limbFrequency, wardenEntityRenderState.limbAmplitudeMultiplier);
 		this.setHeadAndBodyAngles(wardenEntityRenderState.age);
@@ -168,11 +166,6 @@ public class WardenEntityModel extends EntityModel<WardenEntityRenderState> {
 		float f = wardenEntityRenderState.tendrilPitch * (float)(Math.cos((double)animationProgress * 2.25) * Math.PI * 0.1F);
 		this.leftTendril.pitch = f;
 		this.rightTendril.pitch = -f;
-	}
-
-	@Override
-	public ModelPart getPart() {
-		return this.root;
 	}
 
 	public List<ModelPart> getTendrils() {

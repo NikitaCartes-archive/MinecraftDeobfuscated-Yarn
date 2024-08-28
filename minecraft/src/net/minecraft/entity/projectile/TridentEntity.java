@@ -120,7 +120,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 			}
 
 			if (this.getWorld() instanceof ServerWorld serverWorld) {
-				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource, this.getWeaponStack());
+				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource, this.getWeaponStack(), item -> this.kill());
 			}
 
 			if (entity instanceof LivingEntity livingEntity) {

@@ -19,7 +19,6 @@ import net.minecraft.block.vault.VaultSharedData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
@@ -330,7 +329,7 @@ public class VaultBlockEntity extends BlockEntity {
 		}
 
 		private static boolean canBeUnlocked(VaultConfig config, VaultState state) {
-			return config.lootTable() != LootTables.EMPTY && !config.keyItem().isEmpty() && state != VaultState.INACTIVE;
+			return !config.keyItem().isEmpty() && state != VaultState.INACTIVE;
 		}
 
 		private static boolean isValidKey(VaultConfig config, ItemStack stack) {

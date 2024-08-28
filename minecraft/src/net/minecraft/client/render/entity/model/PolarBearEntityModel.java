@@ -53,7 +53,6 @@ public class PolarBearEntityModel extends QuadrupedEntityModel<PolarBearEntityRe
 	}
 
 	public void setAngles(PolarBearEntityRenderState polarBearEntityRenderState) {
-		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		super.setAngles(polarBearEntityRenderState);
 		float f = polarBearEntityRenderState.warningAnimationProgress * polarBearEntityRenderState.warningAnimationProgress;
 		float g = polarBearEntityRenderState.ageScale;

@@ -46,18 +46,6 @@ public class BundleTooltipSubmenuHandler implements TooltipSubmenuHandler {
 		this.reset(slot.getStack(), slot.id);
 	}
 
-	@Override
-	public boolean onKeyPressed(ItemStack item, int slotId, int keyCode, int scanCode) {
-		for (int i = 0; i < this.client.options.hotbarKeys.length; i++) {
-			if (this.client.options.hotbarKeys[i].matchesKey(keyCode, scanCode)) {
-				this.sendPacket(item, slotId, i);
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	private void sendPacket(ItemStack item, int slotId, int selectedItemIndex) {
 		if (this.client.getNetworkHandler() != null && selectedItemIndex < BundleItem.getNumberOfStacksShown(item)) {
 			ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();

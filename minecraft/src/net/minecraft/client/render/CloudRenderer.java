@@ -195,7 +195,7 @@ public class CloudRenderer extends SinglePreparationResourceReloader<Optional<Cl
 	private void renderClouds(RenderLayer layer, Matrix4f positionMatrix, Matrix4f projectionMatrix, float x, float y, float z) {
 		layer.startDrawing();
 		ShaderProgram shaderProgram = RenderSystem.getShader();
-		if (shaderProgram.modelOffset != null) {
+		if (shaderProgram != null && shaderProgram.modelOffset != null) {
 			shaderProgram.modelOffset.set(-x, y, -z);
 		}
 

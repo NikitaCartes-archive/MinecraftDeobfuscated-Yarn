@@ -108,13 +108,13 @@ public class ScoreboardCriterion {
 			return i < 0
 				? Optional.empty()
 				: Registries.STAT_TYPE
-					.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.'))
+					.getOptionalValue(Identifier.splitOn(name.substring(0, i), '.'))
 					.flatMap(type -> getOrCreateStatCriterion(type, Identifier.splitOn(name.substring(i + 1), '.')));
 		}
 	}
 
 	private static <T> Optional<ScoreboardCriterion> getOrCreateStatCriterion(StatType<T> statType, Identifier id) {
-		return statType.getRegistry().getOrEmpty(id).map(statType::getOrCreateStat);
+		return statType.getRegistry().getOptionalValue(id).map(statType::getOrCreateStat);
 	}
 
 	public String getName() {

@@ -38,8 +38,8 @@ public abstract class FlowableFluid extends Fluid {
 	public static final BooleanProperty FALLING = Properties.FALLING;
 	public static final IntProperty LEVEL = Properties.LEVEL_1_8;
 	private static final int field_31726 = 200;
-	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
-		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
+	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<FlowableFluid.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
+		Object2ByteLinkedOpenHashMap<FlowableFluid.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<FlowableFluid.NeighborGroup>(200) {
 			@Override
 			protected void rehash(int i) {
 			}
@@ -208,16 +208,16 @@ public abstract class FlowableFluid extends Fluid {
 			} else if (voxelShape2 == VoxelShapes.empty() && voxelShape == VoxelShapes.empty()) {
 				return true;
 			} else {
-				Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap;
+				Object2ByteLinkedOpenHashMap<FlowableFluid.NeighborGroup> object2ByteLinkedOpenHashMap;
 				if (!state.getBlock().hasDynamicBounds() && !fromState.getBlock().hasDynamicBounds()) {
-					object2ByteLinkedOpenHashMap = (Object2ByteLinkedOpenHashMap<Block.NeighborGroup>)field_15901.get();
+					object2ByteLinkedOpenHashMap = (Object2ByteLinkedOpenHashMap<FlowableFluid.NeighborGroup>)field_15901.get();
 				} else {
 					object2ByteLinkedOpenHashMap = null;
 				}
 
-				Block.NeighborGroup neighborGroup;
+				FlowableFluid.NeighborGroup neighborGroup;
 				if (object2ByteLinkedOpenHashMap != null) {
-					neighborGroup = new Block.NeighborGroup(state, fromState, face);
+					neighborGroup = new FlowableFluid.NeighborGroup(state, fromState, face);
 					byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(neighborGroup);
 					if (b != 127) {
 						return b != 0;
@@ -458,6 +458,25 @@ public abstract class FlowableFluid extends Fluid {
 		return state.getLevel() == 9 && isFluidAboveEqual(state, world, pos)
 			? VoxelShapes.fullCube()
 			: (VoxelShape)this.shapeCache.computeIfAbsent(state, state2 -> VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)state2.getHeight(world, pos), 1.0));
+	}
+
+	static record NeighborGroup(BlockState self, BlockState other, Direction facing) {
+		public boolean equals(Object o) {
+			if (o instanceof FlowableFluid.NeighborGroup neighborGroup
+				&& this.self == neighborGroup.self
+				&& this.other == neighborGroup.other
+				&& this.facing == neighborGroup.facing) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public int hashCode() {
+			int i = System.identityHashCode(this.self);
+			i = 31 * i + System.identityHashCode(this.other);
+			return 31 * i + this.facing.hashCode();
+		}
 	}
 
 	protected class SpreadCache {

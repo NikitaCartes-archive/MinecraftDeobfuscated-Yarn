@@ -8,6 +8,7 @@ import net.minecraft.block.DecoratedPotPattern;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.jukebox.JukeboxSong;
+import net.minecraft.block.spawner.TrialSpawnerConfig;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.component.ComponentType;
 import net.minecraft.enchantment.Enchantment;
@@ -197,6 +198,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<MapDecorationType>> MAP_DECORATION_TYPE = of("map_decoration_type");
 	public static final RegistryKey<Registry<ComponentType<?>>> ENCHANTMENT_EFFECT_COMPONENT_TYPE = of("enchantment_effect_component_type");
 	public static final RegistryKey<Registry<ConsumeEffect.Type<?>>> CONSUME_EFFECT_TYPE = of("consume_effect_type");
+	public static final RegistryKey<Registry<TrialSpawnerConfig>> TRIAL_SPAWNER = of("trial_spawner");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");

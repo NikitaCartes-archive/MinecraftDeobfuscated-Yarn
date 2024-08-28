@@ -36,7 +36,7 @@ public class CollisionDebugRenderer implements DebugRenderer.Renderer {
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 
 		for (VoxelShape voxelShape : this.collisions) {
-			DebugRenderer.method_62350(matrices, vertexConsumer, voxelShape, -cameraX, -cameraY, -cameraZ, 1.0F, 1.0F, 1.0F, 1.0F, true);
+			DebugRenderer.drawVoxelShapeOutlines(matrices, vertexConsumer, voxelShape, -cameraX, -cameraY, -cameraZ, 1.0F, 1.0F, 1.0F, 1.0F, true);
 		}
 	}
 }

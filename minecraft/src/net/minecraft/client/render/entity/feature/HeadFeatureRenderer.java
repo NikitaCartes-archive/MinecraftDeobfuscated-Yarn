@@ -57,7 +57,7 @@ public class HeadFeatureRenderer<S extends LivingEntityRenderState, M extends En
 				matrixStack.push();
 				matrixStack.scale(this.headTransformation.horizontalScale(), 1.0F, this.headTransformation.horizontalScale());
 				M entityModel = this.getContextModel();
-				entityModel.getPart().rotate(matrixStack);
+				entityModel.getRootPart().rotate(matrixStack);
 				entityModel.getHead().rotate(matrixStack);
 				if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof AbstractSkullBlock abstractSkullBlock) {
 					matrixStack.translate(0.0F, this.headTransformation.skullYOffset(), 0.0F);

@@ -51,7 +51,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements Waterloggable {
-	public static final MapCodec<ChestBlock> CODEC = createCodec(settings -> new ChestBlock(settings, () -> BlockEntityType.CHEST));
+	public static final MapCodec<ChestBlock> CODEC = createCodec(settings -> new ChestBlock(() -> BlockEntityType.CHEST, settings));
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<ChestType> CHEST_TYPE = Properties.CHEST_TYPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -117,8 +117,8 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		return CODEC;
 	}
 
-	protected ChestBlock(AbstractBlock.Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
-		super(settings, supplier);
+	protected ChestBlock(Supplier<BlockEntityType<? extends ChestBlockEntity>> blockEntityTypeSupplier, AbstractBlock.Settings settings) {
+		super(settings, blockEntityTypeSupplier);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CHEST_TYPE, ChestType.SINGLE).with(WATERLOGGED, Boolean.valueOf(false))
 		);

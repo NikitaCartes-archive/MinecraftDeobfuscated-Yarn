@@ -42,7 +42,7 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry<
 
 	protected RegistryEntryArgumentType(CommandRegistryAccess registryAccess, RegistryKey<Registry<T>> registry, Codec<RegistryEntry<T>> entryCodec) {
 		this.registries = registryAccess;
-		this.canLookupRegistry = registryAccess.getOptionalWrapper(registry).isPresent();
+		this.canLookupRegistry = registryAccess.getOptional(registry).isPresent();
 		this.entryCodec = entryCodec;
 	}
 

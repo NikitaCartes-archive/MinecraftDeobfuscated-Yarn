@@ -143,7 +143,9 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 				SpriteIdentifier spriteIdentifier = bl ? ModelBaker.SHIELD_BASE : ModelBaker.SHIELD_BASE_NO_PATTERN;
 				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
 					.getTextureSpecificVertexConsumer(
-						ItemRenderer.getItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), false, stack.hasGlint())
+						ItemRenderer.getItemGlintConsumer(
+							vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), mode == ModelTransformationMode.GUI, stack.hasGlint()
+						)
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay);
 				if (bl) {

@@ -11,6 +11,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.state.ProjectileEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
@@ -32,6 +33,8 @@ public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEnt
 		matrixStack.pop();
 		super.render(projectileEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
+
+	protected abstract Identifier getTexture(S state);
 
 	public void updateRenderState(T persistentProjectileEntity, S projectileEntityRenderState, float f) {
 		super.updateRenderState(persistentProjectileEntity, projectileEntityRenderState, f);

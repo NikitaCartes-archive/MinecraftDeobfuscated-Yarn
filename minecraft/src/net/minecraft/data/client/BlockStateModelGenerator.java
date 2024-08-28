@@ -1770,8 +1770,11 @@ public class BlockStateModelGenerator {
 	private void registerBeehive(Block beehive, Function<Block, TextureMap> texturesFactory) {
 		TextureMap textureMap = ((TextureMap)texturesFactory.apply(beehive)).inherit(TextureKey.SIDE, TextureKey.PARTICLE);
 		TextureMap textureMap2 = textureMap.copyAndAdd(TextureKey.FRONT, TextureMap.getSubId(beehive, "_front_honey"));
-		Identifier identifier = Models.ORIENTABLE_WITH_BOTTOM.upload(beehive, textureMap, this.modelCollector);
+		Identifier identifier = Models.ORIENTABLE_WITH_BOTTOM.upload(beehive, "_empty", textureMap, this.modelCollector);
 		Identifier identifier2 = Models.ORIENTABLE_WITH_BOTTOM.upload(beehive, "_honey", textureMap2, this.modelCollector);
+		this.excludeFromSimpleItemModelGeneration(beehive);
+		Models.ORIENTABLE_WITH_BOTTOM.upload(ModelIds.getItemSubModelId(beehive.asItem(), "_empty"), textureMap, this.modelCollector);
+		Models.ORIENTABLE_WITH_BOTTOM.upload(ModelIds.getItemSubModelId(beehive.asItem(), "_honey"), textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(beehive)
@@ -2727,21 +2730,21 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				MultipartBlockStateSupplier.create(Blocks.FIRE)
-					.with(when, buildBlockStateVariants(list, blockStateVariant -> blockStateVariant))
-					.with(When.anyOf(When.create().set(Properties.NORTH, true), when), buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant))
+					.with(when, buildBlockStateVariants(list, variant -> variant))
+					.with(When.anyOf(When.create().set(Properties.NORTH, true), when), buildBlockStateVariants(list2, variant -> variant))
 					.with(
 						When.anyOf(When.create().set(Properties.EAST, true), when),
-						buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R90))
+						buildBlockStateVariants(list2, variant -> variant.put(VariantSettings.Y, VariantSettings.Rotation.R90))
 					)
 					.with(
 						When.anyOf(When.create().set(Properties.SOUTH, true), when),
-						buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R180))
+						buildBlockStateVariants(list2, variant -> variant.put(VariantSettings.Y, VariantSettings.Rotation.R180))
 					)
 					.with(
 						When.anyOf(When.create().set(Properties.WEST, true), when),
-						buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R270))
+						buildBlockStateVariants(list2, variant -> variant.put(VariantSettings.Y, VariantSettings.Rotation.R270))
 					)
-					.with(When.create().set(Properties.UP, true), buildBlockStateVariants(list3, blockStateVariant -> blockStateVariant))
+					.with(When.create().set(Properties.UP, true), buildBlockStateVariants(list3, variant -> variant))
 			);
 	}
 
@@ -2751,11 +2754,11 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				MultipartBlockStateSupplier.create(Blocks.SOUL_FIRE)
-					.with(buildBlockStateVariants(list, blockStateVariant -> blockStateVariant))
-					.with(buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant))
-					.with(buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R90)))
-					.with(buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R180)))
-					.with(buildBlockStateVariants(list2, blockStateVariant -> blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R270)))
+					.with(buildBlockStateVariants(list, variant -> variant))
+					.with(buildBlockStateVariants(list2, variant -> variant))
+					.with(buildBlockStateVariants(list2, variant -> variant.put(VariantSettings.Y, VariantSettings.Rotation.R90)))
+					.with(buildBlockStateVariants(list2, variant -> variant.put(VariantSettings.Y, VariantSettings.Rotation.R180)))
+					.with(buildBlockStateVariants(list2, variant -> variant.put(VariantSettings.Y, VariantSettings.Rotation.R270)))
 			);
 	}
 
@@ -3654,8 +3657,8 @@ public class BlockStateModelGenerator {
 					.coordinate(
 						BlockStateVariantMap.create(Properties.ATTACHED, Properties.POWERED)
 							.register(
-								(boolean_, boolean2) -> BlockStateVariant.create()
-										.put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.TRIPWIRE_HOOK, (boolean_ ? "_attached" : "") + (boolean2 ? "_on" : "")))
+								(attached, on) -> BlockStateVariant.create()
+										.put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.TRIPWIRE_HOOK, (attached ? "_attached" : "") + (on ? "_on" : "")))
 							)
 					)
 					.coordinate(createNorthDefaultHorizontalRotationStates())

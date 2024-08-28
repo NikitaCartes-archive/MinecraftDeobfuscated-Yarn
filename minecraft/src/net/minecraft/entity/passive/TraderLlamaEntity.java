@@ -8,9 +8,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
+import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -55,6 +58,8 @@ public class TraderLlamaEntity extends LlamaEntity {
 		super.initGoals();
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
 		this.targetSelector.add(1, new TraderLlamaEntity.DefendTraderGoal(this));
+		this.targetSelector.add(2, new ActiveTargetGoal(this, ZombieEntity.class, true, entity -> entity.getType() != EntityType.ZOMBIFIED_PIGLIN));
+		this.targetSelector.add(2, new ActiveTargetGoal(this, IllagerEntity.class, true));
 	}
 
 	public void setDespawnDelay(int despawnDelay) {

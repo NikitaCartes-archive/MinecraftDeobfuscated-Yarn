@@ -341,6 +341,20 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.isSubmergedInWater;
 	}
 
+	@Override
+	public void onBubbleColumnSurfaceCollision(boolean drag) {
+		if (!this.isCreative()) {
+			super.onBubbleColumnSurfaceCollision(drag);
+		}
+	}
+
+	@Override
+	public void onBubbleColumnCollision(boolean drag) {
+		if (!this.isCreative()) {
+			super.onBubbleColumnCollision(drag);
+		}
+	}
+
 	private void updateTurtleHelmet() {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 		if (itemStack.isOf(Items.TURTLE_HELMET) && !this.isSubmergedIn(FluidTags.WATER)) {
@@ -734,12 +748,13 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		if (this.hasStatusEffect(StatusEffects.MINING_FATIGUE)) {
-			f *= switch (this.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
+			float g = switch (this.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
 				case 0 -> 0.3F;
 				case 1 -> 0.09F;
 				case 2 -> 0.0027F;
 				default -> 8.1E-4F;
 			};
+			f *= g;
 		}
 
 		f *= (float)this.getAttributeValue(EntityAttributes.BLOCK_BREAK_SPEED);
@@ -1749,12 +1764,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected int getXpToDrop() {
-		if (!this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator()) {
-			int i = this.experienceLevel * 7;
-			return i > 100 ? 100 : i;
-		} else {
-			return 0;
-		}
+		return !this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator() ? Math.min(this.experienceLevel * 7, 100) : 0;
 	}
 
 	@Override
@@ -1789,7 +1799,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (slot == EquipmentSlot.MAINHAND) {
 			return this.inventory.getMainHandStack();
 		} else if (slot == EquipmentSlot.OFFHAND) {
-			return this.inventory.offHand.get(0);
+			return (ItemStack)this.inventory.offHand.getFirst();
 		} else {
 			return slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ? this.inventory.armor.get(slot.getEntitySlotId()) : ItemStack.EMPTY;
 		}

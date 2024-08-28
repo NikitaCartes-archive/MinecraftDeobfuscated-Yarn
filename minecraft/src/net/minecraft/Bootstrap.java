@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
@@ -89,7 +89,7 @@ public class Bootstrap {
 		collectMissingTranslations(Registries.ENTITY_TYPE, EntityType::getTranslationKey, set);
 		collectMissingTranslations(Registries.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
 		collectMissingTranslations(Registries.ITEM, Item::getTranslationKey, set);
-		collectMissingTranslations(Registries.BLOCK, Block::getTranslationKey, set);
+		collectMissingTranslations(Registries.BLOCK, AbstractBlock::getTranslationKey, set);
 		collectMissingTranslations(Registries.CUSTOM_STAT, stat -> "stat." + stat.toString().replace(':', '.'), set);
 		collectMissingGameRuleTranslations(set);
 		return set;

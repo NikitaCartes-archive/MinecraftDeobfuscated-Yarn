@@ -202,6 +202,7 @@ import net.minecraft.datafixer.fix.StructuresToConfiguredStructuresFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
 import net.minecraft.datafixer.fix.TicksInWrongChunkFix;
 import net.minecraft.datafixer.fix.TippedArrowPotionToItemFix;
+import net.minecraft.datafixer.fix.TrialSpawnerConfigInRegistryFix;
 import net.minecraft.datafixer.fix.TrialSpawnerConfigTagFix;
 import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
 import net.minecraft.datafixer.fix.UpdateSignTextFormatFix;
@@ -1323,6 +1324,8 @@ public class Schemas {
 		builder.addFixer(new CarvingStepRemoveFix(schema229));
 		Schema schema230 = builder.addSchema(4059, Schema4059::new);
 		builder.addFixer(new FoodToConsumableFix(schema230));
+		Schema schema231 = builder.addSchema(4061, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new TrialSpawnerConfigInRegistryFix(schema231));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

@@ -60,7 +60,6 @@ import net.minecraft.particle.ParticlesMode;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
@@ -90,8 +89,8 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier field_53900 = Identifier.ofVanilla("transparency");
-	private static final Identifier field_53901 = Identifier.ofVanilla("entity_outline");
+	private static final Identifier TRANSPARENCY = Identifier.ofVanilla("transparency");
+	private static final Identifier ENTITY_OUTLINE = Identifier.ofVanilla("entity_outline");
 	public static final int field_32759 = 16;
 	public static final int field_34812 = 8;
 	private static final int field_32766 = 15;
@@ -134,7 +133,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	@Nullable
 	private Frustum capturedFrustum;
 	@Nullable
-	private Vec3d field_53074;
+	private Vec3d lastCameraPos;
 
 	public WorldRenderer(
 		MinecraftClient client,
@@ -148,8 +147,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.bufferBuilders = bufferBuilders;
 	}
 
-	public void method_62209(Camera camera) {
-		this.weatherRendering.method_62319(this.client.world, camera, this.ticks, this.client.options.getParticles().getValue());
+	public void addWeatherParticlesAndSound(Camera camera) {
+		this.weatherRendering.addParticlesAndSound(this.client.world, camera, this.ticks, this.client.options.getParticles().getValue());
 	}
 
 	public void close() {
@@ -176,24 +175,14 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	@Nullable
-	private PostEffectProcessor method_62907() {
+	private PostEffectProcessor getTransparencyPostEffectProcessor() {
 		if (!MinecraftClient.isFabulousGraphicsOrBetter()) {
 			return null;
 		} else {
-			PostEffectProcessor postEffectProcessor = this.client.method_62887().loadPostEffect(field_53900, DefaultFramebufferSet.STAGES);
+			PostEffectProcessor postEffectProcessor = this.client.getShaderLoader().loadPostEffect(TRANSPARENCY, DefaultFramebufferSet.STAGES);
 			if (postEffectProcessor == null) {
-				String string = "Failed to load shader: " + field_53900;
-				WorldRenderer.ProgramInitException programInitException = new WorldRenderer.ProgramInitException(string);
-				if (this.client.getResourcePackManager().getEnabledIds().size() > 1) {
-					Text text = (Text)this.client.getResourceManager().streamResourcePacks().findFirst().map(resourcePack -> Text.literal(resourcePack.getId())).orElse(null);
-					this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-					this.client.onResourceReloadFailure(programInitException, text, null);
-				} else {
-					this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-					this.client.options.write();
-					LOGGER.error(LogUtils.FATAL_MARKER, string, (Throwable)programInitException);
-					this.client.printCrashReport(new CrashReport(string, programInitException));
-				}
+				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
+				this.client.options.write();
 			}
 
 			return postEffectProcessor;
@@ -236,7 +225,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 			this.chunkBuilder = null;
 			this.noCullingBlockEntities.clear();
-			this.chunkRenderingDataPreparer.method_52826(null);
+			this.chunkRenderingDataPreparer.setStorage(null);
 			this.builtChunks.clear();
 		}
 	}
@@ -265,7 +254,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			this.chunks = new BuiltChunkStorage(this.chunkBuilder, this.world, this.client.options.getClampedViewDistance(), this);
-			this.chunkRenderingDataPreparer.method_52826(this.chunks);
+			this.chunkRenderingDataPreparer.setStorage(this.chunks);
 			this.builtChunks.clear();
 			Entity entity = this.client.getCameraEntity();
 			if (entity != null) {
@@ -311,7 +300,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		int i = 0;
 
 		for (ChunkBuilder.BuiltChunk builtChunk : this.builtChunks) {
-			if (builtChunk.getData().method_62972()) {
+			if (builtChunk.getData().hasNonEmptyLayers()) {
 				i++;
 			}
 		}
@@ -331,31 +320,28 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		Profiler profiler = this.world.getProfiler();
 		profiler.push("camera");
-		double d = this.client.player.getX();
-		double e = this.client.player.getY();
-		double f = this.client.player.getZ();
-		int i = ChunkSectionPos.getSectionCoord(d);
-		int j = ChunkSectionPos.getSectionCoord(e);
-		int k = ChunkSectionPos.getSectionCoord(f);
+		int i = ChunkSectionPos.getSectionCoord(vec3d.getX());
+		int j = ChunkSectionPos.getSectionCoord(vec3d.getY());
+		int k = ChunkSectionPos.getSectionCoord(vec3d.getZ());
 		if (this.cameraChunkX != i || this.cameraChunkY != j || this.cameraChunkZ != k) {
 			this.cameraChunkX = i;
 			this.cameraChunkY = j;
 			this.cameraChunkZ = k;
-			this.chunks.updateCameraPosition(ChunkSectionPos.from(this.client.player));
+			this.chunks.updateCameraPosition(ChunkSectionPos.from(vec3d));
 		}
 
 		this.chunkBuilder.setCameraPosition(vec3d);
 		profiler.swap("cull");
-		double g = Math.floor(vec3d.x / 8.0);
-		double h = Math.floor(vec3d.y / 8.0);
-		double l = Math.floor(vec3d.z / 8.0);
-		if (g != this.lastCameraX || h != this.lastCameraY || l != this.lastCameraZ) {
+		double d = Math.floor(vec3d.x / 8.0);
+		double e = Math.floor(vec3d.y / 8.0);
+		double f = Math.floor(vec3d.z / 8.0);
+		if (d != this.lastCameraX || e != this.lastCameraY || f != this.lastCameraZ) {
 			this.chunkRenderingDataPreparer.scheduleTerrainUpdate();
 		}
 
-		this.lastCameraX = g;
-		this.lastCameraY = h;
-		this.lastCameraZ = l;
+		this.lastCameraX = d;
+		this.lastCameraY = e;
+		this.lastCameraZ = f;
 		profiler.swap("update");
 		if (!hasForcedFrustum) {
 			boolean bl = this.client.chunkCullingEnabled;
@@ -366,12 +352,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			profiler.push("section_occlusion_graph");
 			this.chunkRenderingDataPreparer.method_52834(bl, camera, frustum, this.builtChunks, this.world.getChunkManager().method_62890());
 			profiler.pop();
-			double m = Math.floor((double)(camera.getPitch() / 2.0F));
-			double n = Math.floor((double)(camera.getYaw() / 2.0F));
-			if (this.chunkRenderingDataPreparer.method_52836() || m != this.lastCameraPitch || n != this.lastCameraYaw) {
+			double g = Math.floor((double)(camera.getPitch() / 2.0F));
+			double h = Math.floor((double)(camera.getYaw() / 2.0F));
+			if (this.chunkRenderingDataPreparer.method_52836() || g != this.lastCameraPitch || h != this.lastCameraYaw) {
 				this.applyFrustum(method_52816(frustum));
-				this.lastCameraPitch = m;
-				this.lastCameraYaw = n;
+				this.lastCameraPitch = g;
+				this.lastCameraYaw = h;
 			}
 		}
 
@@ -394,18 +380,18 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public void addBuiltChunk(ChunkBuilder.BuiltChunk chunk) {
-		this.chunkRenderingDataPreparer.method_52827(chunk);
+		this.chunkRenderingDataPreparer.schedulePropagationFrom(chunk);
 	}
 
-	public void setupFrustum(Vec3d vec3d, Matrix4f matrix4f, Matrix4f matrix4f2) {
-		this.frustum = new Frustum(matrix4f, matrix4f2);
-		this.frustum.setPosition(vec3d.getX(), vec3d.getY(), vec3d.getZ());
+	public void setupFrustum(Vec3d pos, Matrix4f positionMatrix, Matrix4f projectionMatrix) {
+		this.frustum = new Frustum(positionMatrix, projectionMatrix);
+		this.frustum.setPosition(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public void render(
-		ObjectAllocator objectAllocator,
+		ObjectAllocator allocator,
 		RenderTickCounter tickCounter,
-		boolean bl,
+		boolean renderBlockOutline,
 		Camera camera,
 		GameRenderer gameRenderer,
 		LightmapTextureManager lightmapTextureManager,
@@ -426,27 +412,27 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		double e = vec3d.getY();
 		double g = vec3d.getZ();
 		profiler.swap("culling");
-		boolean bl2 = this.capturedFrustum != null;
-		Frustum frustum = bl2 ? this.capturedFrustum : this.frustum;
+		boolean bl = this.capturedFrustum != null;
+		Frustum frustum = bl ? this.capturedFrustum : this.frustum;
 		this.client.getProfiler().swap("captureFrustum");
 		if (this.shouldCaptureFrustum) {
-			this.capturedFrustum = bl2 ? new Frustum(positionMatrix, projectionMatrix) : frustum;
+			this.capturedFrustum = bl ? new Frustum(positionMatrix, projectionMatrix) : frustum;
 			this.capturedFrustum.setPosition(d, e, g);
 			this.shouldCaptureFrustum = false;
 		}
 
 		profiler.swap("fog");
 		float h = gameRenderer.getViewDistance();
-		boolean bl3 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
+		boolean bl2 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		Vector4f vector4f = BackgroundRenderer.getFogColor(camera, f, this.client.world, this.client.options.getClampedViewDistance(), gameRenderer.getSkyDarkness(f));
-		Fog fog = BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, vector4f, h, bl3, f);
-		Fog fog2 = BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, vector4f, h, bl3, f);
+		Fog fog = BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, vector4f, h, bl2, f);
+		Fog fog2 = BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, vector4f, h, bl2, f);
 		profiler.swap("cullEntities");
-		boolean bl4 = this.getEntitiesToRender(camera, frustum, this.renderedEntities);
+		boolean bl3 = this.getEntitiesToRender(camera, frustum, this.renderedEntities);
 		this.renderedEntitiesCount = this.renderedEntities.size();
 		profiler.swap("terrain_setup");
-		this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
+		this.setupTerrain(camera, frustum, bl, this.client.player.isSpectator());
 		profiler.swap("compile_sections");
 		this.updateChunks(camera);
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
@@ -457,7 +443,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		int i = this.client.getFramebuffer().textureWidth;
 		int j = this.client.getFramebuffer().textureHeight;
 		SimpleFramebufferFactory simpleFramebufferFactory = new SimpleFramebufferFactory(i, j, true);
-		PostEffectProcessor postEffectProcessor = this.method_62907();
+		PostEffectProcessor postEffectProcessor = this.getTransparencyPostEffectProcessor();
 		if (postEffectProcessor != null) {
 			this.framebufferSet.translucentFramebuffer = frameGraphBuilder.createResourceHandle("translucent", simpleFramebufferFactory);
 			this.framebufferSet.itemEntityFramebuffer = frameGraphBuilder.createResourceHandle("item_entity", simpleFramebufferFactory);
@@ -476,13 +462,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.clearColor(vector4f.x, vector4f.y, vector4f.z, 0.0F);
 			RenderSystem.clear(16640);
 		});
-		if (!bl3) {
+		if (!bl2) {
 			this.renderSky(frameGraphBuilder, camera, f, fog2);
 		}
 
-		this.renderMain(frameGraphBuilder, frustum, camera, positionMatrix, projectionMatrix, fog, bl, bl4, tickCounter, profiler);
-		PostEffectProcessor postEffectProcessor2 = this.client.method_62887().loadPostEffect(field_53901, DefaultFramebufferSet.field_53903);
-		if (bl4 && postEffectProcessor2 != null) {
+		this.renderMain(frameGraphBuilder, frustum, camera, positionMatrix, projectionMatrix, fog, renderBlockOutline, bl3, tickCounter, profiler);
+		PostEffectProcessor postEffectProcessor2 = this.client.getShaderLoader().loadPostEffect(ENTITY_OUTLINE, DefaultFramebufferSet.MAIN_AND_ENTITY_OUTLINE);
+		if (bl3 && postEffectProcessor2 != null) {
 			postEffectProcessor2.render(frameGraphBuilder, i, j, this.framebufferSet);
 		}
 
@@ -504,7 +490,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		this.renderLateDebug(frameGraphBuilder, vec3d, fog);
 		profiler.swap("framegraph");
-		frameGraphBuilder.run(objectAllocator, new FrameGraphBuilder.Profiler() {
+		frameGraphBuilder.run(allocator, new FrameGraphBuilder.Profiler() {
 			@Override
 			public void push(String location) {
 				profiler.push(location);
@@ -528,11 +514,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		FrameGraphBuilder frameGraphBuilder,
 		Frustum frustum,
 		Camera camera,
-		Matrix4f matrix4f,
-		Matrix4f matrix4f2,
+		Matrix4f positionMatrix,
+		Matrix4f projectionMatrix,
 		Fog fog,
-		boolean bl,
-		boolean bl2,
+		boolean renderBlockOutline,
+		boolean hasEntitiesToRender,
 		RenderTickCounter renderTickCounter,
 		Profiler profiler
 	) {
@@ -550,7 +536,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.framebufferSet.weatherFramebuffer = renderPass.transfer(this.framebufferSet.weatherFramebuffer);
 		}
 
-		if (bl2 && this.framebufferSet.entityOutlineFramebuffer != null) {
+		if (hasEntitiesToRender && this.framebufferSet.entityOutlineFramebuffer != null) {
 			this.framebufferSet.entityOutlineFramebuffer = renderPass.transfer(this.framebufferSet.entityOutlineFramebuffer);
 		}
 
@@ -567,9 +553,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			double e = vec3d.getY();
 			double g = vec3d.getZ();
 			profiler.push("terrain");
-			this.renderLayer(RenderLayer.getSolid(), d, e, g, matrix4f, matrix4f2);
-			this.renderLayer(RenderLayer.getCutoutMipped(), d, e, g, matrix4f, matrix4f2);
-			this.renderLayer(RenderLayer.getCutout(), d, e, g, matrix4f, matrix4f2);
+			this.renderLayer(RenderLayer.getSolid(), d, e, g, positionMatrix, projectionMatrix);
+			this.renderLayer(RenderLayer.getCutoutMipped(), d, e, g, positionMatrix, projectionMatrix);
+			this.renderLayer(RenderLayer.getCutout(), d, e, g, positionMatrix, projectionMatrix);
 			if (this.world.getDimensionEffects().isDarkened()) {
 				DiffuseLighting.enableForLevel();
 			} else {
@@ -616,7 +602,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			immediate.draw(TexturedRenderLayers.getHangingSign());
 			immediate.draw(TexturedRenderLayers.getChest());
 			this.bufferBuilders.getOutlineVertexConsumers().draw();
-			if (bl) {
+			if (renderBlockOutline) {
 				this.renderTargetBlockOutline(camera, immediate, matrixStack, false);
 			}
 
@@ -644,10 +630,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			profiler.swap("translucent");
-			this.renderLayer(RenderLayer.getTranslucent(), d, e, g, matrix4f, matrix4f2);
+			this.renderLayer(RenderLayer.getTranslucent(), d, e, g, positionMatrix, projectionMatrix);
 			profiler.swap("string");
-			this.renderLayer(RenderLayer.getTripwire(), d, e, g, matrix4f, matrix4f2);
-			if (bl) {
+			this.renderLayer(RenderLayer.getTripwire(), d, e, g, positionMatrix, projectionMatrix);
+			if (renderBlockOutline) {
 				this.renderTargetBlockOutline(camera, immediate, matrixStack, true);
 			}
 
@@ -656,7 +642,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		});
 	}
 
-	private void renderParticles(FrameGraphBuilder frameGraphBuilder, Camera camera, LightmapTextureManager lightmapTextureManager, float f, Fog fog) {
+	private void renderParticles(FrameGraphBuilder frameGraphBuilder, Camera camera, LightmapTextureManager lightmapTextureManager, float tickDelta, Fog fog) {
 		RenderPass renderPass = frameGraphBuilder.createPass("particles");
 		if (this.framebufferSet.particlesFramebuffer != null) {
 			this.framebufferSet.particlesFramebuffer = renderPass.transfer(this.framebufferSet.particlesFramebuffer);
@@ -676,7 +662,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			RenderPhase.PARTICLES_TARGET.startDrawing();
-			this.client.particleManager.renderParticles(lightmapTextureManager, camera, f);
+			this.client.particleManager.renderParticles(lightmapTextureManager, camera, tickDelta);
 			RenderPhase.PARTICLES_TARGET.endDrawing();
 		});
 	}
@@ -709,9 +695,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		});
 	}
 
-	private void renderWeather(FrameGraphBuilder frameGraphBuilder, LightmapTextureManager lightmapTextureManager, Vec3d vec3d, float f, Fog fog) {
+	private void renderWeather(FrameGraphBuilder frameGraphBuilder, LightmapTextureManager lightmapTextureManager, Vec3d pos, float tickDelta, Fog fog) {
 		int i = this.client.options.getClampedViewDistance() * 16;
-		float g = this.client.gameRenderer.getFarPlaneDistance();
+		float f = this.client.gameRenderer.getFarPlaneDistance();
 		RenderPass renderPass = frameGraphBuilder.createPass("weather");
 		if (this.framebufferSet.weatherFramebuffer != null) {
 			this.framebufferSet.weatherFramebuffer = renderPass.transfer(this.framebufferSet.weatherFramebuffer);
@@ -722,13 +708,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		renderPass.setRenderer(() -> {
 			RenderSystem.setShaderFog(fog);
 			RenderPhase.WEATHER_TARGET.startDrawing();
-			this.weatherRendering.method_62316(this.client.world, lightmapTextureManager, this.ticks, f, vec3d);
-			this.worldBorderRendering.render(this.world.getWorldBorder(), vec3d, (double)i, (double)g);
+			this.weatherRendering.renderPrecipitation(this.client.world, lightmapTextureManager, this.ticks, tickDelta, pos);
+			this.worldBorderRendering.render(this.world.getWorldBorder(), pos, (double)i, (double)f);
 			RenderPhase.WEATHER_TARGET.endDrawing();
 		});
 	}
 
-	private void renderLateDebug(FrameGraphBuilder frameGraphBuilder, Vec3d vec3d, Fog fog) {
+	private void renderLateDebug(FrameGraphBuilder frameGraphBuilder, Vec3d pos, Fog fog) {
 		RenderPass renderPass = frameGraphBuilder.createPass("late_debug");
 		this.framebufferSet.mainFramebuffer = renderPass.transfer(this.framebufferSet.mainFramebuffer);
 		if (this.framebufferSet.itemEntityFramebuffer != null) {
@@ -741,7 +727,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			handle.get().beginWrite(false);
 			MatrixStack matrixStack = new MatrixStack();
 			VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
-			this.client.debugRenderer.renderLate(matrixStack, immediate, vec3d.x, vec3d.y, vec3d.z);
+			this.client.debugRenderer.renderLate(matrixStack, immediate, pos.x, pos.y, pos.z);
 			immediate.drawCurrentLayer();
 			this.checkEmpty(matrixStack);
 		});
@@ -920,21 +906,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			.render(entity, d - cameraX, e - cameraY, f - cameraZ, tickDelta, matrices, vertexConsumers, this.entityRenderDispatcher.getLight(entity, tickDelta));
 	}
 
-	private void method_62198(Vec3d vec3d, RenderLayer renderLayer) {
-		if (this.field_53074 == null || !(vec3d.squaredDistanceTo(this.field_53074) <= 1.0)) {
+	private void translucentSort(Vec3d cameraPos, RenderLayer renderLayer) {
+		if (this.lastCameraPos == null || !(cameraPos.squaredDistanceTo(this.lastCameraPos) <= 1.0)) {
 			this.client.getProfiler().push("translucent_sort");
-			int i = ChunkSectionPos.getSectionCoord(vec3d.x);
-			int j = ChunkSectionPos.getSectionCoord(vec3d.y);
-			int k = ChunkSectionPos.getSectionCoord(vec3d.z);
-			boolean bl = this.field_53074 == null
-				|| i != ChunkSectionPos.getSectionCoord(this.field_53074.x)
-				|| k != ChunkSectionPos.getSectionCoord(this.field_53074.y)
-				|| j != ChunkSectionPos.getSectionCoord(this.field_53074.z);
-			this.field_53074 = vec3d;
+			int i = ChunkSectionPos.getSectionCoord(cameraPos.x);
+			int j = ChunkSectionPos.getSectionCoord(cameraPos.y);
+			int k = ChunkSectionPos.getSectionCoord(cameraPos.z);
+			boolean bl = this.lastCameraPos == null
+				|| i != ChunkSectionPos.getSectionCoord(this.lastCameraPos.x)
+				|| k != ChunkSectionPos.getSectionCoord(this.lastCameraPos.y)
+				|| j != ChunkSectionPos.getSectionCoord(this.lastCameraPos.z);
+			this.lastCameraPos = cameraPos;
 			int l = 0;
 
 			for (ChunkBuilder.BuiltChunk builtChunk : this.builtChunks) {
-				if (l < 15 && (bl || builtChunk.method_52841(i, j, k)) && builtChunk.scheduleSort(renderLayer, this.chunkBuilder)) {
+				if (l < 15 && (bl || builtChunk.isAtPos(i, j, k)) && builtChunk.scheduleSort(renderLayer, this.chunkBuilder)) {
 					l++;
 				}
 			}
@@ -950,33 +936,37 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		ObjectListIterator<ChunkBuilder.BuiltChunk> objectListIterator = this.builtChunks.listIterator(bl ? 0 : this.builtChunks.size());
 		renderLayer.startDrawing();
 		ShaderProgram shaderProgram = RenderSystem.getShader();
-		shaderProgram.initializeUniforms(VertexFormat.DrawMode.QUADS, viewMatrix, positionMatrix, this.client.getWindow());
-		shaderProgram.bind();
-		GlUniform glUniform = shaderProgram.modelOffset;
+		if (shaderProgram == null) {
+			renderLayer.endDrawing();
+		} else {
+			shaderProgram.initializeUniforms(VertexFormat.DrawMode.QUADS, viewMatrix, positionMatrix, this.client.getWindow());
+			shaderProgram.bind();
+			GlUniform glUniform = shaderProgram.modelOffset;
 
-		while (bl ? objectListIterator.hasNext() : objectListIterator.hasPrevious()) {
-			ChunkBuilder.BuiltChunk builtChunk = bl ? (ChunkBuilder.BuiltChunk)objectListIterator.next() : objectListIterator.previous();
-			if (!builtChunk.getData().isEmpty(renderLayer)) {
-				VertexBuffer vertexBuffer = builtChunk.getBuffer(renderLayer);
-				BlockPos blockPos = builtChunk.getOrigin();
-				if (glUniform != null) {
-					glUniform.set((float)((double)blockPos.getX() - x), (float)((double)blockPos.getY() - y), (float)((double)blockPos.getZ() - z));
-					glUniform.upload();
+			while (bl ? objectListIterator.hasNext() : objectListIterator.hasPrevious()) {
+				ChunkBuilder.BuiltChunk builtChunk = bl ? (ChunkBuilder.BuiltChunk)objectListIterator.next() : objectListIterator.previous();
+				if (!builtChunk.getData().isEmpty(renderLayer)) {
+					VertexBuffer vertexBuffer = builtChunk.getBuffer(renderLayer);
+					BlockPos blockPos = builtChunk.getOrigin();
+					if (glUniform != null) {
+						glUniform.set((float)((double)blockPos.getX() - x), (float)((double)blockPos.getY() - y), (float)((double)blockPos.getZ() - z));
+						glUniform.upload();
+					}
+
+					vertexBuffer.bind();
+					vertexBuffer.draw();
 				}
-
-				vertexBuffer.bind();
-				vertexBuffer.draw();
 			}
-		}
 
-		if (glUniform != null) {
-			glUniform.set(0.0F, 0.0F, 0.0F);
-		}
+			if (glUniform != null) {
+				glUniform.set(0.0F, 0.0F, 0.0F);
+			}
 
-		shaderProgram.unbind();
-		VertexBuffer.unbind();
-		this.client.getProfiler().pop();
-		renderLayer.endDrawing();
+			shaderProgram.unbind();
+			VertexBuffer.unbind();
+			this.client.getProfiler().pop();
+			renderLayer.endDrawing();
+		}
 	}
 
 	public void captureFrustum() {
@@ -1042,7 +1032,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						float o = ColorHelper.floatFromChannel(ColorHelper.getGreen(m));
 						float p = ColorHelper.floatFromChannel(ColorHelper.getBlue(m));
 						this.skyRendering.renderSky(n, o, p);
-						if (dimensionEffects.method_62183(h)) {
+						if (dimensionEffects.isSunHigh(h)) {
 							this.skyRendering.method_62306(matrixStack, tessellator, g, k);
 						}
 
@@ -1074,7 +1064,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		List<ChunkBuilder.BuiltChunk> list = Lists.<ChunkBuilder.BuiltChunk>newArrayList();
 
 		for (ChunkBuilder.BuiltChunk builtChunk : this.builtChunks) {
-			long l = builtChunk.method_62975();
+			long l = builtChunk.getSectionPos();
 			if (builtChunk.needsRebuild() && builtChunk.shouldBuild() && method_62910(lightingProvider, l)) {
 				boolean bl = false;
 				if (this.client.options.getChunkBuilderMode().getValue() == ChunkBuilderMode.NEARBY) {
@@ -1105,7 +1095,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		this.client.getProfiler().pop();
-		this.method_62198(camera.getPos(), RenderLayer.getTranslucent());
+		this.translucentSort(camera.getPos(), RenderLayer.getTranslucent());
 	}
 
 	private static boolean method_62910(LightingProvider lightingProvider, long l) {
@@ -1158,7 +1148,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		for (int i = minZ - 1; i <= maxZ + 1; i++) {
 			for (int j = minX - 1; j <= maxX + 1; j++) {
 				for (int k = minY - 1; k <= maxY + 1; k++) {
-					this.scheduleBlockRender(ChunkSectionPos.getSectionCoord(j), ChunkSectionPos.getSectionCoord(k), ChunkSectionPos.getSectionCoord(i));
+					this.scheduleChunkRender(ChunkSectionPos.getSectionCoord(j), ChunkSectionPos.getSectionCoord(k), ChunkSectionPos.getSectionCoord(i));
 				}
 			}
 		}
@@ -1170,32 +1160,32 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	public void scheduleBlockRenders(int i, int j, int k) {
-		this.method_62219(i - 1, j - 1, k - 1, i + 1, j + 1, k + 1);
+	public void scheduleChunkRenders3x3x3(int x, int y, int z) {
+		this.scheduleChunkRenders(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
 	}
 
-	public void method_62219(int i, int j, int k, int l, int m, int n) {
-		for (int o = k; o <= n; o++) {
-			for (int p = i; p <= l; p++) {
-				for (int q = j; q <= m; q++) {
-					this.scheduleBlockRender(p, q, o);
+	public void scheduleChunkRenders(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+		for (int i = zMin; i <= zMax; i++) {
+			for (int j = xMin; j <= xMax; j++) {
+				for (int k = yMin; k <= yMax; k++) {
+					this.scheduleChunkRender(j, k, i);
 				}
 			}
 		}
 	}
 
-	public void scheduleBlockRender(int x, int y, int z) {
-		this.scheduleChunkRender(x, y, z, false);
+	public void scheduleChunkRender(int chunkX, int chunkY, int chunkZ) {
+		this.scheduleChunkRender(chunkX, chunkY, chunkZ, false);
 	}
 
 	private void scheduleChunkRender(int x, int y, int z, boolean important) {
 		this.chunks.scheduleRebuild(x, y, z, important);
 	}
 
-	public void method_62908(long l) {
-		ChunkBuilder.BuiltChunk builtChunk = this.chunks.method_62963(l);
+	public void onChunkUnload(long sectionPos) {
+		ChunkBuilder.BuiltChunk builtChunk = this.chunks.getRenderedChunk(sectionPos);
 		if (builtChunk != null) {
-			this.chunkRenderingDataPreparer.method_52827(builtChunk);
+			this.chunkRenderingDataPreparer.schedulePropagationFrom(builtChunk);
 		}
 	}
 
@@ -1296,8 +1286,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		return this.chunkBuilder.isEmpty();
 	}
 
-	public void method_52815(ChunkPos chunkPos) {
-		this.chunkRenderingDataPreparer.method_52819(chunkPos);
+	public void scheduleNeighborUpdates(ChunkPos chunkPos) {
+		this.chunkRenderingDataPreparer.addNeighbors(chunkPos);
 	}
 
 	public void scheduleTerrainUpdate() {
@@ -1383,12 +1373,5 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	public CloudRenderer getCloudRenderer() {
 		return this.cloudRenderer;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class ProgramInitException extends RuntimeException {
-		public ProgramInitException(String message) {
-			super(message);
-		}
 	}
 }

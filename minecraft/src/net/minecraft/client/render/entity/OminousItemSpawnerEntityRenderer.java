@@ -6,11 +6,9 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.state.OminousItemSpawnerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.OminousItemSpawnerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
@@ -24,10 +22,6 @@ public class OminousItemSpawnerEntityRenderer extends EntityRenderer<OminousItem
 	protected OminousItemSpawnerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
 		this.itemRenderer = context.getItemRenderer();
-	}
-
-	public Identifier getTexture(OminousItemSpawnerEntityRenderState ominousItemSpawnerEntityRenderState) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
 	}
 
 	public OminousItemSpawnerEntityRenderState getRenderState() {
