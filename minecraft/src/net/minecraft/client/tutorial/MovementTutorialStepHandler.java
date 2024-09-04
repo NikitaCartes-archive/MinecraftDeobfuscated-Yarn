@@ -117,7 +117,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onMovement(Input input) {
-		if (input.pressingForward || input.pressingBack || input.pressingLeft || input.pressingRight || input.jumping) {
+		if (input.playerInput.forward() || input.playerInput.backward() || input.playerInput.left() || input.playerInput.right() || input.playerInput.jump()) {
 			this.movedLastTick = true;
 		}
 	}

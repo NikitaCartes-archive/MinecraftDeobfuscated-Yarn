@@ -150,7 +150,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		}
 
 		entityRenderDispatcher.setRenderShadows(false);
-		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880);
+		context.draw(vertexConsumers -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 1.0F, context.getMatrices(), vertexConsumers, 15728880));
 		context.draw();
 		entityRenderDispatcher.setRenderShadows(true);
 		context.getMatrices().pop();

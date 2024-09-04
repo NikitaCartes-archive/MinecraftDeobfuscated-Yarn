@@ -76,9 +76,10 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (entity instanceof LivingEntity && entity.getType() != EntityType.FOX && entity.getType() != EntityType.BEE) {
 			entity.slowMovement(state, new Vec3d(0.8F, 0.75, 0.8F));
-			if (!world.isClient && (Integer)state.get(AGE) > 0 && (entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ())) {
-				double d = Math.abs(entity.getX() - entity.lastRenderX);
-				double e = Math.abs(entity.getZ() - entity.lastRenderZ);
+			Vec3d vec3d = entity.getMovement();
+			if (!world.isClient && (Integer)state.get(AGE) > 0 && vec3d.horizontalLengthSquared() > 0.0) {
+				double d = Math.abs(vec3d.getX());
+				double e = Math.abs(vec3d.getZ());
 				if (d >= 0.003F || e >= 0.003F) {
 					entity.damage(world.getDamageSources().sweetBerryBush(), 1.0F);
 				}

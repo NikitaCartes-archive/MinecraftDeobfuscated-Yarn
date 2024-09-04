@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.ByteArrayOutputStream;
@@ -14,10 +15,12 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.ToIntFunction;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
@@ -35,9 +38,26 @@ public interface DataProvider {
 
 	String getName();
 
+	static <T> CompletableFuture<?> writeAllToPath(DataWriter writer, Codec<T> codec, DataOutput.PathResolver pathResolver, Map<Identifier, T> idsToValues) {
+		return CompletableFuture.allOf(
+			(CompletableFuture[])idsToValues.entrySet()
+				.stream()
+				.map(entry -> writeCodecToPath(writer, codec, (T)entry.getValue(), pathResolver.resolveJson((Identifier)entry.getKey())))
+				.toArray(CompletableFuture[]::new)
+		);
+	}
+
 	static <T> CompletableFuture<?> writeCodecToPath(DataWriter writer, RegistryWrapper.WrapperLookup registries, Codec<T> codec, T value, Path path) {
 		RegistryOps<JsonElement> registryOps = registries.getOps(JsonOps.INSTANCE);
-		JsonElement jsonElement = codec.encodeStart(registryOps, value).getOrThrow();
+		return writeCodecToPath(writer, registryOps, codec, value, path);
+	}
+
+	static <T> CompletableFuture<?> writeCodecToPath(DataWriter writer, Codec<T> codec, T value, Path path) {
+		return writeCodecToPath(writer, JsonOps.INSTANCE, codec, value, path);
+	}
+
+	private static <T> CompletableFuture<?> writeCodecToPath(DataWriter writer, DynamicOps<JsonElement> ops, Codec<T> codec, T value, Path path) {
+		JsonElement jsonElement = codec.encodeStart(ops, value).getOrThrow();
 		return writeToPath(writer, jsonElement, path);
 	}
 

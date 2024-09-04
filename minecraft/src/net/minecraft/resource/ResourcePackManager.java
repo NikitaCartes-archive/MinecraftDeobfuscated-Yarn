@@ -52,6 +52,11 @@ public class ResourcePackManager {
 		return ImmutableMap.copyOf(map);
 	}
 
+	public boolean hasOptionalProfilesEnabled() {
+		List<ResourcePackProfile> list = this.buildEnabledProfiles(List.of());
+		return !this.enabled.equals(list);
+	}
+
 	public void setEnabledProfiles(Collection<String> enabled) {
 		this.enabled = this.buildEnabledProfiles(enabled);
 	}

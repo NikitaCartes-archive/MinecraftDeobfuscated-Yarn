@@ -38,6 +38,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -660,6 +661,16 @@ public class Util {
 	public static <T> T make(T object, Consumer<? super T> initializer) {
 		initializer.accept(object);
 		return object;
+	}
+
+	public static <K extends Enum<K>, V> EnumMap<K, V> mapEnum(Class<K> enumClass, Function<K, V> mapper) {
+		EnumMap<K, V> enumMap = new EnumMap(enumClass);
+
+		for (K enum_ : (Enum[])enumClass.getEnumConstants()) {
+			enumMap.put(enum_, mapper.apply(enum_));
+		}
+
+		return enumMap;
 	}
 
 	/**

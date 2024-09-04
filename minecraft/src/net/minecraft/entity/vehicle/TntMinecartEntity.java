@@ -50,7 +50,6 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public void tick() {
-		double d = this.getVelocity().horizontalLengthSquared();
 		super.tick();
 		if (this.fuseTicks > 0) {
 			this.fuseTicks--;
@@ -60,9 +59,9 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		}
 
 		if (this.horizontalCollision) {
-			double e = this.getVelocity().horizontalLengthSquared();
-			if (d >= 0.01F && e <= 0.01F) {
-				this.explode(e);
+			double d = this.getVelocity().horizontalLengthSquared();
+			if (d >= 0.01F) {
+				this.explode(d);
 			}
 		}
 	}

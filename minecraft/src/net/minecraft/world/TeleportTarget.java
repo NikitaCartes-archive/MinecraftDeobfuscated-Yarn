@@ -1,6 +1,8 @@
 package net.minecraft.world;
 
+import java.util.Set;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -13,11 +15,12 @@ import net.minecraft.util.math.Vec3d;
  */
 public record TeleportTarget(
 	ServerWorld world,
-	Vec3d pos,
+	Vec3d position,
 	Vec3d velocity,
 	float yaw,
 	float pitch,
 	boolean missingRespawnBlock,
+	Set<PositionFlag> relatives,
 	TeleportTarget.PostDimensionTransition postDimensionTransition
 ) {
 	public static final TeleportTarget.PostDimensionTransition NO_OP = entity -> {
@@ -26,11 +29,17 @@ public record TeleportTarget(
 	public static final TeleportTarget.PostDimensionTransition ADD_PORTAL_CHUNK_TICKET = TeleportTarget::addPortalChunkTicket;
 
 	public TeleportTarget(ServerWorld world, Vec3d pos, Vec3d velocity, float yaw, float pitch, TeleportTarget.PostDimensionTransition postDimensionTransition) {
-		this(world, pos, velocity, yaw, pitch, false, postDimensionTransition);
+		this(world, pos, velocity, yaw, pitch, Set.of(), postDimensionTransition);
+	}
+
+	public TeleportTarget(
+		ServerWorld world, Vec3d pos, Vec3d velocity, float yaw, float pitch, Set<PositionFlag> flags, TeleportTarget.PostDimensionTransition postDimensionTransition
+	) {
+		this(world, pos, velocity, yaw, pitch, false, flags, postDimensionTransition);
 	}
 
 	public TeleportTarget(ServerWorld world, Entity entity, TeleportTarget.PostDimensionTransition postDimensionTransition) {
-		this(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, false, postDimensionTransition);
+		this(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, false, Set.of(), postDimensionTransition);
 	}
 
 	private static void sendTravelThroughPortalPacket(Entity entity) {
@@ -44,7 +53,7 @@ public record TeleportTarget(
 	}
 
 	public static TeleportTarget missingSpawnBlock(ServerWorld world, Entity entity, TeleportTarget.PostDimensionTransition postDimensionTransition) {
-		return new TeleportTarget(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, true, postDimensionTransition);
+		return new TeleportTarget(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, true, Set.of(), postDimensionTransition);
 	}
 
 	private static Vec3d getWorldSpawnPos(ServerWorld world, Entity entity) {
@@ -52,7 +61,9 @@ public record TeleportTarget(
 	}
 
 	public TeleportTarget withRotation(float yaw, float pitch) {
-		return new TeleportTarget(this.world(), this.pos(), this.velocity(), yaw, pitch, this.missingRespawnBlock(), this.postDimensionTransition());
+		return new TeleportTarget(
+			this.world(), this.position(), this.velocity(), yaw, pitch, this.missingRespawnBlock(), this.relatives(), this.postDimensionTransition()
+		);
 	}
 
 	@FunctionalInterface

@@ -85,7 +85,7 @@ public class TridentItem extends Item implements ProjectileItem {
 				float f = EnchantmentHelper.getTridentSpinAttackStrength(stack, playerEntity);
 				if (f > 0.0F && !playerEntity.isTouchingWaterOrRain()) {
 					return false;
-				} else if (isAboutToBreak(stack)) {
+				} else if (stack.willBreakNextUse()) {
 					return false;
 				} else {
 					RegistryEntry<SoundEvent> registryEntry = (RegistryEntry<SoundEvent>)EnchantmentHelper.getEffect(stack, EnchantmentEffectComponentTypes.TRIDENT_SOUND)
@@ -138,7 +138,7 @@ public class TridentItem extends Item implements ProjectileItem {
 	@Override
 	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		if (isAboutToBreak(itemStack)) {
+		if (itemStack.willBreakNextUse()) {
 			return ActionResult.FAIL;
 		} else if (EnchantmentHelper.getTridentSpinAttackStrength(itemStack, user) > 0.0F && !user.isTouchingWaterOrRain()) {
 			return ActionResult.FAIL;
@@ -146,10 +146,6 @@ public class TridentItem extends Item implements ProjectileItem {
 			user.setCurrentHand(hand);
 			return ActionResult.CONSUME;
 		}
-	}
-
-	private static boolean isAboutToBreak(ItemStack stack) {
-		return stack.getDamage() >= stack.getMaxDamage() - 1;
 	}
 
 	@Override

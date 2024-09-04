@@ -6,9 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -17,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.block.WireOrientation;
 
-public abstract class AbstractSkullBlock extends BlockWithEntity implements Equipment {
+public abstract class AbstractSkullBlock extends BlockWithEntity {
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private final SkullBlock.SkullType type;
 
@@ -55,11 +53,6 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Equi
 	@Override
 	protected boolean canPathfindThrough(BlockState state, NavigationType type) {
 		return false;
-	}
-
-	@Override
-	public EquipmentSlot getSlotType() {
-		return EquipmentSlot.HEAD;
 	}
 
 	@Override

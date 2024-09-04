@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -10,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -95,15 +97,17 @@ public class EndGatewayBlock extends BlockWithEntity implements Portal {
 	public TeleportTarget createTeleportTarget(ServerWorld world, Entity entity, BlockPos pos) {
 		if (world.getBlockEntity(pos) instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
 			Vec3d vec3d = endGatewayBlockEntity.getOrCreateExitPortalPos(world, pos);
-			return vec3d != null
-				? new TeleportTarget(world, vec3d, getTeleportVelocity(entity), entity.getYaw(), entity.getPitch(), TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
-				: null;
+			if (vec3d == null) {
+				return null;
+			} else {
+				return entity instanceof EnderPearlEntity
+					? new TeleportTarget(world, vec3d, Vec3d.ZERO, 0.0F, 0.0F, Set.of(), TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
+					: new TeleportTarget(
+						world, vec3d, Vec3d.ZERO, 0.0F, 0.0F, PositionFlag.combine(PositionFlag.DELTA, PositionFlag.ROT), TeleportTarget.ADD_PORTAL_CHUNK_TICKET
+					);
+			}
 		} else {
 			return null;
 		}
-	}
-
-	private static Vec3d getTeleportVelocity(Entity entity) {
-		return entity instanceof EnderPearlEntity ? new Vec3d(0.0, -1.0, 0.0) : entity.getVelocity();
 	}
 }

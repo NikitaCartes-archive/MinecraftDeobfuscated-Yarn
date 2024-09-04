@@ -192,6 +192,6 @@ public class MaceItem extends Item {
 	}
 
 	public static boolean shouldDealAdditionalDamage(LivingEntity attacker) {
-		return attacker.fallDistance > 1.5F && !attacker.isFallFlying();
+		return attacker.fallDistance > 1.5F && !attacker.isGliding();
 	}
 }

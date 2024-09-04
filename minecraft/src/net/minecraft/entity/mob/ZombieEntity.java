@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.List;
@@ -31,6 +32,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -266,11 +268,28 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected void convertTo(EntityType<? extends ZombieEntity> entityType) {
-		ZombieEntity zombieEntity = this.convertTo(entityType, true);
-		if (zombieEntity != null) {
-			zombieEntity.applyAttributeModifiers(zombieEntity.getWorld().getLocalDifficulty(zombieEntity.getBlockPos()).getClampedLocalDifficulty());
-			zombieEntity.setCanBreakDoors(this.canBreakDoors());
-		}
+		this.convertTo(
+			entityType,
+			EntityConversionContext.create(this, true, true),
+			newZombie -> newZombie.applyAttributeModifiers(newZombie.getWorld().getLocalDifficulty(newZombie.getBlockPos()).getClampedLocalDifficulty())
+		);
+	}
+
+	@VisibleForTesting
+	public boolean infectVillager(ServerWorld world, VillagerEntity villager) {
+		ZombieVillagerEntity zombieVillagerEntity = villager.convertTo(
+			EntityType.ZOMBIE_VILLAGER, EntityConversionContext.create(villager, true, true), zombieVillager -> {
+				zombieVillager.initialize(world, world.getLocalDifficulty(zombieVillager.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true));
+				zombieVillager.setVillagerData(villager.getVillagerData());
+				zombieVillager.setGossipData(villager.getGossip().serialize(NbtOps.INSTANCE));
+				zombieVillager.setOfferData(villager.getOffers().copy());
+				zombieVillager.setXp(villager.getExperience());
+				if (!this.isSilent()) {
+					world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
+				}
+			}
+		);
+		return zombieVillagerEntity != null;
 	}
 
 	protected boolean burnsInDaylight() {
@@ -418,19 +437,7 @@ public class ZombieEntity extends HostileEntity {
 				return bl;
 			}
 
-			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
-			if (zombieVillagerEntity != null) {
-				zombieVillagerEntity.initialize(
-					world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true)
-				);
-				zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-				zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE));
-				zombieVillagerEntity.setOfferData(villagerEntity.getOffers().copy());
-				zombieVillagerEntity.setXp(villagerEntity.getExperience());
-				if (!this.isSilent()) {
-					world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
-				}
-
+			if (this.infectVillager(world, villagerEntity)) {
 				bl = false;
 			}
 		}
@@ -459,7 +466,10 @@ public class ZombieEntity extends HostileEntity {
 		Random random = world.getRandom();
 		entityData = super.initialize(world, difficulty, spawnReason, entityData);
 		float f = difficulty.getClampedLocalDifficulty();
-		this.setCanPickUpLoot(random.nextFloat() < 0.55F * f);
+		if (spawnReason != SpawnReason.CONVERSION) {
+			this.setCanPickUpLoot(random.nextFloat() < 0.55F * f);
+		}
+
 		if (entityData == null) {
 			entityData = new ZombieEntity.ZombieData(shouldBeBaby(random), true);
 		}
@@ -489,8 +499,10 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			this.setCanBreakDoors(random.nextFloat() < f * 0.1F);
-			this.initEquipment(random, difficulty);
-			this.updateEnchantments(world, random, difficulty);
+			if (spawnReason != SpawnReason.CONVERSION) {
+				this.initEquipment(random, difficulty);
+				this.updateEnchantments(world, random, difficulty);
+			}
 		}
 
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
@@ -505,6 +517,16 @@ public class ZombieEntity extends HostileEntity {
 
 		this.applyAttributeModifiers(f);
 		return entityData;
+	}
+
+	@VisibleForTesting
+	public void setInWaterTime(int inWaterTime) {
+		this.inWaterTime = inWaterTime;
+	}
+
+	@VisibleForTesting
+	public void method_63658(int i) {
+		this.ticksUntilWaterConversion = i;
 	}
 
 	public static boolean shouldBeBaby(Random random) {

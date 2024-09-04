@@ -9,7 +9,6 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -21,33 +20,42 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.util.collection.DataPool;
 
 @Environment(EnvType.CLIENT)
 public record WeightedUnbakedModel(List<ModelVariant> variants) implements GroupableModel {
+	public WeightedUnbakedModel(List<ModelVariant> variants) {
+		if (variants.isEmpty()) {
+			throw new IllegalArgumentException("Variant list must contain at least one element");
+		} else {
+			this.variants = variants;
+		}
+	}
+
 	@Override
 	public Object getEqualityGroup(BlockState state) {
 		return this;
 	}
 
 	@Override
-	public void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType) {
+	public void resolve(UnbakedModel.Resolver resolver) {
 		this.variants.forEach(variant -> resolver.resolve(variant.getLocation()));
 	}
 
-	@Nullable
 	@Override
 	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
-		if (this.variants.isEmpty()) {
-			return null;
+		if (this.variants.size() == 1) {
+			ModelVariant modelVariant = (ModelVariant)this.variants.getFirst();
+			return baker.bake(modelVariant.getLocation(), modelVariant);
 		} else {
-			WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
+			DataPool.Builder<BakedModel> builder = DataPool.builder();
 
-			for (ModelVariant modelVariant : this.variants) {
-				BakedModel bakedModel = baker.bake(modelVariant.getLocation(), modelVariant);
-				builder.add(bakedModel, modelVariant.getWeight());
+			for (ModelVariant modelVariant2 : this.variants) {
+				BakedModel bakedModel = baker.bake(modelVariant2.getLocation(), modelVariant2);
+				builder.add(bakedModel, modelVariant2.getWeight());
 			}
 
-			return builder.build();
+			return new WeightedBakedModel(builder.build());
 		}
 	}
 
@@ -57,7 +65,7 @@ public record WeightedUnbakedModel(List<ModelVariant> variants) implements Group
 			List<ModelVariant> list = Lists.<ModelVariant>newArrayList();
 			if (jsonElement.isJsonArray()) {
 				JsonArray jsonArray = jsonElement.getAsJsonArray();
-				if (jsonArray.size() == 0) {
+				if (jsonArray.isEmpty()) {
 					throw new JsonParseException("Empty variant array");
 				}
 

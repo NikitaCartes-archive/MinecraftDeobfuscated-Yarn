@@ -120,10 +120,11 @@ public class ChunkHolder extends AbstractChunkHolder {
 	}
 
 	public boolean isSavable() {
-		return this.getRefCount() == 0 && this.savingFuture.isDone();
+		return this.savingFuture.isDone();
 	}
 
-	private void combineSavingFuture(CompletableFuture<?> savingFuture) {
+	@Override
+	protected void combineSavingFuture(CompletableFuture<?> savingFuture) {
 		if (this.savingFuture.isDone()) {
 			this.savingFuture = savingFuture;
 		} else {

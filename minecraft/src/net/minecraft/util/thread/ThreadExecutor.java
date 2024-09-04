@@ -16,7 +16,7 @@ import net.minecraft.util.profiler.SampleType;
 import net.minecraft.util.profiler.Sampler;
 import org.slf4j.Logger;
 
-public abstract class ThreadExecutor<R extends Runnable> implements SampleableExecutor, MessageListener<R>, Executor {
+public abstract class ThreadExecutor<R extends Runnable> implements SampleableExecutor, TaskExecutor<R>, Executor {
 	public static final long field_52421 = 100000L;
 	private final String name;
 	private static final Logger LOGGER = LogUtils.getLogger();
@@ -27,8 +27,6 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		this.name = name;
 		ExecutorSampling.INSTANCE.add(this);
 	}
-
-	protected abstract R createTask(Runnable runnable);
 
 	protected abstract boolean canExecute(R task);
 
@@ -80,6 +78,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		}
 	}
 
+	@Override
 	public void send(R runnable) {
 		this.tasks.add(runnable);
 		LockSupport.unpark(this.getThread());

@@ -302,16 +302,18 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					}
 				} else if (slot != null) {
 					ItemStack itemStack2x = this.handler.getSlot(slot.id).getStack();
-					this.client.interactionManager.clickCreativeStack(itemStack2x, slot.id - this.handler.slots.size() + 9 + 36);
 					int j = 45 + button;
 					if (actionType == SlotActionType.SWAP) {
 						this.client.interactionManager.clickCreativeStack(itemStackx, j - this.handler.slots.size() + 9 + 36);
 					} else if (actionType == SlotActionType.THROW && !itemStackx.isEmpty()) {
-						ItemStack itemStack4 = itemStackx.copyWithCount(button == 0 ? 1 : itemStackx.getMaxCount());
+						int l = button == 0 ? 1 : itemStackx.getCount();
+						ItemStack itemStack4 = itemStackx.copyWithCount(l);
+						itemStack2x.decrement(l);
 						this.client.player.dropItem(itemStack4, true);
 						this.client.interactionManager.dropCreativeStack(itemStack4);
 					}
 
+					this.client.interactionManager.clickCreativeStack(itemStack2x, slot.id - this.handler.slots.size() + 9 + 36);
 					this.client.player.playerScreenHandler.sendContentUpdates();
 				}
 			}

@@ -18,15 +18,18 @@ public class DefaultPosArgument implements PosArgument {
 	}
 
 	@Override
-	public Vec3d toAbsolutePos(ServerCommandSource source) {
-		Vec3d vec3d = source.getPosition();
-		return new Vec3d(this.x.toAbsoluteCoordinate(vec3d.x), this.y.toAbsoluteCoordinate(vec3d.y), this.z.toAbsoluteCoordinate(vec3d.z));
+	public Vec3d getPos(ServerCommandSource source, boolean relativeIfPossible) {
+		double d = this.x.isRelative() && relativeIfPossible ? 0.0 : source.getPosition().x;
+		double e = this.y.isRelative() && relativeIfPossible ? 0.0 : source.getPosition().y;
+		double f = this.z.isRelative() && relativeIfPossible ? 0.0 : source.getPosition().z;
+		return new Vec3d(this.x.toAbsoluteCoordinate(d), this.y.toAbsoluteCoordinate(e), this.z.toAbsoluteCoordinate(f));
 	}
 
 	@Override
-	public Vec2f toAbsoluteRotation(ServerCommandSource source) {
-		Vec2f vec2f = source.getRotation();
-		return new Vec2f((float)this.x.toAbsoluteCoordinate((double)vec2f.x), (float)this.y.toAbsoluteCoordinate((double)vec2f.y));
+	public Vec2f getRotation(ServerCommandSource source, boolean relativeIfPossible) {
+		double d = this.x.isRelative() && relativeIfPossible ? 0.0 : (double)source.getRotation().x;
+		double e = this.y.isRelative() && relativeIfPossible ? 0.0 : (double)source.getRotation().y;
+		return new Vec2f((float)this.x.toAbsoluteCoordinate(d), (float)this.y.toAbsoluteCoordinate(e));
 	}
 
 	@Override

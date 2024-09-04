@@ -1,53 +1,36 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.Set;
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
+import net.minecraft.util.math.Vec3d;
 
-public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, PlayerPositionLookS2CPacket> CODEC = Packet.createCodec(
-		PlayerPositionLookS2CPacket::write, PlayerPositionLookS2CPacket::new
+public record PlayerPositionLookS2CPacket(int teleportId, Vec3d position, Vec3d deltaMovement, float yaw, float pitch, Set<PositionFlag> flags)
+	implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, PlayerPositionLookS2CPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.VAR_INT,
+		PlayerPositionLookS2CPacket::teleportId,
+		Vec3d.PACKET_CODEC,
+		PlayerPositionLookS2CPacket::position,
+		Vec3d.PACKET_CODEC,
+		PlayerPositionLookS2CPacket::deltaMovement,
+		PacketCodecs.DEGREES,
+		PlayerPositionLookS2CPacket::yaw,
+		PacketCodecs.DEGREES,
+		PlayerPositionLookS2CPacket::pitch,
+		PositionFlag.PACKET_CODEC,
+		PlayerPositionLookS2CPacket::flags,
+		PlayerPositionLookS2CPacket::new
 	);
-	private final double x;
-	private final double y;
-	private final double z;
-	private final float yaw;
-	private final float pitch;
-	private final Set<PositionFlag> flags;
-	private final int teleportId;
 
-	public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags, int teleportId) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.yaw = yaw;
-		this.pitch = pitch;
-		this.flags = flags;
-		this.teleportId = teleportId;
-	}
-
-	private PlayerPositionLookS2CPacket(PacketByteBuf buf) {
-		this.x = buf.readDouble();
-		this.y = buf.readDouble();
-		this.z = buf.readDouble();
-		this.yaw = buf.readFloat();
-		this.pitch = buf.readFloat();
-		this.flags = PositionFlag.getFlags(buf.readUnsignedByte());
-		this.teleportId = buf.readVarInt();
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeDouble(this.x);
-		buf.writeDouble(this.y);
-		buf.writeDouble(this.z);
-		buf.writeFloat(this.yaw);
-		buf.writeFloat(this.pitch);
-		buf.writeByte(PositionFlag.getBitfield(this.flags));
-		buf.writeVarInt(this.teleportId);
+	public static PlayerPositionLookS2CPacket of(int teleportId, PlayerPosition pos, Set<PositionFlag> flags) {
+		return new PlayerPositionLookS2CPacket(teleportId, pos.position(), pos.deltaMovement(), pos.yaw(), pos.pitch(), flags);
 	}
 
 	@Override
@@ -57,33 +40,5 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerPositionLook(this);
-	}
-
-	public double getX() {
-		return this.x;
-	}
-
-	public double getY() {
-		return this.y;
-	}
-
-	public double getZ() {
-		return this.z;
-	}
-
-	public float getYaw() {
-		return this.yaw;
-	}
-
-	public float getPitch() {
-		return this.pitch;
-	}
-
-	public int getTeleportId() {
-		return this.teleportId;
-	}
-
-	public Set<PositionFlag> getFlags() {
-		return this.flags;
 	}
 }

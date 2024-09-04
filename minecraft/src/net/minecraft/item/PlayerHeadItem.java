@@ -9,14 +9,14 @@ import net.minecraft.util.math.Direction;
 
 public class PlayerHeadItem extends VerticallyAttachableBlockItem {
 	public PlayerHeadItem(Block block, Block wallBlock, Item.Settings settings) {
-		super(block, wallBlock, settings, Direction.DOWN);
+		super(block, wallBlock, Direction.DOWN, settings);
 	}
 
 	@Override
 	public Text getName(ItemStack stack) {
 		ProfileComponent profileComponent = stack.get(DataComponentTypes.PROFILE);
 		return (Text)(profileComponent != null && profileComponent.name().isPresent()
-			? Text.translatable(this.getTranslationKey() + ".named", profileComponent.name().get())
+			? Text.translatable(this.translationKey + ".named", profileComponent.name().get())
 			: super.getName(stack));
 	}
 

@@ -15,7 +15,7 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 	private final EntityType<T> target;
 	private final int damagePerUse;
 
-	public OnAStickItem(Item.Settings settings, EntityType<T> target, int damagePerUse) {
+	public OnAStickItem(EntityType<T> target, int damagePerUse, Item.Settings settings) {
 		super(settings);
 		this.target = target;
 		this.damagePerUse = damagePerUse;

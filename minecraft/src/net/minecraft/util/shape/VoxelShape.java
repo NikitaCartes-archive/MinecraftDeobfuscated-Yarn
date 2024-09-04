@@ -73,6 +73,10 @@ public abstract class VoxelShape {
 		return this.voxels.isEmpty();
 	}
 
+	public VoxelShape offset(Vec3d vec3d) {
+		return this.offset(vec3d.x, vec3d.y, vec3d.z);
+	}
+
 	public VoxelShape offset(double x, double y, double z) {
 		return (VoxelShape)(this.isEmpty()
 			? VoxelShapes.empty()

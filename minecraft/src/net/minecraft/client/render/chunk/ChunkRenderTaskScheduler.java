@@ -2,6 +2,7 @@ package net.minecraft.client.render.chunk;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,18 +24,24 @@ public class ChunkRenderTaskScheduler {
 		int j = -1;
 		double d = Double.MAX_VALUE;
 		double e = Double.MAX_VALUE;
+		ListIterator<ChunkBuilder.BuiltChunk.Task> listIterator = this.queue.listIterator();
 
-		for (int k = 0; k < this.queue.size(); k++) {
-			ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)this.queue.get(k);
-			double f = task.getOrigin().getSquaredDistance(pos);
-			if (!task.isPrioritized() && f < d) {
-				d = f;
-				i = k;
-			}
+		while (listIterator.hasNext()) {
+			int k = listIterator.nextIndex();
+			ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)listIterator.next();
+			if (task.cancelled.get()) {
+				listIterator.remove();
+			} else {
+				double f = task.getOrigin().getSquaredDistance(pos);
+				if (!task.isPrioritized() && f < d) {
+					d = f;
+					i = k;
+				}
 
-			if (task.isPrioritized() && f < e) {
-				e = f;
-				j = k;
+				if (task.isPrioritized() && f < e) {
+					e = f;
+					j = k;
+				}
 			}
 		}
 

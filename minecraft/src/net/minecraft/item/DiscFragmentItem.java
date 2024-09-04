@@ -17,6 +17,6 @@ public class DiscFragmentItem extends Item {
 	}
 
 	public MutableText getDescription() {
-		return Text.translatable(this.getTranslationKey() + ".desc");
+		return Text.translatable(this.translationKey + ".desc");
 	}
 }

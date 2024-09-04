@@ -1755,7 +1755,7 @@ public class Blocks {
 	);
 	public static final Block CARVED_PUMPKIN = register(
 		"carved_pumpkin",
-		WearableCarvedPumpkinBlock::new,
+		CarvedPumpkinBlock::new,
 		AbstractBlock.Settings.create()
 			.mapColor(MapColor.ORANGE)
 			.strength(1.0F)
@@ -6142,8 +6142,8 @@ public class Blocks {
 		return settings2;
 	}
 
-	private static Block register(RegistryKey<Block> key, Function<AbstractBlock.Settings, Block> blockFromSettings, AbstractBlock.Settings settings) {
-		Block block = (Block)blockFromSettings.apply(settings.registryKey(key));
+	private static Block register(RegistryKey<Block> key, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
+		Block block = (Block)factory.apply(settings.registryKey(key));
 		return Registry.register(Registries.BLOCK, key, block);
 	}
 
@@ -6155,8 +6155,8 @@ public class Blocks {
 		return RegistryKey.of(RegistryKeys.BLOCK, Identifier.ofVanilla(id));
 	}
 
-	private static Block register(String id, Function<AbstractBlock.Settings, Block> blockFromSettings, AbstractBlock.Settings settings) {
-		return register(keyOf(id), blockFromSettings, settings);
+	private static Block register(String id, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
+		return register(keyOf(id), factory, settings);
 	}
 
 	private static Block register(String id, AbstractBlock.Settings settings) {

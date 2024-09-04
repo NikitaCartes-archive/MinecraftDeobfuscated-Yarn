@@ -2,8 +2,6 @@ package net.minecraft.potion;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -19,16 +17,11 @@ import net.minecraft.resource.featuretoggle.ToggleableFeature;
 public class Potion implements ToggleableFeature {
 	public static final Codec<RegistryEntry<Potion>> CODEC = Registries.POTION.getEntryCodec();
 	public static final PacketCodec<RegistryByteBuf, RegistryEntry<Potion>> PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.POTION);
-	@Nullable
 	private final String baseName;
 	private final List<StatusEffectInstance> effects;
 	private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
-	public Potion(StatusEffectInstance... effects) {
-		this(null, effects);
-	}
-
-	public Potion(@Nullable String baseName, StatusEffectInstance... effects) {
+	public Potion(String baseName, StatusEffectInstance... effects) {
 		this.baseName = baseName;
 		this.effects = List.of(effects);
 	}
@@ -43,28 +36,18 @@ public class Potion implements ToggleableFeature {
 		return this.requiredFeatures;
 	}
 
-	public static String finishTranslationKey(Optional<RegistryEntry<Potion>> potion, String prefix) {
-		if (potion.isPresent()) {
-			String string = ((Potion)((RegistryEntry)potion.get()).value()).baseName;
-			if (string != null) {
-				return prefix + string;
-			}
-		}
-
-		String string = (String)potion.flatMap(RegistryEntry::getKey).map(key -> key.getValue().getPath()).orElse("empty");
-		return prefix + string;
-	}
-
 	public List<StatusEffectInstance> getEffects() {
 		return this.effects;
 	}
 
+	public String getBaseName() {
+		return this.baseName;
+	}
+
 	public boolean hasInstantEffect() {
-		if (!this.effects.isEmpty()) {
-			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				if (statusEffectInstance.getEffectType().value().isInstant()) {
-					return true;
-				}
+		for (StatusEffectInstance statusEffectInstance : this.effects) {
+			if (statusEffectInstance.getEffectType().value().isInstant()) {
+				return true;
 			}
 		}
 

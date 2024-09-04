@@ -47,7 +47,8 @@ public record PlayerPredicate(
 	List<PlayerPredicate.StatMatcher<?>> stats,
 	Object2BooleanMap<Identifier> recipes,
 	Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements,
-	Optional<EntityPredicate> lookingAt
+	Optional<EntityPredicate> lookingAt,
+	Optional<InputPredicate> input
 ) implements EntitySubPredicate {
 	public static final int LOOKING_AT_DISTANCE = 100;
 	public static final MapCodec<PlayerPredicate> CODEC = RecordCodecBuilder.mapCodec(
@@ -59,7 +60,8 @@ public record PlayerPredicate(
 					Codec.unboundedMap(Identifier.CODEC, PlayerPredicate.AdvancementPredicate.CODEC)
 						.optionalFieldOf("advancements", Map.of())
 						.forGetter(PlayerPredicate::advancements),
-					EntityPredicate.CODEC.optionalFieldOf("looking_at").forGetter(PlayerPredicate::lookingAt)
+					EntityPredicate.CODEC.optionalFieldOf("looking_at").forGetter(PlayerPredicate::lookingAt),
+					InputPredicate.CODEC.optionalFieldOf("input").forGetter(PlayerPredicate::input)
 				)
 				.apply(instance, PlayerPredicate::new)
 	);
@@ -118,7 +120,7 @@ public record PlayerPredicate(
 				}
 			}
 
-			return true;
+			return !this.input.isPresent() || ((InputPredicate)this.input.get()).matches(serverPlayerEntity.getPlayerInput());
 		}
 	}
 
@@ -165,6 +167,7 @@ public record PlayerPredicate(
 		private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<>();
 		private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements = Maps.<Identifier, PlayerPredicate.AdvancementPredicate>newHashMap();
 		private Optional<EntityPredicate> lookingAt = Optional.empty();
+		private Optional<InputPredicate> input = Optional.empty();
 
 		public static PlayerPredicate.Builder create() {
 			return new PlayerPredicate.Builder();
@@ -205,8 +208,13 @@ public record PlayerPredicate(
 			return this;
 		}
 
+		public PlayerPredicate.Builder input(InputPredicate input) {
+			this.input = Optional.of(input);
+			return this;
+		}
+
 		public PlayerPredicate build() {
-			return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats.build(), this.recipes, this.advancements, this.lookingAt);
+			return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats.build(), this.recipes, this.advancements, this.lookingAt, this.input);
 		}
 	}
 
@@ -234,7 +242,7 @@ public record PlayerPredicate(
 							type.getRegistry().getEntryCodec().fieldOf("stat").forGetter(PlayerPredicate.StatMatcher::value),
 							NumberRange.IntRange.CODEC.optionalFieldOf("value", NumberRange.IntRange.ANY).forGetter(PlayerPredicate.StatMatcher::range)
 						)
-						.apply(instance, (registryEntry, intRange) -> new PlayerPredicate.StatMatcher<>(type, registryEntry, intRange))
+						.apply(instance, (value, range) -> new PlayerPredicate.StatMatcher<>(type, value, range))
 			);
 		}
 

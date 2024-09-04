@@ -3,7 +3,7 @@ package net.minecraft.util.profiler;
 public enum SampleType {
 	PATH_FINDING("pathfinding"),
 	EVENT_LOOPS("event-loops"),
-	MAIL_BOXES("mailboxes"),
+	CONSECUTIVE_EXECUTORS("consecutive-executors"),
 	TICK_LOOP("ticking"),
 	JVM("jvm"),
 	CHUNK_RENDERING("chunk rendering"),

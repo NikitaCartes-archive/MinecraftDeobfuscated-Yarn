@@ -46,7 +46,7 @@ public final class ProjectileUtil {
 		Vec3d pos, Entity entity, Predicate<Entity> predicate, Vec3d velocity, World world, float margin, RaycastContext.ShapeType raycastShapeType
 	) {
 		Vec3d vec3d = pos.add(velocity);
-		HitResult hitResult = world.getWorldBorderCollisions(new RaycastContext(pos, vec3d, raycastShapeType, RaycastContext.FluidHandling.NONE, entity));
+		HitResult hitResult = world.getCollisionsIncludingWorldBorder(new RaycastContext(pos, vec3d, raycastShapeType, RaycastContext.FluidHandling.NONE, entity));
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			vec3d = hitResult.getPos();
 		}

@@ -300,7 +300,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	public boolean canEquip(ItemStack stack) {
+	protected boolean canDispenserEquipSlot(EquipmentSlot slot) {
 		return false;
 	}
 

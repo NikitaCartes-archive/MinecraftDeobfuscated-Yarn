@@ -17,6 +17,7 @@ import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.EnchantableComponent;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.component.type.FoodComponent;
@@ -43,7 +44,7 @@ import net.minecraft.component.type.WrittenBookContentComponent;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.item.BlockPredicatesChecker;
 import net.minecraft.item.Instrument;
-import net.minecraft.item.trim.ArmorTrim;
+import net.minecraft.item.equipment.trim.ArmorTrim;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
@@ -74,6 +75,9 @@ public class DataComponentTypes {
 	);
 	public static final ComponentType<Text> ITEM_NAME = register(
 		"item_name", builder -> builder.codec(TextCodecs.STRINGIFIED_CODEC).packetCodec(TextCodecs.REGISTRY_PACKET_CODEC).cache()
+	);
+	public static final ComponentType<Identifier> ITEM_MODEL = register(
+		"item_model", builder -> builder.codec(Identifier.CODEC).packetCodec(Identifier.PACKET_CODEC).cache()
 	);
 	public static final ComponentType<LoreComponent> LORE = register(
 		"lore", builder -> builder.codec(LoreComponent.CODEC).packetCodec(LoreComponent.PACKET_CODEC).cache()
@@ -129,8 +133,15 @@ public class DataComponentTypes {
 	public static final ComponentType<EnchantableComponent> ENCHANTABLE = register(
 		"enchantable", builder -> builder.codec(EnchantableComponent.CODEC).packetCodec(EnchantableComponent.PACKET_CODEC).cache()
 	);
+	public static final ComponentType<EquippableComponent> EQUIPPABLE = register(
+		"equippable", builder -> builder.codec(EquippableComponent.CODEC).packetCodec(EquippableComponent.PACKET_CODEC).cache()
+	);
 	public static final ComponentType<RepairableComponent> REPAIRABLE = register(
 		"repairable", builder -> builder.codec(RepairableComponent.CODEC).packetCodec(RepairableComponent.PACKET_CODEC).cache()
+	);
+	public static final ComponentType<Unit> GLIDER = register("glider", builder -> builder.codec(Unit.CODEC).packetCodec(PacketCodec.unit(Unit.INSTANCE)));
+	public static final ComponentType<Identifier> TOOLTIP_STYLE = register(
+		"tooltip_style", builder -> builder.codec(Identifier.CODEC).packetCodec(Identifier.PACKET_CODEC).cache()
 	);
 	public static final ComponentType<ItemEnchantmentsComponent> STORED_ENCHANTMENTS = register(
 		"stored_enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC).cache()

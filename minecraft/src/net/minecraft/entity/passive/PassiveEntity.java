@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -21,8 +22,8 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	public static final int BABY_AGE = -24000;
 	private static final int HAPPY_TICKS = 40;
 	protected int breedingAge;
-	protected int forcedAge;
-	protected int happyTicksRemaining;
+	public int forcedAge;
+	public int happyTicksRemaining;
 
 	protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
 		super(entityType, world);
@@ -168,6 +169,16 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	 */
 	public static int toGrowUpAge(int breedingAge) {
 		return (int)((float)(breedingAge / 20) * 0.1F);
+	}
+
+	@VisibleForTesting
+	public int getForcedAge() {
+		return this.forcedAge;
+	}
+
+	@VisibleForTesting
+	public int getHappyTicksRemaining() {
+		return this.happyTicksRemaining;
 	}
 
 	public static class PassiveData implements EntityData {

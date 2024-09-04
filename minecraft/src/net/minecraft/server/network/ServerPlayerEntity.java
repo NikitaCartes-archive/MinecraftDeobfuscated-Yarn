@@ -49,6 +49,7 @@ import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -140,6 +141,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PlayerInput;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -171,7 +173,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private static final int field_29769 = 32;
 	private static final int field_29770 = 10;
 	private static final int field_46928 = 25;
-	public static final double field_47708 = 1.0;
+	public static final double field_54046 = 1.0;
+	public static final double field_54047 = 3.0;
 	private static final EntityAttributeModifier CREATIVE_BLOCK_INTERACTION_RANGE_MODIFIER = new EntityAttributeModifier(
 		Identifier.ofVanilla("creative_mode_block_range"), 0.5, EntityAttributeModifier.Operation.ADD_VALUE
 	);
@@ -238,6 +241,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Nullable
 	private BlockPos startRaidPos;
 	private Vec3d movement = Vec3d.ZERO;
+	private PlayerInput playerInput = PlayerInput.DEFAULT;
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -883,8 +887,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 			ServerWorld serverWorld = teleportTarget.world();
 			ServerWorld serverWorld2 = this.getServerWorld();
 			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
+			this.stopRiding();
 			if (serverWorld.getRegistryKey() == registryKey) {
-				this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
+				this.networkHandler.requestTeleport(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
 				this.networkHandler.syncWithPlayerPosition();
 				teleportTarget.postDimensionTransition().onTransition(this);
 				return this;
@@ -906,7 +911,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				serverWorld2.getProfiler().pop();
 				serverWorld2.getProfiler().push("placing");
 				this.setServerWorld(serverWorld);
-				this.networkHandler.requestTeleport(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z, teleportTarget.yaw(), teleportTarget.pitch());
+				this.networkHandler.requestTeleport(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
 				this.networkHandler.syncWithPlayerPosition();
 				serverWorld.onDimensionChanged(this);
 				serverWorld2.getProfiler().pop();
@@ -1213,7 +1218,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 						this.addExhaustion(0.0F * (float)i * 0.01F);
 					}
 				}
-			} else if (this.isFallFlying()) {
+			} else if (this.isGliding()) {
 				int i = Math.round((float)Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 100.0F);
 				this.increaseStat(Stats.AVIATE_ONE_CM, i);
 			} else {
@@ -1423,12 +1428,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void requestTeleport(double destX, double destY, double destZ) {
-		this.networkHandler.requestTeleport(destX, destY, destZ, this.getYaw(), this.getPitch(), PositionFlag.ROT);
+		this.networkHandler
+			.requestTeleport(new PlayerPosition(new Vec3d(destX, destY, destZ), Vec3d.ZERO, 0.0F, 0.0F), PositionFlag.combine(PositionFlag.DELTA, PositionFlag.ROT));
 	}
 
 	@Override
 	public void requestTeleportOffset(double offsetX, double offsetY, double offsetZ) {
-		this.networkHandler.requestTeleport(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, this.getYaw(), this.getPitch(), PositionFlag.VALUES);
+		this.networkHandler.requestTeleport(new PlayerPosition(new Vec3d(offsetX, offsetY, offsetZ), Vec3d.ZERO, 0.0F, 0.0F), PositionFlag.VALUES);
 	}
 
 	@Override
@@ -1439,9 +1445,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.wakeUp(true, true);
 		}
 
-		this.teleport(world, destX, destY, destZ, yaw, pitch, resetCamera);
-		this.setHeadYaw(yaw);
-		return true;
+		if (resetCamera) {
+			this.setCameraEntity(this);
+		}
+
+		boolean bl = super.teleport(world, destX, destY, destZ, flags, yaw, pitch, resetCamera);
+		if (bl) {
+			this.setHeadYaw(flags.contains(PositionFlag.Y_ROT) ? this.getHeadYaw() + yaw : yaw);
+		}
+
+		return bl;
 	}
 
 	@Override
@@ -1694,15 +1707,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public PlayerAdvancementTracker getAdvancementTracker() {
 		return this.advancementTracker;
-	}
-
-	public void teleport(ServerWorld world, double x, double y, double z, float yaw, float pitch, boolean resetCamera) {
-		if (resetCamera) {
-			this.setCameraEntity(this);
-		}
-
-		this.stopRiding();
-		this.teleportTo(new TeleportTarget(world, new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch, TeleportTarget.NO_OP));
 	}
 
 	@Nullable
@@ -1964,7 +1968,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public boolean startRiding(Entity entity, boolean force) {
 		if (super.startRiding(entity, force)) {
 			entity.updatePassengerPosition(this);
-			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+			this.networkHandler.requestTeleport(new PlayerPosition(this.getPos(), Vec3d.ZERO, 0.0F, 0.0F), PositionFlag.ROT);
 			if (entity instanceof LivingEntity livingEntity) {
 				this.server.getPlayerManager().sendStatusEffects(livingEntity, this.networkHandler);
 			}
@@ -2033,6 +2037,20 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void sendEquipmentBreakStatus(Item item, EquipmentSlot slot) {
 		super.sendEquipmentBreakStatus(item, slot);
 		this.incrementStat(Stats.BROKEN.getOrCreateStat(item));
+	}
+
+	public PlayerInput getPlayerInput() {
+		return this.playerInput;
+	}
+
+	public void setPlayerInput(PlayerInput playerInput) {
+		this.playerInput = playerInput;
+	}
+
+	public Vec3d getInputVelocityForMinecart() {
+		float f = this.playerInput.left() == this.playerInput.right() ? 0.0F : (this.playerInput.left() ? 1.0F : -1.0F);
+		float g = this.playerInput.forward() == this.playerInput.backward() ? 0.0F : (this.playerInput.forward() ? 1.0F : -1.0F);
+		return movementInputToVelocity(new Vec3d((double)f, 0.0, (double)g), 1.0F, this.getYaw());
 	}
 
 	static record RespawnPos(Vec3d pos, float yaw) {

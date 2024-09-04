@@ -1,6 +1,5 @@
 package net.minecraft.world.storage;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import java.io.IOException;
@@ -24,14 +23,14 @@ import net.minecraft.nbt.scanner.SelectiveNbtCollector;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.PrioritizedConsecutiveExecutor;
 import net.minecraft.util.thread.TaskQueue;
 import org.slf4j.Logger;
 
 public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final AtomicBoolean closed = new AtomicBoolean();
-	private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
+	private final PrioritizedConsecutiveExecutor executor;
 	private final RegionBasedStorage storage;
 	private final SequencedMap<ChunkPos, StorageIoWorker.Result> results = new LinkedHashMap();
 	private final Long2ObjectLinkedOpenHashMap<CompletableFuture<BitSet>> blendingStatusCaches = new Long2ObjectLinkedOpenHashMap<>();
@@ -39,9 +38,7 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 
 	protected StorageIoWorker(StorageKey storageKey, Path directory, boolean dsync) {
 		this.storage = new RegionBasedStorage(storageKey, directory, dsync);
-		this.executor = new TaskExecutor<>(
-			new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + storageKey.type()
-		);
+		this.executor = new PrioritizedConsecutiveExecutor(StorageIoWorker.Priority.values().length, Util.getIoWorkerExecutor(), "IOWorker-" + storageKey.type());
 	}
 
 	public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {
@@ -132,52 +129,50 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	}
 
 	public CompletableFuture<Void> setResult(ChunkPos pos, Supplier<NbtCompound> nbtSupplier) {
-		return this.run(() -> {
+		return this.run((Supplier)(() -> {
 			NbtCompound nbtCompound = (NbtCompound)nbtSupplier.get();
 			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.computeIfAbsent(pos, pos2 -> new StorageIoWorker.Result(nbtCompound));
 			result.nbt = nbtCompound;
-			return Either.left(result.future);
-		}).thenCompose(Function.identity());
+			return result.future;
+		})).thenCompose(Function.identity());
 	}
 
 	public CompletableFuture<Optional<NbtCompound>> readChunkData(ChunkPos pos) {
-		return this.run(() -> {
+		return this.run((StorageIoWorker.Callable<Optional<NbtCompound>>)(() -> {
 			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(pos);
 			if (result != null) {
-				return Either.left(Optional.ofNullable(result.copyNbt()));
+				return Optional.ofNullable(result.copyNbt());
 			} else {
 				try {
 					NbtCompound nbtCompound = this.storage.getTagAt(pos);
-					return Either.left(Optional.ofNullable(nbtCompound));
+					return Optional.ofNullable(nbtCompound);
 				} catch (Exception var4) {
 					LOGGER.warn("Failed to read chunk {}", pos, var4);
-					return Either.right(var4);
+					throw var4;
 				}
 			}
-		});
+		}));
 	}
 
 	public CompletableFuture<Void> completeAll(boolean sync) {
 		CompletableFuture<Void> completableFuture = this.run(
-				() -> Either.left(
-						CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> result.future).toArray(CompletableFuture[]::new))
-					)
+				(Supplier)(() -> CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> result.future).toArray(CompletableFuture[]::new)))
 			)
 			.thenCompose(Function.identity());
-		return sync ? completableFuture.thenCompose(void_ -> this.run(() -> {
+		return sync ? completableFuture.thenCompose(void_ -> this.<Void>run((StorageIoWorker.Callable<Void>)(() -> {
 				try {
 					this.storage.sync();
-					return Either.left(null);
+					return null;
 				} catch (Exception var2x) {
 					LOGGER.warn("Failed to synchronize chunks", (Throwable)var2x);
-					return Either.right(var2x);
+					throw var2x;
 				}
-			})) : completableFuture.thenCompose(void_ -> this.run(() -> Either.left(null)));
+			}))) : completableFuture.thenCompose(void_ -> this.run((Supplier)(() -> null)));
 	}
 
 	@Override
 	public CompletableFuture<Void> scanChunk(ChunkPos pos, NbtScanner scanner) {
-		return this.run(() -> {
+		return this.run((StorageIoWorker.Callable<Void>)(() -> {
 			try {
 				StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(pos);
 				if (result != null) {
@@ -188,22 +183,36 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 					this.storage.scanChunk(pos, scanner);
 				}
 
-				return Either.left(null);
+				return null;
 			} catch (Exception var4) {
 				LOGGER.warn("Failed to bulk scan chunk {}", pos, var4);
-				return Either.right(var4);
+				throw var4;
 			}
+		}));
+	}
+
+	private <T> CompletableFuture<T> run(StorageIoWorker.Callable<T> task) {
+		return this.executor.executeAsync(StorageIoWorker.Priority.FOREGROUND.ordinal(), future -> {
+			if (!this.closed.get()) {
+				try {
+					future.complete(task.get());
+				} catch (Exception var4) {
+					future.completeExceptionally(var4);
+				}
+			}
+
+			this.writeRemainingResults();
 		});
 	}
 
-	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {
-		return this.executor.askFallible(listener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.FOREGROUND.ordinal(), () -> {
-				if (!this.closed.get()) {
-					listener.send((Either)task.get());
-				}
+	private <T> CompletableFuture<T> run(Supplier<T> task) {
+		return this.executor.executeAsync(StorageIoWorker.Priority.FOREGROUND.ordinal(), completableFuture -> {
+			if (!this.closed.get()) {
+				completableFuture.complete(task.get());
+			}
 
-				this.writeRemainingResults();
-			}));
+			this.writeRemainingResults();
+		});
 	}
 
 	private void writeResult() {
@@ -230,7 +239,7 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 
 	public void close() throws IOException {
 		if (this.closed.compareAndSet(false, true)) {
-			this.executor.ask(listener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.SHUTDOWN.ordinal(), () -> listener.send(Unit.INSTANCE))).join();
+			this.runRemainingTasks();
 			this.executor.close();
 
 			try {
@@ -241,8 +250,18 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 		}
 	}
 
+	private void runRemainingTasks() {
+		this.executor.executeAsync(StorageIoWorker.Priority.SHUTDOWN.ordinal(), future -> future.complete(Unit.INSTANCE)).join();
+	}
+
 	public StorageKey getStorageKey() {
 		return this.storage.getStorageKey();
+	}
+
+	@FunctionalInterface
+	interface Callable<T> {
+		@Nullable
+		T get() throws Exception;
 	}
 
 	static enum Priority {

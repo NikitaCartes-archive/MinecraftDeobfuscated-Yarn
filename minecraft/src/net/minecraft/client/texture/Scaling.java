@@ -19,12 +19,13 @@ public interface Scaling {
 	Scaling.Type getType();
 
 	@Environment(EnvType.CLIENT)
-	public static record NineSlice(int width, int height, Scaling.NineSlice.Border border) implements Scaling {
+	public static record NineSlice(int width, int height, Scaling.NineSlice.Border border, boolean stretchInner) implements Scaling {
 		public static final MapCodec<Scaling.NineSlice> CODEC = RecordCodecBuilder.<Scaling.NineSlice>mapCodec(
 				instance -> instance.group(
 							Codecs.POSITIVE_INT.fieldOf("width").forGetter(Scaling.NineSlice::width),
 							Codecs.POSITIVE_INT.fieldOf("height").forGetter(Scaling.NineSlice::height),
-							Scaling.NineSlice.Border.CODEC.fieldOf("border").forGetter(Scaling.NineSlice::border)
+							Scaling.NineSlice.Border.CODEC.fieldOf("border").forGetter(Scaling.NineSlice::border),
+							Codec.BOOL.optionalFieldOf("stretch_inner", Boolean.valueOf(false)).forGetter(Scaling.NineSlice::stretchInner)
 						)
 						.apply(instance, Scaling.NineSlice::new)
 			)

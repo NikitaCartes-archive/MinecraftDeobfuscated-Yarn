@@ -2,12 +2,10 @@ package net.minecraft.predicate.entity;
 
 import com.google.common.base.Predicates;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.AbstractTeam;
 
 public final class EntityPredicates {
@@ -102,21 +100,5 @@ public final class EntityPredicates {
 
 			return true;
 		};
-	}
-
-	public static class Equipable implements Predicate<Entity> {
-		private final ItemStack stack;
-
-		public Equipable(ItemStack stack) {
-			this.stack = stack;
-		}
-
-		public boolean test(@Nullable Entity entity) {
-			if (!entity.isAlive()) {
-				return false;
-			} else {
-				return !(entity instanceof LivingEntity livingEntity) ? false : livingEntity.canEquip(this.stack);
-			}
-		}
 	}
 }

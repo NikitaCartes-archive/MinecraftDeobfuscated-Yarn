@@ -14,11 +14,6 @@ public class AirBlockItem extends Item {
 	}
 
 	@Override
-	public String getTranslationKey() {
-		return this.block.getTranslationKey();
-	}
-
-	@Override
 	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		super.appendTooltip(stack, context, tooltip, type);
 		this.block.appendTooltip(stack, context, tooltip, type);

@@ -12,6 +12,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.text.Text;
@@ -128,7 +129,8 @@ public class RecipeBookResults {
 
 	public void drawTooltip(DrawContext context, int x, int y) {
 		if (this.client.currentScreen != null && this.hoveredResultButton != null && !this.alternatesWidget.isVisible()) {
-			context.drawTooltip(this.client.textRenderer, this.hoveredResultButton.getTooltip(), x, y);
+			Identifier identifier = this.hoveredResultButton.getCurrentResult().get(DataComponentTypes.TOOLTIP_STYLE);
+			context.drawTooltip(this.client.textRenderer, this.hoveredResultButton.getTooltip(), x, y, identifier);
 		}
 	}
 

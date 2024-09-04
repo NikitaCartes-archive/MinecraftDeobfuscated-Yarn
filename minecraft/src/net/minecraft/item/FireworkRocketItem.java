@@ -3,7 +3,6 @@ package net.minecraft.item;
 import java.util.List;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworksComponent;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -54,7 +53,7 @@ public class FireworkRocketItem extends Item implements ProjectileItem {
 
 	@Override
 	public ActionResult use(World world, PlayerEntity user, Hand hand) {
-		if (user.isFallFlying()) {
+		if (user.isGliding()) {
 			ItemStack itemStack = user.getStackInHand(hand);
 			if (world instanceof ServerWorld serverWorld) {
 				ProjectileEntity.spawn(new FireworkRocketEntity(world, itemStack, user), serverWorld, itemStack);
@@ -88,11 +87,6 @@ public class FireworkRocketItem extends Item implements ProjectileItem {
 
 	private static Vec3d position(BlockPointer pointer, Direction facing) {
 		return pointer.centerPos()
-			.add(
-				(double)facing.getOffsetX() * (0.5000099999997474 - (double)EntityType.FIREWORK_ROCKET.getWidth() / 2.0),
-				(double)facing.getOffsetY() * (0.5000099999997474 - (double)EntityType.FIREWORK_ROCKET.getHeight() / 2.0)
-					- (double)EntityType.FIREWORK_ROCKET.getHeight() / 2.0,
-				(double)facing.getOffsetZ() * (0.5000099999997474 - (double)EntityType.FIREWORK_ROCKET.getWidth() / 2.0)
-			);
+			.add((double)facing.getOffsetX() * 0.5000099999997474, (double)facing.getOffsetY() * 0.5000099999997474, (double)facing.getOffsetZ() * 0.5000099999997474);
 	}
 }

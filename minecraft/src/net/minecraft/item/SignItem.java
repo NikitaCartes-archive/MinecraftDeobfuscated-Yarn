@@ -11,12 +11,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class SignItem extends VerticallyAttachableBlockItem {
-	public SignItem(Item.Settings settings, Block standingBlock, Block wallBlock) {
-		super(standingBlock, wallBlock, settings, Direction.DOWN);
+	public SignItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
+		super(standingBlock, wallBlock, Direction.DOWN, settings);
 	}
 
 	public SignItem(Item.Settings settings, Block standingBlock, Block wallBlock, Direction verticalAttachmentDirection) {
-		super(standingBlock, wallBlock, settings, verticalAttachmentDirection);
+		super(standingBlock, wallBlock, verticalAttachmentDirection, settings);
 	}
 
 	@Override

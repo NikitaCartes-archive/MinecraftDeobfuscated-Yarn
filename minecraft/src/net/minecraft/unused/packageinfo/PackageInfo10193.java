@@ -8,5 +8,5 @@ import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @FieldsAreNonnullByDefault
-interface PackageInfo8058 {
+interface PackageInfo10193 {
 }

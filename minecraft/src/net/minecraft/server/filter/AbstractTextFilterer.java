@@ -31,7 +31,7 @@ import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import org.slf4j.Logger;
 
 public abstract class AbstractTextFilterer implements AutoCloseable {
@@ -273,8 +273,10 @@ public abstract class AbstractTextFilterer implements AutoCloseable {
 
 		protected StreamImpl(final GameProfile gameProfile) {
 			this.gameProfile = gameProfile;
-			TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(AbstractTextFilterer.this.threadPool, "chat stream for " + gameProfile.getName());
-			this.executor = taskExecutor::send;
+			SimpleConsecutiveExecutor simpleConsecutiveExecutor = new SimpleConsecutiveExecutor(
+				AbstractTextFilterer.this.threadPool, "chat stream for " + gameProfile.getName()
+			);
+			this.executor = simpleConsecutiveExecutor::send;
 		}
 
 		@Override

@@ -26,17 +26,14 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.ArmadilloEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.FluidModificationItem;
 import net.minecraft.item.HoneycombItem;
@@ -143,43 +140,6 @@ public interface DispenserBehavior {
 				}
 			}
 		);
-		ItemDispenserBehavior itemDispenserBehavior2 = new FallibleItemDispenserBehavior() {
-			@Override
-			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
-
-				for (AbstractHorseEntity abstractHorseEntity : pointer.world()
-					.getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), horse -> horse.isAlive() && horse.canUseSlot(EquipmentSlot.BODY))) {
-					if (abstractHorseEntity.isHorseArmor(stack) && !abstractHorseEntity.isWearingBodyArmor() && abstractHorseEntity.isTame()) {
-						abstractHorseEntity.equipBodyArmor(stack.split(1));
-						this.setSuccess(true);
-						return stack;
-					}
-				}
-
-				return super.dispenseSilently(pointer, stack);
-			}
-		};
-		DispenserBlock.registerBehavior(Items.LEATHER_HORSE_ARMOR, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.IRON_HORSE_ARMOR, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.GOLDEN_HORSE_ARMOR, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.DIAMOND_HORSE_ARMOR, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.WHITE_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.ORANGE_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.CYAN_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.BLUE_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.BROWN_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.BLACK_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.GRAY_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.GREEN_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.LIGHT_BLUE_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.LIGHT_GRAY_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.LIME_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.MAGENTA_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.PINK_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.PURPLE_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.RED_CARPET, itemDispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.YELLOW_CARPET, itemDispenserBehavior2);
 		DispenserBlock.registerBehavior(
 			Items.CHEST,
 			new FallibleItemDispenserBehavior() {
@@ -188,7 +148,7 @@ public interface DispenserBehavior {
 					BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
 
 					for (AbstractDonkeyEntity abstractDonkeyEntity : pointer.world()
-						.getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), donkey -> donkey.isAlive() && !donkey.hasChest())) {
+						.getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), entity -> entity.isAlive() && !entity.hasChest())) {
 						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.getStackReference(499).set(stack)) {
 							stack.decrement(1);
 							this.setSuccess(true);
@@ -320,19 +280,6 @@ public interface DispenserBehavior {
 				return stack;
 			}
 		});
-		DispenserBehavior dispenserBehavior2 = new FallibleItemDispenserBehavior() {
-			@Override
-			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
-				return stack;
-			}
-		};
-		DispenserBlock.registerBehavior(Items.CREEPER_HEAD, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.ZOMBIE_HEAD, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.DRAGON_HEAD, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.SKELETON_SKULL, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.PIGLIN_HEAD, dispenserBehavior2);
-		DispenserBlock.registerBehavior(Items.PLAYER_HEAD, dispenserBehavior2);
 		DispenserBlock.registerBehavior(
 			Items.WITHER_SKELETON_SKULL,
 			new FallibleItemDispenserBehavior() {
@@ -356,7 +303,7 @@ public interface DispenserBehavior {
 						stack.decrement(1);
 						this.setSuccess(true);
 					} else {
-						this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
+						this.setSuccess(EquippableDispenserBehavior.dispense(pointer, stack));
 					}
 
 					return stack;
@@ -378,7 +325,7 @@ public interface DispenserBehavior {
 					stack.decrement(1);
 					this.setSuccess(true);
 				} else {
-					this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
+					this.setSuccess(EquippableDispenserBehavior.dispense(pointer, stack));
 				}
 
 				return stack;

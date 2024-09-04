@@ -27,7 +27,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -87,6 +86,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -227,7 +227,6 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
-import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
@@ -653,73 +652,17 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onPlayerPositionLook(PlayerPositionLookS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		Vec3d vec3d = playerEntity.getVelocity();
-		boolean bl = packet.getFlags().contains(PositionFlag.X);
-		boolean bl2 = packet.getFlags().contains(PositionFlag.Y);
-		boolean bl3 = packet.getFlags().contains(PositionFlag.Z);
-		double d;
-		double e;
-		if (bl) {
-			d = vec3d.getX();
-			e = playerEntity.getX() + packet.getX();
-			playerEntity.lastRenderX = playerEntity.lastRenderX + packet.getX();
-			playerEntity.prevX = playerEntity.prevX + packet.getX();
-		} else {
-			d = 0.0;
-			e = packet.getX();
-			playerEntity.lastRenderX = e;
-			playerEntity.prevX = e;
-		}
-
-		double f;
-		double g;
-		if (bl2) {
-			f = vec3d.getY();
-			g = playerEntity.getY() + packet.getY();
-			playerEntity.lastRenderY = playerEntity.lastRenderY + packet.getY();
-			playerEntity.prevY = playerEntity.prevY + packet.getY();
-		} else {
-			f = 0.0;
-			g = packet.getY();
-			playerEntity.lastRenderY = g;
-			playerEntity.prevY = g;
-		}
-
-		double h;
-		double i;
-		if (bl3) {
-			h = vec3d.getZ();
-			i = playerEntity.getZ() + packet.getZ();
-			playerEntity.lastRenderZ = playerEntity.lastRenderZ + packet.getZ();
-			playerEntity.prevZ = playerEntity.prevZ + packet.getZ();
-		} else {
-			h = 0.0;
-			i = packet.getZ();
-			playerEntity.lastRenderZ = i;
-			playerEntity.prevZ = i;
-		}
-
-		playerEntity.setPosition(e, g, i);
-		playerEntity.setVelocity(d, f, h);
-		float j = packet.getYaw();
-		float k = packet.getPitch();
-		if (packet.getFlags().contains(PositionFlag.X_ROT)) {
-			playerEntity.setPitch(playerEntity.getPitch() + k);
-			playerEntity.prevPitch += k;
-		} else {
-			playerEntity.setPitch(k);
-			playerEntity.prevPitch = k;
-		}
-
-		if (packet.getFlags().contains(PositionFlag.Y_ROT)) {
-			playerEntity.setYaw(playerEntity.getYaw() + j);
-			playerEntity.prevYaw += j;
-		} else {
-			playerEntity.setYaw(j);
-			playerEntity.prevYaw = j;
-		}
-
-		this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
+		PlayerPosition playerPosition = PlayerPosition.fromEntity(playerEntity);
+		PlayerPosition playerPosition2 = PlayerPosition.fromPacket(packet);
+		PlayerPosition playerPosition3 = PlayerPosition.apply(playerPosition, playerPosition2, packet.flags());
+		playerEntity.setPosition(playerPosition3.position());
+		playerEntity.setVelocity(playerPosition3.deltaMovement());
+		playerEntity.setYaw(playerPosition3.yaw());
+		playerEntity.setPitch(playerPosition3.pitch());
+		PlayerPosition playerPosition4 = new PlayerPosition(playerEntity.getLastRenderPos(), playerEntity.getVelocity(), playerEntity.prevYaw, playerEntity.prevPitch);
+		PlayerPosition playerPosition5 = PlayerPosition.apply(playerPosition4, playerPosition2, packet.flags());
+		playerEntity.setPrevPositionAndAngles(playerPosition5.position(), playerPosition5.yaw(), playerPosition5.pitch());
+		this.connection.send(new TeleportConfirmC2SPacket(packet.teleportId()));
 		this.connection
 			.send(
 				new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false, false)
@@ -786,7 +729,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, j), chunkSection.isEmpty());
 		}
 
-		this.world.method_62146(x - 1, this.world.getBottomSectionCoord(), z - 1, x + 1, this.world.getTopSectionCoord(), z + 1);
+		this.world.scheduleChunkRenders(x - 1, this.world.getBottomSectionCoord(), z - 1, x + 1, this.world.getTopSectionCoord(), z + 1);
 	}
 
 	@Override
@@ -1174,6 +1117,13 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			if (list != null) {
 				clientPlayerEntity2.getDataTracker().writeUpdatedEntries(list);
 			}
+
+			clientPlayerEntity2.setVelocity(clientPlayerEntity.getVelocity());
+			clientPlayerEntity2.setYaw(clientPlayerEntity.getYaw());
+			clientPlayerEntity2.setPitch(clientPlayerEntity.getPitch());
+		} else {
+			clientPlayerEntity2.init();
+			clientPlayerEntity2.setYaw(-180.0F);
 		}
 
 		if (packet.hasFlag(PlayerRespawnS2CPacket.KEEP_ATTRIBUTES)) {
@@ -1182,9 +1132,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			clientPlayerEntity2.getAttributes().setBaseFrom(clientPlayerEntity.getAttributes());
 		}
 
-		clientPlayerEntity2.init();
 		this.world.addEntity(clientPlayerEntity2);
-		clientPlayerEntity2.setYaw(-180.0F);
 		clientPlayerEntity2.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
 		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.hasReducedDebugInfo());
@@ -1320,10 +1268,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		if (this.world.getBlockEntity(blockPos) instanceof SignBlockEntity signBlockEntity) {
 			this.client.player.openEditSignScreen(signBlockEntity, packet.isFront());
 		} else {
-			BlockState blockState = this.world.getBlockState(blockPos);
-			SignBlockEntity signBlockEntity2 = new SignBlockEntity(blockPos, blockState);
-			signBlockEntity2.setWorld(this.world);
-			this.client.player.openEditSignScreen(signBlockEntity2, packet.isFront());
+			LOGGER.warn("Ignoring openTextEdit on an invalid entity: {} at pos {}", this.world.getBlockEntity(blockPos), blockPos);
 		}
 	}
 
@@ -1617,8 +1562,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 	}
 
-	private <T> Registry.PendingTagLoad<T> method_62148(RegistryKey<? extends Registry<? extends T>> registryKey, TagPacketSerializer.Serialized serialized) {
-		Registry<T> registry = this.combinedDynamicRegistries.getOrThrow(registryKey);
+	private <T> Registry.PendingTagLoad<T> startTagReload(RegistryKey<? extends Registry<? extends T>> registryRef, TagPacketSerializer.Serialized serialized) {
+		Registry<T> registry = this.combinedDynamicRegistries.getOrThrow(registryRef);
 		return registry.startTagReload(serialized.toRegistryTags(registry));
 	}
 
@@ -1627,9 +1572,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		List<Registry.PendingTagLoad<?>> list = new ArrayList(packet.getGroups().size());
 		boolean bl = this.connection.isLocal();
-		packet.getGroups().forEach((registryKey, serialized) -> {
-			if (!bl || SerializableRegistries.isSynced(registryKey)) {
-				list.add(this.method_62148(registryKey, serialized));
+		packet.getGroups().forEach((registryRef, serialized) -> {
+			if (!bl || SerializableRegistries.isSynced(registryRef)) {
+				list.add(this.startTagReload(registryRef, serialized));
 			}
 		});
 		list.forEach(Registry.PendingTagLoad::apply);

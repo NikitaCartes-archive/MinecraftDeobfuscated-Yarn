@@ -116,7 +116,7 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 			context.getMatrices().scale(scale, scale, 1.0F);
 			MapRenderer mapRenderer = this.client.getMapRenderer();
 			mapRenderer.update(mapId, mapState, this.mapRenderState);
-			mapRenderer.draw(this.mapRenderState, context.getMatrices(), context.getVertexConsumers(), true, 15728880);
+			context.draw(vertexConsumers -> mapRenderer.draw(this.mapRenderState, context.getMatrices(), vertexConsumers, true, 15728880));
 			context.getMatrices().pop();
 		}
 	}

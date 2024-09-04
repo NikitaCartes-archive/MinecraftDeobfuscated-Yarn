@@ -157,7 +157,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean canUseSlot(EquipmentSlot slot) {
-		return slot != EquipmentSlot.BODY;
+		return slot != EquipmentSlot.BODY && !this.isSlotDisabled(slot);
 	}
 
 	@Override
@@ -170,12 +170,6 @@ public class ArmorStandEntity extends LivingEntity {
 			case HUMANOID_ARMOR:
 				this.onEquipStack(slot, this.armorItems.set(slot.getEntitySlotId(), stack), stack);
 		}
-	}
-
-	@Override
-	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
-		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.isSlotDisabled(equipmentSlot);
 	}
 
 	@Override
@@ -357,14 +351,14 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private boolean isSlotDisabled(EquipmentSlot slot) {
-		return (this.disabledSlots & 1 << slot.getArmorStandSlotId()) != 0 || slot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
+		return (this.disabledSlots & 1 << slot.getOffsetIndex(0)) != 0 || slot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
 	}
 
 	private boolean equip(PlayerEntity player, EquipmentSlot slot, ItemStack stack, Hand hand) {
 		ItemStack itemStack = this.getEquippedStack(slot);
-		if (!itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getArmorStandSlotId() + 8) != 0) {
+		if (!itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getOffsetIndex(8)) != 0) {
 			return false;
-		} else if (itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getArmorStandSlotId() + 16) != 0) {
+		} else if (itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getOffsetIndex(16)) != 0) {
 			return false;
 		} else if (player.isInCreativeMode() && itemStack.isEmpty() && !stack.isEmpty()) {
 			this.equipStack(slot, stack.copyWithCount(1));

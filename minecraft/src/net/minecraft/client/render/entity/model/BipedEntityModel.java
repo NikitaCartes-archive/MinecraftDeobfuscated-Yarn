@@ -137,7 +137,7 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 		BipedEntityModel.ArmPose armPose = this.getArmPose(bipedEntityRenderState, Arm.LEFT);
 		BipedEntityModel.ArmPose armPose2 = this.getArmPose(bipedEntityRenderState, Arm.RIGHT);
 		float f = bipedEntityRenderState.leaningPitch;
-		boolean bl = bipedEntityRenderState.isFallFlying;
+		boolean bl = bipedEntityRenderState.isGliding;
 		this.head.yaw = bipedEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		if (bl) {
 			this.head.pitch = (float) (-Math.PI / 4);

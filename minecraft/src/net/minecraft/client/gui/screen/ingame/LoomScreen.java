@@ -120,16 +120,18 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			this.bannerField.pitch = 0.0F;
 			this.bannerField.pivotY = -32.0F;
 			DyeColor dyeColor = ((BannerItem)slot4.getStack().getItem()).getColor();
-			BannerBlockEntityRenderer.renderCanvas(
-				context.getMatrices(),
-				context.getVertexConsumers(),
-				15728880,
-				OverlayTexture.DEFAULT_UV,
-				this.bannerField,
-				ModelBaker.BANNER_BASE,
-				true,
-				dyeColor,
-				this.bannerPatterns
+			context.draw(
+				vertexConsumers -> BannerBlockEntityRenderer.renderCanvas(
+						context.getMatrices(),
+						vertexConsumers,
+						15728880,
+						OverlayTexture.DEFAULT_UV,
+						this.bannerField,
+						ModelBaker.BANNER_BASE,
+						true,
+						dyeColor,
+						this.bannerPatterns
+					)
 			);
 			context.getMatrices().pop();
 		} else if (this.hasTooManyPatterns) {
@@ -184,16 +186,10 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
 		BannerPatternsComponent bannerPatternsComponent = new BannerPatternsComponent.Builder().add(pattern, DyeColor.WHITE).build();
-		BannerBlockEntityRenderer.renderCanvas(
-			matrixStack,
-			context.getVertexConsumers(),
-			15728880,
-			OverlayTexture.DEFAULT_UV,
-			this.bannerField,
-			ModelBaker.BANNER_BASE,
-			true,
-			DyeColor.GRAY,
-			bannerPatternsComponent
+		context.draw(
+			vertexConsumers -> BannerBlockEntityRenderer.renderCanvas(
+					matrixStack, vertexConsumers, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelBaker.BANNER_BASE, true, DyeColor.GRAY, bannerPatternsComponent
+				)
 		);
 		matrixStack.pop();
 		context.draw();

@@ -13,6 +13,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.OperatorBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -444,7 +446,8 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public void dropCreativeStack(ItemStack stack) {
-		if (this.gameMode.isCreative() && !stack.isEmpty() && this.networkHandler.hasFeature(stack.getItem().getRequiredFeatures())) {
+		boolean bl = this.client.currentScreen instanceof HandledScreen && !(this.client.currentScreen instanceof CreativeInventoryScreen);
+		if (this.gameMode.isCreative() && !bl && !stack.isEmpty() && this.networkHandler.hasFeature(stack.getItem().getRequiredFeatures())) {
 			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(-1, stack));
 		}
 	}

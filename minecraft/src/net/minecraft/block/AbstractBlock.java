@@ -1053,6 +1053,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 	}
 
+	protected VoxelShape getInsideCollisionShape(BlockState state, World world, BlockPos pos) {
+		return VoxelShapes.fullCube();
+	}
+
 	/**
 	 * {@return the strong redstone power emitted from the block}
 	 * 
@@ -1484,6 +1488,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public void onEntityCollision(World world, BlockPos pos, Entity entity) {
 			this.getBlock().onEntityCollision(this.asBlockState(), world, pos, entity);
+		}
+
+		public VoxelShape getInsideCollisionShape(World world, BlockPos pos) {
+			return this.getBlock().getInsideCollisionShape(this.asBlockState(), world, pos);
 		}
 
 		public void onStacksDropped(ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {

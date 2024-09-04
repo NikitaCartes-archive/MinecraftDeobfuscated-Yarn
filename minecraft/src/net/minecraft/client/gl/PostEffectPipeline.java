@@ -103,13 +103,13 @@ public record PostEffectPipeline(Map<Identifier, PostEffectPipeline.Targets> int
 
 	@Environment(EnvType.CLIENT)
 	public sealed interface Targets permits PostEffectPipeline.ScreenSized, PostEffectPipeline.CustomSized {
-		Codec<PostEffectPipeline.Targets> CODEC = Codec.xor(PostEffectPipeline.ScreenSized.CODEC, PostEffectPipeline.CustomSized.CODEC)
+		Codec<PostEffectPipeline.Targets> CODEC = Codec.either(PostEffectPipeline.CustomSized.CODEC, PostEffectPipeline.ScreenSized.CODEC)
 			.xmap(either -> either.map(Function.identity(), Function.identity()), targets -> {
 				Objects.requireNonNull(targets);
 
 				return switch (targets) {
-					case PostEffectPipeline.ScreenSized screenSized -> Either.left(screenSized);
-					case PostEffectPipeline.CustomSized customSized -> Either.right(customSized);
+					case PostEffectPipeline.CustomSized customSized -> Either.left(customSized);
+					case PostEffectPipeline.ScreenSized screenSized -> Either.right(screenSized);
 					default -> throw new MatchException(null, null);
 				};
 			});

@@ -32,11 +32,6 @@ public class PowderSnowBucketItem extends BlockItem implements FluidModification
 	}
 
 	@Override
-	public String getTranslationKey() {
-		return this.getOrCreateTranslationKey();
-	}
-
-	@Override
 	protected SoundEvent getPlaceSound(BlockState state) {
 		return this.placeSound;
 	}

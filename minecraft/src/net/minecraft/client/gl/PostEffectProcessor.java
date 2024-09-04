@@ -59,141 +59,138 @@ public class PostEffectProcessor {
 	// $VF: Inserted dummy exception handlers to handle obfuscated exceptions
 	private static PostEffectPass parsePass(TextureManager textureManager, ShaderLoader shaderLoader, PostEffectPipeline.Pass pass) throws ShaderLoader.LoadException {
 		Identifier identifier = pass.program();
-		ShaderProgram shaderProgram = shaderLoader.getOrCreateProgram(new ShaderProgramKey(identifier, VertexFormats.POSITION, Defines.EMPTY));
-		if (shaderProgram == null) {
-			throw new ShaderLoader.LoadException("Shader '" + identifier + "' could not be loaded");
-		} else {
-			for (PostEffectPipeline.Uniform uniform : pass.uniforms()) {
-				String string = uniform.name();
-				if (shaderProgram.getUniform(string) == null) {
-					throw new ShaderLoader.LoadException("Uniform '" + string + "' does not exist for " + identifier);
-				}
+		ShaderProgram shaderProgram = shaderLoader.getProgramToLoad(new ShaderProgramKey(identifier, VertexFormats.POSITION, Defines.EMPTY));
+
+		for (PostEffectPipeline.Uniform uniform : pass.uniforms()) {
+			String string = uniform.name();
+			if (shaderProgram.getUniform(string) == null) {
+				throw new ShaderLoader.LoadException("Uniform '" + string + "' does not exist for " + identifier);
 			}
-
-			String string2 = identifier.toString();
-			PostEffectPass postEffectPass = new PostEffectPass(string2, shaderProgram, pass.outputTarget(), pass.uniforms());
-
-			for (PostEffectPipeline.Input input : pass.inputs()) {
-				Objects.requireNonNull(input);
-				Throwable var45;
-				switch (input) {
-					case PostEffectPipeline.TextureSampler var11:
-						PostEffectPipeline.TextureSampler var53 = var11;
-
-						try {
-							var54 = var53.samplerName();
-						} catch (Throwable var31) {
-							var45 = var31;
-							boolean var66 = false;
-							break;
-						}
-
-						String var36 = var54;
-						PostEffectPipeline.TextureSampler var55 = var11;
-
-						try {
-							var56 = var55.location();
-						} catch (Throwable var30) {
-							var45 = var30;
-							boolean var67 = false;
-							break;
-						}
-
-						Identifier var37 = var56;
-						PostEffectPipeline.TextureSampler var57 = var11;
-
-						try {
-							var58 = var57.width();
-						} catch (Throwable var29) {
-							var45 = var29;
-							boolean var68 = false;
-							break;
-						}
-
-						int var38 = var58;
-						PostEffectPipeline.TextureSampler var59 = var11;
-
-						try {
-							var60 = var59.height();
-						} catch (Throwable var28) {
-							var45 = var28;
-							boolean var69 = false;
-							break;
-						}
-
-						int var39 = var60;
-						PostEffectPipeline.TextureSampler var61 = var11;
-
-						try {
-							var62 = var61.bilinear();
-						} catch (Throwable var27) {
-							var45 = var27;
-							boolean var70 = false;
-							break;
-						}
-
-						boolean var40 = var62;
-						AbstractTexture abstractTexturex = textureManager.getTexture(var37.withPath((UnaryOperator<String>)(name -> "textures/effect/" + name + ".png")));
-						abstractTexturex.setFilter(var40, false);
-						postEffectPass.addSampler(new PostEffectPass.TextureSampler(var36, abstractTexturex, var38, var39));
-						continue;
-					case PostEffectPipeline.TargetSampler abstractTexture:
-						PostEffectPipeline.TargetSampler var10000 = abstractTexture;
-
-						try {
-							var46 = var10000.samplerName();
-						} catch (Throwable var26) {
-							var45 = var26;
-							boolean var10001 = false;
-							break;
-						}
-
-						String var22 = var46;
-						PostEffectPipeline.TargetSampler var47 = abstractTexture;
-
-						try {
-							var48 = var47.targetId();
-						} catch (Throwable var25) {
-							var45 = var25;
-							boolean var63 = false;
-							break;
-						}
-
-						Identifier var42 = var48;
-						PostEffectPipeline.TargetSampler var49 = abstractTexture;
-
-						try {
-							var50 = var49.useDepthBuffer();
-						} catch (Throwable var24) {
-							var45 = var24;
-							boolean var64 = false;
-							break;
-						}
-
-						boolean var43 = var50;
-						PostEffectPipeline.TargetSampler var51 = abstractTexture;
-
-						try {
-							var52 = var51.bilinear();
-						} catch (Throwable var23) {
-							var45 = var23;
-							boolean var65 = false;
-							break;
-						}
-
-						boolean var44 = var52;
-						postEffectPass.addSampler(new PostEffectPass.TargetSampler(var22, var42, var43, var44));
-						continue;
-					default:
-						throw new MatchException(null, null);
-				}
-
-				Throwable var35 = var45;
-				throw new MatchException(var35.toString(), var35);
-			}
-
-			return postEffectPass;
 		}
+
+		String string2 = identifier.toString();
+		PostEffectPass postEffectPass = new PostEffectPass(string2, shaderProgram, pass.outputTarget(), pass.uniforms());
+
+		for (PostEffectPipeline.Input input : pass.inputs()) {
+			Objects.requireNonNull(input);
+			Throwable var45;
+			switch (input) {
+				case PostEffectPipeline.TextureSampler var11:
+					PostEffectPipeline.TextureSampler var53 = var11;
+
+					try {
+						var54 = var53.samplerName();
+					} catch (Throwable var31) {
+						var45 = var31;
+						boolean var66 = false;
+						break;
+					}
+
+					String var36 = var54;
+					PostEffectPipeline.TextureSampler var55 = var11;
+
+					try {
+						var56 = var55.location();
+					} catch (Throwable var30) {
+						var45 = var30;
+						boolean var67 = false;
+						break;
+					}
+
+					Identifier var37 = var56;
+					PostEffectPipeline.TextureSampler var57 = var11;
+
+					try {
+						var58 = var57.width();
+					} catch (Throwable var29) {
+						var45 = var29;
+						boolean var68 = false;
+						break;
+					}
+
+					int var38 = var58;
+					PostEffectPipeline.TextureSampler var59 = var11;
+
+					try {
+						var60 = var59.height();
+					} catch (Throwable var28) {
+						var45 = var28;
+						boolean var69 = false;
+						break;
+					}
+
+					int var39 = var60;
+					PostEffectPipeline.TextureSampler var61 = var11;
+
+					try {
+						var62 = var61.bilinear();
+					} catch (Throwable var27) {
+						var45 = var27;
+						boolean var70 = false;
+						break;
+					}
+
+					boolean var40 = var62;
+					AbstractTexture abstractTexturex = textureManager.getTexture(var37.withPath((UnaryOperator<String>)(name -> "textures/effect/" + name + ".png")));
+					abstractTexturex.setFilter(var40, false);
+					postEffectPass.addSampler(new PostEffectPass.TextureSampler(var36, abstractTexturex, var38, var39));
+					continue;
+				case PostEffectPipeline.TargetSampler abstractTexture:
+					PostEffectPipeline.TargetSampler var10000 = abstractTexture;
+
+					try {
+						var46 = var10000.samplerName();
+					} catch (Throwable var26) {
+						var45 = var26;
+						boolean var10001 = false;
+						break;
+					}
+
+					String var22 = var46;
+					PostEffectPipeline.TargetSampler var47 = abstractTexture;
+
+					try {
+						var48 = var47.targetId();
+					} catch (Throwable var25) {
+						var45 = var25;
+						boolean var63 = false;
+						break;
+					}
+
+					Identifier var42 = var48;
+					PostEffectPipeline.TargetSampler var49 = abstractTexture;
+
+					try {
+						var50 = var49.useDepthBuffer();
+					} catch (Throwable var24) {
+						var45 = var24;
+						boolean var64 = false;
+						break;
+					}
+
+					boolean var43 = var50;
+					PostEffectPipeline.TargetSampler var51 = abstractTexture;
+
+					try {
+						var52 = var51.bilinear();
+					} catch (Throwable var23) {
+						var45 = var23;
+						boolean var65 = false;
+						break;
+					}
+
+					boolean var44 = var52;
+					postEffectPass.addSampler(new PostEffectPass.TargetSampler(var22, var42, var43, var44));
+					continue;
+				default:
+					throw new MatchException(null, null);
+			}
+
+			Throwable var35 = var45;
+			throw new MatchException(var35.toString(), var35);
+		}
+
+		return postEffectPass;
 	}
 
 	// $VF: Inserted dummy exception handlers to handle obfuscated exceptions

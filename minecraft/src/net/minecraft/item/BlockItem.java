@@ -177,11 +177,6 @@ public class BlockItem extends Item {
 	}
 
 	@Override
-	public String getTranslationKey() {
-		return this.getBlock().getTranslationKey();
-	}
-
-	@Override
 	public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
 		super.appendTooltip(stack, context, tooltip, type);
 		this.getBlock().appendTooltip(stack, context, tooltip, type);

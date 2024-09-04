@@ -53,7 +53,6 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	protected static final float VELOCITY_SLOWDOWN_MULTIPLIER = 0.95F;
 	private boolean onRail;
 	private boolean yawFlipped;
-	private Vec3d movementVelocity = Vec3d.ZERO;
 	private final MinecartController controller;
 	private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), map -> {
 		Vec3i vec3i = Direction.WEST.getVector();
@@ -586,19 +585,6 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 			case HOPPER -> Items.HOPPER_MINECART;
 			case COMMAND_BLOCK -> Items.COMMAND_BLOCK_MINECART;
 		});
-	}
-
-	public void handleMovementInput(LivingEntity passenger, Vec3d movementInput) {
-		Vec3d vec3d = movementInputToVelocity(movementInput, 1.0F, passenger.getYaw());
-		this.setMovementVelocity(vec3d);
-	}
-
-	public void setMovementVelocity(Vec3d movementVelocity) {
-		this.movementVelocity = movementVelocity;
-	}
-
-	public Vec3d getMovementVelocity() {
-		return this.movementVelocity;
 	}
 
 	public static boolean areMinecartImprovementsEnabled(World world) {

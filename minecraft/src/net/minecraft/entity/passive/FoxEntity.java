@@ -451,9 +451,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
-		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
+	protected boolean canDispenserEquipSlot(EquipmentSlot slot) {
+		return slot == EquipmentSlot.MAINHAND && this.canPickUpLoot();
 	}
 
 	@Override

@@ -1,40 +1,53 @@
 package net.minecraft.resource;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import org.slf4j.Logger;
 
 /**
  * An abstract implementation of resource reloader that reads JSON files
- * into Gson representations in the prepare stage.
+ * into values in the prepare stage.
  */
-public abstract class JsonDataLoader extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
+public abstract class JsonDataLoader<T> extends SinglePreparationResourceReloader<Map<Identifier, T>> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final Gson gson;
+	private final DynamicOps<JsonElement> ops;
+	private final Codec<T> codec;
 	private final String dataType;
 
-	public JsonDataLoader(Gson gson, String dataType) {
-		this.gson = gson;
+	protected JsonDataLoader(RegistryWrapper.WrapperLookup registries, Codec<T> codec, String dataType) {
+		this(registries.getOps(JsonOps.INSTANCE), codec, dataType);
+	}
+
+	protected JsonDataLoader(Codec<T> codec, String dataType) {
+		this(JsonOps.INSTANCE, codec, dataType);
+	}
+
+	private JsonDataLoader(DynamicOps<JsonElement> ops, Codec<T> codec, String dataType) {
+		this.ops = ops;
+		this.codec = codec;
 		this.dataType = dataType;
 	}
 
-	protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
-		Map<Identifier, JsonElement> map = new HashMap();
-		load(resourceManager, this.dataType, this.gson, map);
+	protected Map<Identifier, T> prepare(ResourceManager resourceManager, Profiler profiler) {
+		Map<Identifier, T> map = new HashMap();
+		load(resourceManager, this.dataType, this.ops, this.codec, map);
 		return map;
 	}
 
-	public static void load(ResourceManager manager, String dataType, Gson gson, Map<Identifier, JsonElement> results) {
+	public static <T> void load(ResourceManager manager, String dataType, DynamicOps<JsonElement> ops, Codec<T> codec, Map<Identifier, T> result) {
 		ResourceFinder resourceFinder = ResourceFinder.json(dataType);
 
 		for (Entry<Identifier, Resource> entry : resourceFinder.findResources(manager).entrySet()) {
@@ -45,28 +58,28 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloader<M
 				Reader reader = ((Resource)entry.getValue()).getReader();
 
 				try {
-					JsonElement jsonElement = JsonHelper.deserialize(gson, reader, JsonElement.class);
-					JsonElement jsonElement2 = (JsonElement)results.put(identifier2, jsonElement);
-					if (jsonElement2 != null) {
-						throw new IllegalStateException("Duplicate data file ignored with ID " + identifier2);
-					}
-				} catch (Throwable var13) {
+					codec.parse(ops, JsonParser.parseReader(reader)).ifSuccess(value -> {
+						if (result.putIfAbsent(identifier2, value) != null) {
+							throw new IllegalStateException("Duplicate data file ignored with ID " + identifier2);
+						}
+					}).ifError(error -> LOGGER.error("Couldn't parse data file '{}' from '{}': {}", identifier2, identifier, error));
+				} catch (Throwable var14) {
 					if (reader != null) {
 						try {
 							reader.close();
-						} catch (Throwable var12) {
-							var13.addSuppressed(var12);
+						} catch (Throwable var13) {
+							var14.addSuppressed(var13);
 						}
 					}
 
-					throw var13;
+					throw var14;
 				}
 
 				if (reader != null) {
 					reader.close();
 				}
-			} catch (IllegalArgumentException | IOException | JsonParseException var14) {
-				LOGGER.error("Couldn't parse data file {} from {}", identifier2, identifier, var14);
+			} catch (IllegalArgumentException | IOException | JsonParseException var15) {
+				LOGGER.error("Couldn't parse data file '{}' from '{}'", identifier2, identifier, var15);
 			}
 		}
 	}

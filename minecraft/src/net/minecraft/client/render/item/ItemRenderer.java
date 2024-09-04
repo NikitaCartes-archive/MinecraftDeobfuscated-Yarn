@@ -1,8 +1,6 @@
 package net.minecraft.client.render.item;
 
-import com.google.common.collect.Sets;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,16 +17,13 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BundleItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -44,42 +39,24 @@ import net.minecraft.world.World;
 public class ItemRenderer implements SynchronousResourceReloader {
 	public static final Identifier ENTITY_ENCHANTMENT_GLINT = Identifier.ofVanilla("textures/misc/enchanted_glint_entity.png");
 	public static final Identifier ITEM_ENCHANTMENT_GLINT = Identifier.ofVanilla("textures/misc/enchanted_glint_item.png");
-	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	public static final int field_32937 = 8;
 	public static final int field_32938 = 8;
 	public static final int field_32934 = 200;
 	public static final float COMPASS_WITH_GLINT_GUI_MODEL_MULTIPLIER = 0.5F;
 	public static final float COMPASS_WITH_GLINT_FIRST_PERSON_MODEL_MULTIPLIER = 0.75F;
 	public static final float field_41120 = 0.0078125F;
-	private static final ModelIdentifier TRIDENT = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("trident"));
-	public static final ModelIdentifier TRIDENT_IN_HAND = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("trident_in_hand"));
-	private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("spyglass"));
-	public static final ModelIdentifier SPYGLASS_IN_HAND = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("spyglass_in_hand"));
-	private final MinecraftClient client;
+	public static final ModelIdentifier TRIDENT = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("trident"));
+	public static final ModelIdentifier SPYGLASS = ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla("spyglass"));
+	private final BakedModelManager bakedModelManager;
 	private final ItemModels models;
-	private final TextureManager textureManager;
 	private final ItemColors colors;
 	private final BuiltinModelItemRenderer builtinModelItemRenderer;
 
-	public ItemRenderer(
-		MinecraftClient client, TextureManager manager, BakedModelManager bakery, ItemColors colors, BuiltinModelItemRenderer builtinModelItemRenderer
-	) {
-		this.client = client;
-		this.textureManager = manager;
-		this.models = new ItemModels(bakery);
+	public ItemRenderer(BakedModelManager bakedModelManager, ItemColors colors, BuiltinModelItemRenderer builtinModelItemRenderer) {
+		this.bakedModelManager = bakedModelManager;
+		this.models = new ItemModels(bakedModelManager);
 		this.builtinModelItemRenderer = builtinModelItemRenderer;
-
-		for (Item item : Registries.ITEM) {
-			if (!WITHOUT_MODELS.contains(item)) {
-				this.models.putModel(item, ModelIdentifier.ofInventoryVariant(Registries.ITEM.getId(item)));
-			}
-		}
-
 		this.colors = colors;
-	}
-
-	public ItemModels getModels() {
-		return this.models;
 	}
 
 	private void renderBakedItemModel(BakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, VertexConsumer vertices) {
@@ -106,30 +83,21 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		BakedModel model
 	) {
 		if (!stack.isEmpty()) {
-			matrices.push();
 			boolean bl = transformationMode == ModelTransformationMode.GUI
 				|| transformationMode == ModelTransformationMode.GROUND
 				|| transformationMode == ModelTransformationMode.FIXED;
-			if (bl) {
-				if (stack.isOf(Items.TRIDENT)) {
-					model = this.models.getModelManager().getModel(TRIDENT);
-				} else if (stack.isOf(Items.SPYGLASS)) {
-					model = this.models.getModelManager().getModel(SPYGLASS);
-				} else if (stack.isOf(Items.BUNDLE) && BundleItem.hasSelectedStack(stack)) {
-					this.renderBundle(stack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, bl);
-					matrices.pop();
-					return;
-				}
+			if (bl && stack.isOf(Items.BUNDLE) && stack.getItem() instanceof BundleItem bundleItem && BundleItem.hasSelectedStack(stack)) {
+				this.renderBundle(bundleItem, stack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, bl);
+			} else {
+				matrices.push();
+				this.renderItem(stack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, model, bl);
+				matrices.pop();
 			}
-
-			model.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
-			matrices.translate(-0.5F, -0.5F, -0.5F);
-			this.method_62476(stack, transformationMode, matrices, vertexConsumers, light, overlay, model, bl);
-			matrices.pop();
 		}
 	}
 
 	private void renderBundle(
+		BundleItem item,
 		ItemStack stack,
 		ModelTransformationMode transformationMode,
 		boolean leftHanded,
@@ -139,58 +107,89 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		int overlay,
 		boolean bl
 	) {
-		if (stack.getItem() instanceof BundleItem bundleItem) {
-			matrices.push();
-			BakedModel bakedModel = this.models.getModelManager().getModel(getBundleOpenBackModelId(bundleItem));
-			bakedModel.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
-			matrices.translate(-0.5F, -0.5F, -1.5F);
-			this.method_62476(stack, transformationMode, matrices, vertexConsumers, light, overlay, bakedModel, bl);
-			matrices.pop();
-			matrices.push();
-			ItemStack itemStack = BundleItem.getSelectedStack(stack);
-			BakedModel bakedModel2 = this.models.getModel(itemStack);
-			bakedModel2.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
-			matrices.translate(-0.5F, -0.5F, -0.5F);
-			this.method_62476(itemStack, transformationMode, matrices, vertexConsumers, light, overlay, bakedModel2, bl);
-			matrices.pop();
-			matrices.push();
-			BakedModel bakedModel3 = this.models.getModelManager().getModel(getBundleOpenFrontModelId(bundleItem));
-			bakedModel3.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
-			matrices.translate(-0.5F, -0.5F, 0.5F);
-			this.method_62476(stack, transformationMode, matrices, vertexConsumers, light, overlay, bakedModel3, bl);
-			matrices.pop();
-		}
+		matrices.push();
+		BakedModel bakedModel = this.models.getModel(item.getOpenBackTexture());
+		this.renderItem(stack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel, bl, -1.5F);
+		matrices.pop();
+		matrices.push();
+		ItemStack itemStack = BundleItem.getSelectedStack(stack);
+		BakedModel bakedModel2 = this.models.getModel(itemStack);
+		this.renderItem(itemStack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel2, bl);
+		matrices.pop();
+		matrices.push();
+		BakedModel bakedModel3 = this.models.getModel(item.getOpenFrontTexture());
+		this.renderItem(stack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel3, bl, 0.5F);
+		matrices.pop();
 	}
 
-	private void method_62476(
-		ItemStack itemStack,
-		ModelTransformationMode modelTransformationMode,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		int j,
-		BakedModel bakedModel,
+	private void renderItem(
+		ItemStack stack,
+		ModelTransformationMode transformationMode,
+		boolean leftHanded,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		BakedModel model,
 		boolean bl
 	) {
-		if (!bakedModel.isBuiltin() && (!itemStack.isOf(Items.TRIDENT) || bl)) {
-			RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
+		if (bl) {
+			if (stack.isOf(Items.TRIDENT)) {
+				model = this.bakedModelManager.getModel(TRIDENT);
+			} else if (stack.isOf(Items.SPYGLASS)) {
+				model = this.bakedModelManager.getModel(SPYGLASS);
+			}
+		}
+
+		this.renderItem(stack, transformationMode, leftHanded, matrices, vertexConsumers, light, overlay, model, bl, -0.5F);
+	}
+
+	private void renderItem(
+		ItemStack stack,
+		ModelTransformationMode transformationMode,
+		boolean leftHanded,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		BakedModel model,
+		boolean bl,
+		float f
+	) {
+		model.getTransformation().getTransformation(transformationMode).apply(leftHanded, matrices);
+		matrices.translate(-0.5F, -0.5F, f);
+		this.renderItem(stack, transformationMode, matrices, vertexConsumers, light, overlay, model, bl);
+	}
+
+	private void renderItem(
+		ItemStack stack,
+		ModelTransformationMode transformationMode,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		BakedModel model,
+		boolean bl
+	) {
+		if (!model.isBuiltin() && (!stack.isOf(Items.TRIDENT) || bl)) {
+			RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
 			VertexConsumer vertexConsumer;
-			if (usesDynamicDisplay(itemStack) && itemStack.hasGlint()) {
-				MatrixStack.Entry entry = matrixStack.peek().copy();
-				if (modelTransformationMode == ModelTransformationMode.GUI) {
+			if (usesDynamicDisplay(stack) && stack.hasGlint()) {
+				MatrixStack.Entry entry = matrices.peek().copy();
+				if (transformationMode == ModelTransformationMode.GUI) {
 					MatrixUtil.scale(entry.getPositionMatrix(), 0.5F);
-				} else if (modelTransformationMode.isFirstPerson()) {
+				} else if (transformationMode.isFirstPerson()) {
 					MatrixUtil.scale(entry.getPositionMatrix(), 0.75F);
 				}
 
-				vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumerProvider, renderLayer, entry);
+				vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
 			} else {
-				vertexConsumer = getItemGlintConsumer(vertexConsumerProvider, renderLayer, true, itemStack.hasGlint());
+				vertexConsumer = getItemGlintConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 			}
 
-			this.renderBakedItemModel(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
+			this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
 		} else {
-			this.builtinModelItemRenderer.render(itemStack, modelTransformationMode, matrixStack, vertexConsumerProvider, i, j);
+			this.builtinModelItemRenderer.render(stack, transformationMode, matrices, vertexConsumers, light, overlay);
 		}
 	}
 
@@ -235,26 +234,10 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	}
 
 	public BakedModel getModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
-		BakedModel bakedModel;
-		if (stack.isOf(Items.TRIDENT)) {
-			bakedModel = this.models.getModelManager().getModel(TRIDENT_IN_HAND);
-		} else if (stack.isOf(Items.SPYGLASS)) {
-			bakedModel = this.models.getModelManager().getModel(SPYGLASS_IN_HAND);
-		} else {
-			bakedModel = this.models.getModel(stack);
-		}
-
+		BakedModel bakedModel = this.models.getModel(stack);
 		ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
-		BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity, seed);
-		return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
-	}
-
-	public static ModelIdentifier getBundleOpenFrontModelId(BundleItem bundleItem) {
-		return ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla(bundleItem.getOpenFrontModelName()));
-	}
-
-	public static ModelIdentifier getBundleOpenBackModelId(BundleItem bundleItem) {
-		return ModelIdentifier.ofInventoryVariant(Identifier.ofVanilla(bundleItem.getOpenBackModelName()));
+		BakedModel bakedModel2 = bakedModel.getOverrides().getModel(stack, clientWorld, entity, seed);
+		return bakedModel2 == null ? bakedModel : bakedModel2;
 	}
 
 	public void renderItem(
@@ -290,7 +273,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	@Override
 	public void reload(ResourceManager manager) {
-		this.models.reloadModels();
+		this.models.clearModels();
 	}
 
 	@Nullable

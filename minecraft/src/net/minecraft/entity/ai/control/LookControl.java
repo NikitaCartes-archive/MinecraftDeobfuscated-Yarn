@@ -106,18 +106,6 @@ public class LookControl implements Control {
 			: Optional.of((float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F);
 	}
 
-	/**
-	 * Changes the angle from {@code from} to {@code to}, or by {@code max} degrees
-	 * if {@code to} is too big a change.
-	 * 
-	 * <p>This is the same as {@link MobEntity#changeAngle(float, float, float)}.
-	 */
-	protected float changeAngle(float from, float to, float max) {
-		float f = MathHelper.subtractAngles(from, to);
-		float g = MathHelper.clamp(f, -max, max);
-		return from + g;
-	}
-
 	private static double getLookingHeightFor(Entity entity) {
 		return entity instanceof LivingEntity ? entity.getEyeY() : (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
 	}

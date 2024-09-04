@@ -124,6 +124,7 @@ public class Codecs {
 
 		return floatList;
 	});
+	public static final Codec<Integer> RGB = Codec.withAlternative(Codec.INT, VECTOR_3F, vec3f -> ColorHelper.fromFloats(1.0F, vec3f.x(), vec3f.y(), vec3f.z()));
 	public static final Codec<Integer> ARGB = Codec.withAlternative(
 		Codec.INT, VECTOR_4F, vec4f -> ColorHelper.fromFloats(vec4f.w(), vec4f.x(), vec4f.y(), vec4f.z())
 	);
@@ -393,6 +394,10 @@ public class Codecs {
 					? DataResult.error(() -> "List must have contents")
 					: DataResult.success(entryList)
 		);
+	}
+
+	public static <M extends Map<?, ?>> Codec<M> nonEmptyMap(Codec<M> originalCodec) {
+		return originalCodec.validate(map -> map.isEmpty() ? DataResult.error(() -> "Map must have contents") : DataResult.success(map));
 	}
 
 	public static <E> MapCodec<E> createContextRetrievalCodec(Function<DynamicOps<?>, DataResult<E>> retriever) {

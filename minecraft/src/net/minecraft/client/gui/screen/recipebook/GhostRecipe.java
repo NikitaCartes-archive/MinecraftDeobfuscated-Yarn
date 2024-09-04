@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
@@ -58,7 +59,7 @@ public class GhostRecipe {
 			GhostRecipe.CyclingItem cyclingItem = this.items.get(slot);
 			if (cyclingItem != null) {
 				ItemStack itemStack = cyclingItem.get(this.currentIndexProvider.currentIndex());
-				context.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, itemStack), x, y);
+				context.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, itemStack), x, y, itemStack.get(DataComponentTypes.TOOLTIP_STYLE));
 			}
 		}
 	}

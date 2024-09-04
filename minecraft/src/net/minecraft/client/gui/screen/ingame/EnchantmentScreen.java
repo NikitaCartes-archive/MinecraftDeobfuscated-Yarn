@@ -150,8 +150,10 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		float j = MathHelper.clamp(MathHelper.fractionalPart(g + 0.25F) * 1.6F - 0.3F, 0.0F, 1.0F);
 		float k = MathHelper.clamp(MathHelper.fractionalPart(g + 0.75F) * 1.6F - 0.3F, 0.0F, 1.0F);
 		this.BOOK_MODEL.setPageAngles(0.0F, j, k, f);
-		VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(this.BOOK_MODEL.getLayer(BOOK_TEXTURE));
-		this.BOOK_MODEL.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+		context.draw(vertexConsumers -> {
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.BOOK_MODEL.getLayer(BOOK_TEXTURE));
+			this.BOOK_MODEL.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+		});
 		context.draw();
 		context.getMatrices().pop();
 		DiffuseLighting.enableGuiDepthLighting();

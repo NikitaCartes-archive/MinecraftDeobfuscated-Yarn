@@ -68,7 +68,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			stack.apply(
 				DataComponentTypes.ATTRIBUTE_MODIFIERS,
 				AttributeModifiersComponent.DEFAULT,
-				component -> component.modifiers().isEmpty() ? this.applyTo(context, stack.getItem().getAttributeModifiers()) : this.applyTo(context, component)
+				attributeModifiersComponent -> this.applyTo(context, attributeModifiersComponent)
 			);
 		}
 

@@ -56,7 +56,6 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MaceItem;
@@ -136,7 +135,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.<EntityPose, EntityDimensions>builder()
 		.put(EntityPose.STANDING, STANDING_DIMENSIONS)
 		.put(EntityPose.SLEEPING, SLEEPING_DIMENSIONS)
-		.put(EntityPose.FALL_FLYING, EntityDimensions.changing(0.6F, 0.6F).withEyeHeight(0.4F))
+		.put(EntityPose.GLIDING, EntityDimensions.changing(0.6F, 0.6F).withEyeHeight(0.4F))
 		.put(EntityPose.SWIMMING, EntityDimensions.changing(0.6F, 0.6F).withEyeHeight(0.4F))
 		.put(EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6F, 0.6F).withEyeHeight(0.4F))
 		.put(
@@ -343,14 +342,14 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void onBubbleColumnSurfaceCollision(boolean drag) {
-		if (!this.isCreative()) {
+		if (!this.getAbilities().flying) {
 			super.onBubbleColumnSurfaceCollision(drag);
 		}
 	}
 
 	@Override
 	public void onBubbleColumnCollision(boolean drag) {
-		if (!this.isCreative()) {
+		if (!this.getAbilities().flying) {
 			super.onBubbleColumnCollision(drag);
 		}
 	}
@@ -412,8 +411,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void updatePose() {
 		if (this.canChangeIntoPose(EntityPose.SWIMMING)) {
 			EntityPose entityPose;
-			if (this.isFallFlying()) {
-				entityPose = EntityPose.FALL_FLYING;
+			if (this.isGliding()) {
+				entityPose = EntityPose.GLIDING;
 			} else if (this.isSleeping()) {
 				entityPose = EntityPose.SLEEPING;
 			} else if (this.isSwimming()) {
@@ -1541,8 +1540,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected boolean isFallFlyingAllowed(ItemStack chestEquipment) {
-		return !this.abilities.flying && super.isFallFlyingAllowed(chestEquipment);
+	protected boolean canGlide() {
+		return !this.abilities.flying && super.canGlide();
 	}
 
 	@Override
@@ -1595,25 +1594,22 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public boolean checkFallFlying() {
-		if (!this.isOnGround() && !this.isFallFlying() && !this.isTouchingWater() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
-			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
-			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
-				this.startFallFlying();
-				return true;
-			}
+	public boolean checkGliding() {
+		if (!this.isGliding() && this.canGlide() && !this.isTouchingWater()) {
+			this.startGliding();
+			return true;
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 
-	public void startFallFlying() {
-		this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, true);
+	public void startGliding() {
+		this.setFlag(Entity.GLIDING_FLAG_INDEX, true);
 	}
 
-	public void stopFallFlying() {
-		this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, true);
-		this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
+	public void stopGliding() {
+		this.setFlag(Entity.GLIDING_FLAG_INDEX, true);
+		this.setFlag(Entity.GLIDING_FLAG_INDEX, false);
 	}
 
 	@Override
@@ -2036,7 +2032,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected float getVelocityMultiplier() {
-		return !this.abilities.flying && !this.isFallFlying() ? super.getVelocityMultiplier() : 1.0F;
+		return !this.abilities.flying && !this.isGliding() ? super.getVelocityMultiplier() : 1.0F;
 	}
 
 	public float getLuck() {
@@ -2045,12 +2041,6 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public boolean isCreativeLevelTwoOp() {
 		return this.abilities.creativeMode && this.getPermissionLevel() >= 2;
-	}
-
-	@Override
-	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
-		return this.getEquippedStack(equipmentSlot).isEmpty();
 	}
 
 	@Override
@@ -2092,7 +2082,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		double d = 0.22 * (this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0);
 		float f = MathHelper.lerp(delta * 0.5F, this.getPitch(), this.prevPitch) * (float) (Math.PI / 180.0);
 		float g = MathHelper.lerp(delta, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
-		if (this.isFallFlying() || this.isUsingRiptide()) {
+		if (this.isGliding() || this.isUsingRiptide()) {
 			Vec3d vec3d = this.getRotationVec(delta);
 			Vec3d vec3d2 = this.getVelocity();
 			double e = vec3d2.horizontalLengthSquared();

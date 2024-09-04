@@ -37,7 +37,7 @@ public class ZombifiedPiglinEntityRenderer extends BipedEntityRenderer<Zombified
 				new ArmorEntityModel(context.getPart(armorOuterLayer)),
 				new ArmorEntityModel(context.getPart(babyArmorInnerLayer)),
 				new ArmorEntityModel(context.getPart(babyArmorInnerLayer)),
-				context.getModelManager()
+				context.getEquipmentRenderer()
 			)
 		);
 	}

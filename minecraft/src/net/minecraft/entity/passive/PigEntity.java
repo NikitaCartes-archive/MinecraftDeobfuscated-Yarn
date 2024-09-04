@@ -22,6 +22,7 @@ import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -206,21 +207,16 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world, SpawnReason.CONVERSION);
-			if (zombifiedPiglinEntity != null) {
-				zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-				zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-				zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
-				zombifiedPiglinEntity.setBaby(this.isBaby());
-				if (this.hasCustomName()) {
-					zombifiedPiglinEntity.setCustomName(this.getCustomName());
-					zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
-				}
+			ZombifiedPiglinEntity zombifiedPiglinEntity = this.convertTo(
+				EntityType.ZOMBIFIED_PIGLIN, EntityConversionContext.create(this, false, true), zombifiedPiglin -> {
+					if (this.getMainHandStack().isEmpty()) {
+						zombifiedPiglin.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+					}
 
-				zombifiedPiglinEntity.setPersistent();
-				world.spawnEntity(zombifiedPiglinEntity);
-				this.discard();
-			} else {
+					zombifiedPiglin.setPersistent();
+				}
+			);
+			if (zombifiedPiglinEntity == null) {
 				super.onStruckByLightning(world, lightning);
 			}
 		} else {

@@ -39,6 +39,7 @@ import net.minecraft.entity.ai.brain.task.VillagerTaskListProvider;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -797,21 +798,12 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
 			LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
-			WitchEntity witchEntity = EntityType.WITCH.create(world, SpawnReason.CONVERSION);
-			if (witchEntity != null) {
-				witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-				witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null);
-				witchEntity.setAiDisabled(this.isAiDisabled());
-				if (this.hasCustomName()) {
-					witchEntity.setCustomName(this.getCustomName());
-					witchEntity.setCustomNameVisible(this.isCustomNameVisible());
-				}
-
-				witchEntity.setPersistent();
-				world.spawnEntityAndPassengers(witchEntity);
+			WitchEntity witchEntity = this.convertTo(EntityType.WITCH, EntityConversionContext.create(this, false, false), witch -> {
+				witch.initialize(world, world.getLocalDifficulty(witch.getBlockPos()), SpawnReason.CONVERSION, null);
+				witch.setPersistent();
 				this.releaseAllTickets();
-				this.discard();
-			} else {
+			});
+			if (witchEntity == null) {
 				super.onStruckByLightning(world, lightning);
 			}
 		} else {

@@ -22,7 +22,7 @@ public class VerticallyAttachableBlockItem extends BlockItem {
 	 * @param verticalAttachmentDirection the direction of the item's vertical attachment, {@link Direction#UP} for hanging blocks
 	 * and {@link Direction#DOWN} for standing blocks
 	 */
-	public VerticallyAttachableBlockItem(Block standingBlock, Block wallBlock, Item.Settings settings, Direction verticalAttachmentDirection) {
+	public VerticallyAttachableBlockItem(Block standingBlock, Block wallBlock, Direction verticalAttachmentDirection, Item.Settings settings) {
 		super(standingBlock, settings);
 		this.wallBlock = wallBlock;
 		this.verticalAttachmentDirection = verticalAttachmentDirection;

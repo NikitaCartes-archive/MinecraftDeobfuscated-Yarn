@@ -409,11 +409,11 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	protected boolean canEquipStack(ItemStack stack) {
 		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		return this.prefersNewEquipment(stack, itemStack);
+		return this.prefersNewEquipment(stack, itemStack, equipmentSlot);
 	}
 
 	@Override
-	protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack) {
+	protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack, EquipmentSlot slot) {
 		if (EnchantmentHelper.hasAnyEnchantmentsWith(oldStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
 			return false;
 		} else {
@@ -424,7 +424,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 			} else if (!bl && bl2) {
 				return false;
 			} else {
-				return this.isAdult() && !newStack.isOf(Items.CROSSBOW) && oldStack.isOf(Items.CROSSBOW) ? false : super.prefersNewEquipment(newStack, oldStack);
+				return this.isAdult() && !newStack.isOf(Items.CROSSBOW) && oldStack.isOf(Items.CROSSBOW) ? false : super.prefersNewEquipment(newStack, oldStack, slot);
 			}
 		}
 	}

@@ -7,10 +7,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SmithingTemplateItem;
 import net.minecraft.screen.ScreenHandler;
@@ -110,17 +111,14 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 
 	private void equipArmorStand(ItemStack stack) {
 		if (this.armorStand != null) {
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 				this.armorStand.equipStack(equipmentSlot, ItemStack.EMPTY);
 			}
 
 			if (!stack.isEmpty()) {
-				ItemStack itemStack = stack.copy();
-				if (stack.getItem() instanceof ArmorItem armorItem) {
-					this.armorStand.equipStack(armorItem.getSlotType(), itemStack);
-				} else {
-					this.armorStand.equipStack(EquipmentSlot.OFFHAND, itemStack);
-				}
+				EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
+				EquipmentSlot equipmentSlot = equippableComponent != null ? equippableComponent.slot() : EquipmentSlot.OFFHAND;
+				this.armorStand.equipStack(equipmentSlot, stack.copy());
 			}
 		}
 	}

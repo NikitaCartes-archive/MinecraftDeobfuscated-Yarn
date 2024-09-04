@@ -347,19 +347,20 @@ public class ExperimentalMinecartController extends MinecartController {
 	}
 
 	private Vec3d applyInitialVelocity(Vec3d horizontalVelocity) {
-		Entity entity = this.minecart.getFirstPassenger();
-		Vec3d vec3d = this.minecart.getMovementVelocity();
-		if (entity instanceof ServerPlayerEntity && vec3d.lengthSquared() > 0.0) {
-			Vec3d vec3d2 = vec3d.normalize();
-			double d = horizontalVelocity.horizontalLengthSquared();
-			if (vec3d2.lengthSquared() > 0.0 && d < 0.01) {
-				return horizontalVelocity.add(new Vec3d(vec3d2.x, 0.0, vec3d2.z).normalize().multiply(0.001));
+		if (this.minecart.getFirstPassenger() instanceof ServerPlayerEntity serverPlayerEntity) {
+			Vec3d vec3d = serverPlayerEntity.getInputVelocityForMinecart();
+			if (vec3d.lengthSquared() > 0.0) {
+				Vec3d vec3d2 = vec3d.normalize();
+				double d = horizontalVelocity.horizontalLengthSquared();
+				if (vec3d2.lengthSquared() > 0.0 && d < 0.01) {
+					return horizontalVelocity.add(new Vec3d(vec3d2.x, 0.0, vec3d2.z).normalize().multiply(0.001));
+				}
 			}
-		} else {
-			this.minecart.setMovementVelocity(Vec3d.ZERO);
-		}
 
-		return horizontalVelocity;
+			return horizontalVelocity;
+		} else {
+			return horizontalVelocity;
+		}
 	}
 
 	private Vec3d decelerateFromPoweredRail(Vec3d velocity, BlockState railState) {

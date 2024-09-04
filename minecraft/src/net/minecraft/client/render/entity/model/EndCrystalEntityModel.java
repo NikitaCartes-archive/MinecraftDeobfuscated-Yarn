@@ -52,8 +52,8 @@ public class EndCrystalEntityModel extends EntityModel<EndCrystalEntityRenderSta
 		float f = endCrystalEntityRenderState.age * 3.0F;
 		float g = EndCrystalEntityRenderer.getYOffset(endCrystalEntityRenderState.age) * 16.0F;
 		this.outerGlass.pivotY += g / 2.0F;
-		this.outerGlass.method_62132(RotationAxis.POSITIVE_Y.rotationDegrees(f).rotateAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906));
-		this.innerGlass.method_62132(new Quaternionf().setAngleAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906).rotateY(f * (float) (Math.PI / 180.0)));
-		this.cube.method_62132(new Quaternionf().setAngleAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906).rotateY(f * (float) (Math.PI / 180.0)));
+		this.outerGlass.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(f).rotateAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906));
+		this.innerGlass.rotate(new Quaternionf().setAngleAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906).rotateY(f * (float) (Math.PI / 180.0)));
+		this.cube.rotate(new Quaternionf().setAngleAxis((float) (Math.PI / 3), field_52906, 0.0F, field_52906).rotateY(f * (float) (Math.PI / 180.0)));
 	}
 }

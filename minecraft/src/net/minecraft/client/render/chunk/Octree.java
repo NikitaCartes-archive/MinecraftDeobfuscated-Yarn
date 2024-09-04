@@ -34,8 +34,20 @@ public class Octree {
 		return this.root.add(chunk);
 	}
 
-	public void visit(Octree.Visitor visitor, Frustum frustum) {
-		this.root.visit(visitor, false, frustum, 0);
+	public void visit(Octree.Visitor visitor, Frustum frustum, int i) {
+		this.root.visit(visitor, false, frustum, 0, i, true);
+	}
+
+	boolean method_64061(double d, double e, double f, double g, double h, double i, int j) {
+		int k = this.centerPos.getX();
+		int l = this.centerPos.getY();
+		int m = this.centerPos.getZ();
+		return (double)k > d - (double)j
+			&& (double)k < g + (double)j
+			&& (double)l > e - (double)j
+			&& (double)l < h + (double)j
+			&& (double)m > f - (double)j
+			&& (double)m < i + (double)j;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -104,7 +116,7 @@ public class Octree {
 			int i = getIndex(this.axisOrder, bl4, bl5, bl6);
 			if (this.areChildrenLeaves()) {
 				boolean bl7 = this.children[i] != null;
-				this.children[i] = new Octree.Leaf(chunk);
+				this.children[i] = Octree.this.new Leaf(chunk);
 				return !bl7;
 			} else if (this.children[i] != null) {
 				Octree.Branch branch = (Octree.Branch)this.children[i];
@@ -181,20 +193,30 @@ public class Octree {
 		}
 
 		@Override
-		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth) {
-			boolean bl = skipVisibilityCheck;
+		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int i, boolean bl) {
+			boolean bl2 = skipVisibilityCheck;
 			if (!skipVisibilityCheck) {
-				int i = frustum.intersectAab(this.box);
-				skipVisibilityCheck = i == -2;
-				bl = i == -2 || i == -1;
+				int j = frustum.intersectAab(this.box);
+				skipVisibilityCheck = j == -2;
+				bl2 = j == -2 || j == -1;
 			}
 
-			if (bl) {
-				visitor.visit(this, skipVisibilityCheck, depth);
+			if (bl2) {
+				bl = bl
+					&& Octree.this.method_64061(
+						(double)this.box.getMinX(),
+						(double)this.box.getMinY(),
+						(double)this.box.getMinZ(),
+						(double)this.box.getMaxX(),
+						(double)this.box.getMaxY(),
+						(double)this.box.getMaxZ(),
+						i
+					);
+				visitor.visit(this, skipVisibilityCheck, depth, bl);
 
 				for (Octree.Node node : this.children) {
 					if (node != null) {
-						node.visit(visitor, skipVisibilityCheck, frustum, depth + 1);
+						node.visit(visitor, skipVisibilityCheck, frustum, depth + 1, i, bl);
 					}
 				}
 			}
@@ -220,28 +242,36 @@ public class Octree {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record Leaf(ChunkBuilder.BuiltChunk section) implements Octree.Node {
+	final class Leaf implements Octree.Node {
+		private final ChunkBuilder.BuiltChunk field_54166;
+
+		Leaf(final ChunkBuilder.BuiltChunk builtChunk) {
+			this.field_54166 = builtChunk;
+		}
+
 		@Override
-		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth) {
+		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int i, boolean bl) {
+			Box box = this.field_54166.getBoundingBox();
 			if (skipVisibilityCheck || frustum.isVisible(this.getBuiltChunk().getBoundingBox())) {
-				visitor.visit(this, skipVisibilityCheck, depth);
+				bl = bl && Octree.this.method_64061(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, i);
+				visitor.visit(this, skipVisibilityCheck, depth, bl);
 			}
 		}
 
 		@Override
 		public ChunkBuilder.BuiltChunk getBuiltChunk() {
-			return this.section;
+			return this.field_54166;
 		}
 
 		@Override
 		public Box getBoundingBox() {
-			return this.section.getBoundingBox();
+			return this.field_54166.getBoundingBox();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public interface Node {
-		void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth);
+		void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int i, boolean bl);
 
 		@Nullable
 		ChunkBuilder.BuiltChunk getBuiltChunk();
@@ -252,6 +282,6 @@ public class Octree {
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
 	public interface Visitor {
-		void visit(Octree.Node node, boolean skipVisibilityCheck, int depth);
+		void visit(Octree.Node node, boolean skipVisibilityCheck, int depth, boolean bl);
 	}
 }

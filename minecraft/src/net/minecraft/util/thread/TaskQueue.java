@@ -6,17 +6,17 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
-public interface TaskQueue<T, F> {
+public interface TaskQueue<T extends Runnable> {
 	@Nullable
-	F poll();
+	Runnable poll();
 
-	boolean add(T message);
+	boolean add(T runnable);
 
 	boolean isEmpty();
 
 	int getSize();
 
-	public static final class Prioritized implements TaskQueue<TaskQueue.PrioritizedTask, Runnable> {
+	public static final class Prioritized implements TaskQueue<TaskQueue.PrioritizedTask> {
 		private final Queue<Runnable>[] queue;
 		private final AtomicInteger queueSize = new AtomicInteger();
 
@@ -29,6 +29,7 @@ public interface TaskQueue<T, F> {
 		}
 
 		@Nullable
+		@Override
 		public Runnable poll() {
 			for (Queue<Runnable> queue : this.queue) {
 				Runnable runnable = (Runnable)queue.poll();
@@ -63,40 +64,29 @@ public interface TaskQueue<T, F> {
 		}
 	}
 
-	public static final class PrioritizedTask implements Runnable {
-		final int priority;
-		private final Runnable runnable;
-
-		public PrioritizedTask(int priority, Runnable runnable) {
-			this.priority = priority;
-			this.runnable = runnable;
-		}
+	public static record PrioritizedTask(int priority, Runnable runnable) implements Runnable {
 
 		public void run() {
 			this.runnable.run();
 		}
-
-		public int getPriority() {
-			return this.priority;
-		}
 	}
 
-	public static final class Simple<T> implements TaskQueue<T, T> {
-		private final Queue<T> queue;
+	public static final class Simple implements TaskQueue<Runnable> {
+		private final Queue<Runnable> queue;
 
-		public Simple(Queue<T> queue) {
+		public Simple(Queue<Runnable> queue) {
 			this.queue = queue;
 		}
 
 		@Nullable
 		@Override
-		public T poll() {
-			return (T)this.queue.poll();
+		public Runnable poll() {
+			return (Runnable)this.queue.poll();
 		}
 
 		@Override
-		public boolean add(T message) {
-			return this.queue.add(message);
+		public boolean add(Runnable runnable) {
+			return this.queue.add(runnable);
 		}
 
 		@Override

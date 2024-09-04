@@ -35,8 +35,8 @@ public class LivingEntityRenderState extends EntityRenderState {
 	public Text customName;
 	public EntityPose pose = EntityPose.STANDING;
 	@Nullable
-	public BakedModel headEquippedItemModel;
-	public ItemStack headEquippedStack = ItemStack.EMPTY;
+	public BakedModel equippedHeadItemModel;
+	public ItemStack equippedHeadStack = ItemStack.EMPTY;
 	public Arm mainArm = Arm.RIGHT;
 	@Nullable
 	public BakedModel rightHandItemModel;

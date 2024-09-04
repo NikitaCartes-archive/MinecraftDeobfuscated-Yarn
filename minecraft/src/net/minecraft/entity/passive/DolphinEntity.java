@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -83,7 +84,8 @@ public class DolphinEntity extends WaterAnimalEntity {
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		this.setAir(this.getMaxAir());
 		this.setPitch(0.0F);
-		return super.initialize(world, difficulty, spawnReason, new PassiveEntity.PassiveData(true, 0.1F));
+		EntityData entityData2 = (EntityData)Objects.requireNonNullElseGet(entityData, () -> new PassiveEntity.PassiveData(0.1F));
+		return super.initialize(world, difficulty, spawnReason, entityData2);
 	}
 
 	@Nullable
@@ -218,9 +220,8 @@ public class DolphinEntity extends WaterAnimalEntity {
 	}
 
 	@Override
-	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
-		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
+	protected boolean canDispenserEquipSlot(EquipmentSlot slot) {
+		return slot == EquipmentSlot.MAINHAND && this.canPickUpLoot();
 	}
 
 	@Override
@@ -319,8 +320,14 @@ public class DolphinEntity extends WaterAnimalEntity {
 				this.playSound(SoundEvents.ENTITY_DOLPHIN_EAT, 1.0F, 1.0F);
 			}
 
-			this.setHasFish(true);
-			itemStack.decrementUnlessCreative(1, player);
+			if (this.isBaby()) {
+				itemStack.decrementUnlessCreative(1, player);
+				this.growUp(toGrowUpAge(-this.breedingAge), true);
+			} else {
+				this.setHasFish(true);
+				itemStack.decrementUnlessCreative(1, player);
+			}
+
 			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);

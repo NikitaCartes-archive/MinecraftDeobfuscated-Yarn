@@ -14,8 +14,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.thread.MessageListener;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -27,10 +26,10 @@ import org.slf4j.Logger;
 public class ServerLightingProvider extends LightingProvider implements AutoCloseable {
 	public static final int field_44692 = 1000;
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final TaskExecutor<Runnable> processor;
+	private final SimpleConsecutiveExecutor processor;
 	private final ObjectList<Pair<ServerLightingProvider.Stage, Runnable>> pendingTasks = new ObjectArrayList<>();
 	private final ServerChunkLoadingManager chunkLoadingManager;
-	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor;
+	private final ChunkTaskScheduler executor;
 	private final int taskBatchSize = 1000;
 	private final AtomicBoolean ticking = new AtomicBoolean();
 
@@ -38,8 +37,8 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		ChunkProvider chunkProvider,
 		ServerChunkLoadingManager chunkLoadingManager,
 		boolean hasBlockLight,
-		TaskExecutor<Runnable> processor,
-		MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor
+		SimpleConsecutiveExecutor processor,
+		ChunkTaskScheduler executor
 	) {
 		super(chunkProvider, true, hasBlockLight);
 		this.chunkLoadingManager = chunkLoadingManager;
@@ -129,12 +128,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	private void enqueue(int x, int z, IntSupplier completedLevelSupplier, ServerLightingProvider.Stage stage, Runnable task) {
-		this.executor.send(ChunkTaskPrioritySystem.createMessage(() -> {
+		this.executor.add(() -> {
 			this.pendingTasks.add(Pair.of(stage, task));
 			if (this.pendingTasks.size() >= 1000) {
 				this.runTasks();
 			}
-		}, ChunkPos.toLong(x, z), completedLevelSupplier));
+		}, ChunkPos.toLong(x, z), completedLevelSupplier);
 	}
 
 	@Override

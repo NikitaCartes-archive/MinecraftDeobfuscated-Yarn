@@ -27,8 +27,11 @@ public class OctreeDebugRenderer {
 		Octree octree = this.client.worldRenderer.getChunkRenderingDataPreparer().getOctree();
 		MutableInt mutableInt = new MutableInt(0);
 		octree.visit(
-			(node, skipVisibilityCheck, depth) -> this.renderNode(node, matrices, vertexConsumers, cameraX, cameraY, cameraZ, depth, skipVisibilityCheck, mutableInt),
-			frustum
+			(node, skipVisibilityCheck, depth, bl) -> this.renderNode(
+					node, matrices, vertexConsumers, cameraX, cameraY, cameraZ, depth, skipVisibilityCheck, mutableInt, bl
+				),
+			frustum,
+			32
 		);
 	}
 
@@ -41,7 +44,8 @@ public class OctreeDebugRenderer {
 		double cameraZ,
 		int depth,
 		boolean skipVisibilityCheck,
-		MutableInt id
+		MutableInt id,
+		boolean bl
 	) {
 		Box box = node.getBoundingBox();
 		double d = box.getLengthX();
@@ -51,7 +55,8 @@ public class OctreeDebugRenderer {
 			double e = box.getCenter().x;
 			double f = box.getCenter().y;
 			double g = box.getCenter().z;
-			DebugRenderer.drawString(matrices, vertexConsumers, String.valueOf(id.getValue()), e, f, g, Colors.WHITE, 0.3F);
+			int i = bl ? Colors.GREEN : Colors.WHITE;
+			DebugRenderer.drawString(matrices, vertexConsumers, String.valueOf(id.getValue()), e, f, g, i, 0.3F);
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());

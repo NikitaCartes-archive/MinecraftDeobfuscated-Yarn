@@ -17,6 +17,7 @@ import net.minecraft.client.gui.tooltip.TooltipSubmenuHandler;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -190,7 +191,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
 			ItemStack itemStack = this.focusedSlot.getStack();
 			if (this.handler.getCursorStack().isEmpty() || this.isItemTooltipSticky(itemStack)) {
-				drawContext.drawTooltip(this.textRenderer, this.getTooltipFromItem(itemStack), itemStack.getTooltipData(), x, y);
+				drawContext.drawTooltip(
+					this.textRenderer, this.getTooltipFromItem(itemStack), itemStack.getTooltipData(), x, y, itemStack.get(DataComponentTypes.TOOLTIP_STYLE)
+				);
 			}
 		}
 	}

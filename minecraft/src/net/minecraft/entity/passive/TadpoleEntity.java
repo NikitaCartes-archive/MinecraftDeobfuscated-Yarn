@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -222,22 +223,12 @@ public class TadpoleEntity extends FishEntity {
 
 	private void growUp() {
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
-			FrogEntity frogEntity = EntityType.FROG.create(this.getWorld(), SpawnReason.CONVERSION);
-			if (frogEntity != null) {
-				frogEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-				frogEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(frogEntity.getBlockPos()), SpawnReason.CONVERSION, null);
-				frogEntity.setAiDisabled(this.isAiDisabled());
-				if (this.hasCustomName()) {
-					frogEntity.setCustomName(this.getCustomName());
-					frogEntity.setCustomNameVisible(this.isCustomNameVisible());
-				}
-
-				frogEntity.setPersistent();
-				frogEntity.recalculateDimensions(this.getDimensions(this.getPose()));
+			this.convertTo(EntityType.FROG, EntityConversionContext.create(this, false, false), frog -> {
+				frog.initialize(serverWorld, this.getWorld().getLocalDifficulty(frog.getBlockPos()), SpawnReason.CONVERSION, null);
+				frog.setPersistent();
+				frog.recalculateDimensions(this.getDimensions(this.getPose()));
 				this.playSound(SoundEvents.ENTITY_TADPOLE_GROW_UP, 0.15F, 1.0F);
-				serverWorld.spawnEntityAndPassengers(frogEntity);
-				this.discard();
-			}
+			});
 		}
 	}
 

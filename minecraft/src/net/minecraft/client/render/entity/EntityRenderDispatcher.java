@@ -23,6 +23,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.render.entity.equipment.EquipmentModelLoader;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.item.HeldItemRenderer;
@@ -72,12 +73,13 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	private Quaternionf rotation;
 	public Entity targetedEntity;
 	private final ItemRenderer itemRenderer;
-	private final MapRenderer field_53188;
+	private final MapRenderer mapRenderer;
 	private final BlockRenderManager blockRenderManager;
 	private final HeldItemRenderer heldItemRenderer;
 	private final TextRenderer textRenderer;
 	public final GameOptions gameOptions;
 	private final EntityModelLoader modelLoader;
+	private final EquipmentModelLoader equipmentModelLoader;
 	private boolean renderShadows = true;
 	private boolean renderHitboxes;
 
@@ -93,16 +95,18 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		BlockRenderManager blockRenderManager,
 		TextRenderer textRenderer,
 		GameOptions gameOptions,
-		EntityModelLoader entityModelLoader
+		EntityModelLoader modelLoader,
+		EquipmentModelLoader equipmentModelLoader
 	) {
 		this.textureManager = textureManager;
 		this.itemRenderer = itemRenderer;
-		this.field_53188 = mapRenderer;
+		this.mapRenderer = mapRenderer;
 		this.heldItemRenderer = new HeldItemRenderer(client, this, itemRenderer);
 		this.blockRenderManager = blockRenderManager;
 		this.textRenderer = textRenderer;
 		this.gameOptions = gameOptions;
-		this.modelLoader = entityModelLoader;
+		this.modelLoader = modelLoader;
+		this.equipmentModelLoader = equipmentModelLoader;
 	}
 
 	public <T extends Entity> EntityRenderer<? super T, ?> getRenderer(T entity) {
@@ -447,7 +451,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	@Override
 	public void reload(ResourceManager manager) {
 		EntityRendererFactory.Context context = new EntityRendererFactory.Context(
-			this, this.itemRenderer, this.field_53188, this.blockRenderManager, manager, this.modelLoader, this.textRenderer
+			this, this.itemRenderer, this.mapRenderer, this.blockRenderManager, manager, this.modelLoader, this.equipmentModelLoader, this.textRenderer
 		);
 		this.renderers = EntityRenderers.reloadEntityRenderers(context);
 		this.modelRenderers = EntityRenderers.reloadPlayerRenderers(context);

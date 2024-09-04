@@ -63,10 +63,10 @@ public class SlotRanges {
 		list.add(create(name, slotId));
 	}
 
-	private static void createAndAdd(List<SlotRange> list, String baseName, int firstSlotId, int lastSlotId) {
-		IntList intList = new IntArrayList(lastSlotId);
+	private static void createAndAdd(List<SlotRange> list, String baseName, int firstSlotId, int slotCount) {
+		IntList intList = new IntArrayList(slotCount);
 
-		for (int i = 0; i < lastSlotId; i++) {
+		for (int i = 0; i < slotCount; i++) {
 			int j = firstSlotId + i;
 			list.add(create(baseName + i, j));
 			intList.add(j);

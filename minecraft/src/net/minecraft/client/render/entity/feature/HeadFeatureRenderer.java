@@ -21,7 +21,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -49,10 +48,10 @@ public class HeadFeatureRenderer<S extends LivingEntityRenderState, M extends En
 	}
 
 	public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, S livingEntityRenderState, float f, float g) {
-		ItemStack itemStack = livingEntityRenderState.headEquippedStack;
-		BakedModel bakedModel = livingEntityRenderState.headEquippedItemModel;
+		ItemStack itemStack = livingEntityRenderState.equippedHeadStack;
+		BakedModel bakedModel = livingEntityRenderState.equippedHeadItemModel;
 		if (!itemStack.isEmpty() && bakedModel != null) {
-			label26: {
+			label17: {
 				Item item = itemStack.getItem();
 				matrixStack.push();
 				matrixStack.scale(this.headTransformation.horizontalScale(), 1.0F, this.headTransformation.horizontalScale());
@@ -70,10 +69,10 @@ public class HeadFeatureRenderer<S extends LivingEntityRenderState, M extends En
 					SkullBlockEntityRenderer.renderSkull(
 						null, 180.0F, livingEntityRenderState.headItemAnimationProgress, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer
 					);
-					break label26;
+					break label17;
 				}
 
-				if (!(item instanceof ArmorItem armorItem) || armorItem.getSlotType() != EquipmentSlot.HEAD) {
+				if (!ArmorFeatureRenderer.hasModel(itemStack, EquipmentSlot.HEAD)) {
 					translate(matrixStack, this.headTransformation);
 					this.heldItemRenderer
 						.renderItem(itemStack, ModelTransformationMode.HEAD, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);

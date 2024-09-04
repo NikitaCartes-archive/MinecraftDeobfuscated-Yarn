@@ -10,12 +10,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 
 public class CompassItem extends Item {
+	private static final Text LODESTONE_COMPASS_NAME = Text.translatable("item.minecraft.lodestone_compass");
+
 	public CompassItem(Item.Settings settings) {
 		super(settings);
 	}
@@ -71,7 +74,7 @@ public class CompassItem extends Item {
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack stack) {
-		return stack.contains(DataComponentTypes.LODESTONE_TRACKER) ? "item.minecraft.lodestone_compass" : super.getTranslationKey(stack);
+	public Text getName(ItemStack stack) {
+		return stack.contains(DataComponentTypes.LODESTONE_TRACKER) ? LODESTONE_COMPASS_NAME : super.getName(stack);
 	}
 }

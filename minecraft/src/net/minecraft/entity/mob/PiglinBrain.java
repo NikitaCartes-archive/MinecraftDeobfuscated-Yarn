@@ -55,8 +55,6 @@ import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsPosTask;
 import net.minecraft.entity.ai.brain.task.WantNewItemTask;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -635,10 +633,9 @@ public class PiglinBrain {
 		return (List<AbstractPiglinEntity>)piglin.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEARBY_ADULT_PIGLINS).orElse(ImmutableList.of());
 	}
 
-	public static boolean wearsGoldArmor(LivingEntity entity) {
+	public static boolean isWearingPiglinSafeArmor(LivingEntity entity) {
 		for (ItemStack itemStack : entity.getAllArmorItems()) {
-			Item item = itemStack.getItem();
-			if (item instanceof ArmorItem && ((ArmorItem)item).getMaterial().matches(ArmorMaterials.GOLD)) {
+			if (itemStack.isIn(ItemTags.PIGLIN_SAFE_ARMOR)) {
 				return true;
 			}
 		}

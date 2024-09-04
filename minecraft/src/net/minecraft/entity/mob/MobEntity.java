@@ -45,6 +45,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -616,7 +617,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	public ItemStack tryEquip(ItemStack stack) {
 		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		boolean bl = this.prefersNewEquipment(stack, itemStack);
+		boolean bl = this.prefersNewEquipment(stack, itemStack, equipmentSlot);
 		if (equipmentSlot.isArmorSlot() && !bl) {
 			equipmentSlot = EquipmentSlot.MAINHAND;
 			itemStack = this.getEquippedStack(equipmentSlot);
@@ -656,34 +657,35 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		}
 	}
 
-	protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack) {
+	protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack, EquipmentSlot slot) {
 		if (oldStack.isEmpty()) {
 			return true;
 		} else if (newStack.getItem() instanceof SwordItem) {
 			if (!(oldStack.getItem() instanceof SwordItem)) {
 				return true;
 			} else {
-				double d = this.getAttackDamageWith(newStack);
-				double e = this.getAttackDamageWith(oldStack);
+				double d = this.getAttributeValueWithStack(newStack, EntityAttributes.ATTACK_DAMAGE, slot);
+				double e = this.getAttributeValueWithStack(oldStack, EntityAttributes.ATTACK_DAMAGE, slot);
 				return d != e ? d > e : this.prefersNewDamageableItem(newStack, oldStack);
 			}
 		} else if (newStack.getItem() instanceof BowItem && oldStack.getItem() instanceof BowItem) {
 			return this.prefersNewDamageableItem(newStack, oldStack);
 		} else if (newStack.getItem() instanceof CrossbowItem && oldStack.getItem() instanceof CrossbowItem) {
 			return this.prefersNewDamageableItem(newStack, oldStack);
-		} else if (newStack.getItem() instanceof ArmorItem armorItem) {
+		} else if (newStack.getItem() instanceof ArmorItem) {
 			if (EnchantmentHelper.hasAnyEnchantmentsWith(oldStack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
 				return false;
 			} else if (!(oldStack.getItem() instanceof ArmorItem)) {
 				return true;
 			} else {
-				ArmorItem armorItem2 = (ArmorItem)oldStack.getItem();
-				if (armorItem.getProtection() != armorItem2.getProtection()) {
-					return armorItem.getProtection() > armorItem2.getProtection();
+				double d = this.getAttributeValueWithStack(newStack, EntityAttributes.ARMOR, slot);
+				double e = this.getAttributeValueWithStack(oldStack, EntityAttributes.ARMOR, slot);
+				double f = this.getAttributeValueWithStack(newStack, EntityAttributes.ARMOR_TOUGHNESS, slot);
+				double g = this.getAttributeValueWithStack(oldStack, EntityAttributes.ARMOR_TOUGHNESS, slot);
+				if (d != e) {
+					return d > e;
 				} else {
-					return armorItem.getToughness() != armorItem2.getToughness()
-						? armorItem.getToughness() > armorItem2.getToughness()
-						: this.prefersNewDamageableItem(newStack, oldStack);
+					return f != g ? f > g : this.prefersNewDamageableItem(newStack, oldStack);
 				}
 			}
 		} else {
@@ -693,8 +695,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 				}
 
 				if (oldStack.getItem() instanceof MiningToolItem) {
-					double d = this.getAttackDamageWith(newStack);
-					double e = this.getAttackDamageWith(oldStack);
+					double d = this.getAttributeValueWithStack(newStack, EntityAttributes.ATTACK_DAMAGE, slot);
+					double e = this.getAttributeValueWithStack(oldStack, EntityAttributes.ATTACK_DAMAGE, slot);
 					if (d != e) {
 						return d > e;
 					}
@@ -707,9 +709,9 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		}
 	}
 
-	private double getAttackDamageWith(ItemStack stack) {
+	private double getAttributeValueWithStack(ItemStack stack, RegistryEntry<EntityAttribute> attribute, EquipmentSlot slot) {
 		AttributeModifiersComponent attributeModifiersComponent = stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
-		return attributeModifiersComponent.applyOperations(this.getAttributeBaseValue(EntityAttributes.ATTACK_DAMAGE), EquipmentSlot.MAINHAND);
+		return attributeModifiersComponent.applyOperations(this.getAttributeBaseValue(attribute), slot);
 	}
 
 	public boolean prefersNewDamageableItem(ItemStack newStack, ItemStack oldStack) {
@@ -959,10 +961,6 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		return !this.getEquippedStack(EquipmentSlot.BODY).isEmpty();
 	}
 
-	public boolean isHorseArmor(ItemStack stack) {
-		return false;
-	}
-
 	public void equipBodyArmor(ItemStack stack) {
 		this.equipLootStack(EquipmentSlot.BODY, stack);
 	}
@@ -1002,14 +1000,14 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
 		super.dropEquipment(world, source, causedByPlayer);
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 			float f = this.getDropChance(equipmentSlot);
 			if (f != 0.0F) {
 				boolean bl = f > 1.0F;
-				Entity var13 = source.getAttacker();
-				if (var13 instanceof LivingEntity) {
-					LivingEntity livingEntity = (LivingEntity)var13;
+				Entity var11 = source.getAttacker();
+				if (var11 instanceof LivingEntity) {
+					LivingEntity livingEntity = (LivingEntity)var11;
 					if (this.getWorld() instanceof ServerWorld serverWorld) {
 						f = EnchantmentHelper.getEquipmentDropChance(serverWorld, livingEntity, source, f);
 					}
@@ -1030,7 +1028,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		}
 	}
 
-	protected float getDropChance(EquipmentSlot slot) {
+	public float getDropChance(EquipmentSlot slot) {
 		return switch (slot.getType()) {
 			case HAND -> this.handDropChances[slot.getEntitySlotId()];
 			case HUMANOID_ARMOR -> this.armorDropChances[slot.getEntitySlotId()];
@@ -1045,7 +1043,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	public Set<EquipmentSlot> dropEquipment(Predicate<ItemStack> dropPredicate) {
 		Set<EquipmentSlot> set = new HashSet();
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 			if (!itemStack.isEmpty()) {
 				if (!dropPredicate.test(itemStack)) {
@@ -1174,7 +1172,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	protected void updateEnchantments(ServerWorldAccess world, Random random, LocalDifficulty localDifficulty) {
 		this.enchantMainHandItem(world, random, localDifficulty);
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 			if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
 				this.enchantEquipment(world, random, equipmentSlot, localDifficulty);
 			}
@@ -1241,9 +1239,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	@Override
-	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
-		return this.getEquippedStack(equipmentSlot).isEmpty() && this.canPickUpLoot();
+	protected boolean canDispenserEquipSlot(EquipmentSlot slot) {
+		return this.canPickUpLoot();
 	}
 
 	public boolean isPersistent() {
@@ -1339,60 +1336,43 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		return this.positionTargetRange != -1.0F;
 	}
 
+	@Nullable
+	public <T extends MobEntity> T convertTo(
+		EntityType<T> entityType, EntityConversionContext context, SpawnReason reason, EntityConversionContext.Finalizer<T> finalizer
+	) {
+		if (this.isRemoved()) {
+			return null;
+		} else {
+			T mobEntity = (T)entityType.create(this.getWorld(), reason);
+			if (mobEntity == null) {
+				return null;
+			} else {
+				context.type().setUpNewEntity(this, mobEntity, context);
+				finalizer.finalizeConversion(mobEntity);
+				if (this.getWorld() instanceof ServerWorld serverWorld) {
+					serverWorld.spawnEntityAndPassengers(mobEntity);
+				}
+
+				if (context.type().shouldDiscardOldEntity()) {
+					this.discard();
+				}
+
+				return mobEntity;
+			}
+		}
+	}
+
 	/**
 	 * Converts this entity to the provided {@code entityType}.
 	 * <p>The new entity will keep many of the properties set for this entity,
 	 * including its vehicle, its name and whether it is persistent or not.
 	 * <p>If {@code keepEquipment} is {@code true}, it will also keep its equipment.
 	 * 
-	 * @param keepEquipment whether the equipment of this entity should be kept
 	 * @param entityType the entity type to convert to
 	 */
 	@Nullable
-	public <T extends MobEntity> T convertTo(EntityType<T> entityType, boolean keepEquipment) {
-		if (this.isRemoved()) {
-			return null;
-		} else {
-			T mobEntity = (T)entityType.create(this.getWorld(), SpawnReason.CONVERSION);
-			if (mobEntity == null) {
-				return null;
-			} else {
-				mobEntity.copyPositionAndRotation(this);
-				mobEntity.setBaby(this.isBaby());
-				mobEntity.setAiDisabled(this.isAiDisabled());
-				if (this.hasCustomName()) {
-					mobEntity.setCustomName(this.getCustomName());
-					mobEntity.setCustomNameVisible(this.isCustomNameVisible());
-				}
-
-				if (this.isPersistent()) {
-					mobEntity.setPersistent();
-				}
-
-				mobEntity.setInvulnerable(this.isInvulnerable());
-				if (keepEquipment) {
-					mobEntity.setCanPickUpLoot(this.canPickUpLoot());
-
-					for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-						ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-						if (!itemStack.isEmpty()) {
-							mobEntity.equipStack(equipmentSlot, itemStack.copyAndEmpty());
-							mobEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
-						}
-					}
-				}
-
-				this.getWorld().spawnEntity(mobEntity);
-				if (this.hasVehicle()) {
-					Entity entity = this.getVehicle();
-					this.stopRiding();
-					mobEntity.startRiding(entity, true);
-				}
-
-				this.discard();
-				return mobEntity;
-			}
-		}
+	public <T extends MobEntity> T convertTo(EntityType<T> entityType, EntityConversionContext context, EntityConversionContext.Finalizer<T> finalizer) {
+		return this.convertTo(entityType, context, SpawnReason.CONVERSION, finalizer);
 	}
 
 	@Nullable
@@ -1594,5 +1574,23 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		if (attribute.matches(EntityAttributes.FOLLOW_RANGE) || attribute.matches(EntityAttributes.TEMPT_RANGE)) {
 			this.getNavigation().updateRange();
 		}
+	}
+
+	@VisibleForTesting
+	public float[] getHandDropChances() {
+		return this.handDropChances;
+	}
+
+	@VisibleForTesting
+	public float[] getArmorDropChances() {
+		return this.armorDropChances;
+	}
+
+	public void setLootTable(Optional<RegistryKey<LootTable>> lootTable) {
+		this.lootTable = lootTable;
+	}
+
+	public void setLootTableSeed(long lootTableSeed) {
+		this.lootTableSeed = lootTableSeed;
 	}
 }

@@ -15,7 +15,7 @@ import net.minecraft.util.math.ColorHelper;
 public class WolfEntityRenderer extends AgeableMobEntityRenderer<WolfEntity, WolfEntityRenderState, WolfEntityModel> {
 	public WolfEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WolfEntityModel(context.getPart(EntityModelLayers.WOLF)), new WolfEntityModel(context.getPart(EntityModelLayers.WOLF_BABY)), 0.5F);
-		this.addFeature(new WolfArmorFeatureRenderer(this, context.getModelLoader()));
+		this.addFeature(new WolfArmorFeatureRenderer(this, context.getModelLoader(), context.getEquipmentRenderer()));
 		this.addFeature(new WolfCollarFeatureRenderer(this));
 	}
 

@@ -44,6 +44,19 @@ public final class ComponentPredicate implements Predicate<ComponentMap> {
 		return new ComponentPredicate(ImmutableList.copyOf(components));
 	}
 
+	public static ComponentPredicate ofFiltered(ComponentMap components, ComponentType<?>... types) {
+		ComponentPredicate.Builder builder = new ComponentPredicate.Builder();
+
+		for (ComponentType<?> componentType : types) {
+			Component<?> component = components.copy(componentType);
+			if (component != null) {
+				builder.add(component);
+			}
+		}
+
+		return builder.build();
+	}
+
 	public boolean equals(Object o) {
 		if (o instanceof ComponentPredicate componentPredicate && this.components.equals(componentPredicate.components)) {
 			return true;
@@ -93,6 +106,10 @@ public final class ComponentPredicate implements Predicate<ComponentMap> {
 		private final List<Component<?>> components = new ArrayList();
 
 		Builder() {
+		}
+
+		public <T> ComponentPredicate.Builder add(Component<T> component) {
+			return this.add(component.type(), component.value());
 		}
 
 		public <T> ComponentPredicate.Builder add(ComponentType<? super T> type, T value) {

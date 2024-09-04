@@ -141,10 +141,10 @@ public class ModelVariantMap {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Map<String, WeightedUnbakedModel> map = this.variantsFromJson(jsonDeserializationContext, jsonObject);
 			MultipartUnbakedModel.Serialized serialized = this.multipartFromJson(jsonDeserializationContext, jsonObject);
-			if (!map.isEmpty() || serialized != null && !serialized.getBackingModels().isEmpty()) {
-				return new ModelVariantMap(map, serialized);
-			} else {
+			if (map.isEmpty() && serialized == null) {
 				throw new JsonParseException("Neither 'variants' nor 'multipart' found");
+			} else {
+				return new ModelVariantMap(map, serialized);
 			}
 		}
 

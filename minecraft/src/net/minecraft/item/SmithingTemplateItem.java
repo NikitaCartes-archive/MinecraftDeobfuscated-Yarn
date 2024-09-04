@@ -2,7 +2,6 @@ package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -70,16 +69,15 @@ public class SmithingTemplateItem extends Item {
 	private final List<Identifier> emptyAdditionsSlotTextures;
 
 	public SmithingTemplateItem(
-		Item.Settings settings,
 		Text appliesToText,
 		Text ingredientsText,
 		Text baseSlotDescriptionText,
 		Text additionsSlotDescriptionText,
 		List<Identifier> emptyBaseSlotTextures,
 		List<Identifier> emptyAdditionsSlotTextures,
-		FeatureFlag... requiredFeatures
+		Item.Settings settings
 	) {
-		super(settings.requires(requiredFeatures));
+		super(settings);
 		this.appliesToText = appliesToText;
 		this.ingredientsText = ingredientsText;
 		this.baseSlotDescriptionText = baseSlotDescriptionText;
@@ -88,28 +86,27 @@ public class SmithingTemplateItem extends Item {
 		this.emptyAdditionsSlotTextures = emptyAdditionsSlotTextures;
 	}
 
-	public static SmithingTemplateItem of(Item.Settings settings, FeatureFlag... requiredFeatures) {
+	public static SmithingTemplateItem of(Item.Settings settings) {
 		return new SmithingTemplateItem(
-			settings,
 			ARMOR_TRIM_APPLIES_TO_TEXT,
 			ARMOR_TRIM_INGREDIENTS_TEXT,
 			ARMOR_TRIM_BASE_SLOT_DESCRIPTION_TEXT,
 			ARMOR_TRIM_ADDITIONS_SLOT_DESCRIPTION_TEXT,
 			getArmorTrimEmptyBaseSlotTextures(),
 			getArmorTrimEmptyAdditionsSlotTextures(),
-			requiredFeatures
+			settings
 		);
 	}
 
 	public static SmithingTemplateItem createNetheriteUpgrade(Item.Settings settings) {
 		return new SmithingTemplateItem(
-			settings,
 			NETHERITE_UPGRADE_APPLIES_TO_TEXT,
 			NETHERITE_UPGRADE_INGREDIENTS_TEXT,
 			NETHERITE_UPGRADE_BASE_SLOT_DESCRIPTION_TEXT,
 			NETHERITE_UPGRADE_ADDITIONS_SLOT_DESCRIPTION_TEXT,
 			getNetheriteUpgradeEmptyBaseSlotTextures(),
-			getNetheriteUpgradeEmptyAdditionsSlotTextures()
+			getNetheriteUpgradeEmptyAdditionsSlotTextures(),
+			settings
 		);
 	}
 

@@ -30,7 +30,7 @@ public class ZombieVillagerEntityRenderer
 				new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_OUTER_ARMOR)),
 				new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_BABY_INNER_ARMOR)),
 				new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_BABY_OUTER_ARMOR)),
-				context.getModelManager()
+				context.getEquipmentRenderer()
 			)
 		);
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, context.getResourceManager(), "zombie_villager"));
@@ -48,6 +48,7 @@ public class ZombieVillagerEntityRenderer
 		super.updateRenderState(zombieVillagerEntity, zombieVillagerRenderState, f);
 		zombieVillagerRenderState.convertingInWater = zombieVillagerEntity.isConverting();
 		zombieVillagerRenderState.villagerData = zombieVillagerEntity.getVillagerData();
+		zombieVillagerRenderState.attacking = zombieVillagerEntity.isAttacking();
 	}
 
 	protected boolean isShaking(ZombieVillagerRenderState zombieVillagerRenderState) {

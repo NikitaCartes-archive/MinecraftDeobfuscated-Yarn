@@ -133,10 +133,15 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
+	protected VoxelShape getInsideCollisionShape(BlockState state, World world, BlockPos pos) {
+		return state.getOutlineShape(world, pos);
+	}
+
+	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient) {
 			if (!(Boolean)state.get(POWERED)) {
-				this.updatePowered(world, pos);
+				this.updatePowered(world, pos, List.of(entity));
 			}
 		}
 	}
@@ -150,11 +155,16 @@ public class TripwireBlock extends Block {
 
 	private void updatePowered(World world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
+		List<? extends Entity> list = world.getOtherEntities(null, blockState.getOutlineShape(world, pos).getBoundingBox().offset(pos));
+		this.updatePowered(world, pos, list);
+	}
+
+	private void updatePowered(World world, BlockPos pos, List<? extends Entity> entities) {
+		BlockState blockState = world.getBlockState(pos);
 		boolean bl = (Boolean)blockState.get(POWERED);
 		boolean bl2 = false;
-		List<? extends Entity> list = world.getOtherEntities(null, blockState.getOutlineShape(world, pos).getBoundingBox().offset(pos));
-		if (!list.isEmpty()) {
-			for (Entity entity : list) {
+		if (!entities.isEmpty()) {
+			for (Entity entity : entities) {
 				if (!entity.canAvoidTraps()) {
 					bl2 = true;
 					break;

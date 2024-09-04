@@ -707,7 +707,7 @@ public class GameRenderer implements AutoCloseable {
 			float k = j * (float) Math.PI;
 			float l = this.floatingItemWidth * (float)(context.getScaledWindowWidth() / 4);
 			float m = this.floatingItemHeight * (float)(context.getScaledWindowHeight() / 4);
-			MatrixStack matrixStack = new MatrixStack();
+			MatrixStack matrixStack = context.getMatrices();
 			matrixStack.push();
 			matrixStack.translate(
 				(float)(context.getScaledWindowWidth() / 2) + l * MathHelper.abs(MathHelper.sin(k * 2.0F)),
@@ -719,11 +719,11 @@ public class GameRenderer implements AutoCloseable {
 			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(k))));
 			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
-			this.client
-				.getItemRenderer()
-				.renderItem(
-					this.floatingItem, ModelTransformationMode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, context.getVertexConsumers(), this.client.world, 0
-				);
+			context.draw(
+				vertexConsumers -> this.client
+						.getItemRenderer()
+						.renderItem(this.floatingItem, ModelTransformationMode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumers, this.client.world, 0)
+			);
 			matrixStack.pop();
 		}
 	}

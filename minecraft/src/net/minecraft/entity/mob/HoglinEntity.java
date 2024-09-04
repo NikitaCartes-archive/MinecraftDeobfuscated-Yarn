@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -52,7 +54,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	private static final float KNOCKBACK_RESISTANCE = 0.6F;
 	private static final int ATTACK_DAMAGE = 6;
 	private static final float BABY_ATTACK_DAMAGE = 0.5F;
-	private static final int CONVERSION_TIME = 300;
+	public static final int CONVERSION_TIME = 300;
 	private int movementCooldownTicks;
 	private int timeInOverworld;
 	private boolean cannotBeHunted;
@@ -85,6 +87,11 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	public HoglinEntity(EntityType<? extends HoglinEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 5;
+	}
+
+	@VisibleForTesting
+	public void setTimeInOverworld(int timeInOverworld) {
+		this.timeInOverworld = timeInOverworld;
 	}
 
 	@Override
@@ -160,7 +167,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 			this.timeInOverworld++;
 			if (this.timeInOverworld > 300) {
 				this.playSound(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
-				this.zombify((ServerWorld)this.getWorld());
+				this.zombify();
 			}
 		} else {
 			this.timeInOverworld = 0;
@@ -250,11 +257,12 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		return this.experiencePoints;
 	}
 
-	private void zombify(ServerWorld word) {
-		ZoglinEntity zoglinEntity = this.convertTo(EntityType.ZOGLIN, true);
-		if (zoglinEntity != null) {
-			zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-		}
+	private void zombify() {
+		this.convertTo(
+			EntityType.ZOGLIN,
+			EntityConversionContext.create(this, true, false),
+			zoglin -> zoglin.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0))
+		);
 	}
 
 	@Override

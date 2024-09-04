@@ -96,7 +96,7 @@ public class PlayerSkinWidget extends ClickableWidget {
 			context.getMatrices().translate(0.0F, -1.501F, 0.0F);
 			PlayerEntityModel playerEntityModel = skinTextures.model() == SkinTextures.Model.SLIM ? this.slimModel : this.wideModel;
 			RenderLayer renderLayer = playerEntityModel.getLayer(skinTextures.texture());
-			playerEntityModel.render(context.getMatrices(), context.getVertexConsumers().getBuffer(renderLayer), 15728880, OverlayTexture.DEFAULT_UV);
+			context.draw(vertexConsumers -> playerEntityModel.render(context.getMatrices(), vertexConsumers.getBuffer(renderLayer), 15728880, OverlayTexture.DEFAULT_UV));
 			context.getMatrices().pop();
 		}
 	}

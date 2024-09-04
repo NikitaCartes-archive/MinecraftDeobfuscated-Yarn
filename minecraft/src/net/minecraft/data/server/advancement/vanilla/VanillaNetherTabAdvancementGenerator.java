@@ -522,28 +522,28 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			EntityPropertiesLootCondition.builder(
 					LootContext.EntityTarget.THIS,
 					EntityPredicate.Builder.create()
-						.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_HELMET)))
+						.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.PIGLIN_SAFE_ARMOR)))
 				)
 				.invert()
 				.build(),
 			EntityPropertiesLootCondition.builder(
 					LootContext.EntityTarget.THIS,
 					EntityPredicate.Builder.create()
-						.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_CHESTPLATE)))
+						.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.PIGLIN_SAFE_ARMOR)))
 				)
 				.invert()
 				.build(),
 			EntityPropertiesLootCondition.builder(
 					LootContext.EntityTarget.THIS,
 					EntityPredicate.Builder.create()
-						.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_LEGGINGS)))
+						.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.PIGLIN_SAFE_ARMOR)))
 				)
 				.invert()
 				.build(),
 			EntityPropertiesLootCondition.builder(
 					LootContext.EntityTarget.THIS,
 					EntityPredicate.Builder.create()
-						.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(registryEntryLookup2, Items.GOLDEN_BOOTS)))
+						.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.PIGLIN_SAFE_ARMOR)))
 				)
 				.invert()
 				.build()

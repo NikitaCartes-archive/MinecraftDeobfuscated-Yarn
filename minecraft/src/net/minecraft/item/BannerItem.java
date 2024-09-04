@@ -14,7 +14,7 @@ import org.apache.commons.lang3.Validate;
 
 public class BannerItem extends VerticallyAttachableBlockItem {
 	public BannerItem(Block bannerBlock, Block wallBannerBlock, Item.Settings settings) {
-		super(bannerBlock, wallBannerBlock, settings, Direction.DOWN);
+		super(bannerBlock, wallBannerBlock, Direction.DOWN, settings);
 		Validate.isInstanceOf(AbstractBannerBlock.class, bannerBlock);
 		Validate.isInstanceOf(AbstractBannerBlock.class, wallBannerBlock);
 	}

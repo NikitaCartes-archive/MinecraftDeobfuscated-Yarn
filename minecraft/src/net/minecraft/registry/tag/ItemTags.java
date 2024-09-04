@@ -53,6 +53,7 @@ public final class ItemTags {
 	public static final TagKey<Item> PIGLIN_REPELLENTS = of("piglin_repellents");
 	public static final TagKey<Item> PIGLIN_LOVED = of("piglin_loved");
 	public static final TagKey<Item> IGNORED_BY_PIGLIN_BABIES = of("ignored_by_piglin_babies");
+	public static final TagKey<Item> PIGLIN_SAFE_ARMOR = of("piglin_safe_armor");
 	public static final TagKey<Item> MEAT = of("meat");
 	public static final TagKey<Item> SNIFFER_FOOD = of("sniffer_food");
 	public static final TagKey<Item> PIGLIN_FOOD = of("piglin_food");
@@ -112,6 +113,14 @@ public final class ItemTags {
 	public static final TagKey<Item> GOLD_TOOL_MATERIALS = of("gold_tool_materials");
 	public static final TagKey<Item> DIAMOND_TOOL_MATERIALS = of("diamond_tool_materials");
 	public static final TagKey<Item> NETHERITE_TOOL_MATERIALS = of("netherite_tool_materials");
+	public static final TagKey<Item> REPAIRS_LEATHER_ARMOR = of("repairs_leather_armor");
+	public static final TagKey<Item> REPAIRS_CHAIN_ARMOR = of("repairs_chain_armor");
+	public static final TagKey<Item> REPAIRS_IRON_ARMOR = of("repairs_iron_armor");
+	public static final TagKey<Item> REPAIRS_GOLD_ARMOR = of("repairs_gold_armor");
+	public static final TagKey<Item> REPAIRS_DIAMOND_ARMOR = of("repairs_diamond_armor");
+	public static final TagKey<Item> REPAIRS_NETHERITE_ARMOR = of("repairs_netherite_armor");
+	public static final TagKey<Item> REPAIRS_TURTLE_HELMET = of("repairs_turtle_helmet");
+	public static final TagKey<Item> REPAIRS_WOLF_ARMOR = of("repairs_wolf_armor");
 	public static final TagKey<Item> STONE_CRAFTING_MATERIALS = of("stone_crafting_materials");
 	public static final TagKey<Item> FREEZE_IMMUNE_WEARABLES = of("freeze_immune_wearables");
 	public static final TagKey<Item> DAMPENS_VIBRATIONS = of("dampens_vibrations");

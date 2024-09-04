@@ -39,5 +39,7 @@ public interface BakedModel {
 
 	ModelTransformation getTransformation();
 
-	ModelOverrideList getOverrides();
+	default ModelOverrideList getOverrides() {
+		return ModelOverrideList.EMPTY;
+	}
 }

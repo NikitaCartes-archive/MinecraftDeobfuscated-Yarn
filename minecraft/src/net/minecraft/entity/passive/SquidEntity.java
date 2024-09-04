@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.Objects;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -207,7 +208,8 @@ public class SquidEntity extends WaterAnimalEntity {
 
 		for (int i = 0; i < 30; i++) {
 			Vec3d vec3d2 = this.applyBodyRotations(new Vec3d((double)this.random.nextFloat() * 0.6 - 0.3, -1.0, (double)this.random.nextFloat() * 0.6 - 0.3));
-			Vec3d vec3d3 = vec3d2.multiply(0.3 + (double)(this.random.nextFloat() * 2.0F));
+			float f = this.isBaby() ? 0.1F : 0.3F;
+			Vec3d vec3d3 = vec3d2.multiply((double)(f + this.random.nextFloat() * 2.0F));
 			((ServerWorld)this.getWorld()).spawnParticles(this.getInkParticle(), vec3d.x, vec3d.y + 0.5, vec3d.z, 0, vec3d3.x, vec3d3.y, vec3d3.z, 0.1F);
 		}
 	}
@@ -248,11 +250,8 @@ public class SquidEntity extends WaterAnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
-		if (this.random.nextFloat() > 0.95F) {
-			this.setBaby(true);
-		}
-
-		return super.initialize(world, difficulty, spawnReason, entityData);
+		EntityData entityData2 = (EntityData)Objects.requireNonNullElseGet(entityData, () -> new PassiveEntity.PassiveData(0.05F));
+		return super.initialize(world, difficulty, spawnReason, entityData2);
 	}
 
 	class EscapeAttackerGoal extends Goal {

@@ -17,7 +17,7 @@ import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.item.BlockPredicatesChecker;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.trim.ArmorTrim;
+import net.minecraft.item.equipment.trim.ArmorTrim;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.registry.Registries;

@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nullable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EntityType;
@@ -7,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -19,7 +21,7 @@ import net.minecraft.world.World;
 
 public abstract class AbstractPiglinEntity extends HostileEntity {
 	protected static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(AbstractPiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	protected static final int TIME_TO_ZOMBIFY = 300;
+	public static final int TIME_TO_ZOMBIFY = 300;
 	protected int timeInOverworld;
 
 	public AbstractPiglinEntity(EntityType<? extends AbstractPiglinEntity> entityType, World world) {
@@ -84,15 +86,21 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 		}
 	}
 
+	@VisibleForTesting
+	public void setTimeInOverworld(int timeInOverworld) {
+		this.timeInOverworld = timeInOverworld;
+	}
+
 	public boolean shouldZombify() {
 		return !this.getWorld().getDimension().piglinSafe() && !this.isImmuneToZombification() && !this.isAiDisabled();
 	}
 
 	protected void zombify(ServerWorld world) {
-		ZombifiedPiglinEntity zombifiedPiglinEntity = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, true);
-		if (zombifiedPiglinEntity != null) {
-			zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-		}
+		this.convertTo(
+			EntityType.ZOMBIFIED_PIGLIN,
+			EntityConversionContext.create(this, true, true),
+			zombifiedPiglin -> zombifiedPiglin.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0))
+		);
 	}
 
 	public boolean isAdult() {

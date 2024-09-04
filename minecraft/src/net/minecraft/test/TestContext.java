@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Either;
 import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -610,6 +611,20 @@ public class TestContext {
 		}
 	}
 
+	public <E extends Entity, T> void expectEntity(BlockPos pos, EntityType<E> type, Predicate<E> predicate) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+		List<E> list = this.getWorld().getEntitiesByType(type, new Box(blockPos), Entity::isAlive);
+		if (list.isEmpty()) {
+			throw new PositionedException("Expected " + type.getUntranslatedName(), blockPos, pos, this.test.getTick());
+		} else {
+			for (E entity : list) {
+				if (!predicate.test(entity)) {
+					throw new GameTestException("Test failed for entity " + entity);
+				}
+			}
+		}
+	}
+
 	public <E extends Entity, T> void expectEntityWithData(BlockPos pos, EntityType<E> type, Function<? super E, T> entityDataGetter, @Nullable T data) {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		List<E> list = this.getWorld().getEntitiesByType(type, new Box(blockPos), Entity::isAlive);
@@ -618,11 +633,7 @@ public class TestContext {
 		} else {
 			for (E entity : list) {
 				T object = (T)entityDataGetter.apply(entity);
-				if (object == null) {
-					if (data != null) {
-						throw new GameTestException("Expected entity data to be: " + data + ", but was: " + object);
-					}
-				} else if (!object.equals(data)) {
+				if (!Objects.equals(object, data)) {
 					throw new GameTestException("Expected entity data to be: " + data + ", but was: " + object);
 				}
 			}

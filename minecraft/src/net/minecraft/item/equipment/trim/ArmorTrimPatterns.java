@@ -1,4 +1,4 @@
-package net.minecraft.item.trim;
+package net.minecraft.item.equipment.trim;
 
 import java.util.Optional;
 import net.minecraft.item.Item;

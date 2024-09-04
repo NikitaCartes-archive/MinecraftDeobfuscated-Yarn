@@ -33,6 +33,7 @@ public abstract class AbstractChunkHolder {
 	private final AtomicReferenceArray<CompletableFuture<OptionalChunk<Chunk>>> chunkFuturesByStatus = new AtomicReferenceArray(STATUSES.size());
 	private final AtomicReference<ChunkLoader> chunkLoader = new AtomicReference();
 	private final AtomicInteger refCount = new AtomicInteger();
+	private volatile CompletableFuture<Void> referenceFuture = CompletableFuture.completedFuture(null);
 
 	public AbstractChunkHolder(ChunkPos pos) {
 		this.pos = pos;
@@ -239,19 +240,25 @@ public abstract class AbstractChunkHolder {
 		return chunkStatus == null || status.isLaterThan(chunkStatus);
 	}
 
-	public void incrementRefCount() {
-		this.refCount.incrementAndGet();
-	}
+	protected abstract void combineSavingFuture(CompletableFuture<?> savingFuture);
 
-	public void decrementRefCount() {
-		int i = this.refCount.decrementAndGet();
-		if (i < 0) {
-			throw new IllegalStateException("More releases than claims. Count: " + i);
+	public void incrementRefCount() {
+		if (this.refCount.getAndIncrement() == 0) {
+			this.referenceFuture = new CompletableFuture();
+			this.combineSavingFuture(this.referenceFuture);
 		}
 	}
 
-	public int getRefCount() {
-		return this.refCount.get();
+	public void decrementRefCount() {
+		CompletableFuture<Void> completableFuture = this.referenceFuture;
+		int i = this.refCount.decrementAndGet();
+		if (i == 0) {
+			completableFuture.complete(null);
+		}
+
+		if (i < 0) {
+			throw new IllegalStateException("More releases than claims. Count: " + i);
+		}
 	}
 
 	@Nullable

@@ -179,7 +179,7 @@ public class EntityTrackerEntry {
 						bl5 = true;
 					}
 
-					if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying())
+					if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isGliding())
 						&& this.trackingTick > 0) {
 						Vec3d vec3d2 = this.entity.getVelocity();
 						double d = vec3d2.squaredDistanceTo(this.velocity);
@@ -296,7 +296,7 @@ public class EntityTrackerEntry {
 				sender.accept(new EntityAttributesS2CPacket(this.entity.getId(), collection));
 			}
 
-			if (((LivingEntity)this.entity).isFallFlying()) {
+			if (((LivingEntity)this.entity).isGliding()) {
 				bl = true;
 			}
 		}
@@ -305,11 +305,11 @@ public class EntityTrackerEntry {
 			sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
 		}
 
-		if (this.entity instanceof LivingEntity) {
+		if (this.entity instanceof LivingEntity livingEntity) {
 			List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
 
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
+			for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
+				ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
 				if (!itemStack.isEmpty()) {
 					list.add(Pair.of(equipmentSlot, itemStack.copy()));
 				}

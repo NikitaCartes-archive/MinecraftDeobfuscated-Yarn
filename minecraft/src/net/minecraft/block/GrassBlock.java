@@ -45,20 +45,23 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 			.getOrThrow(RegistryKeys.PLACED_FEATURE)
 			.getOptional(VegetationPlacedFeatures.GRASS_BONEMEAL);
 
-		label49:
+		label51:
 		for (int i = 0; i < 128; i++) {
 			BlockPos blockPos2 = blockPos;
 
 			for (int j = 0; j < i / 16; j++) {
 				blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
 				if (!world.getBlockState(blockPos2.down()).isOf(this) || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
-					continue label49;
+					continue label51;
 				}
 			}
 
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			if (blockState2.isOf(blockState.getBlock()) && random.nextInt(10) == 0) {
-				((Fertilizable)blockState.getBlock()).grow(world, random, blockPos2, blockState2);
+				Fertilizable fertilizable = (Fertilizable)blockState.getBlock();
+				if (fertilizable.isFertilizable(world, blockPos2, blockState2)) {
+					fertilizable.grow(world, random, blockPos2, blockState2);
+				}
 			}
 
 			if (blockState2.isAir()) {

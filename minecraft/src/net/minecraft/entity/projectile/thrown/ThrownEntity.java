@@ -42,33 +42,43 @@ public abstract class ThrownEntity extends ProjectileEntity {
 
 	@Override
 	public void tick() {
-		super.tick();
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
+		Vec3d vec3d;
 		if (hitResult.getType() != HitResult.Type.MISS) {
+			vec3d = hitResult.getPos();
+		} else {
+			vec3d = this.getPos().add(this.getVelocity());
+		}
+
+		this.setPosition(vec3d);
+		this.updateRotation();
+		this.tickBlockCollision();
+		super.tick();
+		if (hitResult.getType() != HitResult.Type.MISS && this.isAlive()) {
 			this.hitOrDeflect(hitResult);
 		}
 
+		this.applyDrag();
+		this.applyGravity();
+	}
+
+	private void applyDrag() {
 		Vec3d vec3d = this.getVelocity();
-		double d = this.getX() + vec3d.x;
-		double e = this.getY() + vec3d.y;
-		double f = this.getZ() + vec3d.z;
-		this.updateRotation();
-		float h;
+		Vec3d vec3d2 = this.getPos();
+		float g;
 		if (this.isTouchingWater()) {
 			for (int i = 0; i < 4; i++) {
-				float g = 0.25F;
-				this.getWorld().addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				float f = 0.25F;
+				this.getWorld()
+					.addParticle(ParticleTypes.BUBBLE, vec3d2.x - vec3d.x * 0.25, vec3d2.y - vec3d.y * 0.25, vec3d2.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 
-			h = 0.8F;
+			g = 0.8F;
 		} else {
-			h = 0.99F;
+			g = 0.99F;
 		}
 
-		this.setVelocity(vec3d.multiply((double)h));
-		this.applyGravity();
-		this.setPosition(d, e, f);
-		this.checkBlockCollision();
+		this.setVelocity(vec3d.multiply((double)g));
 	}
 
 	@Override

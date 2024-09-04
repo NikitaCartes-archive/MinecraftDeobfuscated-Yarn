@@ -1,11 +1,10 @@
 package net.minecraft.item;
 
-import com.google.common.collect.Interner;
-import com.google.common.collect.Interners;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -19,6 +18,7 @@ import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.component.type.EnchantableComponent;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.JukeboxPlayableComponent;
 import net.minecraft.component.type.MapIdComponent;
@@ -40,6 +40,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeyedValue;
 import net.minecraft.registry.RegistryPair;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -49,6 +50,7 @@ import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.featuretoggle.ToggleableFeature;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -105,8 +107,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	private final ComponentMap components;
 	@Nullable
 	private final Item recipeRemainder;
-	@Nullable
-	private String translationKey;
+	protected final String translationKey;
 	private final FeatureSet requiredFeatures;
 
 	/**
@@ -132,7 +133,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	public Item(Item.Settings settings) {
-		this.components = settings.getValidatedComponents();
+		this.translationKey = settings.getTranslationKey();
+		this.components = settings.getValidatedComponents(Text.translatable(this.translationKey), settings.getModelId());
 		this.recipeRemainder = settings.recipeRemainder;
 		this.requiredFeatures = settings.requiredFeatures;
 		if (SharedConstants.isDevelopment) {
@@ -251,7 +253,12 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		ConsumableComponent consumableComponent = itemStack.get(DataComponentTypes.CONSUMABLE);
-		return (ActionResult)(consumableComponent != null ? consumableComponent.consume(user, itemStack, hand) : ActionResult.PASS);
+		if (consumableComponent != null) {
+			return consumableComponent.consume(user, itemStack, hand);
+		} else {
+			EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
+			return (ActionResult)(equippableComponent != null ? equippableComponent.equip(itemStack, user) : ActionResult.PASS);
+		}
 	}
 
 	/**
@@ -413,34 +420,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return ActionResult.PASS;
 	}
 
-	public Text getName() {
-		return Text.translatable(this.getTranslationKey());
-	}
-
 	public String toString() {
 		return Registries.ITEM.getEntry(this).getIdAsString();
-	}
-
-	protected String getOrCreateTranslationKey() {
-		if (this.translationKey == null) {
-			this.translationKey = Util.createTranslationKey("item", Registries.ITEM.getId(this));
-		}
-
-		return this.translationKey;
-	}
-
-	/**
-	 * Gets the translation key of this item.
-	 */
-	public String getTranslationKey() {
-		return this.getOrCreateTranslationKey();
-	}
-
-	/**
-	 * Gets the translation key of this item using the provided item stack for context.
-	 */
-	public String getTranslationKey(ItemStack stack) {
-		return this.getTranslationKey();
 	}
 
 	/**
@@ -546,8 +527,19 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		return Optional.empty();
 	}
 
+	/**
+	 * Gets the translation key of this item.
+	 */
+	public final String getTranslationKey() {
+		return this.translationKey;
+	}
+
+	public final Text getName() {
+		return this.components.getOrDefault(DataComponentTypes.ITEM_NAME, ScreenTexts.EMPTY);
+	}
+
 	public Text getName(ItemStack stack) {
-		return Text.translatable(this.getTranslationKey(stack));
+		return stack.getComponents().getOrDefault(DataComponentTypes.ITEM_NAME, ScreenTexts.EMPTY);
 	}
 
 	/**
@@ -563,29 +555,6 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		Vec3d vec3d = player.getEyePos();
 		Vec3d vec3d2 = vec3d.add(player.getRotationVector(player.getPitch(), player.getYaw()).multiply(player.getBlockInteractionRange()));
 		return world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, fluidHandling, player));
-	}
-
-	/**
-	 * {@return whether {@code stack} can be repaired using {@code ingredient}}
-	 * 
-	 * <p>This only handles repairing using the ingredient such as diamonds, and does
-	 * not handle combining tools or armor.
-	 */
-	@Deprecated(
-		forRemoval = true
-	)
-	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return false;
-	}
-
-	/**
-	 * {@return the attribute modifiers the item provides}
-	 * 
-	 * <p>Tools and armor should override this to specify the attack damage or armor points.
-	 */
-	@Deprecated
-	public AttributeModifiersComponent getAttributeModifiers() {
-		return AttributeModifiersComponent.DEFAULT;
 	}
 
 	public boolean isUsedOnRelease(ItemStack stack) {
@@ -624,12 +593,16 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * of {@link Item} (or most of its subclasses).
 	 */
 	public static class Settings {
-		private static final Interner<ComponentMap> COMPONENT_MAP_INTERNER = Interners.newStrongInterner();
-		@Nullable
-		private ComponentMap.Builder components;
+		private static final RegistryKeyedValue<Item, String> BLOCK_PREFIXED_TRANSLATION_KEY = key -> Util.createTranslationKey("block", key.getValue());
+		private static final RegistryKeyedValue<Item, String> ITEM_PREFIXED_TRANSLATION_KEY = key -> Util.createTranslationKey("item", key.getValue());
+		private final ComponentMap.Builder components = ComponentMap.builder().addAll(DataComponentTypes.DEFAULT_ITEM_COMPONENTS);
 		@Nullable
 		Item recipeRemainder;
 		FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
+		@Nullable
+		private RegistryKey<Item> registryKey;
+		private RegistryKeyedValue<Item, String> translationKey = ITEM_PREFIXED_TRANSLATION_KEY;
+		private RegistryKeyedValue<Item, Identifier> modelId = RegistryKey::getValue;
 
 		/**
 		 * When set, any item configured with this Settings instance will be edible based on the provided {@link FoodComponent}.
@@ -736,16 +709,55 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			return this.component(DataComponentTypes.REPAIRABLE, new RepairableComponent(registryEntryLookup.getOrThrow(repairIngredientsTag)));
 		}
 
+		public Item.Settings equippable(EquipmentSlot slot, RegistryEntry<SoundEvent> equipSound, Identifier model) {
+			return this.component(DataComponentTypes.EQUIPPABLE, new EquippableComponent(slot, equipSound, Optional.of(model), Optional.empty(), true));
+		}
+
+		public Item.Settings equippable(EquipmentSlot slot) {
+			return this.component(
+				DataComponentTypes.EQUIPPABLE, new EquippableComponent(slot, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, Optional.empty(), Optional.empty(), true)
+			);
+		}
+
 		public Item.Settings requires(FeatureFlag... features) {
 			this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
 			return this;
 		}
 
-		public <T> Item.Settings component(ComponentType<T> type, T value) {
-			if (this.components == null) {
-				this.components = ComponentMap.builder().addAll(DataComponentTypes.DEFAULT_ITEM_COMPONENTS);
-			}
+		public Item.Settings registryKey(RegistryKey<Item> registryKey) {
+			this.registryKey = registryKey;
+			return this;
+		}
 
+		public Item.Settings translationKey(String translationKey) {
+			this.translationKey = RegistryKeyedValue.fixed(translationKey);
+			return this;
+		}
+
+		public Item.Settings useBlockPrefixedTranslationKey() {
+			this.translationKey = BLOCK_PREFIXED_TRANSLATION_KEY;
+			return this;
+		}
+
+		public Item.Settings useItemPrefixedTranslationKey() {
+			this.translationKey = ITEM_PREFIXED_TRANSLATION_KEY;
+			return this;
+		}
+
+		protected String getTranslationKey() {
+			return this.translationKey.get((RegistryKey<Item>)Objects.requireNonNull(this.registryKey, "Item id not set"));
+		}
+
+		public Item.Settings modelId(Identifier modelId) {
+			this.modelId = RegistryKeyedValue.fixed(modelId);
+			return this;
+		}
+
+		public Identifier getModelId() {
+			return this.modelId.get((RegistryKey<Item>)Objects.requireNonNull(this.registryKey, "Item id not set"));
+		}
+
+		public <T> Item.Settings component(ComponentType<T> type, T value) {
 			this.components.add(type, value);
 			return this;
 		}
@@ -754,17 +766,13 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			return this.component(DataComponentTypes.ATTRIBUTE_MODIFIERS, attributeModifiersComponent);
 		}
 
-		ComponentMap getValidatedComponents() {
-			ComponentMap componentMap = this.getComponents();
+		ComponentMap getValidatedComponents(Text name, Identifier modelId) {
+			ComponentMap componentMap = this.components.add(DataComponentTypes.ITEM_NAME, name).add(DataComponentTypes.ITEM_MODEL, modelId).build();
 			if (componentMap.contains(DataComponentTypes.DAMAGE) && componentMap.getOrDefault(DataComponentTypes.MAX_STACK_SIZE, 1) > 1) {
 				throw new IllegalStateException("Item cannot have both durability and be stackable");
 			} else {
 				return componentMap;
 			}
-		}
-
-		private ComponentMap getComponents() {
-			return this.components == null ? DataComponentTypes.DEFAULT_ITEM_COMPONENTS : COMPONENT_MAP_INTERNER.intern(this.components.build());
 		}
 	}
 

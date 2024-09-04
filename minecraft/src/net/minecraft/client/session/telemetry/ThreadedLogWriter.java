@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.logging.LogWriter;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
@@ -15,11 +15,11 @@ import org.slf4j.Logger;
 public class ThreadedLogWriter implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final LogWriter<SentTelemetryEvent> writer;
-	private final TaskExecutor<Runnable> executor;
+	private final SimpleConsecutiveExecutor executor;
 
 	public ThreadedLogWriter(FileChannel channel, Executor executor) {
 		this.writer = new LogWriter<>(SentTelemetryEvent.CODEC, channel);
-		this.executor = TaskExecutor.create(executor, "telemetry-event-log");
+		this.executor = new SimpleConsecutiveExecutor(executor, "telemetry-event-log");
 	}
 
 	public TelemetryLogger getLogger() {

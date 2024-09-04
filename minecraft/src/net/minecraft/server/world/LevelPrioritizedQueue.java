@@ -1,72 +1,57 @@
 package net.minecraft.server.world;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.ChunkPos;
 
-public class LevelPrioritizedQueue<T> {
+public class LevelPrioritizedQueue {
 	public static final int LEVEL_COUNT = ChunkLevels.INACCESSIBLE + 2;
-	private final List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>> levelToPosToElements = (List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>>)IntStream.range(
-			0, LEVEL_COUNT
-		)
-		.mapToObj(i -> new Long2ObjectLinkedOpenHashMap())
-		.collect(Collectors.toList());
-	private volatile int firstNonEmptyLevel = LEVEL_COUNT;
+	private final List<Long2ObjectLinkedOpenHashMap<List<Runnable>>> values = IntStream.range(0, LEVEL_COUNT)
+		.mapToObj(level -> new Long2ObjectLinkedOpenHashMap())
+		.toList();
+	private volatile int topPriority = LEVEL_COUNT;
 	private final String name;
-	private final LongSet blockingChunks = new LongOpenHashSet();
-	private final int maxBlocking;
 
-	public LevelPrioritizedQueue(String name, int maxSize) {
+	public LevelPrioritizedQueue(String name) {
 		this.name = name;
-		this.maxBlocking = maxSize;
 	}
 
 	protected void updateLevel(int fromLevel, ChunkPos pos, int toLevel) {
 		if (fromLevel < LEVEL_COUNT) {
-			Long2ObjectLinkedOpenHashMap<List<Optional<T>>> long2ObjectLinkedOpenHashMap = (Long2ObjectLinkedOpenHashMap<List<Optional<T>>>)this.levelToPosToElements
-				.get(fromLevel);
-			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.remove(pos.toLong());
-			if (fromLevel == this.firstNonEmptyLevel) {
-				while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
-					this.firstNonEmptyLevel++;
+			Long2ObjectLinkedOpenHashMap<List<Runnable>> long2ObjectLinkedOpenHashMap = (Long2ObjectLinkedOpenHashMap<List<Runnable>>)this.values.get(fromLevel);
+			List<Runnable> list = long2ObjectLinkedOpenHashMap.remove(pos.toLong());
+			if (fromLevel == this.topPriority) {
+				while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.values.get(this.topPriority)).isEmpty()) {
+					this.topPriority++;
 				}
 			}
 
 			if (list != null && !list.isEmpty()) {
-				((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(toLevel))
-					.computeIfAbsent(pos.toLong(), (Long2ObjectFunction<? extends List>)(l -> Lists.newArrayList()))
+				((Long2ObjectLinkedOpenHashMap)this.values.get(toLevel))
+					.computeIfAbsent(pos.toLong(), (Long2ObjectFunction<? extends List>)(chunkPos -> Lists.newArrayList()))
 					.addAll(list);
-				this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, toLevel);
+				this.topPriority = Math.min(this.topPriority, toLevel);
 			}
 		}
 	}
 
-	protected void add(Optional<T> element, long pos, int level) {
-		((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(level))
-			.computeIfAbsent(pos, (Long2ObjectFunction<? extends List>)(l -> Lists.newArrayList()))
-			.add(element);
-		this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, level);
+	protected void add(Runnable task, long pos, int level) {
+		((Long2ObjectLinkedOpenHashMap)this.values.get(level))
+			.computeIfAbsent(pos, (Long2ObjectFunction<? extends List>)(chunkPos -> Lists.newArrayList()))
+			.add(task);
+		this.topPriority = Math.min(this.topPriority, level);
 	}
 
 	protected void remove(long pos, boolean removeElement) {
-		for (Long2ObjectLinkedOpenHashMap<List<Optional<T>>> long2ObjectLinkedOpenHashMap : this.levelToPosToElements) {
-			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.get(pos);
+		for (Long2ObjectLinkedOpenHashMap<List<Runnable>> long2ObjectLinkedOpenHashMap : this.values) {
+			List<Runnable> list = long2ObjectLinkedOpenHashMap.get(pos);
 			if (list != null) {
 				if (removeElement) {
 					list.clear();
-				} else {
-					list.removeIf(optional -> optional.isEmpty());
 				}
 
 				if (list.isEmpty()) {
@@ -75,48 +60,37 @@ public class LevelPrioritizedQueue<T> {
 			}
 		}
 
-		while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
-			this.firstNonEmptyLevel++;
+		while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.values.get(this.topPriority)).isEmpty()) {
+			this.topPriority++;
 		}
-
-		this.blockingChunks.remove(pos);
-	}
-
-	private Runnable createBlockingAdder(long pos) {
-		return () -> this.blockingChunks.add(pos);
 	}
 
 	@Nullable
-	public Stream<Either<T, Runnable>> poll() {
-		if (this.blockingChunks.size() >= this.maxBlocking) {
-			return null;
-		} else if (!this.hasQueuedElement()) {
+	public LevelPrioritizedQueue.Entry poll() {
+		if (!this.hasQueuedElement()) {
 			return null;
 		} else {
-			int i = this.firstNonEmptyLevel;
-			Long2ObjectLinkedOpenHashMap<List<Optional<T>>> long2ObjectLinkedOpenHashMap = (Long2ObjectLinkedOpenHashMap<List<Optional<T>>>)this.levelToPosToElements
-				.get(i);
+			int i = this.topPriority;
+			Long2ObjectLinkedOpenHashMap<List<Runnable>> long2ObjectLinkedOpenHashMap = (Long2ObjectLinkedOpenHashMap<List<Runnable>>)this.values.get(i);
 			long l = long2ObjectLinkedOpenHashMap.firstLongKey();
-			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.removeFirst();
+			List<Runnable> list = long2ObjectLinkedOpenHashMap.removeFirst();
 
-			while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
-				this.firstNonEmptyLevel++;
+			while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.values.get(this.topPriority)).isEmpty()) {
+				this.topPriority++;
 			}
 
-			return list.stream().map(optional -> (Either)optional.map(Either::left).orElseGet(() -> Either.right(this.createBlockingAdder(l))));
+			return new LevelPrioritizedQueue.Entry(l, list);
 		}
 	}
 
 	public boolean hasQueuedElement() {
-		return this.firstNonEmptyLevel < LEVEL_COUNT;
+		return this.topPriority < LEVEL_COUNT;
 	}
 
 	public String toString() {
-		return this.name + " " + this.firstNonEmptyLevel + "...";
+		return this.name + " " + this.topPriority + "...";
 	}
 
-	@VisibleForTesting
-	LongSet getBlockingChunks() {
-		return new LongOpenHashSet(this.blockingChunks);
+	public static record Entry(long chunkPos, List<Runnable> tasks) {
 	}
 }

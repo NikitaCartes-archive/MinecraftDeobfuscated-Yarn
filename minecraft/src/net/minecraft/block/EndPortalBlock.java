@@ -1,22 +1,22 @@
 package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
+import java.util.Set;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
@@ -47,13 +47,13 @@ public class EndPortalBlock extends BlockWithEntity implements Portal {
 	}
 
 	@Override
+	protected VoxelShape getInsideCollisionShape(BlockState state, World world, BlockPos pos) {
+		return state.getOutlineShape(world, pos);
+	}
+
+	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity.canUsePortals(false)
-			&& VoxelShapes.matchesAnywhere(
-				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()))),
-				state.getOutlineShape(world, pos),
-				BooleanBiFunction.AND
-			)) {
+		if (entity.canUsePortals(false)) {
 			if (!world.isClient && world.getRegistryKey() == World.END && entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.seenCredits) {
 				serverPlayerEntity.detachForDimensionChange();
 				return;
@@ -73,14 +73,18 @@ public class EndPortalBlock extends BlockWithEntity implements Portal {
 			boolean bl = registryKey == World.END;
 			BlockPos blockPos = bl ? ServerWorld.END_SPAWN_POS : serverWorld.getSpawnPos();
 			Vec3d vec3d = blockPos.toBottomCenterPos();
-			float f = entity.getYaw();
+			float f;
+			Set<PositionFlag> set;
 			if (bl) {
 				EndPlatformFeature.generate(serverWorld, BlockPos.ofFloored(vec3d).down(), true);
 				f = Direction.WEST.asRotation();
+				set = PositionFlag.combine(PositionFlag.DELTA, Set.of(PositionFlag.X_ROT));
 				if (entity instanceof ServerPlayerEntity) {
 					vec3d = vec3d.subtract(0.0, 1.0, 0.0);
 				}
 			} else {
+				f = 0.0F;
+				set = PositionFlag.combine(PositionFlag.DELTA, PositionFlag.ROT);
 				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 					return serverPlayerEntity.getRespawnTarget(false, TeleportTarget.NO_OP);
 				}
@@ -89,12 +93,7 @@ public class EndPortalBlock extends BlockWithEntity implements Portal {
 			}
 
 			return new TeleportTarget(
-				serverWorld,
-				vec3d,
-				entity.getVelocity(),
-				f,
-				entity.getPitch(),
-				TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
+				serverWorld, vec3d, Vec3d.ZERO, f, 0.0F, set, TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
 			);
 		}
 	}

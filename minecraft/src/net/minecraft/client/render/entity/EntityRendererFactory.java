@@ -5,7 +5,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.MapRenderer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.render.entity.equipment.EquipmentModelLoader;
+import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -26,7 +29,9 @@ public interface EntityRendererFactory<T extends Entity> {
 		private final BlockRenderManager blockRenderManager;
 		private final ResourceManager resourceManager;
 		private final EntityModelLoader modelLoader;
+		private final EquipmentModelLoader equipmentModelLoader;
 		private final TextRenderer textRenderer;
+		private final EquipmentRenderer equipmentRenderer;
 
 		public Context(
 			EntityRenderDispatcher renderDispatcher,
@@ -35,6 +40,7 @@ public interface EntityRendererFactory<T extends Entity> {
 			BlockRenderManager blockRenderManager,
 			ResourceManager resourceManager,
 			EntityModelLoader modelLoader,
+			EquipmentModelLoader equipmentModelLoader,
 			TextRenderer textRenderer
 		) {
 			this.renderDispatcher = renderDispatcher;
@@ -43,7 +49,9 @@ public interface EntityRendererFactory<T extends Entity> {
 			this.blockRenderManager = blockRenderManager;
 			this.resourceManager = resourceManager;
 			this.modelLoader = modelLoader;
+			this.equipmentModelLoader = equipmentModelLoader;
 			this.textRenderer = textRenderer;
+			this.equipmentRenderer = new EquipmentRenderer(equipmentModelLoader, this.getModelManager().getAtlas(TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE));
 		}
 
 		public EntityRenderDispatcher getRenderDispatcher() {
@@ -68,6 +76,14 @@ public interface EntityRendererFactory<T extends Entity> {
 
 		public EntityModelLoader getModelLoader() {
 			return this.modelLoader;
+		}
+
+		public EquipmentModelLoader getEquipmentModelLoader() {
+			return this.equipmentModelLoader;
+		}
+
+		public EquipmentRenderer getEquipmentRenderer() {
+			return this.equipmentRenderer;
 		}
 
 		public BakedModelManager getModelManager() {

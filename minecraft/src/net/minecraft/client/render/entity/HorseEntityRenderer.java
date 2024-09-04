@@ -29,7 +29,7 @@ public final class HorseEntityRenderer extends AbstractHorseEntityRenderer<Horse
 	public HorseEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new HorseEntityModel(context.getPart(EntityModelLayers.HORSE)), new HorseEntityModel(context.getPart(EntityModelLayers.HORSE_BABY)), 1.1F);
 		this.addFeature(new HorseMarkingFeatureRenderer(this));
-		this.addFeature(new HorseArmorFeatureRenderer(this, context.getModelLoader()));
+		this.addFeature(new HorseArmorFeatureRenderer(this, context.getModelLoader(), context.getEquipmentRenderer()));
 	}
 
 	public Identifier getTexture(HorseEntityRenderState horseEntityRenderState) {

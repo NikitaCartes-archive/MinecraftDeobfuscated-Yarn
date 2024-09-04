@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -42,7 +43,11 @@ public record EntityEquipmentPredicate(
 			.head(
 				ItemPredicate.Builder.create()
 					.items(itemLookup, Items.WHITE_BANNER)
-					.component(ComponentPredicate.of(Raid.createOminousBanner(bannerPatternLookup).getComponents()))
+					.component(
+						ComponentPredicate.ofFiltered(
+							Raid.createOminousBanner(bannerPatternLookup).getComponents(), DataComponentTypes.BANNER_PATTERNS, DataComponentTypes.ITEM_NAME
+						)
+					)
 			)
 			.build();
 	}

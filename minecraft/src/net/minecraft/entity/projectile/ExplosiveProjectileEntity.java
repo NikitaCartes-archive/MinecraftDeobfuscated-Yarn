@@ -69,46 +69,57 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	public void tick() {
 		Entity entity = this.getOwner();
 		if (this.getWorld().isClient || (entity == null || !entity.isRemoved()) && this.getWorld().isChunkLoaded(this.getBlockPos())) {
+			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());
+			Vec3d vec3d;
+			if (hitResult.getType() != HitResult.Type.MISS) {
+				vec3d = hitResult.getPos();
+			} else {
+				vec3d = this.getPos().add(this.getVelocity());
+			}
+
+			ProjectileUtil.setRotationFromVelocity(this, 0.2F);
+			this.setPosition(vec3d);
+			this.tickBlockCollision();
 			super.tick();
 			if (this.isBurning()) {
 				this.setOnFireFor(1.0F);
 			}
 
-			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());
-			if (hitResult.getType() != HitResult.Type.MISS) {
+			if (hitResult.getType() != HitResult.Type.MISS && this.isAlive()) {
 				this.hitOrDeflect(hitResult);
 			}
 
-			if (!this.getWorld().isClient()) {
-				this.tickBlockCollision();
-			}
-
-			Vec3d vec3d = this.getVelocity();
-			double d = this.getX() + vec3d.x;
-			double e = this.getY() + vec3d.y;
-			double f = this.getZ() + vec3d.z;
-			ProjectileUtil.setRotationFromVelocity(this, 0.2F);
-			float h;
-			if (this.isTouchingWater()) {
-				for (int i = 0; i < 4; i++) {
-					float g = 0.25F;
-					this.getWorld().addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
-				}
-
-				h = this.getDragInWater();
-			} else {
-				h = this.getDrag();
-			}
-
-			this.setVelocity(vec3d.add(vec3d.normalize().multiply(this.accelerationPower)).multiply((double)h));
-			ParticleEffect particleEffect = this.getParticleType();
-			if (particleEffect != null) {
-				this.getWorld().addParticle(particleEffect, d, e + 0.5, f, 0.0, 0.0, 0.0);
-			}
-
-			this.setPosition(d, e, f);
+			this.applyDrag();
+			this.addParticles();
 		} else {
 			this.discard();
+		}
+	}
+
+	private void applyDrag() {
+		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d2 = this.getPos();
+		float g;
+		if (this.isTouchingWater()) {
+			for (int i = 0; i < 4; i++) {
+				float f = 0.25F;
+				this.getWorld()
+					.addParticle(ParticleTypes.BUBBLE, vec3d2.x - vec3d.x * 0.25, vec3d2.y - vec3d.y * 0.25, vec3d2.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+			}
+
+			g = this.getDragInWater();
+		} else {
+			g = this.getDrag();
+		}
+
+		this.setVelocity(vec3d.add(vec3d.normalize().multiply(this.accelerationPower)).multiply((double)g));
+	}
+
+	private void addParticles() {
+		ParticleEffect particleEffect = this.getParticleType();
+		Vec3d vec3d = this.getPos();
+		if (particleEffect != null) {
+			this.getWorld().addParticle(particleEffect, vec3d.x, vec3d.y + 0.5, vec3d.z, 0.0, 0.0, 0.0);
 		}
 	}
 

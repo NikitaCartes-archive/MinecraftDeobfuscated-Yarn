@@ -24,6 +24,8 @@ import net.minecraft.util.shape.VoxelShape;
  * Represents a scoped, read-only view of block states, fluid states and block entities.
  */
 public interface BlockView extends HeightLimitView {
+	int field_54147 = 16;
+
 	/**
 	 * {@return the block entity at {@code pos}, or {@code null} if there is none}
 	 */
@@ -186,9 +188,8 @@ public interface BlockView extends HeightLimitView {
 	}
 
 	static Iterable<BlockPos> collectCollisionsBetween(Vec3d oldPos, Vec3d newPos, Box boundingBox) {
-		Box box = boundingBox.expand(1.0E-5F);
 		Vec3d vec3d = newPos.subtract(oldPos);
-		Iterable<BlockPos> iterable = BlockPos.iterate(box);
+		Iterable<BlockPos> iterable = BlockPos.iterate(boundingBox);
 		if (vec3d.lengthSquared() < (double)MathHelper.square(0.99999F)) {
 			return iterable;
 		} else {
@@ -201,7 +202,7 @@ public interface BlockView extends HeightLimitView {
 			Vec3d vec3d2 = vec3d.normalize().multiply(1.0E-7);
 			Vec3d vec3d3 = boundingBox.getMinPos().add(vec3d2);
 			Vec3d vec3d4 = boundingBox.getMinPos().subtract(vec3d).subtract(vec3d2);
-			collectCollisionsBetween(set, vec3d4, vec3d3, box);
+			collectCollisionsBetween(set, vec3d4, vec3d3, boundingBox);
 			return set;
 		}
 	}
@@ -220,6 +221,7 @@ public interface BlockView extends HeightLimitView {
 		double g = d * (l > 0 ? 1.0 - MathHelper.fractionalPart(oldPos.x) : MathHelper.fractionalPart(oldPos.x));
 		double h = e * (m > 0 ? 1.0 - MathHelper.fractionalPart(oldPos.y) : MathHelper.fractionalPart(oldPos.y));
 		double o = f * (n > 0 ? 1.0 - MathHelper.fractionalPart(oldPos.z) : MathHelper.fractionalPart(oldPos.z));
+		int p = 0;
 
 		while (g <= 1.0 || h <= 1.0 || o <= 1.0) {
 			if (g < h) {
@@ -238,20 +240,24 @@ public interface BlockView extends HeightLimitView {
 				o += f;
 			}
 
+			if (p++ > 16) {
+				break;
+			}
+
 			Optional<Vec3d> optional = Box.raycast((double)i, (double)j, (double)k, (double)(i + 1), (double)(j + 1), (double)(k + 1), oldPos, newPos);
 			if (!optional.isEmpty()) {
 				Vec3d vec3d2 = (Vec3d)optional.get();
-				double p = MathHelper.clamp(vec3d2.x, (double)i + 1.0E-5F, (double)i + 1.0 - 1.0E-5F);
-				double q = MathHelper.clamp(vec3d2.y, (double)j + 1.0E-5F, (double)j + 1.0 - 1.0E-5F);
-				double r = MathHelper.clamp(vec3d2.z, (double)k + 1.0E-5F, (double)k + 1.0 - 1.0E-5F);
-				int s = MathHelper.floor(p + boundingBox.getLengthX());
-				int t = MathHelper.floor(q + boundingBox.getLengthY());
-				int u = MathHelper.floor(r + boundingBox.getLengthZ());
+				double q = MathHelper.clamp(vec3d2.x, (double)i + 1.0E-5F, (double)i + 1.0 - 1.0E-5F);
+				double r = MathHelper.clamp(vec3d2.y, (double)j + 1.0E-5F, (double)j + 1.0 - 1.0E-5F);
+				double s = MathHelper.clamp(vec3d2.z, (double)k + 1.0E-5F, (double)k + 1.0 - 1.0E-5F);
+				int t = MathHelper.floor(q + boundingBox.getLengthX());
+				int u = MathHelper.floor(r + boundingBox.getLengthY());
+				int v = MathHelper.floor(s + boundingBox.getLengthZ());
 
-				for (int v = i; v <= s; v++) {
-					for (int w = j; w <= t; w++) {
-						for (int x = k; x <= u; x++) {
-							result.add(new BlockPos(v, w, x));
+				for (int w = i; w <= t; w++) {
+					for (int x = j; x <= u; x++) {
+						for (int y = k; y <= v; y++) {
+							result.add(new BlockPos(w, x, y));
 						}
 					}
 				}

@@ -1,7 +1,5 @@
 package net.minecraft.registry;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
@@ -30,7 +28,6 @@ import org.slf4j.Logger;
 
 public class ReloadableRegistries {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Gson GSON = new GsonBuilder().create();
 	private static final RegistryEntryInfo DEFAULT_REGISTRY_ENTRY_INFO = new RegistryEntryInfo(Optional.empty(), Lifecycle.experimental());
 
 	public static CompletableFuture<ReloadableRegistries.ReloadResult> reload(
@@ -52,21 +49,15 @@ public class ReloadableRegistries {
 	private static <T> CompletableFuture<MutableRegistry<?>> prepare(
 		LootDataType<T> type, RegistryOps<JsonElement> ops, ResourceManager resourceManager, Executor prepareExecutor
 	) {
-		return CompletableFuture.supplyAsync(
-			() -> {
-				MutableRegistry<T> mutableRegistry = new SimpleRegistry<>(type.registryKey(), Lifecycle.experimental());
-				Map<Identifier, JsonElement> map = new HashMap();
-				String string = RegistryKeys.getPath(type.registryKey());
-				JsonDataLoader.load(resourceManager, string, GSON, map);
-				map.forEach(
-					(id, json) -> type.parse(id, ops, json)
-							.ifPresent(value -> mutableRegistry.add(RegistryKey.of(type.registryKey(), id), (T)value, DEFAULT_REGISTRY_ENTRY_INFO))
-				);
-				TagGroupLoader.loadInitial(resourceManager, mutableRegistry);
-				return mutableRegistry;
-			},
-			prepareExecutor
-		);
+		return CompletableFuture.supplyAsync(() -> {
+			MutableRegistry<T> mutableRegistry = new SimpleRegistry<>(type.registryKey(), Lifecycle.experimental());
+			Map<Identifier, T> map = new HashMap();
+			String string = RegistryKeys.getPath(type.registryKey());
+			JsonDataLoader.load(resourceManager, string, ops, type.codec(), map);
+			map.forEach((id, value) -> mutableRegistry.add(RegistryKey.of(type.registryKey(), id), (T)value, DEFAULT_REGISTRY_ENTRY_INFO));
+			TagGroupLoader.loadInitial(resourceManager, mutableRegistry);
+			return mutableRegistry;
+		}, prepareExecutor);
 	}
 
 	private static ReloadableRegistries.ReloadResult toResult(

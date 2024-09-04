@@ -281,11 +281,11 @@ public class EntityModelLayers {
 	}
 
 	public static EntityModelLayer createBoat(BoatEntity.Type type) {
-		return create("boat/" + type.getName(), "main");
+		return create("boat/" + type.getId(), "main");
 	}
 
 	public static EntityModelLayer createChestBoat(BoatEntity.Type type) {
-		return create("chest_boat/" + type.getName(), "main");
+		return create("chest_boat/" + type.getId(), "main");
 	}
 
 	public static EntityModelLayer createStandingSign(WoodType type) {

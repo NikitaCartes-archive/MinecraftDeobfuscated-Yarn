@@ -14,6 +14,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -185,7 +186,13 @@ public class DefaultMinecartController extends MinecartController {
 		vec3d2 = new Vec3d(l * h / j, vec3d2.y, l * i / j);
 		this.setVelocity(vec3d2);
 		Entity entity = this.minecart.getFirstPassenger();
-		Vec3d vec3d3 = this.minecart.getMovementVelocity();
+		Vec3d vec3d3;
+		if (this.minecart.getFirstPassenger() instanceof ServerPlayerEntity serverPlayerEntity) {
+			vec3d3 = serverPlayerEntity.getInputVelocityForMinecart();
+		} else {
+			vec3d3 = Vec3d.ZERO;
+		}
+
 		if (entity instanceof PlayerEntity && vec3d3.lengthSquared() > 0.0) {
 			Vec3d vec3d4 = vec3d3.normalize();
 			double m = this.getVelocity().horizontalLengthSquared();
@@ -193,8 +200,6 @@ public class DefaultMinecartController extends MinecartController {
 				this.setVelocity(this.getVelocity().add(vec3d3.x * 0.001, 0.0, vec3d3.z * 0.001));
 				bl2 = false;
 			}
-		} else {
-			this.minecart.setMovementVelocity(Vec3d.ZERO);
 		}
 
 		if (bl2) {

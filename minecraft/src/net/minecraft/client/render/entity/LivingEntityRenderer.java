@@ -295,8 +295,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, S extends Liv
 		livingEntityRenderState.usingRiptide = livingEntity.isUsingRiptide();
 		livingEntityRenderState.hurt = livingEntity.hurtTime > 0 || livingEntity.deathTime > 0;
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
-		livingEntityRenderState.headEquippedStack = itemStack.copy();
-		livingEntityRenderState.headEquippedItemModel = this.itemRenderer.getModel(itemStack, livingEntity, ModelTransformationMode.HEAD);
+		livingEntityRenderState.equippedHeadStack = itemStack.copy();
+		livingEntityRenderState.equippedHeadItemModel = this.itemRenderer.getModel(itemStack, livingEntity, ModelTransformationMode.HEAD);
 		livingEntityRenderState.mainArm = livingEntity.getMainArm();
 		ItemStack itemStack2 = livingEntity.getStackInArm(Arm.RIGHT);
 		ItemStack itemStack3 = livingEntity.getStackInArm(Arm.LEFT);

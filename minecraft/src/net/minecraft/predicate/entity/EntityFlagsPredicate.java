@@ -45,7 +45,7 @@ public record EntityFlagsPredicate(
 				boolean var10000;
 				label53: {
 					if (entity instanceof LivingEntity livingEntity
-						&& (livingEntity.isFallFlying() || livingEntity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().flying)) {
+						&& (livingEntity.isGliding() || livingEntity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().flying)) {
 						var10000 = true;
 						break label53;
 					}

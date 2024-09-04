@@ -7,13 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BundleItem;
-import net.minecraft.item.Items;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ReferencedModelsCollector {
 	static final Logger LOGGER = LogUtils.getLogger();
+	public static final String ITEM_DIRECTORY = "item/";
 	private final Map<Identifier, UnbakedModel> inputs;
 	final UnbakedModel missingModel;
 	private final Map<ModelIdentifier, UnbakedModel> topLevelModels = new HashMap();
@@ -33,17 +36,22 @@ public class ReferencedModelsCollector {
 		this.resolvedModels.put(MissingModel.ID, missingModel);
 	}
 
-	private void addInventoryItem(Identifier id) {
-		ModelIdentifier modelIdentifier = ModelIdentifier.ofInventoryVariant(id);
-		Identifier identifier = id.withPrefixedPath("item/");
-		UnbakedModel unbakedModel = this.computeResolvedModel(identifier);
-		this.addTopLevelModel(modelIdentifier, unbakedModel);
-	}
+	private static Set<ModelIdentifier> getRequiredModels() {
+		Set<ModelIdentifier> set = new HashSet();
+		Registries.ITEM.streamEntries().forEach(entry -> {
+			Identifier identifier = ((Item)entry.value()).getComponents().get(DataComponentTypes.ITEM_MODEL);
+			if (identifier != null) {
+				set.add(ModelIdentifier.ofInventoryVariant(identifier));
+			}
 
-	private void addItem(ModelIdentifier id) {
-		Identifier identifier = id.id().withPrefixedPath("item/");
-		UnbakedModel unbakedModel = this.computeResolvedModel(identifier);
-		this.addTopLevelModel(id, unbakedModel);
+			if (entry.value() instanceof BundleItem bundleItem) {
+				set.add(ModelIdentifier.ofInventoryVariant(bundleItem.getOpenFrontTexture()));
+				set.add(ModelIdentifier.ofInventoryVariant(bundleItem.getOpenBackTexture()));
+			}
+		});
+		set.add(ItemRenderer.TRIDENT);
+		set.add(ItemRenderer.SPYGLASS);
+		return set;
 	}
 
 	private void addTopLevelModel(ModelIdentifier modelId, UnbakedModel model) {
@@ -53,20 +61,25 @@ public class ReferencedModelsCollector {
 	public void addBlockStates(BlockStatesLoader.BlockStateDefinition definition) {
 		this.resolvedModels.put(Models.GENERATED, Models.GENERATION_MARKER);
 		this.resolvedModels.put(Models.ENTITY, Models.BLOCK_ENTITY_MARKER);
-		definition.models().forEach((modelId, model) -> this.addTopLevelModel(modelId, model.model()));
-
-		for (Identifier identifier : Registries.ITEM.getIds()) {
-			this.addInventoryItem(identifier);
+		Set<ModelIdentifier> set = getRequiredModels();
+		definition.models().forEach((id, model) -> {
+			this.addTopLevelModel(id, model.model());
+			set.remove(id);
+		});
+		this.inputs.keySet().forEach(id -> {
+			if (id.getPath().startsWith("item/")) {
+				ModelIdentifier modelIdentifier = ModelIdentifier.ofInventoryVariant(id.withPath((UnaryOperator<String>)(path -> path.substring("item/".length()))));
+				this.addTopLevelModel(modelIdentifier, new ItemModel(id));
+				set.remove(modelIdentifier);
+			}
+		});
+		if (!set.isEmpty()) {
+			LOGGER.warn("Missing mandatory models: {}", set.stream().map(id -> "\n\t" + id).collect(Collectors.joining()));
 		}
-
-		this.addItem(ItemRenderer.TRIDENT_IN_HAND);
-		this.addItem(ItemRenderer.SPYGLASS_IN_HAND);
-		this.addItem(ItemRenderer.getBundleOpenFrontModelId((BundleItem)Items.BUNDLE));
-		this.addItem(ItemRenderer.getBundleOpenBackModelId((BundleItem)Items.BUNDLE));
 	}
 
 	public void resolveAll() {
-		this.topLevelModels.values().forEach(model -> model.resolve(new ReferencedModelsCollector.ResolverImpl(), UnbakedModel.ModelType.TOP));
+		this.topLevelModels.values().forEach(model -> model.resolve(new ReferencedModelsCollector.ResolverImpl()));
 	}
 
 	public Map<ModelIdentifier, UnbakedModel> getTopLevelModels() {
@@ -95,47 +108,17 @@ public class ReferencedModelsCollector {
 	class ResolverImpl implements UnbakedModel.Resolver {
 		private final List<Identifier> stack = new ArrayList();
 		private final Set<Identifier> visited = new HashSet();
-		private UnbakedModel.ModelType currentlyResolvingType = UnbakedModel.ModelType.TOP;
 
 		@Override
 		public UnbakedModel resolve(Identifier id) {
-			return this.resolve(id, false);
-		}
-
-		@Override
-		public UnbakedModel resolveOverride(Identifier id) {
-			if (this.currentlyResolvingType == UnbakedModel.ModelType.OVERRIDE) {
-				ReferencedModelsCollector.LOGGER.warn("Re-entrant override in {}->{}", this.getPath(), id);
-			}
-
-			this.currentlyResolvingType = UnbakedModel.ModelType.OVERRIDE;
-			UnbakedModel unbakedModel = this.resolve(id, true);
-			this.currentlyResolvingType = UnbakedModel.ModelType.TOP;
-			return unbakedModel;
-		}
-
-		private boolean isRecursive(Identifier id, boolean override) {
-			if (this.stack.isEmpty()) {
-				return false;
-			} else if (!this.stack.contains(id)) {
-				return false;
-			} else if (override) {
-				Identifier identifier = (Identifier)this.stack.getLast();
-				return !identifier.equals(id);
-			} else {
-				return true;
-			}
-		}
-
-		private UnbakedModel resolve(Identifier id, boolean override) {
-			if (this.isRecursive(id, override)) {
+			if (this.stack.contains(id)) {
 				ReferencedModelsCollector.LOGGER.warn("Detected model loading loop: {}->{}", this.getPath(), id);
 				return ReferencedModelsCollector.this.missingModel;
 			} else {
 				UnbakedModel unbakedModel = ReferencedModelsCollector.this.computeResolvedModel(id);
 				if (this.visited.add(id)) {
 					this.stack.add(id);
-					unbakedModel.resolve(this, this.currentlyResolvingType);
+					unbakedModel.resolve(this);
 					this.stack.remove(id);
 				}
 

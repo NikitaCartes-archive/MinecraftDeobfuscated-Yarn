@@ -93,7 +93,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private static final Identifier ENTITY_OUTLINE = Identifier.ofVanilla("entity_outline");
 	public static final int field_32759 = 16;
 	public static final int field_34812 = 8;
-	private static final int field_32766 = 15;
+	public static final int field_54162 = 32;
+	private static final int field_54163 = 15;
 	private final MinecraftClient client;
 	private final EntityRenderDispatcher entityRenderDispatcher;
 	private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
@@ -106,6 +107,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private ClientWorld world;
 	private final ChunkRenderingDataPreparer chunkRenderingDataPreparer = new ChunkRenderingDataPreparer();
 	private final ObjectArrayList<ChunkBuilder.BuiltChunk> builtChunks = new ObjectArrayList<>(10000);
+	private final ObjectArrayList<ChunkBuilder.BuiltChunk> field_54164 = new ObjectArrayList<>(50);
 	private final Set<BlockEntity> noCullingBlockEntities = Sets.<BlockEntity>newHashSet();
 	@Nullable
 	private BuiltChunkStorage chunks;
@@ -133,7 +135,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	@Nullable
 	private Frustum capturedFrustum;
 	@Nullable
-	private Vec3d lastCameraPos;
+	private BlockPos field_54160;
+	private int field_54161;
 
 	public WorldRenderer(
 		MinecraftClient client,
@@ -226,8 +229,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.chunkBuilder = null;
 			this.noCullingBlockEntities.clear();
 			this.chunkRenderingDataPreparer.setStorage(null);
-			this.builtChunks.clear();
+			this.method_64059();
 		}
+	}
+
+	private void method_64059() {
+		this.builtChunks.clear();
+		this.field_54164.clear();
 	}
 
 	public void reload() {
@@ -255,7 +263,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 			this.chunks = new BuiltChunkStorage(this.chunkBuilder, this.world, this.client.options.getClampedViewDistance(), this);
 			this.chunkRenderingDataPreparer.setStorage(this.chunks);
-			this.builtChunks.clear();
+			this.method_64059();
 			Entity entity = this.client.getCameraEntity();
 			if (entity != null) {
 				this.chunks.updateCameraPosition(ChunkSectionPos.from(entity));
@@ -350,7 +358,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			profiler.push("section_occlusion_graph");
-			this.chunkRenderingDataPreparer.method_52834(bl, camera, frustum, this.builtChunks, this.world.getChunkManager().method_62890());
+			this.chunkRenderingDataPreparer.method_52834(bl, camera, frustum, this.builtChunks, this.world.getChunkManager().getActiveSections());
 			profiler.pop();
 			double g = Math.floor((double)(camera.getPitch() / 2.0F));
 			double h = Math.floor((double)(camera.getYaw() / 2.0F));
@@ -373,8 +381,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			throw new IllegalStateException("applyFrustum called from wrong thread: " + Thread.currentThread().getName());
 		} else {
 			this.client.getProfiler().push("apply_frustum");
-			this.builtChunks.clear();
-			this.chunkRenderingDataPreparer.method_52828(frustum, this.builtChunks);
+			this.method_64059();
+			this.chunkRenderingDataPreparer.method_52828(frustum, this.builtChunks, this.field_54164);
 			this.client.getProfiler().pop();
 		}
 	}
@@ -906,26 +914,36 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			.render(entity, d - cameraX, e - cameraY, f - cameraZ, tickDelta, matrices, vertexConsumers, this.entityRenderDispatcher.getLight(entity, tickDelta));
 	}
 
-	private void translucentSort(Vec3d cameraPos, RenderLayer renderLayer) {
-		if (this.lastCameraPos == null || !(cameraPos.squaredDistanceTo(this.lastCameraPos) <= 1.0)) {
+	private void translucentSort(Vec3d vec3d) {
+		if (!this.builtChunks.isEmpty()) {
+			BlockPos blockPos = BlockPos.ofFloored(vec3d);
+			boolean bl = !blockPos.equals(this.field_54160);
 			this.client.getProfiler().push("translucent_sort");
-			int i = ChunkSectionPos.getSectionCoord(cameraPos.x);
-			int j = ChunkSectionPos.getSectionCoord(cameraPos.y);
-			int k = ChunkSectionPos.getSectionCoord(cameraPos.z);
-			boolean bl = this.lastCameraPos == null
-				|| i != ChunkSectionPos.getSectionCoord(this.lastCameraPos.x)
-				|| k != ChunkSectionPos.getSectionCoord(this.lastCameraPos.y)
-				|| j != ChunkSectionPos.getSectionCoord(this.lastCameraPos.z);
-			this.lastCameraPos = cameraPos;
-			int l = 0;
+			ChunkBuilder.class_10196 lv = new ChunkBuilder.class_10196();
 
-			for (ChunkBuilder.BuiltChunk builtChunk : this.builtChunks) {
-				if (l < 15 && (bl || builtChunk.isAtPos(i, j, k)) && builtChunk.scheduleSort(renderLayer, this.chunkBuilder)) {
-					l++;
-				}
+			for (ChunkBuilder.BuiltChunk builtChunk : this.field_54164) {
+				this.method_64060(builtChunk, lv, vec3d, bl, true);
 			}
 
+			this.field_54161 = this.field_54161 % this.builtChunks.size();
+			int i = Math.max(this.builtChunks.size() / 8, 15);
+
+			while (i-- > 0) {
+				int j = this.field_54161++ % this.builtChunks.size();
+				this.method_64060(this.builtChunks.get(j), lv, vec3d, bl, false);
+			}
+
+			this.field_54160 = blockPos;
 			this.client.getProfiler().pop();
+		}
+	}
+
+	private void method_64060(ChunkBuilder.BuiltChunk builtChunk, ChunkBuilder.class_10196 arg, Vec3d vec3d, boolean bl, boolean bl2) {
+		arg.method_64070(vec3d, builtChunk.getSectionPos());
+		boolean bl3 = !arg.equals(builtChunk.field_54168.get());
+		boolean bl4 = bl && (arg.method_64067() || bl2);
+		if ((bl4 || bl3) && !builtChunk.method_64066() && builtChunk.method_64065()) {
+			builtChunk.scheduleSort(this.chunkBuilder);
 		}
 	}
 
@@ -1032,8 +1050,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						float o = ColorHelper.floatFromChannel(ColorHelper.getGreen(m));
 						float p = ColorHelper.floatFromChannel(ColorHelper.getBlue(m));
 						this.skyRendering.renderSky(n, o, p);
-						if (dimensionEffects.isSunHigh(h)) {
-							this.skyRendering.method_62306(matrixStack, tessellator, g, k);
+						if (dimensionEffects.isSunRisingOrSetting(h)) {
+							this.skyRendering.renderGlowingSky(matrixStack, tessellator, g, k);
 						}
 
 						this.skyRendering.renderCelestialBodies(matrixStack, tessellator, h, l, i, j, fog);
@@ -1065,7 +1083,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		for (ChunkBuilder.BuiltChunk builtChunk : this.builtChunks) {
 			long l = builtChunk.getSectionPos();
-			if (builtChunk.needsRebuild() && builtChunk.shouldBuild() && method_62910(lightingProvider, l)) {
+			if (builtChunk.needsRebuild() && builtChunk.shouldBuild() && isLightingEnabledAround(lightingProvider, l)) {
 				boolean bl = false;
 				if (this.client.options.getChunkBuilderMode().getValue() == ChunkBuilderMode.NEARBY) {
 					BlockPos blockPos2 = builtChunk.getOrigin().add(8, 8, 8);
@@ -1095,16 +1113,16 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		this.client.getProfiler().pop();
-		this.translucentSort(camera.getPos(), RenderLayer.getTranslucent());
+		this.translucentSort(camera.getPos());
 	}
 
-	private static boolean method_62910(LightingProvider lightingProvider, long l) {
-		int i = ChunkSectionPos.unpackZ(l);
-		int j = ChunkSectionPos.unpackX(l);
+	private static boolean isLightingEnabledAround(LightingProvider lightingProvider, long sectionPos) {
+		int i = ChunkSectionPos.unpackZ(sectionPos);
+		int j = ChunkSectionPos.unpackX(sectionPos);
 
 		for (int k = i - 1; k <= i + 1; k++) {
-			for (int m = j - 1; m <= j + 1; m++) {
-				if (!lightingProvider.isLightingEnabled(ChunkSectionPos.withZeroY(m, k))) {
+			for (int l = j - 1; l <= j + 1; l++) {
+				if (!lightingProvider.isLightingEnabled(ChunkSectionPos.withZeroY(l, k))) {
 					return false;
 				}
 			}
@@ -1164,10 +1182,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.scheduleChunkRenders(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
 	}
 
-	public void scheduleChunkRenders(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
-		for (int i = zMin; i <= zMax; i++) {
-			for (int j = xMin; j <= xMax; j++) {
-				for (int k = yMin; k <= yMax; k++) {
+	public void scheduleChunkRenders(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		for (int i = minZ; i <= maxZ; i++) {
+			for (int j = minX; j <= maxX; j++) {
+				for (int k = minY; k <= maxY; k++) {
 					this.scheduleChunkRender(j, k, i);
 				}
 			}

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -151,7 +152,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public void tick() {
-		super.tick();
 		boolean bl = this.isNoClip();
 		Vec3d vec3d = this.getVelocity();
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
@@ -197,89 +197,86 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		} else {
 			this.inGroundTime = 0;
 			Vec3d vec3d3 = this.getPos();
-			Vec3d vec3d2 = vec3d3.add(vec3d);
-			HitResult hitResult = this.getWorld()
-				.getWorldBorderCollisions(new RaycastContext(vec3d3, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
-			if (hitResult.getType() != HitResult.Type.MISS) {
-				vec3d2 = hitResult.getPos();
-			}
-
-			while (!this.isRemoved()) {
-				EntityHitResult entityHitResult = this.getEntityCollision(vec3d3, vec3d2);
-				if (entityHitResult != null) {
-					hitResult = entityHitResult;
-				}
-
-				if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
-					Entity entity = ((EntityHitResult)hitResult).getEntity();
-					Entity entity2 = this.getOwner();
-					if (entity instanceof PlayerEntity && entity2 instanceof PlayerEntity && !((PlayerEntity)entity2).shouldDamagePlayer((PlayerEntity)entity)) {
-						hitResult = null;
-						entityHitResult = null;
-					}
-				}
-
-				if (hitResult != null && !bl) {
-					ProjectileDeflection projectileDeflection = this.hitOrDeflect(hitResult);
-					this.velocityDirty = true;
-					if (projectileDeflection != ProjectileDeflection.NONE) {
-						break;
-					}
-				}
-
-				if (entityHitResult == null || this.getPierceLevel() <= 0) {
-					break;
-				}
-
-				hitResult = null;
-			}
-
-			vec3d = this.getVelocity();
-			double e = vec3d.x;
-			double f = vec3d.y;
-			double g = vec3d.z;
 			if (this.isCritical()) {
 				for (int i = 0; i < 4; i++) {
 					this.getWorld()
 						.addParticle(
-							ParticleTypes.CRIT, this.getX() + e * (double)i / 4.0, this.getY() + f * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -e, -f + 0.2, -g
+							ParticleTypes.CRIT,
+							vec3d3.x + vec3d.x * (double)i / 4.0,
+							vec3d3.y + vec3d.y * (double)i / 4.0,
+							vec3d3.z + vec3d.z * (double)i / 4.0,
+							-vec3d.x,
+							-vec3d.y + 0.2,
+							-vec3d.z
 						);
 				}
 			}
 
-			double h = this.getX() + e;
-			double j = this.getY() + f;
-			double k = this.getZ() + g;
-			double l = vec3d.horizontalLength();
+			float f;
 			if (bl) {
-				this.setYaw((float)(MathHelper.atan2(-e, -g) * 180.0F / (float)Math.PI));
+				f = (float)(MathHelper.atan2(-vec3d.x, -vec3d.z) * 180.0F / (float)Math.PI);
 			} else {
-				this.setYaw((float)(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI));
+				f = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
 			}
 
-			this.setPitch((float)(MathHelper.atan2(f, l) * 180.0F / (float)Math.PI));
-			this.setPitch(updateRotation(this.prevPitch, this.getPitch()));
-			this.setYaw(updateRotation(this.prevYaw, this.getYaw()));
-			float m = 0.99F;
-			if (this.isTouchingWater()) {
-				for (int n = 0; n < 4; n++) {
-					float o = 0.25F;
-					this.getWorld().addParticle(ParticleTypes.BUBBLE, h - e * 0.25, j - f * 0.25, k - g * 0.25, e, f, g);
-				}
-
-				m = this.getDragInWater();
-			}
-
-			this.setVelocity(vec3d.multiply((double)m));
+			float g = (float)(MathHelper.atan2(vec3d.y, vec3d.horizontalLength()) * 180.0F / (float)Math.PI);
+			this.setPitch(updateRotation(this.getPitch(), g));
+			this.setYaw(updateRotation(this.getYaw(), f));
+			BlockHitResult blockHitResult = this.getWorld()
+				.getCollisionsIncludingWorldBorder(
+					new RaycastContext(vec3d3, vec3d3.add(vec3d), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)
+				);
+			this.applyCollision(blockHitResult);
+			super.tick();
+			this.applyDrag();
 			if (!bl) {
 				this.applyGravity();
 			}
+		}
+	}
 
-			this.setPosition(h, j, k);
-			if (!this.getWorld().isClient()) {
-				this.tickBlockCollision();
+	private void applyCollision(BlockHitResult blockHitResult) {
+		while (this.isAlive()) {
+			EntityHitResult entityHitResult = this.getEntityCollision(this.getPos(), blockHitResult.getPos());
+			Vec3d vec3d = ((HitResult)Objects.requireNonNullElse(entityHitResult, blockHitResult)).getPos();
+			this.updatePrevPosition();
+			this.setPosition(vec3d);
+			this.tickBlockCollision();
+			if (this.portalManager != null && this.portalManager.isInPortal()) {
+				this.tickPortalTeleportation();
+			}
+
+			if (entityHitResult == null) {
+				if (this.isAlive() && blockHitResult.getType() != HitResult.Type.MISS) {
+					this.hitOrDeflect(blockHitResult);
+				}
+				break;
+			} else if (this.isAlive() && !this.noClip) {
+				ProjectileDeflection projectileDeflection = this.hitOrDeflect(entityHitResult);
+				this.velocityDirty = true;
+				if (projectileDeflection == ProjectileDeflection.NONE) {
+					continue;
+				}
+				break;
 			}
 		}
+	}
+
+	private void applyDrag() {
+		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d2 = this.getPos();
+		float f = 0.99F;
+		if (this.isTouchingWater()) {
+			for (int i = 0; i < 4; i++) {
+				float g = 0.25F;
+				this.getWorld()
+					.addParticle(ParticleTypes.BUBBLE, vec3d2.x - vec3d.x * 0.25, vec3d2.y - vec3d.y * 0.25, vec3d2.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+			}
+
+			f = this.getDragInWater();
+		}
+
+		this.setVelocity(vec3d.multiply((double)f));
 	}
 
 	@Override
@@ -445,15 +442,15 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		this.inBlockState = this.getWorld().getBlockState(blockHitResult.getBlockPos());
 		super.onBlockHit(blockHitResult);
-		Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
-		this.setVelocity(vec3d);
 		ItemStack itemStack = this.getWeaponStack();
 		if (this.getWorld() instanceof ServerWorld serverWorld && itemStack != null) {
 			this.onBlockHitEnchantmentEffects(serverWorld, blockHitResult, itemStack);
 		}
 
-		Vec3d vec3d2 = vec3d.normalize().multiply(0.05F);
-		this.setPos(this.getX() - vec3d2.x, this.getY() - vec3d2.y, this.getZ() - vec3d2.z);
+		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d2 = new Vec3d(Math.signum(vec3d.x), Math.signum(vec3d.y), Math.signum(vec3d.z));
+		Vec3d vec3d3 = vec3d2.multiply(0.05F);
+		this.setPosition(this.getPos().subtract(vec3d3));
 		this.playSound(this.getSound(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
 		this.inGround = true;
 		this.shake = 7;
@@ -502,7 +499,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	protected boolean canHit(Entity entity) {
-		return super.canHit(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getId()));
+		return entity instanceof PlayerEntity && this.getOwner() instanceof PlayerEntity playerEntity && !playerEntity.shouldDamagePlayer((PlayerEntity)entity)
+			? false
+			: super.canHit(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getId()));
 	}
 
 	@Override

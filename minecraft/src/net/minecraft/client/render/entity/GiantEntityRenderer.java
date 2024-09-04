@@ -23,7 +23,7 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, ZombieEn
 				this,
 				new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_INNER_ARMOR)),
 				new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_OUTER_ARMOR)),
-				ctx.getModelManager()
+				ctx.getEquipmentRenderer()
 			)
 		);
 	}

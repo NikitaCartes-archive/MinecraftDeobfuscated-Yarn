@@ -146,7 +146,7 @@ public class GoatBrain {
 						3.0F,
 						goat -> goat.isBaby() ? 1.0 : 2.5,
 						goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT,
-						goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_HORN_BREAK : SoundEvents.ENTITY_GOAT_HORN_BREAK
+						goat -> SoundEvents.ENTITY_GOAT_HORN_BREAK
 					)
 				),
 				Pair.of(

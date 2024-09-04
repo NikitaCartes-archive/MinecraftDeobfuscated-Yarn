@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.logging.LogWriter;
 import net.minecraft.util.path.CacheFiles;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import org.slf4j.Logger;
 
 public class Downloader implements AutoCloseable {
@@ -31,7 +31,7 @@ public class Downloader implements AutoCloseable {
 	private static final int MAX_RETAINED_CACHE_FILES = 20;
 	private final Path directory;
 	private final LogWriter<Downloader.LogEntry> logWriter;
-	private final TaskExecutor<Runnable> executor = TaskExecutor.create(Util.getDownloadWorkerExecutor(), "download-queue");
+	private final SimpleConsecutiveExecutor executor = new SimpleConsecutiveExecutor(Util.getDownloadWorkerExecutor(), "download-queue");
 
 	public Downloader(Path directory) throws IOException {
 		this.directory = directory;

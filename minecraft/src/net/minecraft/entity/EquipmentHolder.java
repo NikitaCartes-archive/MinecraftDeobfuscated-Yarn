@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.item.Equipment;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
@@ -52,9 +53,9 @@ public interface EquipmentHolder {
 		if (stack.isEmpty()) {
 			return null;
 		} else {
-			Equipment equipment = Equipment.fromStack(stack);
-			if (equipment != null) {
-				EquipmentSlot equipmentSlot = equipment.getSlotType();
+			EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
+			if (equippableComponent != null) {
+				EquipmentSlot equipmentSlot = equippableComponent.slot();
 				if (!slotBlacklist.contains(equipmentSlot)) {
 					return equipmentSlot;
 				}

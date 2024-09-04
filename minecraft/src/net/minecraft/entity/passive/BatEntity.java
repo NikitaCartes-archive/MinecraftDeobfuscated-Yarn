@@ -18,6 +18,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -238,7 +239,11 @@ public class BatEntity extends AmbientEntity {
 				return false;
 			}
 
-			return i > random.nextInt(j) ? false : canMobSpawn(type, world, spawnReason, pos, random);
+			if (i > random.nextInt(j)) {
+				return false;
+			} else {
+				return !world.getBlockState(pos.down()).isIn(BlockTags.BATS_SPAWNABLE_ON) ? false : canMobSpawn(type, world, spawnReason, pos, random);
+			}
 		}
 	}
 

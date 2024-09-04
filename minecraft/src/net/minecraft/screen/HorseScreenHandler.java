@@ -37,7 +37,7 @@ public class HorseScreenHandler extends ScreenHandler {
 		this.addSlot(new ArmorSlot(this.horseArmorInventory, entity, EquipmentSlot.BODY, 0, 8, 36, null) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return entity.isHorseArmor(stack);
+				return entity.canEquip(stack, EquipmentSlot.BODY);
 			}
 
 			@Override

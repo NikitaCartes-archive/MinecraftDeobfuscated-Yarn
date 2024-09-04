@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
@@ -15,13 +14,11 @@ import net.minecraft.util.math.random.Random;
 @Environment(EnvType.CLIENT)
 public class BuiltinBakedModel implements BakedModel {
 	private final ModelTransformation transformation;
-	private final ModelOverrideList itemPropertyOverrides;
 	private final Sprite sprite;
 	private final boolean sideLit;
 
-	public BuiltinBakedModel(ModelTransformation transformation, ModelOverrideList itemPropertyOverrides, Sprite sprite, boolean sideLit) {
+	public BuiltinBakedModel(ModelTransformation transformation, Sprite sprite, boolean sideLit) {
 		this.transformation = transformation;
-		this.itemPropertyOverrides = itemPropertyOverrides;
 		this.sprite = sprite;
 		this.sideLit = sideLit;
 	}
@@ -59,10 +56,5 @@ public class BuiltinBakedModel implements BakedModel {
 	@Override
 	public ModelTransformation getTransformation() {
 		return this.transformation;
-	}
-
-	@Override
-	public ModelOverrideList getOverrides() {
-		return this.itemPropertyOverrides;
 	}
 }

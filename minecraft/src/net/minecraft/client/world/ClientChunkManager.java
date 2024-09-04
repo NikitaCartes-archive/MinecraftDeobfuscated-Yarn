@@ -171,7 +171,7 @@ public class ClientChunkManager extends ChunkManager {
 		MinecraftClient.getInstance().worldRenderer.scheduleChunkRender(pos.getSectionX(), pos.getSectionY(), pos.getSectionZ());
 	}
 
-	public LongOpenHashSet method_62890() {
+	public LongOpenHashSet getActiveSections() {
 		return this.chunks.activeSections;
 	}
 

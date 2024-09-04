@@ -2,16 +2,18 @@ package net.minecraft.block;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.dispenser.DispenserBehavior;
+import net.minecraft.block.dispenser.EquippableDispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.DropperBlockEntity;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -28,7 +30,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
@@ -48,7 +49,7 @@ public class DispenserBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	private static final ItemDispenserBehavior DEFAULT_BEHAVIOR = new ItemDispenserBehavior();
-	public static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(new Object2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(DEFAULT_BEHAVIOR));
+	public static final Map<Item, DispenserBehavior> BEHAVIORS = new IdentityHashMap();
 	private static final int SCHEDULED_TICK_DELAY = 4;
 
 	@Override
@@ -100,7 +101,16 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	protected DispenserBehavior getBehaviorForItem(World world, ItemStack stack) {
-		return (DispenserBehavior)(!stack.isItemEnabled(world.getEnabledFeatures()) ? DEFAULT_BEHAVIOR : (DispenserBehavior)BEHAVIORS.get(stack.getItem()));
+		if (!stack.isItemEnabled(world.getEnabledFeatures())) {
+			return DEFAULT_BEHAVIOR;
+		} else {
+			DispenserBehavior dispenserBehavior = (DispenserBehavior)BEHAVIORS.get(stack.getItem());
+			return dispenserBehavior != null ? dispenserBehavior : getBehaviorForItem(stack);
+		}
+	}
+
+	private static DispenserBehavior getBehaviorForItem(ItemStack stack) {
+		return (DispenserBehavior)(stack.contains(DataComponentTypes.EQUIPPABLE) ? EquippableDispenserBehavior.INSTANCE : DEFAULT_BEHAVIOR);
 	}
 
 	@Override

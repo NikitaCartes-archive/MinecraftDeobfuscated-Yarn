@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +11,6 @@ import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.Baker;
-import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -30,10 +28,10 @@ public class ModelOverrideList {
 		this.conditionTypes = new Identifier[0];
 	}
 
-	public ModelOverrideList(Baker baker, JsonUnbakedModel parent, List<ModelOverride> overrides) {
+	public ModelOverrideList(Baker baker, List<ModelOverride> overrides) {
 		this.conditionTypes = (Identifier[])overrides.stream()
-			.flatMap(ModelOverride::streamConditions)
-			.map(ModelOverride.Condition::getType)
+			.flatMap(modelOverridex -> modelOverridex.conditions().stream())
+			.map(ModelOverride.Condition::type)
 			.distinct()
 			.toArray(Identifier[]::new);
 		Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap<>();
@@ -46,10 +44,10 @@ public class ModelOverrideList {
 
 		for (int j = overrides.size() - 1; j >= 0; j--) {
 			ModelOverride modelOverride = (ModelOverride)overrides.get(j);
-			BakedModel bakedModel = this.bakeOverridingModel(baker, parent, modelOverride);
-			ModelOverrideList.InlinedCondition[] inlinedConditions = (ModelOverrideList.InlinedCondition[])modelOverride.streamConditions().map(condition -> {
-				int i = object2IntMap.getInt(condition.getType());
-				return new ModelOverrideList.InlinedCondition(i, condition.getThreshold());
+			BakedModel bakedModel = baker.bake(modelOverride.modelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
+			ModelOverrideList.InlinedCondition[] inlinedConditions = (ModelOverrideList.InlinedCondition[])modelOverride.conditions().stream().map(condition -> {
+				int i = object2IntMap.getInt(condition.type());
+				return new ModelOverrideList.InlinedCondition(i, condition.threshold());
 			}).toArray(ModelOverrideList.InlinedCondition[]::new);
 			list.add(new ModelOverrideList.BakedOverride(inlinedConditions, bakedModel));
 		}
@@ -58,15 +56,9 @@ public class ModelOverrideList {
 	}
 
 	@Nullable
-	private BakedModel bakeOverridingModel(Baker baker, JsonUnbakedModel parent, ModelOverride override) {
-		UnbakedModel unbakedModel = baker.getModel(override.getModelId());
-		return Objects.equals(unbakedModel, parent) ? null : baker.bake(override.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
-	}
-
-	@Nullable
-	public BakedModel apply(BakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
-		if (this.overrides.length != 0) {
-			int i = this.conditionTypes.length;
+	public BakedModel getModel(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int seed) {
+		int i = this.conditionTypes.length;
+		if (i != 0) {
 			float[] fs = new float[i];
 
 			for (int j = 0; j < i; j++) {
@@ -81,29 +73,16 @@ public class ModelOverrideList {
 
 			for (ModelOverrideList.BakedOverride bakedOverride : this.overrides) {
 				if (bakedOverride.test(fs)) {
-					BakedModel bakedModel = bakedOverride.model;
-					if (bakedModel == null) {
-						return model;
-					}
-
-					return bakedModel;
+					return bakedOverride.model;
 				}
 			}
 		}
 
-		return model;
+		return null;
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class BakedOverride {
-		private final ModelOverrideList.InlinedCondition[] conditions;
-		@Nullable
-		final BakedModel model;
-
-		BakedOverride(ModelOverrideList.InlinedCondition[] conditions, @Nullable BakedModel model) {
-			this.conditions = conditions;
-			this.model = model;
-		}
+	static record BakedOverride(ModelOverrideList.InlinedCondition[] conditions, @Nullable BakedModel model) {
 
 		boolean test(float[] values) {
 			for (ModelOverrideList.InlinedCondition inlinedCondition : this.conditions) {
@@ -118,13 +97,6 @@ public class ModelOverrideList {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class InlinedCondition {
-		public final int index;
-		public final float threshold;
-
-		InlinedCondition(int index, float threshold) {
-			this.index = index;
-			this.threshold = threshold;
-		}
+	static record InlinedCondition(int index, float threshold) {
 	}
 }

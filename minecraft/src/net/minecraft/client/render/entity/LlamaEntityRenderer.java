@@ -18,7 +18,7 @@ public class LlamaEntityRenderer extends AgeableMobEntityRenderer<LlamaEntity, L
 
 	public LlamaEntityRenderer(EntityRendererFactory.Context context, EntityModelLayer layer, EntityModelLayer babyLayer) {
 		super(context, new LlamaEntityModel(context.getPart(layer)), new LlamaEntityModel(context.getPart(babyLayer)), 0.7F);
-		this.addFeature(new LlamaDecorFeatureRenderer(this, context.getModelLoader()));
+		this.addFeature(new LlamaDecorFeatureRenderer(this, context.getModelLoader(), context.getEquipmentRenderer()));
 	}
 
 	public Identifier getTexture(LlamaEntityRenderState llamaEntityRenderState) {
@@ -38,7 +38,7 @@ public class LlamaEntityRenderer extends AgeableMobEntityRenderer<LlamaEntity, L
 		super.updateRenderState(llamaEntity, llamaEntityRenderState, f);
 		llamaEntityRenderState.variant = llamaEntity.getVariant();
 		llamaEntityRenderState.hasChest = !llamaEntity.isBaby() && llamaEntity.hasChest();
-		llamaEntityRenderState.carpetColor = llamaEntity.getCarpetColor();
+		llamaEntityRenderState.bodyArmor = llamaEntity.getBodyArmor();
 		llamaEntityRenderState.trader = llamaEntity.isTrader();
 	}
 }

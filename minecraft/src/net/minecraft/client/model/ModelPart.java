@@ -125,10 +125,10 @@ public final class ModelPart {
 		}
 	}
 
-	public void method_62132(Quaternionf quaternionf) {
-		Quaternionf quaternionf2 = new Quaternionf().rotationZYX(this.roll, this.yaw, this.pitch);
-		Quaternionf quaternionf3 = quaternionf2.mul(quaternionf);
-		Vector3f vector3f = quaternionf3.getEulerAnglesXYZ(new Vector3f());
+	public void rotate(Quaternionf quaternion) {
+		Quaternionf quaternionf = new Quaternionf().rotationZYX(this.roll, this.yaw, this.pitch);
+		Quaternionf quaternionf2 = quaternionf.mul(quaternion);
+		Vector3f vector3f = quaternionf2.getEulerAnglesXYZ(new Vector3f());
 		this.setAngles(vector3f.x, vector3f.y, vector3f.z);
 	}
 
@@ -201,7 +201,7 @@ public final class ModelPart {
 
 	@Environment(EnvType.CLIENT)
 	public static class Cuboid {
-		private final ModelPart.Quad[] sides;
+		public final ModelPart.Quad[] sides;
 		public final float minX;
 		public final float minY;
 		public final float minZ;
@@ -341,12 +341,10 @@ public final class ModelPart {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class Quad {
-		public final ModelPart.Vertex[] vertices;
-		public final Vector3f direction;
+	public static record Quad(ModelPart.Vertex[] vertices, Vector3f direction) {
 
 		public Quad(ModelPart.Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean flip, Direction direction) {
-			this.vertices = vertices;
+			this(vertices, direction.getUnitVector());
 			float f = 0.0F / squishU;
 			float g = 0.0F / squishV;
 			vertices[0] = vertices[0].remap(u2 / squishU - f, v1 / squishV + g);
@@ -363,7 +361,6 @@ public final class ModelPart {
 				}
 			}
 
-			this.direction = direction.getUnitVector();
 			if (flip) {
 				this.direction.mul(-1.0F, 1.0F, 1.0F);
 			}
@@ -371,10 +368,7 @@ public final class ModelPart {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class Vertex {
-		public final Vector3f pos;
-		public final float u;
-		public final float v;
+	public static record Vertex(Vector3f pos, float u, float v) {
 
 		public Vertex(float x, float y, float z, float u, float v) {
 			this(new Vector3f(x, y, z), u, v);
@@ -382,12 +376,6 @@ public final class ModelPart {
 
 		public ModelPart.Vertex remap(float u, float v) {
 			return new ModelPart.Vertex(this.pos, u, v);
-		}
-
-		public Vertex(Vector3f pos, float u, float v) {
-			this.pos = pos;
-			this.u = u;
-			this.v = v;
 		}
 	}
 }

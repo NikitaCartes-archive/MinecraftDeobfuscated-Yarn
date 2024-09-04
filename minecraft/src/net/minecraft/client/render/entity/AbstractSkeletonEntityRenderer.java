@@ -23,7 +23,7 @@ public abstract class AbstractSkeletonEntityRenderer<T extends AbstractSkeletonE
 		super(context, model, 0.5F);
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
-				this, new SkeletonEntityModel(context.getPart(armorInnerLayer)), new SkeletonEntityModel(context.getPart(armorOuterLayer)), context.getModelManager()
+				this, new SkeletonEntityModel(context.getPart(armorInnerLayer)), new SkeletonEntityModel(context.getPart(armorOuterLayer)), context.getEquipmentRenderer()
 			)
 		);
 	}

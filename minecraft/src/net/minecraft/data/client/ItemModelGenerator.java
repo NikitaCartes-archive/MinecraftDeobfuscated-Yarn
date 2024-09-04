@@ -3,31 +3,33 @@ package net.minecraft.data.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ArmorMaterials;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.item.equipment.EquipmentModel;
+import net.minecraft.item.equipment.EquipmentModels;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class ItemModelGenerator {
 	public static final Identifier TRIM_TYPE = Identifier.ofVanilla("trim_type");
 	private static final List<ItemModelGenerator.TrimMaterial> TRIM_MATERIALS = List.of(
 		new ItemModelGenerator.TrimMaterial("quartz", 0.1F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("iron", 0.2F, Map.of(ArmorMaterials.IRON, "iron_darker")),
-		new ItemModelGenerator.TrimMaterial("netherite", 0.3F, Map.of(ArmorMaterials.NETHERITE, "netherite_darker")),
+		new ItemModelGenerator.TrimMaterial("iron", 0.2F, Map.of(EquipmentModels.IRON, "iron_darker")),
+		new ItemModelGenerator.TrimMaterial("netherite", 0.3F, Map.of(EquipmentModels.NETHERITE, "netherite_darker")),
 		new ItemModelGenerator.TrimMaterial("redstone", 0.4F, Map.of()),
 		new ItemModelGenerator.TrimMaterial("copper", 0.5F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("gold", 0.6F, Map.of(ArmorMaterials.GOLD, "gold_darker")),
+		new ItemModelGenerator.TrimMaterial("gold", 0.6F, Map.of(EquipmentModels.GOLD, "gold_darker")),
 		new ItemModelGenerator.TrimMaterial("emerald", 0.7F, Map.of()),
-		new ItemModelGenerator.TrimMaterial("diamond", 0.8F, Map.of(ArmorMaterials.DIAMOND, "diamond_darker")),
+		new ItemModelGenerator.TrimMaterial("diamond", 0.8F, Map.of(EquipmentModels.DIAMOND, "diamond_darker")),
 		new ItemModelGenerator.TrimMaterial("lapis", 0.9F, Map.of()),
 		new ItemModelGenerator.TrimMaterial("amethyst", 1.0F, Map.of())
 	);
@@ -79,7 +81,7 @@ public class ItemModelGenerator {
 		return id.withSuffixedPath("_" + trimMaterialName + "_trim");
 	}
 
-	private JsonObject createArmorJson(Identifier id, Map<TextureKey, Identifier> textures, RegistryEntry<ArmorMaterial> armorMaterial) {
+	private JsonObject createArmorJson(Identifier id, Map<TextureKey, Identifier> textures, Identifier modelId) {
 		JsonObject jsonObject = Models.GENERATED_TWO_LAYERS.createJson(id, textures);
 		JsonArray jsonArray = new JsonArray();
 
@@ -88,7 +90,7 @@ public class ItemModelGenerator {
 			JsonObject jsonObject3 = new JsonObject();
 			jsonObject3.addProperty(TRIM_TYPE.getPath(), trimMaterial.itemModelIndex());
 			jsonObject2.add("predicate", jsonObject3);
-			jsonObject2.addProperty("model", this.suffixTrim(id, trimMaterial.getAppliedName(armorMaterial)).toString());
+			jsonObject2.addProperty("model", this.suffixTrim(id, trimMaterial.getAppliedName(modelId)).toString());
 			jsonArray.add(jsonObject2);
 		}
 
@@ -96,24 +98,33 @@ public class ItemModelGenerator {
 		return jsonObject;
 	}
 
-	private void registerArmor(ArmorItem armor) {
-		if (armor.getType().isTrimmable()) {
-			Identifier identifier = ModelIds.getItemModelId(armor);
-			Identifier identifier2 = TextureMap.getId(armor);
-			Identifier identifier3 = TextureMap.getSubId(armor, "_overlay");
-			if (armor.getMaterial().matches(ArmorMaterials.LEATHER)) {
+	private void registerArmor(Item item, Identifier modelId, EquipmentModel model, EquipmentSlot slot) {
+		List<EquipmentModel.Layer> list = model.getLayers(EquipmentModel.LayerType.HUMANOID);
+		if (!list.isEmpty()) {
+			boolean bl = list.size() == 2 && ((EquipmentModel.Layer)list.getFirst()).dyeable().isPresent();
+			Identifier identifier = ModelIds.getItemModelId(item);
+			Identifier identifier2 = TextureMap.getId(item);
+			Identifier identifier3 = TextureMap.getSubId(item, "_overlay");
+			if (bl) {
 				Models.GENERATED_TWO_LAYERS
-					.upload(identifier, TextureMap.layered(identifier2, identifier3), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
+					.upload(identifier, TextureMap.layered(identifier2, identifier3), this.writer, (id, textures) -> this.createArmorJson(id, textures, modelId));
 			} else {
-				Models.GENERATED.upload(identifier, TextureMap.layer0(identifier2), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
+				Models.GENERATED.upload(identifier, TextureMap.layer0(identifier2), this.writer, (id, textures) -> this.createArmorJson(id, textures, modelId));
 			}
+			String string = switch (slot) {
+				case HEAD -> "helmet";
+				case CHEST -> "chestplate";
+				case LEGS -> "leggings";
+				case FEET -> "boots";
+				default -> throw new UnsupportedOperationException();
+			};
 
 			for (ItemModelGenerator.TrimMaterial trimMaterial : TRIM_MATERIALS) {
-				String string = trimMaterial.getAppliedName(armor.getMaterial());
-				Identifier identifier4 = this.suffixTrim(identifier, string);
-				String string2 = armor.getType().getName() + "_trim_" + string;
-				Identifier identifier5 = Identifier.ofVanilla(string2).withPrefixedPath("trims/items/");
-				if (armor.getMaterial().matches(ArmorMaterials.LEATHER)) {
+				String string2 = trimMaterial.getAppliedName(modelId);
+				Identifier identifier4 = this.suffixTrim(identifier, string2);
+				String string3 = string + "_trim_" + string2;
+				Identifier identifier5 = Identifier.ofVanilla(string3).withPrefixedPath("trims/items/");
+				if (bl) {
 					this.uploadArmor(identifier4, identifier2, identifier3, identifier5);
 				} else {
 					this.uploadArmor(identifier4, identifier2, identifier5);
@@ -386,10 +397,19 @@ public class ItemModelGenerator {
 		this.register(Items.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Models.GENERATED);
 		this.register(Items.DEBUG_STICK, Items.STICK, Models.HANDHELD);
 		this.register(Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_APPLE, Models.GENERATED);
+		Map<Identifier, EquipmentModel> map = new HashMap();
+		EquipmentModels.accept(map::put);
 
 		for (Item item : Registries.ITEM) {
-			if (item instanceof ArmorItem armorItem) {
-				this.registerArmor(armorItem);
+			EquippableComponent equippableComponent = item.getComponents().get(DataComponentTypes.EQUIPPABLE);
+			if (equippableComponent != null && equippableComponent.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR && equippableComponent.model().isPresent()) {
+				Identifier identifier = (Identifier)equippableComponent.model().get();
+				EquipmentModel equipmentModel = (EquipmentModel)map.get(identifier);
+				if (equipmentModel == null) {
+					throw new IllegalStateException("Referenced equipment model does not exist: " + identifier);
+				}
+
+				this.registerArmor(item, identifier, equipmentModel, equippableComponent.slot());
 			}
 		}
 
@@ -422,9 +442,9 @@ public class ItemModelGenerator {
 		this.register(Items.BUNDLE, Models.GENERATED);
 	}
 
-	static record TrimMaterial(String name, float itemModelIndex, Map<RegistryEntry<ArmorMaterial>, String> overrideArmorMaterials) {
-		public String getAppliedName(RegistryEntry<ArmorMaterial> armorMaterial) {
-			return (String)this.overrideArmorMaterials.getOrDefault(armorMaterial, this.name);
+	static record TrimMaterial(String name, float itemModelIndex, Map<Identifier, String> overrideArmorMaterials) {
+		public String getAppliedName(Identifier modelId) {
+			return (String)this.overrideArmorMaterials.getOrDefault(modelId, this.name);
 		}
 	}
 }

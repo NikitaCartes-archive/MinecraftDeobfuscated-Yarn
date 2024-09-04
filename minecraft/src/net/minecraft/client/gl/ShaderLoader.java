@@ -329,8 +329,18 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 			return this.cache.getOrLoadProgram(key);
 		} catch (ShaderLoader.LoadException var3) {
 			LOGGER.error("Failed to load shader program: {}", key, var3);
+			this.cache.shaderPrograms.put(key, Optional.empty());
 			this.onError.accept(var3);
 			return null;
+		}
+	}
+
+	public ShaderProgram getProgramToLoad(ShaderProgramKey key) throws ShaderLoader.LoadException {
+		ShaderProgram shaderProgram = this.cache.getOrLoadProgram(key);
+		if (shaderProgram == null) {
+			throw new ShaderLoader.LoadException("Shader '" + key + "' could not be found");
+		} else {
+			return shaderProgram;
 		}
 	}
 
@@ -346,6 +356,7 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 			return this.cache.getOrLoadProcessor(id, availableExternalTargets);
 		} catch (ShaderLoader.LoadException var4) {
 			LOGGER.error("Failed to load post chain: {}", id, var4);
+			this.cache.postEffectProcessors.put(id, Optional.empty());
 			this.onError.accept(var4);
 			return null;
 		}
@@ -360,7 +371,7 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 		private final ShaderLoader.Definitions definitions;
 		final Map<ShaderProgramKey, Optional<ShaderProgram>> shaderPrograms = new HashMap();
 		final Map<ShaderLoader.ShaderKey, CompiledShader> compiledShaders = new HashMap();
-		private final Map<Identifier, Optional<PostEffectProcessor>> postEffectProcessors = new HashMap();
+		final Map<Identifier, Optional<PostEffectProcessor>> postEffectProcessors = new HashMap();
 
 		Cache(final ShaderLoader.Definitions definitions) {
 			this.definitions = definitions;
@@ -372,14 +383,9 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 			if (optional != null) {
 				return (ShaderProgram)optional.orElse(null);
 			} else {
-				try {
-					ShaderProgram shaderProgram = this.loadProgram(key);
-					this.shaderPrograms.put(key, Optional.of(shaderProgram));
-					return shaderProgram;
-				} catch (ShaderLoader.LoadException var4) {
-					this.shaderPrograms.put(key, Optional.empty());
-					throw var4;
-				}
+				ShaderProgram shaderProgram = this.loadProgram(key);
+				this.shaderPrograms.put(key, Optional.of(shaderProgram));
+				return shaderProgram;
 			}
 		}
 
@@ -422,14 +428,9 @@ public class ShaderLoader extends SinglePreparationResourceReloader<ShaderLoader
 			if (optional != null) {
 				return (PostEffectProcessor)optional.orElse(null);
 			} else {
-				try {
-					PostEffectProcessor postEffectProcessor = this.loadProcessor(id, availableExternalTargets);
-					this.postEffectProcessors.put(id, Optional.of(postEffectProcessor));
-					return postEffectProcessor;
-				} catch (ShaderLoader.LoadException var5) {
-					this.postEffectProcessors.put(id, Optional.empty());
-					throw var5;
-				}
+				PostEffectProcessor postEffectProcessor = this.loadProcessor(id, availableExternalTargets);
+				this.postEffectProcessors.put(id, Optional.of(postEffectProcessor));
+				return postEffectProcessor;
 			}
 		}
 

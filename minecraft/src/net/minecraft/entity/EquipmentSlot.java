@@ -1,7 +1,13 @@
 package net.minecraft.entity;
 
+import io.netty.buffer.ByteBuf;
+import java.util.List;
+import java.util.function.IntFunction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 
 /**
  * Provides enum types for several key slots found within an entity {@link net.minecraft.inventory.Inventory}.
@@ -28,23 +34,28 @@ public enum EquipmentSlot implements StringIdentifiable {
 	BODY(EquipmentSlot.Type.ANIMAL_ARMOR, 0, 1, 6, "body");
 
 	public static final int NO_MAX_COUNT = 0;
+	public static final List<EquipmentSlot> VALUES = List.of(values());
+	public static final IntFunction<EquipmentSlot> FROM_INDEX = ValueLists.createIdToValueFunction(
+		slot -> slot.index, values(), ValueLists.OutOfBoundsHandling.ZERO
+	);
 	public static final StringIdentifiable.EnumCodec<EquipmentSlot> CODEC = StringIdentifiable.createCodec(EquipmentSlot::values);
+	public static final PacketCodec<ByteBuf, EquipmentSlot> PACKET_CODEC = PacketCodecs.indexed(FROM_INDEX, slot -> slot.index);
 	private final EquipmentSlot.Type type;
 	private final int entityId;
 	private final int maxCount;
-	private final int armorStandId;
+	private final int index;
 	private final String name;
 
-	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int maxCount, final int armorStandId, final String name) {
+	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int maxCount, final int index, final String name) {
 		this.type = type;
 		this.entityId = entityId;
 		this.maxCount = maxCount;
-		this.armorStandId = armorStandId;
+		this.index = index;
 		this.name = name;
 	}
 
-	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int armorStandId, final String name) {
-		this(type, entityId, 0, armorStandId, name);
+	private EquipmentSlot(final EquipmentSlot.Type type, final int entityId, final int index, final String name) {
+		this(type, entityId, 0, index, name);
 	}
 
 	/**
@@ -84,11 +95,12 @@ public enum EquipmentSlot implements StringIdentifiable {
 		return this.maxCount > 0 ? stack.split(this.maxCount) : stack;
 	}
 
-	/**
-	 * {@return the index of the inventory slot this slot occupies in an {@link net.minecraft.entity.decoration.ArmorStandEntity}}
-	 */
-	public int getArmorStandSlotId() {
-		return this.armorStandId;
+	public int getIndex() {
+		return this.index;
+	}
+
+	public int getOffsetIndex(int offset) {
+		return this.index + offset;
 	}
 
 	/**

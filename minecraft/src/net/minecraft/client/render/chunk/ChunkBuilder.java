@@ -3,7 +3,6 @@ package net.minecraft.client.render.chunk;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
-import com.google.common.primitives.Doubles;
 import com.mojang.blaze3d.systems.VertexSorter;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import java.util.ArrayList;
@@ -41,8 +40,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
 
 @Environment(EnvType.CLIENT)
@@ -53,7 +53,7 @@ public class ChunkBuilder {
 	private final BlockBufferBuilderPool buffersPool;
 	private volatile int queuedTaskCount;
 	private volatile boolean stopped;
-	private final TaskExecutor<Runnable> mailbox;
+	private final SimpleConsecutiveExecutor field_54167;
 	private final Executor executor;
 	ClientWorld world;
 	final WorldRenderer worldRenderer;
@@ -73,8 +73,8 @@ public class ChunkBuilder {
 		this.buffers = bufferBuilderStorage.getBlockBufferBuilders();
 		this.buffersPool = bufferBuilderStorage.getBlockBufferBuildersPool();
 		this.executor = executor;
-		this.mailbox = TaskExecutor.create(executor, "Section Renderer");
-		this.mailbox.send(this::scheduleRunTasks);
+		this.field_54167 = new SimpleConsecutiveExecutor(executor, "Section Renderer");
+		this.field_54167.send(this::scheduleRunTasks);
 		this.sectionBuilder = new SectionBuilder(blockRenderManager, blockEntityRenderDispatcher);
 	}
 
@@ -94,7 +94,8 @@ public class ChunkBuilder {
 						if (throwable != null) {
 							MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Batching sections"));
 						} else {
-							this.mailbox.send(() -> {
+							task.field_54169.set(true);
+							this.field_54167.send(() -> {
 								if (result == ChunkBuilder.Result.SUCCESSFUL) {
 									blockBufferAllocatorStorage.clear();
 								} else {
@@ -151,7 +152,7 @@ public class ChunkBuilder {
 
 	public void send(ChunkBuilder.BuiltChunk.Task task) {
 		if (!this.stopped) {
-			this.mailbox.send(() -> {
+			this.field_54167.send(() -> {
 				if (!this.stopped) {
 					this.scheduler.enqueue(task);
 					this.queuedTaskCount = this.scheduler.size();
@@ -205,6 +206,7 @@ public class ChunkBuilder {
 		public static final int field_32832 = 16;
 		public final int index;
 		public final AtomicReference<ChunkBuilder.ChunkData> data = new AtomicReference(ChunkBuilder.ChunkData.EMPTY);
+		public final AtomicReference<ChunkBuilder.class_10196> field_54168 = new AtomicReference(null);
 		@Nullable
 		private ChunkBuilder.BuiltChunk.RebuildTask rebuildTask;
 		@Nullable
@@ -215,7 +217,7 @@ public class ChunkBuilder {
 			.collect(Collectors.toMap(layer -> layer, layer -> new VertexBuffer(VertexBuffer.Usage.STATIC)));
 		private Box boundingBox;
 		private boolean needsRebuild = true;
-		private long sectionPos = ChunkSectionPos.asLong(-1, -1, -1);
+		long sectionPos = ChunkSectionPos.asLong(-1, -1, -1);
 		final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
 		private boolean needsImportantRebuild;
 
@@ -271,6 +273,7 @@ public class ChunkBuilder {
 		private void clear() {
 			this.cancel();
 			this.data.set(ChunkBuilder.ChunkData.EMPTY);
+			this.field_54168.set(null);
 			this.needsRebuild = true;
 		}
 
@@ -310,19 +313,17 @@ public class ChunkBuilder {
 			return ChunkSectionPos.offset(this.sectionPos, direction);
 		}
 
-		public boolean scheduleSort(RenderLayer layer, ChunkBuilder chunkRenderer) {
-			ChunkBuilder.ChunkData chunkData = this.getData();
-			if (this.sortTask != null) {
-				this.sortTask.cancel();
-			}
+		public void scheduleSort(ChunkBuilder chunkBuilder) {
+			this.sortTask = new ChunkBuilder.BuiltChunk.SortTask(this.getData());
+			chunkBuilder.send(this.sortTask);
+		}
 
-			if (!chunkData.nonEmptyLayers.contains(layer)) {
-				return false;
-			} else {
-				this.sortTask = new ChunkBuilder.BuiltChunk.SortTask(this.getSquaredCameraDistance(), chunkData);
-				chunkRenderer.send(this.sortTask);
-				return true;
-			}
+		public boolean method_64065() {
+			return this.getData().nonEmptyLayers.contains(RenderLayer.getTranslucent());
+		}
+
+		public boolean method_64066() {
+			return this.sortTask != null && !this.sortTask.field_54169.get();
 		}
 
 		protected void cancel() {
@@ -341,7 +342,7 @@ public class ChunkBuilder {
 			this.cancel();
 			ChunkRendererRegion chunkRendererRegion = builder.build(ChunkBuilder.this.world, ChunkSectionPos.from(this.sectionPos));
 			boolean bl = this.data.get() != ChunkBuilder.ChunkData.EMPTY;
-			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(this.getSquaredCameraDistance(), chunkRendererRegion, bl);
+			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(chunkRendererRegion, bl);
 			return this.rebuildTask;
 		}
 
@@ -369,12 +370,6 @@ public class ChunkBuilder {
 			task.run(ChunkBuilder.this.buffers);
 		}
 
-		public boolean isAtPos(int sectionX, int sectionY, int sectionZ) {
-			return sectionX == ChunkSectionPos.unpackX(this.sectionPos)
-				|| sectionZ == ChunkSectionPos.unpackZ(this.sectionPos)
-				|| sectionY == ChunkSectionPos.unpackY(this.sectionPos);
-		}
-
 		void setData(ChunkBuilder.ChunkData chunkData) {
 			this.data.set(chunkData);
 			ChunkBuilder.this.worldRenderer.addBuiltChunk(this);
@@ -392,9 +387,9 @@ public class ChunkBuilder {
 			@Nullable
 			protected ChunkRendererRegion region;
 
-			public RebuildTask(final double distance, @Nullable final ChunkRendererRegion region, final boolean prioritized) {
-				super(distance, prioritized);
-				this.region = region;
+			public RebuildTask(@Nullable final ChunkRendererRegion chunkRendererRegion, final boolean bl) {
+				super(bl);
+				this.region = chunkRendererRegion;
 			}
 
 			@Override
@@ -421,6 +416,7 @@ public class ChunkBuilder {
 						ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(BuiltChunk.this.origin);
 						SectionBuilder.RenderData renderData = ChunkBuilder.this.sectionBuilder
 							.build(chunkSectionPos, chunkRendererRegion, BuiltChunk.this.getVertexSorter(), buffers);
+						ChunkBuilder.class_10196 lv = ChunkBuilder.class_10196.method_64069(ChunkBuilder.this.getCameraPosition(), BuiltChunk.this.sectionPos);
 						BuiltChunk.this.setNoCullingBlockEntities(renderData.noCullingBlockEntities);
 						if (this.cancelled.get()) {
 							renderData.close();
@@ -435,7 +431,7 @@ public class ChunkBuilder {
 								list.add(ChunkBuilder.this.scheduleUpload(buffer, BuiltChunk.this.getBuffer(renderLayer)));
 								chunkData.nonEmptyLayers.add(renderLayer);
 							});
-							return Util.combine(list).handle((results, throwable) -> {
+							return Util.combine(list).handle((listx, throwable) -> {
 								if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
 									MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering section"));
 								}
@@ -444,6 +440,7 @@ public class ChunkBuilder {
 									return ChunkBuilder.Result.CANCELLED;
 								} else {
 									BuiltChunk.this.setData(chunkData);
+									BuiltChunk.this.field_54168.set(lv);
 									return ChunkBuilder.Result.SUCCESSFUL;
 								}
 							});
@@ -465,9 +462,9 @@ public class ChunkBuilder {
 		class SortTask extends ChunkBuilder.BuiltChunk.Task {
 			private final ChunkBuilder.ChunkData data;
 
-			public SortTask(final double distance, final ChunkBuilder.ChunkData data) {
-				super(distance, true);
-				this.data = data;
+			public SortTask(final ChunkBuilder.ChunkData chunkData) {
+				super(true);
+				this.data = chunkData;
 			}
 
 			@Override
@@ -488,24 +485,34 @@ public class ChunkBuilder {
 					BuiltBuffer.SortState sortState = this.data.transparentSortingData;
 					if (sortState != null && !this.data.isEmpty(RenderLayer.getTranslucent())) {
 						VertexSorter vertexSorter = BuiltChunk.this.getVertexSorter();
-						BufferAllocator.CloseableBuffer closeableBuffer = sortState.sortAndStore(buffers.get(RenderLayer.getTranslucent()), vertexSorter);
-						if (closeableBuffer == null) {
-							return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
-						} else if (this.cancelled.get()) {
-							closeableBuffer.close();
+						ChunkBuilder.class_10196 lv = ChunkBuilder.class_10196.method_64069(ChunkBuilder.this.getCameraPosition(), BuiltChunk.this.sectionPos);
+						if (lv.equals(BuiltChunk.this.field_54168.get()) && !lv.method_64067()) {
 							return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
 						} else {
-							CompletableFuture<ChunkBuilder.Result> completableFuture = ChunkBuilder.this.scheduleIndexBufferUpload(
-									closeableBuffer, BuiltChunk.this.getBuffer(RenderLayer.getTranslucent())
-								)
-								.thenApply(v -> ChunkBuilder.Result.CANCELLED);
-							return completableFuture.handle((result, throwable) -> {
-								if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-									MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering section"));
-								}
+							BufferAllocator.CloseableBuffer closeableBuffer = sortState.sortAndStore(buffers.get(RenderLayer.getTranslucent()), vertexSorter);
+							if (closeableBuffer == null) {
+								return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
+							} else if (this.cancelled.get()) {
+								closeableBuffer.close();
+								return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
+							} else {
+								CompletableFuture<ChunkBuilder.Result> completableFuture = ChunkBuilder.this.scheduleIndexBufferUpload(
+										closeableBuffer, BuiltChunk.this.getBuffer(RenderLayer.getTranslucent())
+									)
+									.thenApply(v -> ChunkBuilder.Result.CANCELLED);
+								return completableFuture.handle((result, throwable) -> {
+									if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
+										MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering section"));
+									}
 
-								return this.cancelled.get() ? ChunkBuilder.Result.CANCELLED : ChunkBuilder.Result.SUCCESSFUL;
-							});
+									if (this.cancelled.get()) {
+										return ChunkBuilder.Result.CANCELLED;
+									} else {
+										BuiltChunk.this.field_54168.set(lv);
+										return ChunkBuilder.Result.SUCCESSFUL;
+									}
+								});
+							}
 						}
 					} else {
 						return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
@@ -520,14 +527,13 @@ public class ChunkBuilder {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public abstract class Task implements Comparable<ChunkBuilder.BuiltChunk.Task> {
-			protected final double distance;
+		public abstract class Task {
 			protected final AtomicBoolean cancelled = new AtomicBoolean(false);
+			protected final AtomicBoolean field_54169 = new AtomicBoolean(false);
 			protected final boolean prioritized;
 
-			public Task(final double distance, final boolean prioritized) {
-				this.distance = distance;
-				this.prioritized = prioritized;
+			public Task(final boolean bl) {
+				this.prioritized = bl;
 			}
 
 			public abstract CompletableFuture<ChunkBuilder.Result> run(BlockBufferAllocatorStorage buffers);
@@ -542,10 +548,6 @@ public class ChunkBuilder {
 
 			public BlockPos getOrigin() {
 				return BuiltChunk.this.origin;
-			}
-
-			public int compareTo(ChunkBuilder.BuiltChunk.Task task) {
-				return Doubles.compare(this.distance, task.distance);
 			}
 		}
 	}
@@ -591,5 +593,42 @@ public class ChunkBuilder {
 	static enum Result {
 		SUCCESSFUL,
 		CANCELLED;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static final class class_10196 {
+		private int field_54170;
+		private int field_54171;
+		private int field_54172;
+
+		public static ChunkBuilder.class_10196 method_64069(Vec3d vec3d, long l) {
+			return new ChunkBuilder.class_10196().method_64070(vec3d, l);
+		}
+
+		public ChunkBuilder.class_10196 method_64070(Vec3d vec3d, long l) {
+			this.field_54170 = method_64068(vec3d.getX(), ChunkSectionPos.unpackX(l));
+			this.field_54171 = method_64068(vec3d.getY(), ChunkSectionPos.unpackY(l));
+			this.field_54172 = method_64068(vec3d.getZ(), ChunkSectionPos.unpackZ(l));
+			return this;
+		}
+
+		private static int method_64068(double d, int i) {
+			int j = ChunkSectionPos.getSectionCoordFloored(d) - i;
+			return MathHelper.clamp(j, -1, 1);
+		}
+
+		public boolean method_64067() {
+			return this.field_54170 == 0 || this.field_54171 == 0 || this.field_54172 == 0;
+		}
+
+		public boolean equals(Object object) {
+			if (object == this) {
+				return true;
+			} else {
+				return !(object instanceof ChunkBuilder.class_10196 lv)
+					? false
+					: this.field_54170 == lv.field_54170 && this.field_54171 == lv.field_54171 && this.field_54172 == lv.field_54172;
+			}
+		}
 	}
 }

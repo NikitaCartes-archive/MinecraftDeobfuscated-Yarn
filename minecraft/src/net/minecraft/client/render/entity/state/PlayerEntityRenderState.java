@@ -26,7 +26,7 @@ public class PlayerEntityRenderState extends BipedEntityRenderState {
 	public boolean leftSleeveVisible = true;
 	public boolean rightSleeveVisible = true;
 	public boolean capeVisible = true;
-	public float fallFlyingTicks;
+	public float glidingTicks;
 	public boolean applyFlyingRotation;
 	public float flyingRotation;
 	public boolean handSwinging;

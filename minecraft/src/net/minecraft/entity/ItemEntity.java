@@ -155,10 +155,7 @@ public class ItemEntity extends Entity implements Ownable {
 
 			if (!this.isOnGround() || this.getVelocity().horizontalLengthSquared() > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
 				this.move(MovementType.SELF, this.getVelocity());
-				if (!this.getWorld().isClient()) {
-					this.tickBlockCollision();
-				}
-
+				this.tickBlockCollision();
 				float f = 0.98F;
 				if (this.isOnGround()) {
 					f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;
@@ -374,7 +371,7 @@ public class ItemEntity extends Entity implements Ownable {
 	@Override
 	public Text getName() {
 		Text text = this.getCustomName();
-		return (Text)(text != null ? text : Text.translatable(this.getStack().getTranslationKey()));
+		return text != null ? text : this.getStack().getItemName();
 	}
 
 	@Override

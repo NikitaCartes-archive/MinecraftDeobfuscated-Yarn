@@ -30,7 +30,7 @@ import net.minecraft.world.event.GameEvent;
 public class GoatHornItem extends Item {
 	private final TagKey<Instrument> instrumentTag;
 
-	public GoatHornItem(Item.Settings settings, TagKey<Instrument> instrumentTag) {
+	public GoatHornItem(TagKey<Instrument> instrumentTag, Item.Settings settings) {
 		super(settings);
 		this.instrumentTag = instrumentTag;
 	}

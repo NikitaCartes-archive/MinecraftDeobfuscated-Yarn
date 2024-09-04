@@ -29,9 +29,10 @@ public class TippedArrowItem extends ArrowItem {
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack stack) {
-		return Potion.finishTranslationKey(
-			stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion(), this.getTranslationKey() + ".effect."
-		);
+	public Text getName(ItemStack stack) {
+		return (Text)stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT)
+			.potion()
+			.map(potion -> Text.translatable(this.translationKey + ".effect." + ((Potion)potion.value()).getBaseName()))
+			.orElseGet(() -> Text.translatable(this.translationKey + ".effect.empty"));
 	}
 }

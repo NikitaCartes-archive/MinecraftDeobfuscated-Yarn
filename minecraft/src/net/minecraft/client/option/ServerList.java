@@ -15,7 +15,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import org.slf4j.Logger;
 
 /**
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ServerList {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final TaskExecutor<Runnable> IO_EXECUTOR = TaskExecutor.create(Util.getMainWorkerExecutor(), "server-list-io");
+	private static final SimpleConsecutiveExecutor IO_EXECUTOR = new SimpleConsecutiveExecutor(Util.getMainWorkerExecutor(), "server-list-io");
 	private static final int MAX_HIDDEN_ENTRIES = 16;
 	private final MinecraftClient client;
 	private final List<ServerInfo> servers = Lists.<ServerInfo>newArrayList();

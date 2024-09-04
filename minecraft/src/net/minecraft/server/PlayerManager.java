@@ -444,7 +444,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity.addCommandTag(string);
 		}
 
-		Vec3d vec3d = teleportTarget.pos();
+		Vec3d vec3d = teleportTarget.position();
 		serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, teleportTarget.yaw(), teleportTarget.pitch());
 		if (teleportTarget.missingRespawnBlock()) {
 			serverPlayerEntity.networkHandler

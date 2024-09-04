@@ -467,10 +467,10 @@ public class BlockModelRenderer {
 				float ao = fs[neighborData.field_4188[2].shape] * fs[neighborData.field_4188[3].shape];
 				float ap = fs[neighborData.field_4188[4].shape] * fs[neighborData.field_4188[5].shape];
 				float aq = fs[neighborData.field_4188[6].shape] * fs[neighborData.field_4188[7].shape];
-				this.brightness[translation.firstCorner] = x * ab + y * ac + z * ad + aa * ae;
-				this.brightness[translation.secondCorner] = x * af + y * ag + z * ah + aa * ai;
-				this.brightness[translation.thirdCorner] = x * aj + y * ak + z * al + aa * am;
-				this.brightness[translation.fourthCorner] = x * an + y * ao + z * ap + aa * aq;
+				this.brightness[translation.firstCorner] = Math.clamp(x * ab + y * ac + z * ad + aa * ae, 0.0F, 1.0F);
+				this.brightness[translation.secondCorner] = Math.clamp(x * af + y * ag + z * ah + aa * ai, 0.0F, 1.0F);
+				this.brightness[translation.thirdCorner] = Math.clamp(x * aj + y * ak + z * al + aa * am, 0.0F, 1.0F);
+				this.brightness[translation.fourthCorner] = Math.clamp(x * an + y * ao + z * ap + aa * aq, 0.0F, 1.0F);
 				int ar = this.getAmbientOcclusionBrightness(l, i, q, v);
 				int as = this.getAmbientOcclusionBrightness(k, i, o, v);
 				int at = this.getAmbientOcclusionBrightness(k, j, s, v);

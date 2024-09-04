@@ -10,7 +10,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -105,16 +104,16 @@ public interface CollisionView extends BlockView {
 		return worldBorder.canCollide(entity, box) ? worldBorder.asVoxelShape() : null;
 	}
 
-	default HitResult getWorldBorderCollisions(RaycastContext context) {
-		HitResult hitResult = this.raycast(context);
+	default BlockHitResult getCollisionsIncludingWorldBorder(RaycastContext context) {
+		BlockHitResult blockHitResult = this.raycast(context);
 		WorldBorder worldBorder = this.getWorldBorder();
-		if (worldBorder.contains(context.getStart()) && !worldBorder.contains(hitResult.getPos())) {
-			Vec3d vec3d = hitResult.getPos().subtract(context.getStart());
+		if (worldBorder.contains(context.getStart()) && !worldBorder.contains(blockHitResult.getPos())) {
+			Vec3d vec3d = blockHitResult.getPos().subtract(context.getStart());
 			Direction direction = Direction.getFacing(vec3d.x, vec3d.y, vec3d.z);
-			Vec3d vec3d2 = worldBorder.clamp(hitResult.getPos());
+			Vec3d vec3d2 = worldBorder.clamp(blockHitResult.getPos());
 			return new BlockHitResult(vec3d2, direction, BlockPos.ofFloored(vec3d2), false, true);
 		} else {
-			return hitResult;
+			return blockHitResult;
 		}
 	}
 

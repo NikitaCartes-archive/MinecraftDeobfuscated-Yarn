@@ -1,6 +1,8 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -85,7 +87,8 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 		}
 	}
 
-	private void setConversionTime(int time) {
+	@VisibleForTesting
+	public void setConversionTime(int time) {
 		this.conversionTime = time;
 		this.setConverting(true);
 	}
@@ -94,10 +97,11 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	 * Converts this skeleton to a stray and plays a sound if it is not silent.
 	 */
 	protected void convertToStray() {
-		this.convertTo(EntityType.STRAY, true);
-		if (!this.isSilent()) {
-			this.getWorld().syncWorldEvent(null, WorldEvents.SKELETON_CONVERTS_TO_STRAY, this.getBlockPos(), 0);
-		}
+		this.convertTo(EntityType.STRAY, EntityConversionContext.create(this, true, true), stray -> {
+			if (!this.isSilent()) {
+				this.getWorld().syncWorldEvent(null, WorldEvents.SKELETON_CONVERTS_TO_STRAY, this.getBlockPos(), 0);
+			}
+		});
 	}
 
 	@Override

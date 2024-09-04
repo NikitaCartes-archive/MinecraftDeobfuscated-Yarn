@@ -15,15 +15,15 @@ import net.minecraft.util.math.RotationAxis;
 @Environment(EnvType.CLIENT)
 public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, SalmonEntityRenderState, SalmonEntityModel> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/fish/salmon.png");
-	private final SalmonEntityModel field_53198;
-	private final SalmonEntityModel field_53199;
-	private final SalmonEntityModel field_53200;
+	private final SalmonEntityModel smallModel;
+	private final SalmonEntityModel mediumModel;
+	private final SalmonEntityModel largeModel;
 
 	public SalmonEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SalmonEntityModel(context.getPart(EntityModelLayers.SALMON)), 0.4F);
-		this.field_53198 = new SalmonEntityModel(context.getPart(EntityModelLayers.SALMON_SMALL));
-		this.field_53199 = new SalmonEntityModel(context.getPart(EntityModelLayers.SALMON));
-		this.field_53200 = new SalmonEntityModel(context.getPart(EntityModelLayers.SALMON_LARGE));
+		this.smallModel = new SalmonEntityModel(context.getPart(EntityModelLayers.SALMON_SMALL));
+		this.mediumModel = new SalmonEntityModel(context.getPart(EntityModelLayers.SALMON));
+		this.largeModel = new SalmonEntityModel(context.getPart(EntityModelLayers.SALMON_LARGE));
 	}
 
 	public void updateRenderState(SalmonEntity salmonEntity, SalmonEntityRenderState salmonEntityRenderState, float f) {
@@ -58,11 +58,11 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 
 	public void render(SalmonEntityRenderState salmonEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		if (salmonEntityRenderState.variant == SalmonEntity.Variant.SMALL) {
-			this.model = this.field_53198;
+			this.model = this.smallModel;
 		} else if (salmonEntityRenderState.variant == SalmonEntity.Variant.LARGE) {
-			this.model = this.field_53200;
+			this.model = this.largeModel;
 		} else {
-			this.model = this.field_53199;
+			this.model = this.mediumModel;
 		}
 
 		super.render(salmonEntityRenderState, matrixStack, vertexConsumerProvider, i);

@@ -6,9 +6,9 @@ import java.util.Optional;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.trim.ArmorTrim;
-import net.minecraft.item.trim.ArmorTrimMaterial;
-import net.minecraft.item.trim.ArmorTrimPattern;
+import net.minecraft.item.equipment.trim.ArmorTrim;
+import net.minecraft.item.equipment.trim.ArmorTrimMaterial;
+import net.minecraft.item.equipment.trim.ArmorTrimPattern;
 import net.minecraft.registry.RegistryCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -29,8 +29,8 @@ public record TrimPredicate(Optional<RegistryEntryList<ArmorTrimMaterial>> mater
 	}
 
 	public boolean test(ItemStack itemStack, ArmorTrim armorTrim) {
-		return this.material.isPresent() && !((RegistryEntryList)this.material.get()).contains(armorTrim.getMaterial())
+		return this.material.isPresent() && !((RegistryEntryList)this.material.get()).contains(armorTrim.material())
 			? false
-			: !this.pattern.isPresent() || ((RegistryEntryList)this.pattern.get()).contains(armorTrim.getPattern());
+			: !this.pattern.isPresent() || ((RegistryEntryList)this.pattern.get()).contains(armorTrim.pattern());
 	}
 }

@@ -16,6 +16,7 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
 import net.minecraft.enchantment.effect.EnchantmentValueEffect;
@@ -151,7 +152,7 @@ public class EnchantmentHelper {
 	}
 
 	private static void forEachEnchantment(LivingEntity entity, EnchantmentHelper.ContextAwareConsumer contextAwareConsumer) {
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 			forEachEnchantment(entity.getEquippedStack(equipmentSlot), equipmentSlot, entity, contextAwareConsumer);
 		}
 	}
@@ -461,7 +462,7 @@ public class EnchantmentHelper {
 	public static Optional<EnchantmentEffectContext> chooseEquipmentWith(ComponentType<?> componentType, LivingEntity entity, Predicate<ItemStack> stackPredicate) {
 		List<EnchantmentEffectContext> list = new ArrayList();
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 			ItemStack itemStack = entity.getEquippedStack(equipmentSlot);
 			if (stackPredicate.test(itemStack)) {
 				ItemEnchantmentsComponent itemEnchantmentsComponent = itemStack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
@@ -488,7 +489,8 @@ public class EnchantmentHelper {
 	 * @param slotIndex the index of the enchanting option
 	 */
 	public static int calculateRequiredExperienceLevel(Random random, int slotIndex, int bookshelfCount, ItemStack stack) {
-		if (stack.getEnchantability() <= 0) {
+		EnchantableComponent enchantableComponent = stack.get(DataComponentTypes.ENCHANTABLE);
+		if (enchantableComponent == null) {
 			return 0;
 		} else {
 			if (bookshelfCount > 15) {
@@ -539,11 +541,11 @@ public class EnchantmentHelper {
 		Random random, ItemStack stack, int level, Stream<RegistryEntry<Enchantment>> possibleEnchantments
 	) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
-		int i = stack.getEnchantability();
-		if (i <= 0) {
+		EnchantableComponent enchantableComponent = stack.get(DataComponentTypes.ENCHANTABLE);
+		if (enchantableComponent == null) {
 			return list;
 		} else {
-			level += 1 + random.nextInt(i / 4 + 1) + random.nextInt(i / 4 + 1);
+			level += 1 + random.nextInt(enchantableComponent.value() / 4 + 1) + random.nextInt(enchantableComponent.value() / 4 + 1);
 			float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
 			level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
 			List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, possibleEnchantments);

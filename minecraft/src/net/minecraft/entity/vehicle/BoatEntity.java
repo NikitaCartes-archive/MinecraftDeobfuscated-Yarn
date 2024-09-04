@@ -4,9 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -202,17 +200,7 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 
 	@Override
 	public Item asItem() {
-		return switch (this.getVariant()) {
-			case SPRUCE -> Items.SPRUCE_BOAT;
-			case BIRCH -> Items.BIRCH_BOAT;
-			case JUNGLE -> Items.JUNGLE_BOAT;
-			case ACACIA -> Items.ACACIA_BOAT;
-			case CHERRY -> Items.CHERRY_BOAT;
-			case DARK_OAK -> Items.DARK_OAK_BOAT;
-			case MANGROVE -> Items.MANGROVE_BOAT;
-			case BAMBOO -> Items.BAMBOO_RAFT;
-			default -> Items.OAK_BOAT;
-		};
+		return this.getVariant().getItem();
 	}
 
 	@Override
@@ -870,7 +858,7 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 
 	@Override
 	protected Text getDefaultName() {
-		return Text.translatable(this.asItem().getTranslationKey());
+		return this.getVariant().name;
 	}
 
 	@Override
@@ -892,41 +880,49 @@ public class BoatEntity extends VehicleEntity implements Leashable, VariantHolde
 	}
 
 	public static enum Type implements StringIdentifiable {
-		OAK(Blocks.OAK_PLANKS, "oak"),
-		SPRUCE(Blocks.SPRUCE_PLANKS, "spruce"),
-		BIRCH(Blocks.BIRCH_PLANKS, "birch"),
-		JUNGLE(Blocks.JUNGLE_PLANKS, "jungle"),
-		ACACIA(Blocks.ACACIA_PLANKS, "acacia"),
-		CHERRY(Blocks.CHERRY_PLANKS, "cherry"),
-		DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),
-		MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove"),
-		BAMBOO(Blocks.BAMBOO_PLANKS, "bamboo");
+		OAK(Items.OAK_PLANKS, Items.OAK_BOAT, "oak", "item.minecraft.oak_boat"),
+		SPRUCE(Items.SPRUCE_PLANKS, Items.SPRUCE_BOAT, "spruce", "item.minecaft.spruce_boat"),
+		BIRCH(Items.BIRCH_PLANKS, Items.BIRCH_BOAT, "birch", "item.minecraft.birch_boat"),
+		JUNGLE(Items.JUNGLE_PLANKS, Items.JUNGLE_BOAT, "jungle", "item.minecraft.jungle_boat"),
+		ACACIA(Items.ACACIA_PLANKS, Items.ACACIA_BOAT, "acacia", "item.minecraft.acacia_boat"),
+		CHERRY(Items.CHERRY_PLANKS, Items.CHERRY_BOAT, "cherry", "item.minecraft.cherry_boat"),
+		DARK_OAK(Items.DARK_OAK_PLANKS, Items.DARK_OAK_BOAT, "dark_oak", "item.minecraft.dark_oak_boat"),
+		MANGROVE(Items.MANGROVE_PLANKS, Items.MANGROVE_BOAT, "mangrove", "item.minecraft.mangrove_boat"),
+		BAMBOO(Items.BAMBOO_PLANKS, Items.BAMBOO_RAFT, "bamboo", "item.minecraft.bamboo_raft");
 
-		private final String name;
-		private final Block baseBlock;
+		private final String id;
+		private final Item baseBlock;
+		private final Item item;
+		final Text name;
 		public static final StringIdentifiable.EnumCodec<BoatEntity.Type> CODEC = StringIdentifiable.createCodec(BoatEntity.Type::values);
 		private static final IntFunction<BoatEntity.Type> BY_ID = ValueLists.createIdToValueFunction(Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO);
 
-		private Type(final Block baseBlock, final String name) {
-			this.name = name;
+		private Type(final Item baseBlock, final Item item, final String id, final String translationKey) {
+			this.id = id;
 			this.baseBlock = baseBlock;
+			this.item = item;
+			this.name = Text.translatable(translationKey);
 		}
 
 		@Override
 		public String asString() {
-			return this.name;
+			return this.id;
 		}
 
-		public String getName() {
-			return this.name;
+		public String getId() {
+			return this.id;
 		}
 
-		public Block getBaseBlock() {
+		public Item getBaseBlock() {
 			return this.baseBlock;
 		}
 
+		public Item getItem() {
+			return this.item;
+		}
+
 		public String toString() {
-			return this.name;
+			return this.id;
 		}
 
 		public static BoatEntity.Type getType(int type) {

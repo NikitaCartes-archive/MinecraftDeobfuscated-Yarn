@@ -74,7 +74,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 				vertexConsumerProvider.getBuffer(LAYER),
 				vec3d.subtract(guardianEntityRenderState.cameraPosVec),
 				guardianEntityRenderState.beamTicks,
-				guardianEntityRenderState.baseScale,
+				guardianEntityRenderState.beamProgress,
 				f
 			);
 			matrixStack.pop();

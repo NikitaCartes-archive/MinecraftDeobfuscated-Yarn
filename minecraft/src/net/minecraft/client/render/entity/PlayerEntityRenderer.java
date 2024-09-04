@@ -54,15 +54,15 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				this,
 				new ArmorEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_INNER_ARMOR : EntityModelLayers.PLAYER_INNER_ARMOR)),
 				new ArmorEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR)),
-				ctx.getModelManager()
+				ctx.getEquipmentRenderer()
 			)
 		);
 		this.addFeature(new PlayerHeldItemFeatureRenderer<>(this, ctx.getItemRenderer()));
 		this.addFeature(new StuckArrowsFeatureRenderer<>(this, ctx));
 		this.addFeature(new Deadmau5FeatureRenderer(this, ctx.getModelLoader()));
-		this.addFeature(new CapeFeatureRenderer(this, ctx.getModelLoader()));
+		this.addFeature(new CapeFeatureRenderer(this, ctx.getModelLoader(), ctx.getEquipmentModelLoader()));
 		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), ctx.getItemRenderer()));
-		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader()));
+		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader(), ctx.getEquipmentRenderer()));
 		this.addFeature(new ShoulderParrotFeatureRenderer(this, ctx.getModelLoader()));
 		this.addFeature(new TridentRiptideFeatureRenderer(this, ctx.getModelLoader()));
 		this.addFeature(new StuckStingersFeatureRenderer<>(this, ctx));
@@ -130,14 +130,14 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	protected void renderLabelIfPresent(
 		PlayerEntityRenderState playerEntityRenderState, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
+		matrixStack.push();
 		if (playerEntityRenderState.playerName != null) {
-			matrixStack.push();
 			super.renderLabelIfPresent(playerEntityRenderState, playerEntityRenderState.playerName, matrixStack, vertexConsumerProvider, i);
 			matrixStack.translate(0.0F, 9.0F * 1.15F * 0.025F, 0.0F);
-			matrixStack.pop();
 		}
 
 		super.renderLabelIfPresent(playerEntityRenderState, text, matrixStack, vertexConsumerProvider, i);
+		matrixStack.pop();
 	}
 
 	public PlayerEntityRenderState getRenderState() {
@@ -160,7 +160,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityRenderState.leftSleeveVisible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
 		playerEntityRenderState.rightSleeveVisible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
 		playerEntityRenderState.capeVisible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE);
-		updateFallFlying(abstractClientPlayerEntity, playerEntityRenderState, f);
+		updateGliding(abstractClientPlayerEntity, playerEntityRenderState, f);
 		this.updateHandState(abstractClientPlayerEntity, playerEntityRenderState.mainHandState, Hand.MAIN_HAND);
 		this.updateHandState(abstractClientPlayerEntity, playerEntityRenderState.offHandState, Hand.OFF_HAND);
 		updateCape(abstractClientPlayerEntity, playerEntityRenderState, f);
@@ -184,8 +184,8 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityRenderState.name = abstractClientPlayerEntity.getGameProfile().getName();
 	}
 
-	private static void updateFallFlying(AbstractClientPlayerEntity player, PlayerEntityRenderState state, float tickDelta) {
-		state.fallFlyingTicks = (float)player.getFallFlyingTicks() + tickDelta;
+	private static void updateGliding(AbstractClientPlayerEntity player, PlayerEntityRenderState state, float tickDelta) {
+		state.glidingTicks = (float)player.getGlidingTicks() + tickDelta;
 		Vec3d vec3d = player.getRotationVec(tickDelta);
 		Vec3d vec3d2 = player.lerpVelocity(tickDelta);
 		double d = vec3d2.horizontalLengthSquared();
@@ -234,20 +234,20 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			: null;
 	}
 
-	public void renderRightArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, boolean bl) {
-		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.rightArm, bl);
+	public void renderRightArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, boolean sleeveVisible) {
+		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.rightArm, sleeveVisible);
 	}
 
-	public void renderLeftArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, boolean bl) {
-		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.leftArm, bl);
+	public void renderLeftArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, boolean sleeveVisible) {
+		this.renderArm(matrices, vertexConsumers, light, skinTexture, this.model.leftArm, sleeveVisible);
 	}
 
-	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, boolean bl) {
+	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, boolean sleeveVisible) {
 		PlayerEntityModel playerEntityModel = this.getModel();
 		arm.resetTransform();
 		arm.visible = true;
-		playerEntityModel.leftSleeve.visible = bl;
-		playerEntityModel.rightSleeve.visible = bl;
+		playerEntityModel.leftSleeve.visible = sleeveVisible;
+		playerEntityModel.rightSleeve.visible = sleeveVisible;
 		playerEntityModel.leftArm.roll = -0.1F;
 		playerEntityModel.rightArm.roll = 0.1F;
 		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(skinTexture)), light, OverlayTexture.DEFAULT_UV);
@@ -256,9 +256,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	protected void setupTransforms(PlayerEntityRenderState playerEntityRenderState, MatrixStack matrixStack, float f, float g) {
 		float h = playerEntityRenderState.leaningPitch;
 		float i = playerEntityRenderState.pitch;
-		if (playerEntityRenderState.isFallFlying) {
+		if (playerEntityRenderState.isGliding) {
 			super.setupTransforms(playerEntityRenderState, matrixStack, f, g);
-			float j = MathHelper.clamp(playerEntityRenderState.fallFlyingTicks * playerEntityRenderState.fallFlyingTicks / 100.0F, 0.0F, 1.0F);
+			float j = MathHelper.clamp(playerEntityRenderState.glidingTicks * playerEntityRenderState.glidingTicks / 100.0F, 0.0F, 1.0F);
 			if (!playerEntityRenderState.usingRiptide) {
 				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(j * (-90.0F - i)));
 			}

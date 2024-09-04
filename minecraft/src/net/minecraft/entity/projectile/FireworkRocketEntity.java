@@ -102,6 +102,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	@Override
 	public void tick() {
 		super.tick();
+		HitResult hitResult;
 		if (this.wasShotByEntity()) {
 			if (this.shooter == null) {
 				this.dataTracker.get(SHOOTER_ENTITY_ID).ifPresent(id -> {
@@ -114,7 +115,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 			if (this.shooter != null) {
 				Vec3d vec3d3;
-				if (this.shooter.isFallFlying()) {
+				if (this.shooter.isGliding()) {
 					Vec3d vec3d = this.shooter.getRotationVector();
 					double d = 1.5;
 					double e = 0.1;
@@ -133,6 +134,8 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 				this.setPosition(this.shooter.getX() + vec3d3.x, this.shooter.getY() + vec3d3.y, this.shooter.getZ() + vec3d3.z);
 				this.setVelocity(this.shooter.getVelocity());
 			}
+
+			hitResult = ProjectileUtil.getCollision(this, this::canHit);
 		} else {
 			if (!this.wasShotAtAngle()) {
 				double f = this.horizontalCollision ? 1.0 : 1.15;
@@ -140,16 +143,13 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			}
 
 			Vec3d vec3d3 = this.getVelocity();
+			hitResult = ProjectileUtil.getCollision(this, this::canHit);
 			this.move(MovementType.SELF, vec3d3);
-			if (!this.getWorld().isClient()) {
-				this.tickBlockCollision();
-			}
-
+			this.tickBlockCollision();
 			this.setVelocity(vec3d3);
 		}
 
-		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-		if (!this.noClip) {
+		if (!this.noClip && this.isAlive() && hitResult.getType() != HitResult.Type.MISS) {
 			this.hitOrDeflect(hitResult);
 			this.velocityDirty = true;
 		}

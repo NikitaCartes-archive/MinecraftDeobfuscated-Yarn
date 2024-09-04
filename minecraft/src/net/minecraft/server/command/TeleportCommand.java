@@ -181,19 +181,22 @@ public class TeleportCommand {
 		@Nullable PosArgument rotation,
 		@Nullable TeleportCommand.LookTarget facingLocation
 	) throws CommandSyntaxException {
-		Vec3d vec3d = location.toAbsolutePos(source);
-		Vec2f vec2f = rotation == null ? null : rotation.toAbsoluteRotation(source);
+		Vec3d vec3d = location.getPos(source, true);
+		Vec2f vec2f = rotation == null ? null : rotation.getRotation(source, true);
 		Set<PositionFlag> set = EnumSet.noneOf(PositionFlag.class);
 		if (location.isXRelative()) {
 			set.add(PositionFlag.X);
+			set.add(PositionFlag.DELTA_X);
 		}
 
 		if (location.isYRelative()) {
 			set.add(PositionFlag.Y);
+			set.add(PositionFlag.DELTA_Y);
 		}
 
 		if (location.isZRelative()) {
 			set.add(PositionFlag.Z);
+			set.add(PositionFlag.DELTA_Z);
 		}
 
 		if (rotation == null) {
@@ -211,26 +214,27 @@ public class TeleportCommand {
 
 		for (Entity entity : targets) {
 			if (rotation == null) {
-				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.getYaw(), entity.getPitch(), facingLocation);
+				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, 0.0F, 0.0F, facingLocation);
 			} else {
 				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, facingLocation);
 			}
 		}
 
+		Vec3d vec3d2 = location.toAbsolutePos(source);
 		if (targets.size() == 1) {
 			source.sendFeedback(
 				() -> Text.translatable(
 						"commands.teleport.success.location.single",
 						((Entity)targets.iterator().next()).getDisplayName(),
-						formatFloat(vec3d.x),
-						formatFloat(vec3d.y),
-						formatFloat(vec3d.z)
+						formatFloat(vec3d2.x),
+						formatFloat(vec3d2.y),
+						formatFloat(vec3d2.z)
 					),
 				true
 			);
 		} else {
 			source.sendFeedback(
-				() -> Text.translatable("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d.x), formatFloat(vec3d.y), formatFloat(vec3d.z)),
+				() -> Text.translatable("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d2.x), formatFloat(vec3d2.y), formatFloat(vec3d2.z)),
 				true
 			);
 		}
@@ -265,7 +269,7 @@ public class TeleportCommand {
 					facingLocation.look(source, target);
 				}
 
-				if (!(target instanceof LivingEntity livingEntity) || !livingEntity.isFallFlying()) {
+				if (!(target instanceof LivingEntity livingEntity) || !livingEntity.isGliding()) {
 					target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
 					target.setOnGround(true);
 				}

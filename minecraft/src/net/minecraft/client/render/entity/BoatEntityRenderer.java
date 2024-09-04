@@ -50,8 +50,8 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity, BoatEntityRen
 
 	private static Identifier getTexture(BoatEntity.Type type, boolean chest) {
 		return chest
-			? Identifier.ofVanilla("textures/entity/chest_boat/" + type.getName() + ".png")
-			: Identifier.ofVanilla("textures/entity/boat/" + type.getName() + ".png");
+			? Identifier.ofVanilla("textures/entity/chest_boat/" + type.getId() + ".png")
+			: Identifier.ofVanilla("textures/entity/boat/" + type.getId() + ".png");
 	}
 
 	public void render(BoatEntityRenderState boatEntityRenderState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

@@ -55,8 +55,8 @@ import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
@@ -373,11 +373,8 @@ public class ServerPlayNetworkHandler
 
 	@Override
 	public void onPlayerInput(PlayerInputC2SPacket packet) {
-		if (this.player.hasVehicle()
-			&& this.player.getVehicle() instanceof AbstractMinecartEntity abstractMinecartEntity
-			&& ((double)packet.getSideways() != 0.0 || (double)packet.getForward() != 0.0)) {
-			abstractMinecartEntity.handleMovementInput(this.player, new Vec3d((double)packet.getSideways(), 0.0, (double)packet.getForward()));
-		}
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		this.player.setPlayerInput(packet.input());
 	}
 
 	/**
@@ -871,7 +868,7 @@ public class ServerPlayNetworkHandler
 								this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), g, h);
 							}
 						} else {
-							boolean bl = this.player.isFallFlying();
+							boolean bl = this.player.isGliding();
 							if (serverWorld.getTickManager().shouldTick()) {
 								this.movePacketsCount++;
 								int q = this.movePacketsCount - this.lastTickMovePacketsCount;
@@ -990,23 +987,24 @@ public class ServerPlayNetworkHandler
 	}
 
 	public void requestTeleport(double x, double y, double z, float yaw, float pitch) {
-		this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet());
+		this.requestTeleport(new PlayerPosition(new Vec3d(x, y, z), Vec3d.ZERO, yaw, pitch), Collections.emptySet());
 	}
 
-	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags) {
-		double d = flags.contains(PositionFlag.X) ? this.player.getX() : 0.0;
-		double e = flags.contains(PositionFlag.Y) ? this.player.getY() : 0.0;
-		double f = flags.contains(PositionFlag.Z) ? this.player.getZ() : 0.0;
-		float g = flags.contains(PositionFlag.Y_ROT) ? this.player.getYaw() : 0.0F;
-		float h = flags.contains(PositionFlag.X_ROT) ? this.player.getPitch() : 0.0F;
-		this.requestedTeleportPos = new Vec3d(x, y, z);
+	public void requestTeleport(PlayerPosition pos, Set<PositionFlag> flags) {
+		this.prevTeleportCheckTicks = this.ticks;
 		if (++this.requestedTeleportId == Integer.MAX_VALUE) {
 			this.requestedTeleportId = 0;
 		}
 
-		this.prevTeleportCheckTicks = this.ticks;
-		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
-		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId));
+		PlayerPosition playerPosition = PlayerPosition.fromEntity(this.player);
+		PlayerPosition playerPosition2 = PlayerPosition.apply(playerPosition, pos, flags);
+		this.requestedTeleportPos = playerPosition2.position();
+		this.player.setVelocity(playerPosition2.deltaMovement());
+		this.player
+			.updatePositionAndAngles(
+				playerPosition2.position().x, playerPosition2.position().y, playerPosition2.position().z, playerPosition2.yaw(), playerPosition2.pitch()
+			);
+		this.player.networkHandler.sendPacket(PlayerPositionLookS2CPacket.of(this.requestedTeleportId, pos, flags));
 	}
 
 	@Override
@@ -1142,7 +1140,7 @@ public class ServerPlayNetworkHandler
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
 				Entity entity = packet.getTarget(serverWorld);
 				if (entity != null) {
-					this.player.teleport(serverWorld, entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch(), true);
+					this.player.teleport(serverWorld, entity.getX(), entity.getY(), entity.getZ(), Set.of(), entity.getYaw(), entity.getPitch(), true);
 					return;
 				}
 			}
@@ -1456,8 +1454,8 @@ public class ServerPlayNetworkHandler
 				}
 				break;
 			case START_FALL_FLYING:
-				if (!this.player.checkFallFlying()) {
-					this.player.stopFallFlying();
+				if (!this.player.checkGliding()) {
+					this.player.stopGliding();
 				}
 				break;
 			default:
@@ -1529,7 +1527,7 @@ public class ServerPlayNetworkHandler
 			}
 
 			Box box = entity.getBoundingBox();
-			if (this.player.canInteractWithEntityIn(box, 1.0)) {
+			if (this.player.canInteractWithEntityIn(box, 3.0)) {
 				packet.handle(new PlayerInteractEntityC2SPacket.Handler() {
 					private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {
 						ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand);
@@ -1720,6 +1718,7 @@ public class ServerPlayNetworkHandler
 			boolean bl3 = itemStack.isEmpty() || itemStack.getCount() <= itemStack.getMaxCount();
 			if (bl2 && bl3) {
 				this.player.playerScreenHandler.getSlot(packet.slot()).setStack(itemStack);
+				this.player.playerScreenHandler.setPreviousTrackedSlot(packet.slot(), itemStack);
 				this.player.playerScreenHandler.sendContentUpdates();
 			} else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
 				this.creativeItemDropThreshold += 20;

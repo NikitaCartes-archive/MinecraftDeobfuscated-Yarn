@@ -24,7 +24,7 @@ public class ClientRegistries {
 	@Nullable
 	private ClientRegistries.DynamicRegistries dynamicRegistries;
 	@Nullable
-	private ClientRegistries.class_9954 tagLoader;
+	private ClientRegistries.Tags tags;
 
 	public void putDynamicRegistry(RegistryKey<? extends Registry<?>> registryRef, List<SerializableRegistries.SerializedRegistryEntry> entries) {
 		if (this.dynamicRegistries == null) {
@@ -35,11 +35,11 @@ public class ClientRegistries {
 	}
 
 	public void putTags(Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> tags) {
-		if (this.tagLoader == null) {
-			this.tagLoader = new ClientRegistries.class_9954();
+		if (this.tags == null) {
+			this.tags = new ClientRegistries.Tags();
 		}
 
-		tags.forEach(this.tagLoader::method_62162);
+		tags.forEach(this.tags::put);
 	}
 
 	private static <T> Registry.PendingTagLoad<T> method_62160(
@@ -56,8 +56,8 @@ public class ClientRegistries {
 		dynamicRegistries.dynamicRegistries
 			.forEach((registryKey, listx) -> map.put(registryKey, new RegistryLoader.ElementsAndTags(listx, TagPacketSerializer.Serialized.NONE)));
 		List<Registry.PendingTagLoad<?>> list = new ArrayList();
-		if (this.tagLoader != null) {
-			this.tagLoader.method_62163((registryKey, serialized) -> {
+		if (this.tags != null) {
+			this.tags.forEach((registryKey, serialized) -> {
 				if (!serialized.isEmpty()) {
 					if (SerializableRegistries.isSynced(registryKey)) {
 						map.compute(registryKey, (registryKeyx, elementsAndTags) -> {
@@ -78,8 +78,8 @@ public class ClientRegistries {
 		return dynamicRegistryManager;
 	}
 
-	private void method_62157(ClientRegistries.class_9954 arg, DynamicRegistryManager.Immutable immutable, boolean bl) {
-		arg.method_62163((registryKey, serialized) -> {
+	private void method_62157(ClientRegistries.Tags tags, DynamicRegistryManager.Immutable immutable, boolean bl) {
+		tags.forEach((registryKey, serialized) -> {
 			if (bl || SerializableRegistries.isSynced(registryKey)) {
 				method_62160(immutable, registryKey, serialized).apply();
 			}
@@ -91,8 +91,8 @@ public class ClientRegistries {
 		if (this.dynamicRegistries != null) {
 			dynamicRegistryManager = this.method_62155(resourceFactory, this.dynamicRegistries, local);
 		} else {
-			if (this.tagLoader != null) {
-				this.method_62157(this.tagLoader, immutable, !local);
+			if (this.tags != null) {
+				this.method_62157(this.tags, immutable, !local);
 			}
 
 			dynamicRegistryManager = immutable;
@@ -111,15 +111,15 @@ public class ClientRegistries {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_9954 {
-		private final Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> field_53034 = new HashMap();
+	static class Tags {
+		private final Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> tags = new HashMap();
 
-		public void method_62162(RegistryKey<? extends Registry<?>> registryKey, TagPacketSerializer.Serialized serialized) {
-			this.field_53034.put(registryKey, serialized);
+		public void put(RegistryKey<? extends Registry<?>> registryRef, TagPacketSerializer.Serialized tags) {
+			this.tags.put(registryRef, tags);
 		}
 
-		public void method_62163(BiConsumer<? super RegistryKey<? extends Registry<?>>, ? super TagPacketSerializer.Serialized> biConsumer) {
-			this.field_53034.forEach(biConsumer);
+		public void forEach(BiConsumer<? super RegistryKey<? extends Registry<?>>, ? super TagPacketSerializer.Serialized> consumer) {
+			this.tags.forEach(consumer);
 		}
 	}
 }

@@ -581,7 +581,7 @@ public class ServerChunkManager extends ChunkManager {
 		}
 
 		@Override
-		protected Runnable createTask(Runnable runnable) {
+		public Runnable createTask(Runnable runnable) {
 			return runnable;
 		}
 

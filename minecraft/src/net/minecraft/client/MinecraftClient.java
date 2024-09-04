@@ -118,6 +118,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderers;
+import net.minecraft.client.render.entity.equipment.EquipmentModelLoader;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -373,6 +374,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final PlayerSkinProvider skinProvider;
 	private final BakedModelManager bakedModelManager;
 	private final BlockRenderManager blockRenderManager;
+	private final EquipmentModelLoader equipmentModelLoader;
 	private final PaintingManager paintingManager;
 	private final StatusEffectSpriteManager statusEffectSpriteManager;
 	private final MapTextureManager mapTextureManager;
@@ -610,13 +612,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.bakedModelManager);
 		this.entityModelLoader = new EntityModelLoader();
 		this.resourceManager.registerReloader(this.entityModelLoader);
+		this.equipmentModelLoader = new EquipmentModelLoader();
+		this.resourceManager.registerReloader(this.equipmentModelLoader);
 		this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(
 			this.textRenderer, this.entityModelLoader, this::getBlockRenderManager, this::getItemRenderer, this::getEntityRenderDispatcher
 		);
 		this.resourceManager.registerReloader(this.blockEntityRenderDispatcher);
 		BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.blockEntityRenderDispatcher, this.entityModelLoader);
 		this.resourceManager.registerReloader(builtinModelItemRenderer);
-		this.itemRenderer = new ItemRenderer(this, this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
+		this.itemRenderer = new ItemRenderer(this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
 		this.resourceManager.registerReloader(this.itemRenderer);
 		this.mapTextureManager = new MapTextureManager(this.textureManager);
 		this.mapDecorationsAtlasManager = new MapDecorationsAtlasManager(this.textureManager);
@@ -643,7 +647,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), builtinModelItemRenderer, this.blockColors);
 		this.resourceManager.registerReloader(this.blockRenderManager);
 		this.entityRenderDispatcher = new EntityRenderDispatcher(
-			this, this.textureManager, this.itemRenderer, this.mapRenderer, this.blockRenderManager, this.textRenderer, this.options, this.entityModelLoader
+			this,
+			this.textureManager,
+			this.itemRenderer,
+			this.mapRenderer,
+			this.blockRenderManager,
+			this.textRenderer,
+			this.options,
+			this.entityModelLoader,
+			this.equipmentModelLoader
 		);
 		this.resourceManager.registerReloader(this.entityRenderDispatcher);
 		this.particleManager = new ParticleManager(this.world, this.textureManager);
@@ -872,9 +884,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void onShaderResourceReloadFailure(Exception exception) {
-		if (this.getResourcePackManager().getEnabledIds().size() <= 1) {
-			LOGGER.error(LogUtils.FATAL_MARKER, exception.getMessage(), (Throwable)exception);
-			this.printCrashReport(new CrashReport(exception.getMessage(), exception));
+		if (!this.resourcePackManager.hasOptionalProfilesEnabled()) {
+			if (this.resourcePackManager.getEnabledIds().size() <= 1) {
+				LOGGER.error(LogUtils.FATAL_MARKER, exception.getMessage(), (Throwable)exception);
+				this.printCrashReport(new CrashReport(exception.getMessage(), exception));
+			} else {
+				this.send(this::onForcedResourceReloadFailure);
+			}
 		} else {
 			this.onResourceReloadFailure(exception, Text.translatable("resourcePack.runtime_failure"), null);
 		}
@@ -1063,15 +1079,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		for (Item item : Registries.ITEM) {
-			ItemStack itemStack = item.getDefaultStack();
-			String string = itemStack.getTranslationKey();
+		Registries.ITEM.streamEntries().forEach(reference -> {
+			Item item = (Item)reference.value();
+			String string = item.getTranslationKey();
 			String string2 = Text.translatable(string).getString();
 			if (string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) {
-				LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, item);
+				LOGGER.debug("Missing translation for: {} {} {}", reference.registryKey().getValue(), string, item);
 			}
-		}
-
+		});
 		bl |= HandledScreens.isMissingScreens();
 		bl |= EntityRenderers.isMissingRendererFactories();
 		if (bl) {
@@ -2601,7 +2616,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	@Override
-	protected Runnable createTask(Runnable runnable) {
+	public Runnable createTask(Runnable runnable) {
 		return runnable;
 	}
 
@@ -2869,6 +2884,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public EntityModelLoader getEntityModelLoader() {
 		return this.entityModelLoader;
+	}
+
+	public EquipmentModelLoader getEquipmentModelLoader() {
+		return this.equipmentModelLoader;
 	}
 
 	public boolean shouldFilterText() {

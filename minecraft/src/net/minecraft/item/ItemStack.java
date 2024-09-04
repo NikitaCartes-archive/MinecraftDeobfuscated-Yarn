@@ -32,7 +32,6 @@ import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ContainerComponent;
-import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.RepairableComponent;
@@ -601,6 +600,10 @@ public final class ItemStack implements ComponentHolder {
 		return this.isDamageable() && this.getDamage() >= this.getMaxDamage();
 	}
 
+	public boolean willBreakNextUse() {
+		return this.isDamageable() && this.getDamage() >= this.getMaxDamage() - 1;
+	}
+
 	/**
 	 * Damages this item stack. This method should be used when a non-entity, such as a
 	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
@@ -917,10 +920,6 @@ public final class ItemStack implements ComponentHolder {
 		return i;
 	}
 
-	public String getTranslationKey() {
-		return this.getItem().getTranslationKey(this);
-	}
-
 	public String toString() {
 		return this.getCount() + " " + this.getItem();
 	}
@@ -1072,9 +1071,12 @@ public final class ItemStack implements ComponentHolder {
 				}
 			}
 
-			Text text2 = this.get(DataComponentTypes.ITEM_NAME);
-			return text2 != null ? text2 : this.getItem().getName(this);
+			return this.getItemName();
 		}
+	}
+
+	public Text getItemName() {
+		return this.getItem().getName(this);
 	}
 
 	public Text getFormattedName() {
@@ -1348,23 +1350,13 @@ public final class ItemStack implements ComponentHolder {
 
 	public void applyAttributeModifier(AttributeModifierSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer) {
 		AttributeModifiersComponent attributeModifiersComponent = this.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
-		if (!attributeModifiersComponent.modifiers().isEmpty()) {
-			attributeModifiersComponent.applyModifiers(slot, attributeModifierConsumer);
-		} else {
-			this.getItem().getAttributeModifiers().applyModifiers(slot, attributeModifierConsumer);
-		}
-
+		attributeModifiersComponent.applyModifiers(slot, attributeModifierConsumer);
 		EnchantmentHelper.applyAttributeModifiers(this, slot, attributeModifierConsumer);
 	}
 
 	public void applyAttributeModifiers(EquipmentSlot slot, BiConsumer<RegistryEntry<EntityAttribute>, EntityAttributeModifier> attributeModifierConsumer) {
 		AttributeModifiersComponent attributeModifiersComponent = this.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
-		if (!attributeModifiersComponent.modifiers().isEmpty()) {
-			attributeModifiersComponent.applyModifiers(slot, attributeModifierConsumer);
-		} else {
-			this.getItem().getAttributeModifiers().applyModifiers(slot, attributeModifierConsumer);
-		}
-
+		attributeModifiersComponent.applyModifiers(slot, attributeModifierConsumer);
 		EnchantmentHelper.applyAttributeModifiers(this, slot, attributeModifierConsumer);
 	}
 
@@ -1487,11 +1479,6 @@ public final class ItemStack implements ComponentHolder {
 
 	public boolean canRepairWith(ItemStack ingredient) {
 		RepairableComponent repairableComponent = this.get(DataComponentTypes.REPAIRABLE);
-		return repairableComponent != null ? repairableComponent.matches(ingredient) : this.getItem().canRepair(this, ingredient);
-	}
-
-	public int getEnchantability() {
-		EnchantableComponent enchantableComponent = this.get(DataComponentTypes.ENCHANTABLE);
-		return enchantableComponent != null ? enchantableComponent.value() : 0;
+		return repairableComponent != null && repairableComponent.matches(ingredient);
 	}
 }

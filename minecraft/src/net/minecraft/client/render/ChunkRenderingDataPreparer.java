@@ -74,13 +74,16 @@ public class ChunkRenderingDataPreparer {
 		this.field_45621 = true;
 	}
 
-	public void method_52828(Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks) {
-		((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).storage().octree.visit((node, skipVisibilityCheck, depth) -> {
+	public void method_52828(Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks, List<ChunkBuilder.BuiltChunk> list) {
+		((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).storage().octree.visit((node, bl, i, bl2) -> {
 			ChunkBuilder.BuiltChunk builtChunk = node.getBuiltChunk();
 			if (builtChunk != null) {
 				builtChunks.add(builtChunk);
+				if (bl2) {
+					list.add(builtChunk);
+				}
 			}
-		}, frustum);
+		}, frustum, 32);
 	}
 
 	public boolean method_52836() {
@@ -154,7 +157,7 @@ public class ChunkRenderingDataPreparer {
 			Frustum frustum2 = WorldRenderer.method_52816(frustum);
 			Consumer<ChunkBuilder.BuiltChunk> consumer = builtChunk -> {
 				if (frustum2.isVisible(builtChunk.getBoundingBox())) {
-					builtChunks.add(builtChunk);
+					this.field_45626.set(true);
 				}
 			};
 			this.method_52825(lv.storage, vec3d, queue, bl, consumer, longOpenHashSet);

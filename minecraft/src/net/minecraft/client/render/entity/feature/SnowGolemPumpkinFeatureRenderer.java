@@ -34,7 +34,7 @@ public class SnowGolemPumpkinFeatureRenderer extends FeatureRenderer<LivingEntit
 	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntityRenderState livingEntityRenderState, float f, float g
 	) {
-		BakedModel bakedModel = livingEntityRenderState.headEquippedItemModel;
+		BakedModel bakedModel = livingEntityRenderState.equippedHeadItemModel;
 		if (bakedModel != null) {
 			boolean bl = livingEntityRenderState.hasOutline && livingEntityRenderState.invisible;
 			if (!livingEntityRenderState.invisible || bl) {
@@ -44,7 +44,7 @@ public class SnowGolemPumpkinFeatureRenderer extends FeatureRenderer<LivingEntit
 				matrixStack.translate(0.0F, -0.34375F, 0.0F);
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 				matrixStack.scale(0.625F, -0.625F, -0.625F);
-				ItemStack itemStack = livingEntityRenderState.headEquippedStack;
+				ItemStack itemStack = livingEntityRenderState.equippedHeadStack;
 				if (bl && itemStack.getItem() instanceof BlockItem blockItem) {
 					BlockState blockState = blockItem.getBlock().getDefaultState();
 					BakedModel bakedModel2 = this.blockRenderManager.getModel(blockState);

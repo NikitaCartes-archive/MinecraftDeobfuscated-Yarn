@@ -1,9 +1,7 @@
 package net.minecraft.item;
 
 import java.util.List;
-import net.minecraft.block.DispenserBlock;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.consume.UseAction;
@@ -14,19 +12,18 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class ShieldItem extends Item implements Equipment {
+public class ShieldItem extends Item {
 	public static final int field_30918 = 5;
 	public static final float MIN_DAMAGE_AMOUNT_TO_BREAK = 3.0F;
 
 	public ShieldItem(Item.Settings settings) {
 		super(settings);
-		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack stack) {
+	public Text getName(ItemStack stack) {
 		DyeColor dyeColor = stack.get(DataComponentTypes.BASE_COLOR);
-		return dyeColor != null ? this.getTranslationKey() + "." + dyeColor.getName() : super.getTranslationKey(stack);
+		return (Text)(dyeColor != null ? Text.translatable(this.translationKey + "." + dyeColor.getName()) : super.getName(stack));
 	}
 
 	@Override
@@ -48,10 +45,5 @@ public class ShieldItem extends Item implements Equipment {
 	public ActionResult use(World world, PlayerEntity user, Hand hand) {
 		user.setCurrentHand(hand);
 		return ActionResult.CONSUME;
-	}
-
-	@Override
-	public EquipmentSlot getSlotType() {
-		return EquipmentSlot.OFFHAND;
 	}
 }

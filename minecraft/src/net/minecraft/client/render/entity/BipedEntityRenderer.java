@@ -28,7 +28,7 @@ public abstract class BipedEntityRenderer<T extends MobEntity, S extends BipedEn
 	public BipedEntityRenderer(EntityRendererFactory.Context context, M model, M babyModel, float scale, HeadFeatureRenderer.HeadTransformation headTransformation) {
 		super(context, model, babyModel, scale);
 		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), headTransformation, context.getItemRenderer()));
-		this.addFeature(new ElytraFeatureRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new ElytraFeatureRenderer<>(this, context.getModelLoader(), context.getEquipmentRenderer()));
 		this.addFeature(new HeldItemFeatureRenderer<>(this, context.getItemRenderer()));
 	}
 
@@ -39,11 +39,11 @@ public abstract class BipedEntityRenderer<T extends MobEntity, S extends BipedEn
 
 	public static void updateBipedRenderState(LivingEntity entity, BipedEntityRenderState state, float tickDelta) {
 		state.isInSneakingPose = entity.isInSneakingPose();
-		state.isFallFlying = entity.isFallFlying();
+		state.isGliding = entity.isGliding();
 		state.isSwimming = entity.isInSwimmingPose();
 		state.hasVehicle = entity.hasVehicle();
 		state.limbAmplitudeInverse = 1.0F;
-		if (state.isFallFlying) {
+		if (state.isGliding) {
 			state.limbAmplitudeInverse = (float)entity.getVelocity().lengthSquared();
 			state.limbAmplitudeInverse /= 0.2F;
 			state.limbAmplitudeInverse = state.limbAmplitudeInverse * state.limbAmplitudeInverse * state.limbAmplitudeInverse;

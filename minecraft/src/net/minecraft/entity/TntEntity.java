@@ -88,10 +88,7 @@ public class TntEntity extends Entity implements Ownable {
 		this.tickPortalTeleportation();
 		this.applyGravity();
 		this.move(MovementType.SELF, this.getVelocity());
-		if (!this.getWorld().isClient()) {
-			this.tickBlockCollision();
-		}
-
+		this.tickBlockCollision();
 		this.setVelocity(this.getVelocity().multiply(0.98));
 		if (this.isOnGround()) {
 			this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));

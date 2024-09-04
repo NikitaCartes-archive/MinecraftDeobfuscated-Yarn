@@ -17,7 +17,7 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, S extends
 		EntityRendererFactory.Context context, M mainModel, M babyMainModel, M armorInnerModel, M armorOuterModel, M babyArmorInnerModel, M babyArmorOuterModel
 	) {
 		super(context, mainModel, babyMainModel, 0.5F);
-		this.addFeature(new ArmorFeatureRenderer<>(this, armorInnerModel, armorOuterModel, babyArmorInnerModel, babyArmorOuterModel, context.getModelManager()));
+		this.addFeature(new ArmorFeatureRenderer<>(this, armorInnerModel, armorOuterModel, babyArmorInnerModel, babyArmorOuterModel, context.getEquipmentRenderer()));
 	}
 
 	public Identifier getTexture(S zombieEntityRenderState) {

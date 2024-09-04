@@ -889,7 +889,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	protected ServerTask createTask(Runnable runnable) {
+	public ServerTask createTask(Runnable runnable) {
 		return new ServerTask(this.ticks, runnable);
 	}
 

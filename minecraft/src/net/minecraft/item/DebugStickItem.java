@@ -55,7 +55,7 @@ public class DebugStickItem extends Item {
 			StateManager<Block, BlockState> stateManager = registryEntry.value().getStateManager();
 			Collection<Property<?>> collection = stateManager.getProperties();
 			if (collection.isEmpty()) {
-				sendMessage(player, Text.translatable(this.getTranslationKey() + ".empty", registryEntry.getIdAsString()));
+				sendMessage(player, Text.translatable(this.translationKey + ".empty", registryEntry.getIdAsString()));
 				return false;
 			} else {
 				DebugStickStateComponent debugStickStateComponent = stack.get(DataComponentTypes.DEBUG_STICK_STATE);
@@ -70,11 +70,11 @@ public class DebugStickItem extends Item {
 
 						BlockState blockState = cycle(state, property, player.shouldCancelInteraction());
 						world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
-						sendMessage(player, Text.translatable(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
+						sendMessage(player, Text.translatable(this.translationKey + ".update", property.getName(), getValueString(blockState, property)));
 					} else {
 						property = cycle(collection, property, player.shouldCancelInteraction());
 						stack.set(DataComponentTypes.DEBUG_STICK_STATE, debugStickStateComponent.with(registryEntry, property));
-						sendMessage(player, Text.translatable(this.getTranslationKey() + ".select", property.getName(), getValueString(state, property)));
+						sendMessage(player, Text.translatable(this.translationKey + ".select", property.getName(), getValueString(state, property)));
 					}
 
 					return true;

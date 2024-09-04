@@ -197,7 +197,7 @@ public class SkyRendering implements AutoCloseable {
 		matrix4fStack.popMatrix();
 	}
 
-	public void method_62306(MatrixStack matrices, Tessellator tesselator, float angleRadians, int color) {
+	public void renderGlowingSky(MatrixStack matrices, Tessellator tesselator, float angleRadians, int color) {
 		RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();

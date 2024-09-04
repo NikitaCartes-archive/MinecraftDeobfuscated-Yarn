@@ -230,10 +230,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 			}
 
 			this.move(MovementType.SELF, this.getVelocity());
-			if (!this.getWorld().isClient()) {
-				this.tickBlockCollision();
-			}
-
+			this.tickBlockCollision();
 			this.updateRotation();
 			if (this.state == FishingBobberEntity.State.FLYING && (this.isOnGround() || this.horizontalCollision)) {
 				this.setVelocity(Vec3d.ZERO);

@@ -27,13 +27,12 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 
 	private EntityEquipmentUpdateS2CPacket(RegistryByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		EquipmentSlot[] equipmentSlots = EquipmentSlot.values();
 		this.equipmentList = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
 
 		int i;
 		do {
 			i = buf.readByte();
-			EquipmentSlot equipmentSlot = equipmentSlots[i & 127];
+			EquipmentSlot equipmentSlot = (EquipmentSlot)EquipmentSlot.VALUES.get(i & 127);
 			ItemStack itemStack = ItemStack.OPTIONAL_PACKET_CODEC.decode(buf);
 			this.equipmentList.add(Pair.of(equipmentSlot, itemStack));
 		} while ((i & -128) != 0);

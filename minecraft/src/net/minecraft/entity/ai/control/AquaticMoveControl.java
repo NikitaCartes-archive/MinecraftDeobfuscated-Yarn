@@ -47,7 +47,7 @@ public class AquaticMoveControl extends MoveControl {
 					if (Math.abs(e) > 1.0E-5F || Math.abs(j) > 1.0E-5F) {
 						float k = -((float)(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
 						k = MathHelper.clamp(MathHelper.wrapDegrees(k), (float)(-this.pitchChange), (float)this.pitchChange);
-						this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, 5.0F));
+						this.entity.setPitch(this.changeAngle(this.entity.getPitch(), k, 5.0F));
 					}
 
 					float k = MathHelper.cos(this.entity.getPitch() * (float) (Math.PI / 180.0));

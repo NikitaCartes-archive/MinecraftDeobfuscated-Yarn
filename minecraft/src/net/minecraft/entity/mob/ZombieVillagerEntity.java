@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -17,13 +18,13 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
@@ -88,7 +89,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		VillagerData.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.getVillagerData())
 			.resultOrPartial(LOGGER::error)
-			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
+			.ifPresent(villagerData -> nbt.put("VillagerData", villagerData));
 		if (this.offerData != null) {
 			nbt.put("Offers", TradeOfferList.CODEC.encodeStart(this.getRegistryManager().getOps(NbtOps.INSTANCE), this.offerData).getOrThrow());
 		}
@@ -210,40 +211,48 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	private void finishConversion(ServerWorld world) {
-		VillagerEntity villagerEntity = this.convertTo(EntityType.VILLAGER, false);
-		if (villagerEntity != null) {
-			for (EquipmentSlot equipmentSlot : this.dropEquipment(
-				stack -> !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)
-			)) {
-				StackReference stackReference = villagerEntity.getStackReference(equipmentSlot.getEntitySlotId() + 300);
-				stackReference.set(this.getEquippedStack(equipmentSlot));
-			}
+		this.convertTo(
+			EntityType.VILLAGER,
+			EntityConversionContext.create(this, false, true),
+			villager -> {
+				for (EquipmentSlot equipmentSlot : this.dropEquipment(
+					stack -> !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)
+				)) {
+					StackReference stackReference = villager.getStackReference(equipmentSlot.getEntitySlotId() + 300);
+					stackReference.set(this.getEquippedStack(equipmentSlot));
+				}
 
-			villagerEntity.setVillagerData(this.getVillagerData());
-			if (this.gossipData != null) {
-				villagerEntity.readGossipDataNbt(this.gossipData);
-			}
+				villager.setVillagerData(this.getVillagerData());
+				if (this.gossipData != null) {
+					villager.readGossipDataNbt(this.gossipData);
+				}
 
-			if (this.offerData != null) {
-				villagerEntity.setOffers(this.offerData.copy());
-			}
+				if (this.offerData != null) {
+					villager.setOffers(this.offerData.copy());
+				}
 
-			villagerEntity.setExperience(this.xp);
-			villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null);
-			villagerEntity.reinitializeBrain(world);
-			if (this.converter != null) {
-				PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
-				if (playerEntity instanceof ServerPlayerEntity) {
-					Criteria.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
-					world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
+				villager.setExperience(this.xp);
+				villager.initialize(world, world.getLocalDifficulty(villager.getBlockPos()), SpawnReason.CONVERSION, null);
+				villager.reinitializeBrain(world);
+				if (this.converter != null) {
+					PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
+					if (playerEntity instanceof ServerPlayerEntity) {
+						Criteria.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villager);
+						world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villager);
+					}
+				}
+
+				villager.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+				if (!this.isSilent()) {
+					world.syncWorldEvent(null, WorldEvents.ZOMBIE_VILLAGER_CURED, this.getBlockPos(), 0);
 				}
 			}
+		);
+	}
 
-			villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-			if (!this.isSilent()) {
-				world.syncWorldEvent(null, WorldEvents.ZOMBIE_VILLAGER_CURED, this.getBlockPos(), 0);
-			}
-		}
+	@VisibleForTesting
+	public void setConversionTimer(int conversionTimer) {
+		this.conversionTimer = conversionTimer;
 	}
 
 	private int getConversionRate() {

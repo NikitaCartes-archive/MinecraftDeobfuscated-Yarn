@@ -1,12 +1,12 @@
 package net.minecraft.client.gui;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -32,6 +32,7 @@ import net.minecraft.client.texture.Scaling;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
@@ -85,10 +86,6 @@ public class DrawContext {
 
 	public MatrixStack getMatrices() {
 		return this.matrices;
-	}
-
-	public VertexConsumerProvider.Immediate getVertexConsumers() {
-		return this.vertexConsumers;
 	}
 
 	public void draw() {
@@ -373,23 +370,52 @@ public class DrawContext {
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, height, color);
 		} else if (height == nineSlice.height()) {
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, height, color);
-			this.drawSpriteTiled(
-				renderLayers, sprite, x + i, y, width - j - i, height, i, 0, nineSlice.width() - j - i, nineSlice.height(), nineSlice.width(), nineSlice.height(), color
+			this.drawInnerSprite(
+				renderLayers,
+				nineSlice,
+				sprite,
+				x + i,
+				y,
+				width - j - i,
+				height,
+				i,
+				0,
+				nineSlice.width() - j - i,
+				nineSlice.height(),
+				nineSlice.width(),
+				nineSlice.height(),
+				color
 			);
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, height, color);
 		} else if (width == nineSlice.width()) {
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, k, color);
-			this.drawSpriteTiled(
-				renderLayers, sprite, x, y + k, width, height - l - k, 0, k, nineSlice.width(), nineSlice.height() - l - k, nineSlice.width(), nineSlice.height(), color
+			this.drawInnerSprite(
+				renderLayers,
+				nineSlice,
+				sprite,
+				x,
+				y + k,
+				width,
+				height - l - k,
+				0,
+				k,
+				nineSlice.width(),
+				nineSlice.height() - l - k,
+				nineSlice.width(),
+				nineSlice.height(),
+				color
 			);
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, width, l, color);
 		} else {
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, k, color);
-			this.drawSpriteTiled(renderLayers, sprite, x + i, y, width - j - i, k, i, 0, nineSlice.width() - j - i, k, nineSlice.width(), nineSlice.height(), color);
+			this.drawInnerSprite(
+				renderLayers, nineSlice, sprite, x + i, y, width - j - i, k, i, 0, nineSlice.width() - j - i, k, nineSlice.width(), nineSlice.height(), color
+			);
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, k, color);
 			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, i, l, color);
-			this.drawSpriteTiled(
+			this.drawInnerSprite(
 				renderLayers,
+				nineSlice,
 				sprite,
 				x + i,
 				y + height - l,
@@ -406,9 +432,12 @@ public class DrawContext {
 			this.drawSprite(
 				renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, nineSlice.height() - l, x + width - j, y + height - l, j, l, color
 			);
-			this.drawSpriteTiled(renderLayers, sprite, x, y + k, i, height - l - k, 0, k, i, nineSlice.height() - l - k, nineSlice.width(), nineSlice.height(), color);
-			this.drawSpriteTiled(
+			this.drawInnerSprite(
+				renderLayers, nineSlice, sprite, x, y + k, i, height - l - k, 0, k, i, nineSlice.height() - l - k, nineSlice.width(), nineSlice.height(), color
+			);
+			this.drawInnerSprite(
 				renderLayers,
+				nineSlice,
 				sprite,
 				x + i,
 				y + k,
@@ -422,8 +451,9 @@ public class DrawContext {
 				nineSlice.height(),
 				color
 			);
-			this.drawSpriteTiled(
+			this.drawInnerSprite(
 				renderLayers,
+				nineSlice,
 				sprite,
 				x + width - j,
 				y + k,
@@ -437,6 +467,43 @@ public class DrawContext {
 				nineSlice.height(),
 				color
 			);
+		}
+	}
+
+	private void drawInnerSprite(
+		Function<Identifier, RenderLayer> renderLayers,
+		Scaling.NineSlice nineSlice,
+		Sprite sprite,
+		int x,
+		int y,
+		int width,
+		int height,
+		int u,
+		int v,
+		int tileWidth,
+		int tileHeight,
+		int textureWidth,
+		int textureHeight,
+		int color
+	) {
+		if (width > 0 && height > 0) {
+			if (nineSlice.stretchInner()) {
+				this.drawTexturedQuad(
+					renderLayers,
+					sprite.getAtlasId(),
+					x,
+					x + width,
+					y,
+					y + height,
+					sprite.getFrameU((float)u / (float)textureWidth),
+					sprite.getFrameU((float)(u + tileWidth) / (float)textureWidth),
+					sprite.getFrameV((float)v / (float)textureHeight),
+					sprite.getFrameV((float)(v + tileHeight) / (float)textureHeight),
+					color
+				);
+			} else {
+				this.drawSpriteTiled(renderLayers, sprite, x, y, width, height, u, v, tileWidth, tileHeight, textureWidth, textureHeight, color);
+			}
 		}
 	}
 
@@ -619,7 +686,7 @@ public class DrawContext {
 
 				this.client
 					.getItemRenderer()
-					.renderItem(stack, ModelTransformationMode.GUI, false, this.matrices, this.getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
+					.renderItem(stack, ModelTransformationMode.GUI, false, this.matrices, this.vertexConsumers, 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
 				this.draw();
 				if (bl) {
 					DiffuseLighting.enableGuiDepthLighting();
@@ -674,13 +741,17 @@ public class DrawContext {
 	}
 
 	public void drawItemTooltip(TextRenderer textRenderer, ItemStack stack, int x, int y) {
-		this.drawTooltip(textRenderer, Screen.getTooltipFromItem(this.client, stack), stack.getTooltipData(), x, y);
+		this.drawTooltip(textRenderer, Screen.getTooltipFromItem(this.client, stack), stack.getTooltipData(), x, y, stack.get(DataComponentTypes.TOOLTIP_STYLE));
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, List<Text> text, Optional<TooltipData> data, int x, int y) {
+		this.drawTooltip(textRenderer, text, data, x, y, null);
+	}
+
+	public void drawTooltip(TextRenderer textRenderer, List<Text> text, Optional<TooltipData> data, int x, int y, @Nullable Identifier texture) {
 		List<TooltipComponent> list = (List<TooltipComponent>)text.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Util.toArrayList());
 		data.ifPresent(datax -> list.add(list.isEmpty() ? 0 : 1, TooltipComponent.of(datax)));
-		this.drawTooltip(textRenderer, list, x, y, HoveredTooltipPositioner.INSTANCE);
+		this.drawTooltip(textRenderer, list, x, y, HoveredTooltipPositioner.INSTANCE, texture);
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, Text text, int x, int y) {
@@ -688,20 +759,26 @@ public class DrawContext {
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, List<Text> text, int x, int y) {
-		this.drawOrderedTooltip(textRenderer, Lists.transform(text, Text::asOrderedText), x, y);
+		this.drawTooltip(textRenderer, text, x, y, null);
+	}
+
+	public void drawTooltip(TextRenderer textRenderer, List<Text> text, int x, int y, @Nullable Identifier texture) {
+		this.drawTooltip(textRenderer, text.stream().map(Text::asOrderedText).map(TooltipComponent::of).toList(), x, y, HoveredTooltipPositioner.INSTANCE, texture);
 	}
 
 	public void drawOrderedTooltip(TextRenderer textRenderer, List<? extends OrderedText> text, int x, int y) {
 		this.drawTooltip(
-			textRenderer, (List<TooltipComponent>)text.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, HoveredTooltipPositioner.INSTANCE
+			textRenderer, (List<TooltipComponent>)text.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, HoveredTooltipPositioner.INSTANCE, null
 		);
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, List<OrderedText> text, TooltipPositioner positioner, int x, int y) {
-		this.drawTooltip(textRenderer, (List<TooltipComponent>)text.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, positioner);
+		this.drawTooltip(textRenderer, (List<TooltipComponent>)text.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, positioner, null);
 	}
 
-	private void drawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
+	private void drawTooltip(
+		TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, @Nullable Identifier texture
+	) {
 		if (!components.isEmpty()) {
 			int i = 0;
 			int j = components.size() == 1 ? -2 : 0;
@@ -722,7 +799,7 @@ public class DrawContext {
 			int o = vector2ic.y();
 			this.matrices.push();
 			int p = 400;
-			TooltipBackgroundRenderer.render(this, n, o, i, j, 400);
+			TooltipBackgroundRenderer.render(this, n, o, i, j, 400, texture);
 			this.matrices.translate(0.0F, 0.0F, 400.0F);
 			int q = o;
 
@@ -764,6 +841,11 @@ public class DrawContext {
 				}
 			}
 		}
+	}
+
+	public void draw(Consumer<VertexConsumerProvider> drawer) {
+		drawer.accept(this.vertexConsumers);
+		this.vertexConsumers.draw();
 	}
 
 	@Environment(EnvType.CLIENT)

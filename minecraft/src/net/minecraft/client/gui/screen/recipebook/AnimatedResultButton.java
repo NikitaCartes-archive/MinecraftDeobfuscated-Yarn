@@ -79,7 +79,7 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 
 		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), this.width, this.height);
-		ItemStack itemStack = this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
+		ItemStack itemStack = this.getCurrentResult();
 		int i = 4;
 		if (this.resultCollection.hasSingleOutput() && this.hasMultipleResults()) {
 			context.drawItem(itemStack, this.getX() + i + 1, this.getY() + i + 1, 0, 10);
@@ -105,9 +105,12 @@ public class AnimatedResultButton extends ClickableWidget {
 		return (RecipeEntry<?>)this.results.get(i);
 	}
 
+	public ItemStack getCurrentResult() {
+		return this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
+	}
+
 	public List<Text> getTooltip() {
-		ItemStack itemStack = this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
-		List<Text> list = Lists.<Text>newArrayList(Screen.getTooltipFromItem(MinecraftClient.getInstance(), itemStack));
+		List<Text> list = Lists.<Text>newArrayList(Screen.getTooltipFromItem(MinecraftClient.getInstance(), this.getCurrentResult()));
 		if (this.hasMultipleResults()) {
 			list.add(MORE_RECIPES_TEXT);
 		}
@@ -117,7 +120,7 @@ public class AnimatedResultButton extends ClickableWidget {
 
 	@Override
 	public void appendClickableNarrations(NarrationMessageBuilder builder) {
-		ItemStack itemStack = this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
+		ItemStack itemStack = this.getCurrentResult();
 		builder.put(NarrationPart.TITLE, Text.translatable("narration.recipe", itemStack.getName()));
 		if (this.hasMultipleResults()) {
 			builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"), Text.translatable("narration.recipe.usage.more"));

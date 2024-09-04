@@ -38,6 +38,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -71,8 +72,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.thread.MessageListener;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.ChunkLoadingManager;
 import net.minecraft.world.GameRules;
@@ -130,8 +130,8 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 	private final PointOfInterestStorage pointOfInterestStorage;
 	final LongSet unloadedChunks = new LongOpenHashSet();
 	private boolean chunkHolderListDirty;
-	private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
-	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldGenExecutor;
+	private final ChunkTaskScheduler worldGenScheduler;
+	private final ChunkTaskScheduler lightScheduler;
 	private final WorldGenerationProgressListener worldGenerationProgressListener;
 	private final ChunkStatusChangeListener chunkStatusChangeListener;
 	private final ServerChunkLoadingManager.TicketManager ticketManager;
@@ -181,14 +181,14 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 			dynamicRegistryManager.getOrThrow(RegistryKeys.STRUCTURE_SET), this.noiseConfig, l
 		);
 		this.mainThreadExecutor = mainThreadExecutor;
-		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
+		SimpleConsecutiveExecutor simpleConsecutiveExecutor = new SimpleConsecutiveExecutor(executor, "worldgen");
 		this.worldGenerationProgressListener = worldGenerationProgressListener;
 		this.chunkStatusChangeListener = chunkStatusChangeListener;
-		TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(executor, "light");
-		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, taskExecutor2), executor, Integer.MAX_VALUE);
-		this.worldGenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
+		SimpleConsecutiveExecutor simpleConsecutiveExecutor2 = new SimpleConsecutiveExecutor(executor, "light");
+		this.worldGenScheduler = new ChunkTaskScheduler(simpleConsecutiveExecutor, executor);
+		this.lightScheduler = new ChunkTaskScheduler(simpleConsecutiveExecutor2, executor);
 		this.lightingProvider = new ServerLightingProvider(
-			chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false)
+			chunkProvider, this, this.world.getDimension().hasSkyLight(), simpleConsecutiveExecutor2, this.lightScheduler
 		);
 		this.ticketManager = new ServerChunkLoadingManager.TicketManager(executor, mainThreadExecutor);
 		this.persistentStateManagerFactory = persistentStateManagerFactory;
@@ -390,7 +390,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 				if (holder != null) {
 					holder.setLevel(level);
 				} else {
-					holder = new ChunkHolder(new ChunkPos(pos), level, this.world, this.lightingProvider, this.chunkTaskPrioritySystem, this);
+					holder = new ChunkHolder(new ChunkPos(pos), level, this.world, this.lightingProvider, this::updateLevel, this);
 				}
 
 				this.currentChunkHolders.put(pos, holder);
@@ -401,10 +401,16 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		}
 	}
 
+	private void updateLevel(ChunkPos pos, IntSupplier levelGetter, int targetLevel, IntConsumer levelSetter) {
+		this.worldGenScheduler.updateLevel(pos, levelGetter, targetLevel, levelSetter);
+		this.lightScheduler.updateLevel(pos, levelGetter, targetLevel, levelSetter);
+	}
+
 	@Override
 	public void close() throws IOException {
 		try {
-			this.chunkTaskPrioritySystem.close();
+			this.worldGenScheduler.close();
+			this.lightScheduler.close();
 			this.pointOfInterestStorage.close();
 		} finally {
 			super.close();
@@ -458,28 +464,21 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 			|| this.pointOfInterestStorage.hasUnsavedElements()
 			|| !this.unloadedChunks.isEmpty()
 			|| !this.unloadTaskQueue.isEmpty()
-			|| this.chunkTaskPrioritySystem.shouldDelayShutdown()
+			|| this.worldGenScheduler.shouldDelayShutdown()
+			|| this.lightScheduler.shouldDelayShutdown()
 			|| this.ticketManager.shouldDelayShutdown();
 	}
 
 	private void unloadChunks(BooleanSupplier shouldKeepTicking) {
-		LongIterator longIterator = this.unloadedChunks.iterator();
-
-		while (longIterator.hasNext()) {
+		for (LongIterator longIterator = this.unloadedChunks.iterator(); longIterator.hasNext(); longIterator.remove()) {
 			long l = longIterator.nextLong();
 			ChunkHolder chunkHolder = this.currentChunkHolders.get(l);
 			if (chunkHolder != null) {
-				if (chunkHolder.getRefCount() != 0) {
-					continue;
-				}
-
 				this.currentChunkHolders.remove(l);
 				this.chunksToUnload.put(l, chunkHolder);
 				this.chunkHolderListDirty = true;
 				this.tryUnloadChunk(l, chunkHolder);
 			}
-
-			longIterator.remove();
 		}
 
 		int i = Math.max(0, this.unloadTaskQueue.size() - 2000);
@@ -503,31 +502,33 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		}
 	}
 
-	private void tryUnloadChunk(long pos, ChunkHolder holder) {
-		holder.getSavingFuture().thenRunAsync(() -> {
-			if (!holder.isSavable()) {
-				this.tryUnloadChunk(pos, holder);
+	private void tryUnloadChunk(long pos, ChunkHolder chunk) {
+		CompletableFuture<?> completableFuture = chunk.getSavingFuture();
+		completableFuture.thenRunAsync(() -> {
+			CompletableFuture<?> completableFuture2 = chunk.getSavingFuture();
+			if (completableFuture2 != completableFuture) {
+				this.tryUnloadChunk(pos, chunk);
 			} else {
-				Chunk chunk = holder.getLatest();
-				if (this.chunksToUnload.remove(pos, holder) && chunk != null) {
-					if (chunk instanceof WorldChunk worldChunk) {
+				Chunk chunkx = chunk.getLatest();
+				if (this.chunksToUnload.remove(pos, chunk) && chunkx != null) {
+					if (chunkx instanceof WorldChunk worldChunk) {
 						worldChunk.setLoadedToWorld(false);
 					}
 
-					this.save(chunk);
-					if (chunk instanceof WorldChunk worldChunk) {
+					this.save(chunkx);
+					if (chunkx instanceof WorldChunk worldChunk) {
 						this.world.unloadEntities(worldChunk);
 					}
 
-					this.lightingProvider.updateChunkStatus(chunk.getPos());
+					this.lightingProvider.updateChunkStatus(chunkx.getPos());
 					this.lightingProvider.tick();
-					this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
-					this.chunkToNextSaveTimeMs.remove(chunk.getPos().toLong());
+					this.worldGenerationProgressListener.setChunkStatus(chunkx.getPos(), null);
+					this.chunkToNextSaveTimeMs.remove(chunkx.getPos().toLong());
 				}
 			}
 		}, this.unloadTaskQueue::add).whenComplete((void_, throwable) -> {
 			if (throwable != null) {
-				LOGGER.error("Failed to save chunk {}", holder.getPos(), throwable);
+				LOGGER.error("Failed to save chunk {}", chunk.getPos(), throwable);
 			}
 		});
 	}
@@ -645,13 +646,14 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		return chunkLoader;
 	}
 
-	private void schedule(ChunkLoader chunkLoader) {
-		this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkLoader.getHolder(), () -> {
-			CompletableFuture<?> completableFuture = chunkLoader.run();
+	private void schedule(ChunkLoader loader) {
+		AbstractChunkHolder abstractChunkHolder = loader.getHolder();
+		this.worldGenScheduler.add(() -> {
+			CompletableFuture<?> completableFuture = loader.run();
 			if (completableFuture != null) {
-				completableFuture.thenRun(() -> this.schedule(chunkLoader));
+				completableFuture.thenRun(() -> this.schedule(loader));
 			}
-		}));
+		}, abstractChunkHolder.getPos().toLong(), abstractChunkHolder::getCompletedLevel);
 	}
 
 	@Override
@@ -662,8 +664,8 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 
 	public CompletableFuture<OptionalChunk<WorldChunk>> makeChunkTickable(ChunkHolder holder) {
 		CompletableFuture<OptionalChunk<List<Chunk>>> completableFuture = this.getRegion(holder, 1, distance -> ChunkStatus.FULL);
-		CompletableFuture<OptionalChunk<WorldChunk>> completableFuture2 = completableFuture.thenApplyAsync(optionalChunk -> optionalChunk.map(list -> {
-				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
+		CompletableFuture<OptionalChunk<WorldChunk>> completableFuture2 = completableFuture.thenApplyAsync(optionalChunk -> optionalChunk.map(chunks -> {
+				WorldChunk worldChunk = (WorldChunk)chunks.get(chunks.size() / 2);
 				worldChunk.runPostProcessing();
 				this.world.disableTickSchedulers(worldChunk);
 				CompletableFuture<?> completableFuturex = holder.getPostProcessingFuture();

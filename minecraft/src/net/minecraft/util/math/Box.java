@@ -1,5 +1,6 @@
 package net.minecraft.util.math;
 
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.util.hit.BlockHitResult;
@@ -600,6 +601,24 @@ public class Box {
 		}
 	}
 
+	public boolean collides(Vec3d vec3d, List<Box> boundingBoxes) {
+		Vec3d vec3d2 = this.getCenter();
+		Vec3d vec3d3 = vec3d2.add(vec3d);
+
+		for (Box box : boundingBoxes) {
+			Box box2 = box.expand(this.getLengthX() * 0.5, this.getLengthY() * 0.5, this.getLengthZ() * 0.5);
+			if (box2.contains(vec3d3) || box2.contains(vec3d2)) {
+				return true;
+			}
+
+			if (box2.raycast(vec3d2, vec3d3).isPresent()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public double squaredMagnitude(Vec3d pos) {
 		double d = Math.max(Math.max(this.minX - pos.x, pos.x - this.maxX), 0.0);
 		double e = Math.max(Math.max(this.minY - pos.y, pos.y - this.maxY), 0.0);
@@ -629,6 +648,10 @@ public class Box {
 	 */
 	public Vec3d getCenter() {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
+	}
+
+	public Vec3d getHorizontalCenter() {
+		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), this.minY, MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
 
 	public Vec3d getMinPos() {

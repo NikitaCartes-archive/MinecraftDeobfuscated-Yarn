@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
@@ -177,7 +178,7 @@ public class NetherPortalBlock extends Block implements Portal {
 			vec3d = new Vec3d(0.5, 0.0, 0.0);
 		}
 
-		return getExitPortalTarget(world, exitPortalRectangle, axis, vec3d, entity, entity.getVelocity(), entity.getYaw(), entity.getPitch(), postDimensionTransition);
+		return getExitPortalTarget(world, exitPortalRectangle, axis, vec3d, entity, postDimensionTransition);
 	}
 
 	private static TeleportTarget getExitPortalTarget(
@@ -186,9 +187,6 @@ public class NetherPortalBlock extends Block implements Portal {
 		Direction.Axis axis,
 		Vec3d positionInPortal,
 		Entity entity,
-		Vec3d velocity,
-		float yaw,
-		float pitch,
 		TeleportTarget.PostDimensionTransition postDimensionTransition
 	) {
 		BlockPos blockPos = exitPortalRectangle.lowerLeft;
@@ -198,14 +196,13 @@ public class NetherPortalBlock extends Block implements Portal {
 		double e = (double)exitPortalRectangle.height;
 		EntityDimensions entityDimensions = entity.getDimensions(entity.getPose());
 		int i = axis == axis2 ? 0 : 90;
-		Vec3d vec3d = axis == axis2 ? velocity : new Vec3d(velocity.z, velocity.y, -velocity.x);
 		double f = (double)entityDimensions.width() / 2.0 + (d - (double)entityDimensions.width()) * positionInPortal.getX();
 		double g = (e - (double)entityDimensions.height()) * positionInPortal.getY();
 		double h = 0.5 + positionInPortal.getZ();
 		boolean bl = axis2 == Direction.Axis.X;
-		Vec3d vec3d2 = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
-		Vec3d vec3d3 = NetherPortal.findOpenPosition(vec3d2, world, entity, entityDimensions);
-		return new TeleportTarget(world, vec3d3, vec3d, yaw + (float)i, pitch, postDimensionTransition);
+		Vec3d vec3d = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
+		Vec3d vec3d2 = NetherPortal.findOpenPosition(vec3d, world, entity, entityDimensions);
+		return new TeleportTarget(world, vec3d2, Vec3d.ZERO, (float)i, 0.0F, PositionFlag.combine(PositionFlag.DELTA, PositionFlag.ROT), postDimensionTransition);
 	}
 
 	@Override

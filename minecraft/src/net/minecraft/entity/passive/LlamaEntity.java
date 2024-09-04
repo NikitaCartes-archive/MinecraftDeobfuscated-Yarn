@@ -3,10 +3,8 @@ package net.minecraft.entity.passive;
 import com.mojang.serialization.Codec;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.DyedCarpetBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
 import net.minecraft.entity.EntityAttachments;
@@ -48,7 +46,6 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.ValueLists;
@@ -285,24 +282,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	public boolean isHorseArmor(ItemStack stack) {
-		return stack.isIn(ItemTags.WOOL_CARPETS);
-	}
-
-	@Override
 	public boolean canBeSaddled() {
 		return false;
-	}
-
-	@Nullable
-	private static DyeColor getColorFromCarpet(ItemStack color) {
-		Block block = Block.getBlockFromItem(color.getItem());
-		return block instanceof DyedCarpetBlock ? ((DyedCarpetBlock)block).getDyeColor() : null;
-	}
-
-	@Nullable
-	public DyeColor getCarpetColor() {
-		return getColorFromCarpet(this.getEquippedStack(EquipmentSlot.BODY));
 	}
 
 	@Override

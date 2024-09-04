@@ -1,20 +1,20 @@
 package net.minecraft.client.render.model;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -54,23 +54,20 @@ public class MultipartUnbakedModel implements GroupableModel {
 	}
 
 	@Override
-	public void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType) {
-		this.selectors.forEach(selector -> selector.variant.resolve(resolver, currentlyResolvingType));
+	public void resolve(UnbakedModel.Resolver resolver) {
+		this.selectors.forEach(selector -> selector.variant.resolve(resolver));
 	}
 
-	@Nullable
 	@Override
 	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
-		MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
+		List<MultipartBakedModel.class_10204> list = new ArrayList(this.selectors.size());
 
 		for (MultipartUnbakedModel.Selector selector : this.selectors) {
 			BakedModel bakedModel = selector.variant.bake(baker, textureGetter, rotationContainer);
-			if (bakedModel != null) {
-				builder.addComponent(selector.predicate, bakedModel);
-			}
+			list.add(new MultipartBakedModel.class_10204(selector.predicate, bakedModel));
 		}
 
-		return builder.build();
+		return new MultipartBakedModel(list);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -80,13 +77,16 @@ public class MultipartUnbakedModel implements GroupableModel {
 		}
 
 		private List<MultipartModelComponent> deserializeComponents(JsonDeserializationContext context, JsonArray array) {
-			List<MultipartModelComponent> list = Lists.<MultipartModelComponent>newArrayList();
+			List<MultipartModelComponent> list = new ArrayList();
+			if (array.isEmpty()) {
+				throw new JsonSyntaxException("Empty selector array");
+			} else {
+				for (JsonElement jsonElement : array) {
+					list.add((MultipartModelComponent)context.deserialize(jsonElement, MultipartModelComponent.class));
+				}
 
-			for (JsonElement jsonElement : array) {
-				list.add((MultipartModelComponent)context.deserialize(jsonElement, MultipartModelComponent.class));
+				return list;
 			}
-
-			return list;
 		}
 	}
 

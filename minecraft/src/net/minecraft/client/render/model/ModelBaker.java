@@ -8,7 +8,6 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -95,11 +94,10 @@ public class ModelBaker {
 			this.textureGetter = spriteId -> spriteGetter.get(modelId, spriteId);
 		}
 
-		@Override
-		public UnbakedModel getModel(Identifier id) {
-			UnbakedModel unbakedModel = (UnbakedModel)ModelBaker.this.resolvedModels.get(id);
+		private UnbakedModel getModel(Identifier identifier) {
+			UnbakedModel unbakedModel = (UnbakedModel)ModelBaker.this.resolvedModels.get(identifier);
 			if (unbakedModel == null) {
-				ModelBaker.LOGGER.warn("Requested a model that was not discovered previously: {}", id);
+				ModelBaker.LOGGER.warn("Requested a model that was not discovered previously: {}", identifier);
 				return ModelBaker.this.missingModel;
 			} else {
 				return unbakedModel;
@@ -120,10 +118,9 @@ public class ModelBaker {
 			}
 		}
 
-		@Nullable
 		BakedModel bake(UnbakedModel model, ModelBakeSettings settings) {
 			if (model instanceof JsonUnbakedModel jsonUnbakedModel && jsonUnbakedModel.getRootModel() == Models.GENERATION_MARKER) {
-				return ModelBaker.ITEM_MODEL_GENERATOR.create(this.textureGetter, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.textureGetter, settings, false);
+				return ModelBaker.ITEM_MODEL_GENERATOR.create(this.textureGetter, jsonUnbakedModel).bake(this.textureGetter, settings, false);
 			}
 
 			return model.bake(this, this.textureGetter, settings);

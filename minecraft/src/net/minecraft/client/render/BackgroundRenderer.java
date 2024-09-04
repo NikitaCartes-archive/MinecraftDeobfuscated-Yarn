@@ -105,7 +105,7 @@ public class BackgroundRenderer {
 					h = 0.0F;
 				}
 
-				if (h > 0.0F && world.getDimensionEffects().isSunHigh(world.getSkyAngle(tickDelta))) {
+				if (h > 0.0F && world.getDimensionEffects().isSunRisingOrSetting(world.getSkyAngle(tickDelta))) {
 					int aa = world.getDimensionEffects().getSkyColor(world.getSkyAngle(tickDelta));
 					h *= ColorHelper.floatFromChannel(ColorHelper.getAlpha(aa));
 					r = r * (1.0F - h) + ColorHelper.floatFromChannel(ColorHelper.getRed(aa)) * h;

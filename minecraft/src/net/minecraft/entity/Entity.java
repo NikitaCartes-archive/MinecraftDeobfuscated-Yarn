@@ -44,6 +44,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -287,7 +288,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public boolean intersectionChecked;
 	private ImmutableList<Entity> passengerList = ImmutableList.of();
-	protected int ridingCooldown;
+	public int ridingCooldown;
 	@Nullable
 	private Entity vehicle;
 	private World world;
@@ -344,7 +345,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	private static final int SWIMMING_FLAG_INDEX = 4;
 	private static final int INVISIBLE_FLAG_INDEX = 5;
 	protected static final int GLOWING_FLAG_INDEX = 6;
-	protected static final int FALL_FLYING_FLAG_INDEX = 7;
+	protected static final int GLIDING_FLAG_INDEX = 7;
 	private static final TrackedData<Integer> AIR = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Optional<Text>> CUSTOM_NAME = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.OPTIONAL_TEXT_COMPONENT);
 	private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -928,15 +929,18 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			boolean bl = !MathHelper.approximatelyEquals(movement.x, vec3d.x);
 			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.horizontalCollision = bl || bl2;
-			this.verticalCollision = movement.y != vec3d.y;
-			this.groundCollision = this.verticalCollision && movement.y < 0.0;
+			if (Math.abs(movement.y) > 0.0 || this.isLocalPlayerOrLogicalSideForUpdatingMovement()) {
+				this.verticalCollision = movement.y != vec3d.y;
+				this.groundCollision = this.verticalCollision && movement.y < 0.0;
+				this.setMovement(this.groundCollision, this.horizontalCollision, vec3d);
+			}
+
 			if (this.horizontalCollision) {
 				this.collidedSoftly = this.hasCollidedSoftly(vec3d);
 			} else {
 				this.collidedSoftly = false;
 			}
 
-			this.setMovement(this.groundCollision, this.horizontalCollision, vec3d);
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			if (!this.getWorld().isClient() || this.isLogicalSideForUpdatingMovement()) {
@@ -1345,8 +1349,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	protected void checkBlockCollision(@Nullable Set<BlockState> result) {
 		Vec3d vec3d = this.getLastRenderPos();
 		Vec3d vec3d2 = this.pos;
+		Box box = this.getBoundingBox().contract(1.0E-5F);
 
-		for (BlockPos blockPos : BlockView.collectCollisionsBetween(vec3d, vec3d2, this.getBoundingBox())) {
+		for (BlockPos blockPos : BlockView.collectCollisionsBetween(vec3d, vec3d2, box)) {
 			if (!this.isAlive()) {
 				return;
 			}
@@ -1354,10 +1359,13 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			if (!blockState.isAir()) {
 				try {
-					blockState.onEntityCollision(this.getWorld(), blockPos, this);
-					this.onBlockCollision(blockState);
-				} catch (Throwable var11) {
-					CrashReport crashReport = CrashReport.create(var11, "Colliding entity with block");
+					VoxelShape voxelShape = blockState.getInsideCollisionShape(this.getWorld(), blockPos);
+					if (voxelShape == VoxelShapes.fullCube() || this.collides(vec3d, blockPos, voxelShape)) {
+						blockState.onEntityCollision(this.getWorld(), blockPos, this);
+						this.onBlockCollision(blockState);
+					}
+				} catch (Throwable var12) {
+					CrashReport crashReport = CrashReport.create(var12, "Colliding entity with block");
 					CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
 					CrashReportSection.addBlockInfo(crashReportSection, this.getWorld(), blockPos, blockState);
 					CrashReportSection crashReportSection2 = crashReport.addElement("Entity being checked for collision");
@@ -1370,6 +1378,12 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				}
 			}
 		}
+	}
+
+	private boolean collides(Vec3d pos, BlockPos collisionPos, VoxelShape shape) {
+		Box box = this.getBoundingBox();
+		Vec3d vec3d = pos.subtract(box.getHorizontalCenter());
+		return this.getBoundingBox().collides(vec3d, shape.offset(new Vec3d(collisionPos)).getBoundingBoxes());
 	}
 
 	/**
@@ -1959,17 +1973,32 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public final void resetPosition() {
-		double d = this.getX();
-		double e = this.getY();
-		double f = this.getZ();
-		this.prevX = d;
-		this.prevY = e;
-		this.prevZ = f;
-		this.lastRenderX = d;
-		this.lastRenderY = e;
-		this.lastRenderZ = f;
-		this.prevYaw = this.getYaw();
-		this.prevPitch = this.getPitch();
+		this.updatePrevPosition();
+		this.updatePrevAngles();
+	}
+
+	public final void setPrevPositionAndAngles(Vec3d pos, float yaw, float pitch) {
+		this.setPrevPosition(pos);
+		this.setPrevAngles(yaw, pitch);
+	}
+
+	protected void updatePrevPosition() {
+		this.setPrevPosition(this.pos);
+	}
+
+	protected void updatePrevAngles() {
+		this.setPrevAngles(this.getYaw(), this.getPitch());
+	}
+
+	private void setPrevPosition(Vec3d pos) {
+		this.prevX = this.lastRenderX = pos.x;
+		this.prevY = this.lastRenderY = pos.y;
+		this.prevZ = this.lastRenderZ = pos.z;
+	}
+
+	private void setPrevAngles(float prevYaw, float prevPitch) {
+		this.prevYaw = prevYaw;
+		this.prevPitch = prevPitch;
 	}
 
 	public final Vec3d getLastRenderPos() {
@@ -2955,11 +2984,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		if (this.hasPortalCooldown()) {
 			this.resetPortalCooldown();
 		} else {
-			if (this.portalManager != null && this.portalManager.portalMatches(portal)) {
+			if (this.portalManager == null || !this.portalManager.portalMatches(portal)) {
+				this.portalManager = new PortalManager(portal, pos.toImmutable());
+			} else if (!this.portalManager.isInPortal()) {
 				this.portalManager.setPortalPos(pos.toImmutable());
 				this.portalManager.setInPortal(true);
-			} else {
-				this.portalManager = new PortalManager(portal, pos.toImmutable());
 			}
 		}
 	}
@@ -3380,7 +3409,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * <p>Entity flag is used to track whether the entity is sneaking, sprinting, invisible,
 	 * etc.
 	 */
-	protected void setFlag(int index, boolean value) {
+	public void setFlag(int index, boolean value) {
 		byte b = this.dataTracker.get(FLAGS);
 		if (value) {
 			this.dataTracker.set(FLAGS, (byte)(b | 1 << index));
@@ -3871,8 +3900,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			List<Entity> list2 = new ArrayList();
 
 			for (Entity entity : list) {
-				float f = teleportTarget.yaw() + (entity.getYaw() - this.getYaw());
-				Entity entity2 = entity.teleportTo(teleportTarget.withRotation(f, entity.pitch));
+				float f = entity.getYaw() - this.getYaw();
+				float g = entity.getPitch() - this.getPitch();
+				float h = teleportTarget.yaw() + (teleportTarget.relatives().contains(PositionFlag.Y_ROT) ? 0.0F : f);
+				float i = teleportTarget.pitch() + (teleportTarget.relatives().contains(PositionFlag.X_ROT) ? 0.0F : g);
+				Entity entity2 = entity.teleportTo(teleportTarget.withRotation(h, i));
 				if (entity2 != null) {
 					list2.add(entity2);
 				}
@@ -3887,7 +3919,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				}
 
 				entity3.setPosition(teleportTarget);
-				this.checkBlockCollision();
+				entity3.checkBlockCollision();
 				if (this != entity3) {
 					serverWorld2.onDimensionChanged(entity3);
 				}
@@ -3909,12 +3941,15 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	protected void setPosition(TeleportTarget teleportTarget) {
-		this.setPos(teleportTarget.pos().x, teleportTarget.pos().y, teleportTarget.pos().z);
-		this.setYaw(teleportTarget.yaw());
-		this.setPitch(teleportTarget.pitch());
+		PlayerPosition playerPosition = PlayerPosition.fromTeleportTarget(teleportTarget);
+		PlayerPosition playerPosition2 = PlayerPosition.apply(PlayerPosition.fromEntity(this), playerPosition, teleportTarget.relatives());
+		this.setPos(playerPosition2.position().x, playerPosition2.position().y, playerPosition2.position().z);
+		this.setYaw(playerPosition2.yaw());
+		this.setHeadYaw(playerPosition2.yaw());
+		this.setPitch(playerPosition2.pitch());
 		this.refreshPosition();
 		this.resetPosition();
-		this.setVelocity(teleportTarget.velocity());
+		this.setVelocity(playerPosition2.deltaMovement());
 	}
 
 	public void addPortalChunkTicketAt(BlockPos pos) {
@@ -4164,7 +4199,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 */
 	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch, boolean resetCamera) {
 		float f = MathHelper.clamp(pitch, -90.0F, 90.0F);
-		Entity entity = this.teleportTo(new TeleportTarget(world, new Vec3d(destX, destY, destZ), this.getVelocity(), yaw, f, TeleportTarget.NO_OP));
+		Entity entity = this.teleportTo(new TeleportTarget(world, new Vec3d(destX, destY, destZ), Vec3d.ZERO, yaw, f, flags, TeleportTarget.NO_OP));
 		return entity != null;
 	}
 
@@ -4686,6 +4721,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			Entity entity = passenger.getVehicle();
 			return entity == this ? true : this.hasPassengerDeep(entity);
 		}
+	}
+
+	public boolean isLocalPlayerOrLogicalSideForUpdatingMovement() {
+		return this instanceof PlayerEntity playerEntity ? playerEntity.isMainPlayer() : this.isLogicalSideForUpdatingMovement();
 	}
 
 	/**

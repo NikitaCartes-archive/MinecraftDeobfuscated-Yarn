@@ -254,10 +254,14 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
-		if (this.isHorseArmor(stack)) {
-			this.equipBodyArmor(stack.copyWithCount(1));
-			stack.decrementUnlessCreative(1, player);
+		if (this.canEquip(stack, EquipmentSlot.BODY)) {
+			this.equipBodyArmor(stack.splitUnlessCreative(1, player));
 		}
+	}
+
+	@Override
+	protected boolean canDispenserEquipSlot(EquipmentSlot slot) {
+		return slot == EquipmentSlot.BODY && this.isTame() || super.canDispenserEquipSlot(slot);
 	}
 
 	@Override
@@ -694,7 +698,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 					return actionResult;
 				}
 
-				if (this.canUseSlot(EquipmentSlot.BODY) && this.isHorseArmor(itemStack) && !this.isWearingBodyArmor()) {
+				if (this.canEquip(itemStack, EquipmentSlot.BODY) && !this.isWearingBodyArmor()) {
 					this.equipHorseArmor(player, itemStack);
 					return ActionResult.SUCCESS;
 				}

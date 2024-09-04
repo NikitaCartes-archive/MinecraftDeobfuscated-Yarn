@@ -47,7 +47,7 @@ public class PlayerCapeModel<T extends PlayerEntityRenderState> extends BipedEnt
 		}
 
 		this.cape
-			.method_62132(
+			.rotate(
 				new Quaternionf()
 					.rotationX((6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536) * (float) (Math.PI / 180.0))
 					.rotateZ(playerEntityRenderState.field_53538 / 2.0F * (float) (Math.PI / 180.0))

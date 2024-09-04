@@ -127,12 +127,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 		return this.overrides;
 	}
 
-	private ModelOverrideList compileOverrides(Baker baker, JsonUnbakedModel parent) {
-		return this.overrides.isEmpty() ? ModelOverrideList.EMPTY : new ModelOverrideList(baker, parent, this.overrides);
-	}
-
 	@Override
-	public void resolve(UnbakedModel.Resolver resolver, UnbakedModel.ModelType currentlyResolvingType) {
+	public void resolve(UnbakedModel.Resolver resolver) {
 		if (this.parentId != null) {
 			if (!(resolver.resolve(this.parentId) instanceof JsonUnbakedModel jsonUnbakedModel)) {
 				throw new IllegalStateException("BlockModel parent has to be a block model.");
@@ -140,34 +136,30 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 			this.parent = jsonUnbakedModel;
 		}
-
-		if (currentlyResolvingType != UnbakedModel.ModelType.OVERRIDE) {
-			this.overrides.forEach(override -> resolver.resolveOverride(override.getModelId()));
-		}
 	}
 
 	@Override
 	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
-		return this.bake(baker, this, textureGetter, rotationContainer, true);
+		return this.bake(textureGetter, rotationContainer, true);
 	}
 
-	public BakedModel bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, boolean bl) {
-		Sprite sprite = (Sprite)textureGetter.apply(this.resolveSprite("particle"));
+	public BakedModel bake(Function<SpriteIdentifier, Sprite> function, ModelBakeSettings modelBakeSettings, boolean bl) {
+		Sprite sprite = (Sprite)function.apply(this.resolveSprite("particle"));
 		if (this.getRootModel() == Models.BLOCK_ENTITY_MARKER) {
-			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(baker, parent), sprite, this.getGuiLight().isSide());
+			return new BuiltinBakedModel(this.getTransformations(), sprite, this.getGuiLight().isSide());
 		} else {
-			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(baker, parent), bl).setParticle(sprite);
+			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, bl).setParticle(sprite);
 
 			for (ModelElement modelElement : this.getElements()) {
 				for (Direction direction : modelElement.faces.keySet()) {
 					ModelElementFace modelElementFace = (ModelElementFace)modelElement.faces.get(direction);
-					Sprite sprite2 = (Sprite)textureGetter.apply(this.resolveSprite(modelElementFace.textureId()));
+					Sprite sprite2 = (Sprite)function.apply(this.resolveSprite(modelElementFace.textureId()));
 					if (modelElementFace.cullFace() == null) {
-						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, settings));
+						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings));
 					} else {
 						builder.addQuad(
-							Direction.transform(settings.getRotation().getMatrix(), modelElementFace.cullFace()),
-							createQuad(modelElement, modelElementFace, sprite2, direction, settings)
+							Direction.transform(modelBakeSettings.getRotation().getMatrix(), modelElementFace.cullFace()),
+							createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings)
 						);
 					}
 				}
@@ -364,16 +356,6 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 		public boolean isSide() {
 			return this == BLOCK;
-		}
-	}
-
-	/**
-	 * An unused unchecked exception. Probably related to unbaked models.
-	 */
-	@Environment(EnvType.CLIENT)
-	public static class UncheckedModelException extends RuntimeException {
-		public UncheckedModelException(String message) {
-			super(message);
 		}
 	}
 }

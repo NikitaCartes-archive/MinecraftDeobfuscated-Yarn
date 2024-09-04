@@ -23,15 +23,13 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
 		ModelData modelData = BipedEntityModel.getModelData(dilation, 0.0F);
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild(
+		ModelPartData modelPartData2 = modelPartData.addChild(
 			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation),
 			ModelTransform.pivot(0.0F, 1.0F, 0.0F)
 		);
-		modelPartData.addChild(
-			EntityModelPartNames.HAT,
-			ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation.add(0.5F)),
-			ModelTransform.pivot(0.0F, 1.0F, 0.0F)
+		modelPartData2.addChild(
+			EntityModelPartNames.HAT, ModelPartBuilder.create().uv(32, 0).cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, dilation.add(0.5F)), ModelTransform.NONE
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.RIGHT_LEG,

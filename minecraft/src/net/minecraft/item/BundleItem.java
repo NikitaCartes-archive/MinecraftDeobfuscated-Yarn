@@ -5,17 +5,18 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.tooltip.BundleTooltipData;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -28,13 +29,16 @@ public class BundleItem extends Item {
 	public static final int MAX_TOOLTIP_STACKS_SHOWN_WHEN_TOO_MANY_TYPES = 11;
 	private static final int FULL_ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 1.0F, 0.33F, 0.33F);
 	private static final int ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 0.44F, 0.53F, 1.0F);
-	private final String openFrontModelName;
-	private final String openBackModelName;
+	private static final int field_54109 = 10;
+	private static final int field_54110 = 2;
+	private static final int field_54111 = 60;
+	private final Identifier openFrontTexture;
+	private final Identifier openBackTexture;
 
-	public BundleItem(String openFrontModelName, String openBackModelName, Item.Settings settings) {
+	public BundleItem(Identifier openFrontTexture, Identifier openBackTexture, Item.Settings settings) {
 		super(settings);
-		this.openFrontModelName = openFrontModelName;
-		this.openBackModelName = openBackModelName;
+		this.openFrontTexture = openFrontTexture;
+		this.openBackTexture = openBackTexture;
 	}
 
 	public static float getAmountFilled(ItemStack stack) {
@@ -42,12 +46,12 @@ public class BundleItem extends Item {
 		return bundleContentsComponent.getOccupancy().floatValue();
 	}
 
-	public String getOpenFrontModelName() {
-		return this.openFrontModelName;
+	public Identifier getOpenFrontTexture() {
+		return this.openFrontTexture;
 	}
 
-	public String getOpenBackModelName() {
-		return this.openBackModelName;
+	public Identifier getOpenBackTexture() {
+		return this.openBackTexture;
 	}
 
 	@Override
@@ -60,7 +64,7 @@ public class BundleItem extends Item {
 			BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent);
 			if (clickType == ClickType.LEFT && !itemStack.isEmpty()) {
 				if (builder.add(slot, player) > 0) {
-					this.playInsertSound(player);
+					playInsertSound(player);
 				} else {
 					playInsertFailSound(player);
 				}
@@ -74,7 +78,7 @@ public class BundleItem extends Item {
 					if (itemStack3.getCount() > 0) {
 						builder.add(itemStack3);
 					} else {
-						this.playRemoveOneSound(player);
+						playRemoveOneSound(player);
 					}
 				}
 
@@ -99,7 +103,7 @@ public class BundleItem extends Item {
 				BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent);
 				if (clickType == ClickType.LEFT && !otherStack.isEmpty()) {
 					if (slot.canTakePartial(player) && builder.add(otherStack) > 0) {
-						this.playInsertSound(player);
+						playInsertSound(player);
 					} else {
 						playInsertFailSound(player);
 					}
@@ -110,7 +114,7 @@ public class BundleItem extends Item {
 					if (slot.canTakePartial(player)) {
 						ItemStack itemStack = builder.removeFirst();
 						if (itemStack != null) {
-							this.playRemoveOneSound(player);
+							playRemoveOneSound(player);
 							cursorStackReference.set(itemStack);
 						}
 					}
@@ -126,13 +130,18 @@ public class BundleItem extends Item {
 
 	@Override
 	public ActionResult use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
-		if (dropAllBundledItems(itemStack, user)) {
-			this.playDropContentsSound(user);
-			user.incrementStat(Stats.USED.getOrCreateStat(this));
-			return ActionResult.SUCCESS;
+		if (world.isClient) {
+			return ActionResult.CONSUME;
 		} else {
-			return ActionResult.FAIL;
+			user.setCurrentHand(hand);
+			return ActionResult.SUCCESS_SERVER;
+		}
+	}
+
+	private void dropContentsOnUse(PlayerEntity player, ItemStack stack) {
+		if (this.dropFirstBundledStack(stack, player)) {
+			playDropContentsSound(player);
+			player.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 	}
 
@@ -183,18 +192,47 @@ public class BundleItem extends Item {
 		return bundleContentsComponent.getNumberOfStacksShown();
 	}
 
-	private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
+	private boolean dropFirstBundledStack(ItemStack stack, PlayerEntity player) {
 		BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
 		if (bundleContentsComponent != null && !bundleContentsComponent.isEmpty()) {
-			stack.set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
-			if (player instanceof ServerPlayerEntity) {
-				bundleContentsComponent.iterateCopy().forEach(stackx -> player.dropItem(stackx, true));
+			Optional<ItemStack> optional = popFirstBundledStack(stack, player, bundleContentsComponent);
+			if (optional.isPresent()) {
+				player.dropItem((ItemStack)optional.get(), true);
+				return true;
+			} else {
+				return false;
 			}
-
-			return true;
 		} else {
 			return false;
 		}
+	}
+
+	private static Optional<ItemStack> popFirstBundledStack(ItemStack stack, PlayerEntity player, BundleContentsComponent contents) {
+		BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(contents);
+		ItemStack itemStack = builder.removeFirst();
+		if (itemStack != null) {
+			playRemoveOneSound(player);
+			stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+			return Optional.of(itemStack);
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	@Override
+	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+		if (!world.isClient && user instanceof PlayerEntity playerEntity) {
+			int i = this.getMaxUseTime(stack, user);
+			boolean bl = remainingUseTicks == i;
+			if (bl || remainingUseTicks < i - 10 && remainingUseTicks % 2 == 0) {
+				this.dropContentsOnUse(playerEntity, stack);
+			}
+		}
+	}
+
+	@Override
+	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+		return 60;
 	}
 
 	@Override
@@ -213,11 +251,11 @@ public class BundleItem extends Item {
 		}
 	}
 
-	private void playRemoveOneSound(Entity entity) {
+	private static void playRemoveOneSound(Entity entity) {
 		entity.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
 	}
 
-	private void playInsertSound(Entity entity) {
+	private static void playInsertSound(Entity entity) {
 		entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
 	}
 
@@ -225,7 +263,7 @@ public class BundleItem extends Item {
 		entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT_FAIL, 1.0F, 1.0F);
 	}
 
-	private void playDropContentsSound(Entity entity) {
+	private static void playDropContentsSound(Entity entity) {
 		entity.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
 	}
 }

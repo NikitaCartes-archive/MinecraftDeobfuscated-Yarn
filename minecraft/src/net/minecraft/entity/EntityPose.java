@@ -8,7 +8,7 @@ import net.minecraft.util.function.ValueLists;
 
 public enum EntityPose {
 	STANDING(0),
-	FALL_FLYING(1),
+	GLIDING(1),
 	SLEEPING(2),
 	SWIMMING(3),
 	SPIN_ATTACK(4),

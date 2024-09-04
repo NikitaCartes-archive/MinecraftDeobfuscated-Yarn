@@ -14,6 +14,7 @@ import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.data.client.EquipmentModelProvider;
 import net.minecraft.data.client.ModelProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BiomeParametersProvider;
@@ -128,6 +129,7 @@ public class Main {
 		);
 		DataGenerator.Pack pack2 = dataGenerator.createVanillaPack(includeClient);
 		pack2.addProvider(ModelProvider::new);
+		pack2.addProvider(EquipmentModelProvider::new);
 		DataGenerator.Pack pack3 = dataGenerator.createVanillaPack(includeServer);
 		pack3.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture));
 		pack3.addProvider(toFactory(VanillaAdvancementProviders::createVanillaProvider, completableFuture));

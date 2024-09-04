@@ -37,6 +37,8 @@ import net.minecraft.block.LadderBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffect;
@@ -69,10 +71,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
-import net.minecraft.item.ElytraItem;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -208,7 +207,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public final ElytraFlightController elytraFlightController = new ElytraFlightController(this);
 	@Nullable
 	protected PlayerEntity attackingPlayer;
-	protected int playerHitTimer;
+	public int playerHitTimer;
 	protected boolean dead;
 	protected int despawnCounter;
 	protected float prevStepBobbingAmount;
@@ -242,7 +241,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private float absorptionAmount;
 	protected ItemStack activeItemStack = ItemStack.EMPTY;
 	protected int itemUseTimeLeft;
-	protected int fallFlyingTicks;
+	protected int glidingTicks;
 	private BlockPos lastBlockPos;
 	private Optional<BlockPos> climbingPos = Optional.empty();
 	@Nullable
@@ -679,17 +678,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
-		boolean bl = newStack.isEmpty() && oldStack.isEmpty();
-		if (!bl && !ItemStack.areItemsAndComponentsEqual(oldStack, newStack) && !this.firstUpdate) {
-			Equipment equipment = Equipment.fromStack(newStack);
-			if (!this.getWorld().isClient() && !this.isSpectator()) {
-				if (!this.isSilent() && equipment != null && equipment.getSlotType() == slot) {
+		if (!this.getWorld().isClient() && !this.isSpectator()) {
+			boolean bl = newStack.isEmpty() && oldStack.isEmpty();
+			if (!bl && !ItemStack.areItemsAndComponentsEqual(oldStack, newStack) && !this.firstUpdate) {
+				EquippableComponent equippableComponent = newStack.get(DataComponentTypes.EQUIPPABLE);
+				if (!this.isSilent() && equippableComponent != null && slot == equippableComponent.slot()) {
 					this.getWorld()
-						.playSound(null, this.getX(), this.getY(), this.getZ(), equipment.getEquipSound(), this.getSoundCategory(), 1.0F, 1.0F, this.random.nextLong());
+						.playSound(null, this.getX(), this.getY(), this.getZ(), equippableComponent.equipSound(), this.getSoundCategory(), 1.0F, 1.0F, this.random.nextLong());
 				}
 
 				if (this.isArmorSlot(slot)) {
-					this.emitGameEvent(equipment != null ? GameEvent.EQUIP : GameEvent.UNEQUIP);
+					this.emitGameEvent(equippableComponent != null ? GameEvent.EQUIP : GameEvent.UNEQUIP);
 				}
 			}
 		}
@@ -731,7 +730,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			nbt.put("active_effects", nbtList);
 		}
 
-		nbt.putBoolean("FallFlying", this.isFallFlying());
+		nbt.putBoolean("FallFlying", this.isGliding());
 		this.getSleepingPosition().ifPresent(pos -> {
 			nbt.putInt("SleepingX", pos.getX());
 			nbt.putInt("SleepingY", pos.getY());
@@ -778,7 +777,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		if (nbt.getBoolean("FallFlying")) {
-			this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, true);
+			this.setFlag(Entity.GLIDING_FLAG_INDEX, true);
 		}
 
 		if (nbt.contains("SleepingX", NbtElement.NUMBER_TYPE)
@@ -1733,7 +1732,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			for (EquipmentSlot equipmentSlot : slots) {
 				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-				if (itemStack.getItem() instanceof ArmorItem && itemStack.takesDamageFrom(source)) {
+				if (itemStack.isDamageable() && itemStack.takesDamageFrom(source)) {
 					itemStack.damage(i, this, equipmentSlot);
 				}
 			}
@@ -2253,8 +2252,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			FluidState fluidState = this.getWorld().getFluidState(this.getBlockPos());
 			if ((this.isTouchingWater() || this.isInLava()) && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState)) {
 				this.travelInFluid(movementInput);
-			} else if (this.isFallFlying()) {
-				this.travelFallFlying();
+			} else if (this.isGliding()) {
+				this.travelGliding();
 			} else {
 				this.travelMidAir(movementInput);
 			}
@@ -2338,18 +2337,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	private void travelFallFlying() {
+	private void travelGliding() {
 		Vec3d vec3d = this.getVelocity();
 		double d = vec3d.horizontalLength();
-		this.setVelocity(this.calcFallFlyingVelocity(vec3d));
+		this.setVelocity(this.calcGlidingVelocity(vec3d));
 		this.move(MovementType.SELF, this.getVelocity());
 		if (!this.getWorld().isClient) {
 			double e = this.getVelocity().horizontalLength();
-			this.checkFallFlyingCollision(d, e);
+			this.checkGlidingCollision(d, e);
 		}
 	}
 
-	private Vec3d calcFallFlyingVelocity(Vec3d oldVelocity) {
+	private Vec3d calcGlidingVelocity(Vec3d oldVelocity) {
 		Vec3d vec3d = this.getRotationVector();
 		float f = this.getPitch() * (float) (Math.PI / 180.0);
 		double d = Math.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z);
@@ -2374,7 +2373,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return oldVelocity.multiply(0.99F, 0.98F, 0.99F);
 	}
 
-	private void checkFallFlyingCollision(double oldSpeed, double newSpeed) {
+	private void checkGlidingCollision(double oldSpeed, double newSpeed) {
 		if (this.horizontalCollision) {
 			double d = oldSpeed - newSpeed;
 			float f = (float)(d * 10.0 - 3.0);
@@ -2598,10 +2597,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		this.getWorld().getProfiler().pop();
 		this.lookDirection += h;
-		if (this.isFallFlying()) {
-			this.fallFlyingTicks++;
+		if (this.isGliding()) {
+			this.glidingTicks++;
 		} else {
-			this.fallFlyingTicks = 0;
+			this.glidingTicks = 0;
 		}
 
 		if (this.isSleeping()) {
@@ -2639,7 +2638,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private Map<EquipmentSlot, ItemStack> getEquipmentChanges() {
 		Map<EquipmentSlot, ItemStack> map = null;
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 			ItemStack itemStack = switch (equipmentSlot.getType()) {
 				case HAND -> this.getSyncedHandStack(equipmentSlot);
 				case HUMANOID_ARMOR -> this.getSyncedArmorStack(equipmentSlot);
@@ -2662,9 +2661,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (map != null) {
 			for (Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
 				EquipmentSlot equipmentSlot2 = (EquipmentSlot)entry.getKey();
-				ItemStack itemStack3 = (ItemStack)entry.getValue();
-				if (!itemStack3.isEmpty() && !itemStack3.shouldBreak()) {
-					itemStack3.applyAttributeModifiers(equipmentSlot2, (registryEntry, entityAttributeModifier) -> {
+				ItemStack itemStack2 = (ItemStack)entry.getValue();
+				if (!itemStack2.isEmpty() && !itemStack2.shouldBreak()) {
+					itemStack2.applyAttributeModifiers(equipmentSlot2, (registryEntry, entityAttributeModifier) -> {
 						EntityAttributeInstance entityAttributeInstance = this.attributes.getCustomInstance(registryEntry);
 						if (entityAttributeInstance != null) {
 							entityAttributeInstance.removeModifier(entityAttributeModifier.id());
@@ -2672,7 +2671,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 						}
 					});
 					if (this.getWorld() instanceof ServerWorld serverWorld) {
-						EnchantmentHelper.applyLocationBasedEffects(serverWorld, itemStack3, this, equipmentSlot2);
+						EnchantmentHelper.applyLocationBasedEffects(serverWorld, itemStack2, this, equipmentSlot2);
 					}
 				}
 			}
@@ -2849,8 +2848,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.getWorld().getProfiler().push("travel");
 		this.sidewaysSpeed *= 0.98F;
 		this.forwardSpeed *= 0.98F;
-		if (this.isFallFlying()) {
-			this.tickFallFlying();
+		if (this.isGliding()) {
+			this.tickGliding();
 		}
 
 		Box box = this.getBoundingBox();
@@ -2908,20 +2907,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return false;
 	}
 
-	protected void tickFallFlying() {
+	protected void tickGliding() {
 		this.limitFallDistance();
 		if (!this.getWorld().isClient) {
-			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
-			if (!this.isFallFlyingAllowed(itemStack)) {
-				this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
+			if (!this.canGlide()) {
+				this.setFlag(Entity.GLIDING_FLAG_INDEX, false);
 				return;
 			}
 
-			int i = this.fallFlyingTicks + 1;
+			int i = this.glidingTicks + 1;
 			if (i % 10 == 0) {
 				int j = i / 10;
 				if (j % 2 == 0) {
-					itemStack.damage(1, this, EquipmentSlot.CHEST);
+					List<EquipmentSlot> list = EquipmentSlot.VALUES.stream().filter(slot -> canGlideWith(this.getEquippedStack(slot), slot)).toList();
+					EquipmentSlot equipmentSlot = Util.getRandom(list, this.random);
+					this.getEquippedStack(equipmentSlot).damage(1, this, equipmentSlot);
 				}
 
 				this.emitGameEvent(GameEvent.ELYTRA_GLIDE);
@@ -2929,10 +2929,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	protected boolean isFallFlyingAllowed(ItemStack chestEquipment) {
-		return !this.isOnGround() && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)
-			? chestEquipment.isOf(Items.ELYTRA) && ElytraItem.isUsable(chestEquipment)
-			: false;
+	protected boolean canGlide() {
+		if (!this.isOnGround() && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
+			for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
+				if (canGlideWith(this.getEquippedStack(equipmentSlot), equipmentSlot)) {
+					return true;
+				}
+			}
+
+			return false;
+		} else {
+			return false;
+		}
 	}
 
 	protected void tickNewAi() {
@@ -3357,17 +3365,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.isSneaking();
 	}
 
-	public boolean isFallFlying() {
-		return this.getFlag(Entity.FALL_FLYING_FLAG_INDEX);
+	public boolean isGliding() {
+		return this.getFlag(Entity.GLIDING_FLAG_INDEX);
 	}
 
 	@Override
 	public boolean isInSwimmingPose() {
-		return super.isInSwimmingPose() || !this.isFallFlying() && this.isInPose(EntityPose.FALL_FLYING);
+		return super.isInSwimmingPose() || !this.isGliding() && this.isInPose(EntityPose.GLIDING);
 	}
 
-	public int getFallFlyingTicks() {
-		return this.fallFlyingTicks;
+	public int getGlidingTicks() {
+		return this.glidingTicks;
 	}
 
 	public boolean teleport(double x, double y, double z, boolean particleEffects) {
@@ -3425,10 +3433,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public void setNearbySongPlaying(BlockPos songPosition, boolean playing) {
-	}
-
-	public boolean canEquip(ItemStack stack) {
-		return false;
 	}
 
 	public boolean canPickUpLoot() {
@@ -3585,16 +3589,36 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
 	}
 
-	public EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
-		Equipment equipment = Equipment.fromStack(stack);
-		if (equipment != null) {
-			EquipmentSlot equipmentSlot = equipment.getSlotType();
-			if (this.canUseSlot(equipmentSlot)) {
-				return equipmentSlot;
+	public final boolean canEquipFromDispenser(ItemStack stack) {
+		if (this.isAlive() && !this.isSpectator()) {
+			EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
+			if (equippableComponent != null && equippableComponent.dispensable()) {
+				EquipmentSlot equipmentSlot = equippableComponent.slot();
+				return this.canUseSlot(equipmentSlot) && equippableComponent.allows(this.getType())
+					? this.getEquippedStack(equipmentSlot).isEmpty() && this.canDispenserEquipSlot(equipmentSlot)
+					: false;
+			} else {
+				return false;
 			}
+		} else {
+			return false;
 		}
+	}
 
-		return EquipmentSlot.MAINHAND;
+	protected boolean canDispenserEquipSlot(EquipmentSlot slot) {
+		return true;
+	}
+
+	public final EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
+		EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
+		return equippableComponent != null && this.canUseSlot(equippableComponent.slot()) ? equippableComponent.slot() : EquipmentSlot.MAINHAND;
+	}
+
+	public final boolean canEquip(ItemStack stack, EquipmentSlot slot) {
+		EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
+		return equippableComponent == null
+			? slot == EquipmentSlot.MAINHAND && this.canUseSlot(EquipmentSlot.MAINHAND)
+			: slot == equippableComponent.slot() && this.canUseSlot(equippableComponent.slot()) && equippableComponent.allows(this.getType());
 	}
 
 	private static StackReference getStackReference(LivingEntity entity, EquipmentSlot slot) {
@@ -3709,6 +3733,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			return false;
 		}
+	}
+
+	public static boolean canGlideWith(ItemStack stack, EquipmentSlot slot) {
+		if (!stack.contains(DataComponentTypes.GLIDER)) {
+			return false;
+		} else {
+			EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
+			return equippableComponent != null && slot == equippableComponent.slot() && !stack.willBreakNextUse();
+		}
+	}
+
+	@VisibleForTesting
+	public int getPlayerHitTimer() {
+		return this.playerHitTimer;
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

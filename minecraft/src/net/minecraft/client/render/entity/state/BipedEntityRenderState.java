@@ -16,7 +16,7 @@ public class BipedEntityRenderState extends LivingEntityRenderState {
 	public Arm preferredArm = Arm.RIGHT;
 	public Hand activeHand = Hand.MAIN_HAND;
 	public boolean isInSneakingPose;
-	public boolean isFallFlying;
+	public boolean isGliding;
 	public boolean isSwimming;
 	public boolean hasVehicle;
 	public boolean isUsingItem;

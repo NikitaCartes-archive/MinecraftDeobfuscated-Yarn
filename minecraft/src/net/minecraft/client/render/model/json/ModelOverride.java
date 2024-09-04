@@ -11,47 +11,21 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
-public class ModelOverride {
-	private final Identifier modelId;
-	private final List<ModelOverride.Condition> conditions;
-
+public record ModelOverride(Identifier modelId, List<ModelOverride.Condition> conditions) {
 	public ModelOverride(Identifier modelId, List<ModelOverride.Condition> conditions) {
+		conditions = List.copyOf(conditions);
 		this.modelId = modelId;
-		this.conditions = ImmutableList.copyOf(conditions);
-	}
-
-	public Identifier getModelId() {
-		return this.modelId;
-	}
-
-	public Stream<ModelOverride.Condition> streamConditions() {
-		return this.conditions.stream();
+		this.conditions = conditions;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Condition {
-		private final Identifier type;
-		private final float threshold;
-
-		public Condition(Identifier type, float threshold) {
-			this.type = type;
-			this.threshold = threshold;
-		}
-
-		public Identifier getType() {
-			return this.type;
-		}
-
-		public float getThreshold() {
-			return this.threshold;
-		}
+	public static record Condition(Identifier type, float threshold) {
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -1,4 +1,4 @@
-package net.minecraft.item.trim;
+package net.minecraft.item.equipment.trim;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

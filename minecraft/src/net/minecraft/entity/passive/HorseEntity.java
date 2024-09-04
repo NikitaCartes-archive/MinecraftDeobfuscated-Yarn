@@ -17,7 +17,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.AnimalArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -97,7 +96,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 		ItemStack itemStack = this.getBodyArmor();
 		super.onInventoryChanged(sender);
 		ItemStack itemStack2 = this.getBodyArmor();
-		if (this.age > 20 && this.isHorseArmor(itemStack2) && itemStack != itemStack2) {
+		if (this.age > 20 && this.canEquip(itemStack2, EquipmentSlot.BODY) && itemStack != itemStack2) {
 			this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5F, 1.0F);
 		}
 	}
@@ -212,15 +211,6 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	@Override
 	public boolean canUseSlot(EquipmentSlot slot) {
 		return true;
-	}
-
-	@Override
-	public boolean isHorseArmor(ItemStack stack) {
-		if (stack.getItem() instanceof AnimalArmorItem animalArmorItem && animalArmorItem.getType() == AnimalArmorItem.Type.EQUESTRIAN) {
-			return true;
-		}
-
-		return false;
 	}
 
 	@Nullable

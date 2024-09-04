@@ -14,6 +14,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.Shearable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.VariantHolder;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -163,30 +164,14 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	public void sheared(SoundCategory shearedSoundCategory) {
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		if (!this.getWorld().isClient()) {
-			CowEntity cowEntity = EntityType.COW.create(this.getWorld(), SpawnReason.CONVERSION);
-			if (cowEntity != null) {
+			this.convertTo(EntityType.COW, EntityConversionContext.create(this, false, false), cow -> {
 				((ServerWorld)this.getWorld()).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
-				this.discard();
-				cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-				cowEntity.setHealth(this.getHealth());
-				cowEntity.bodyYaw = this.bodyYaw;
-				if (this.hasCustomName()) {
-					cowEntity.setCustomName(this.getCustomName());
-					cowEntity.setCustomNameVisible(this.isCustomNameVisible());
-				}
-
-				if (this.isPersistent()) {
-					cowEntity.setPersistent();
-				}
-
-				cowEntity.setInvulnerable(this.isInvulnerable());
-				this.getWorld().spawnEntity(cowEntity);
 				this.forEachShearedItem(LootTables.MOOSHROOM_SHEARING, stack -> {
 					for (int i = 0; i < stack.getCount(); i++) {
 						this.getWorld().spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getBodyY(1.0), this.getZ(), stack.copyWithCount(1)));
 					}
 				});
-			}
+			});
 		}
 	}
 

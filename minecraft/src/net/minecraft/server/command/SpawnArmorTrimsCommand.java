@@ -1,63 +1,38 @@
 package net.minecraft.server.command;
 
-import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.datafixers.util.Pair;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.trim.ArmorTrim;
-import net.minecraft.item.trim.ArmorTrimMaterial;
-import net.minecraft.item.trim.ArmorTrimMaterials;
-import net.minecraft.item.trim.ArmorTrimPattern;
-import net.minecraft.item.trim.ArmorTrimPatterns;
+import net.minecraft.item.equipment.trim.ArmorTrim;
+import net.minecraft.item.equipment.trim.ArmorTrimMaterial;
+import net.minecraft.item.equipment.trim.ArmorTrimMaterials;
+import net.minecraft.item.equipment.trim.ArmorTrimPattern;
+import net.minecraft.item.equipment.trim.ArmorTrimPatterns;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SpawnArmorTrimsCommand {
-	private static final Map<Pair<RegistryEntry<ArmorMaterial>, EquipmentSlot>, Item> ARMOR_PIECES = Util.make(
-		Maps.<Pair<RegistryEntry<ArmorMaterial>, EquipmentSlot>, Item>newHashMap(), map -> {
-			map.put(Pair.of(ArmorMaterials.CHAIN, EquipmentSlot.HEAD), Items.CHAINMAIL_HELMET);
-			map.put(Pair.of(ArmorMaterials.CHAIN, EquipmentSlot.CHEST), Items.CHAINMAIL_CHESTPLATE);
-			map.put(Pair.of(ArmorMaterials.CHAIN, EquipmentSlot.LEGS), Items.CHAINMAIL_LEGGINGS);
-			map.put(Pair.of(ArmorMaterials.CHAIN, EquipmentSlot.FEET), Items.CHAINMAIL_BOOTS);
-			map.put(Pair.of(ArmorMaterials.IRON, EquipmentSlot.HEAD), Items.IRON_HELMET);
-			map.put(Pair.of(ArmorMaterials.IRON, EquipmentSlot.CHEST), Items.IRON_CHESTPLATE);
-			map.put(Pair.of(ArmorMaterials.IRON, EquipmentSlot.LEGS), Items.IRON_LEGGINGS);
-			map.put(Pair.of(ArmorMaterials.IRON, EquipmentSlot.FEET), Items.IRON_BOOTS);
-			map.put(Pair.of(ArmorMaterials.GOLD, EquipmentSlot.HEAD), Items.GOLDEN_HELMET);
-			map.put(Pair.of(ArmorMaterials.GOLD, EquipmentSlot.CHEST), Items.GOLDEN_CHESTPLATE);
-			map.put(Pair.of(ArmorMaterials.GOLD, EquipmentSlot.LEGS), Items.GOLDEN_LEGGINGS);
-			map.put(Pair.of(ArmorMaterials.GOLD, EquipmentSlot.FEET), Items.GOLDEN_BOOTS);
-			map.put(Pair.of(ArmorMaterials.NETHERITE, EquipmentSlot.HEAD), Items.NETHERITE_HELMET);
-			map.put(Pair.of(ArmorMaterials.NETHERITE, EquipmentSlot.CHEST), Items.NETHERITE_CHESTPLATE);
-			map.put(Pair.of(ArmorMaterials.NETHERITE, EquipmentSlot.LEGS), Items.NETHERITE_LEGGINGS);
-			map.put(Pair.of(ArmorMaterials.NETHERITE, EquipmentSlot.FEET), Items.NETHERITE_BOOTS);
-			map.put(Pair.of(ArmorMaterials.DIAMOND, EquipmentSlot.HEAD), Items.DIAMOND_HELMET);
-			map.put(Pair.of(ArmorMaterials.DIAMOND, EquipmentSlot.CHEST), Items.DIAMOND_CHESTPLATE);
-			map.put(Pair.of(ArmorMaterials.DIAMOND, EquipmentSlot.LEGS), Items.DIAMOND_LEGGINGS);
-			map.put(Pair.of(ArmorMaterials.DIAMOND, EquipmentSlot.FEET), Items.DIAMOND_BOOTS);
-			map.put(Pair.of(ArmorMaterials.TURTLE, EquipmentSlot.HEAD), Items.TURTLE_HELMET);
-		}
-	);
 	private static final List<RegistryKey<ArmorTrimPattern>> PATTERNS = List.of(
 		ArmorTrimPatterns.SENTRY,
 		ArmorTrimPatterns.DUNE,
@@ -106,6 +81,18 @@ public class SpawnArmorTrimsCommand {
 		DefaultedList<ArmorTrim> defaultedList = DefaultedList.of();
 		Registry<ArmorTrimPattern> registry = world.getRegistryManager().getOrThrow(RegistryKeys.TRIM_PATTERN);
 		Registry<ArmorTrimMaterial> registry2 = world.getRegistryManager().getOrThrow(RegistryKeys.TRIM_MATERIAL);
+		RegistryWrapper<Item> registryWrapper = world.createCommandRegistryWrapper(RegistryKeys.ITEM);
+		Map<Identifier, List<Item>> map = (Map<Identifier, List<Item>>)registryWrapper.streamEntries()
+			.map(RegistryEntry.Reference::value)
+			.filter(
+				itemx -> {
+					EquippableComponent equippableComponentx = itemx.getComponents().get(DataComponentTypes.EQUIPPABLE);
+					return equippableComponentx != null
+						&& equippableComponentx.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR
+						&& equippableComponentx.model().isPresent();
+				}
+			)
+			.collect(Collectors.groupingBy(itemx -> (Identifier)itemx.getComponents().get(DataComponentTypes.EQUIPPABLE).model().get()));
 		registry.stream()
 			.sorted(Comparator.comparing(pattern -> PATTERN_INDEX_GETTER.applyAsInt((RegistryKey)registry.getKey(pattern).orElse(null))))
 			.forEachOrdered(
@@ -114,46 +101,37 @@ public class SpawnArmorTrimsCommand {
 						.forEachOrdered(material -> defaultedList.add(new ArmorTrim(registry2.getEntry(material), registry.getEntry(pattern))))
 			);
 		BlockPos blockPos = player.getBlockPos().offset(player.getHorizontalFacing(), 5);
-		Registry<ArmorMaterial> registry3 = source.getRegistryManager().getOrThrow(RegistryKeys.ARMOR_MATERIAL);
-		int i = registry3.size() - 1;
+		int i = map.size() - 1;
 		double d = 3.0;
 		int j = 0;
 		int k = 0;
 
 		for (ArmorTrim armorTrim : defaultedList) {
-			for (ArmorMaterial armorMaterial : registry3) {
-				if (armorMaterial != ArmorMaterials.LEATHER.value()) {
-					double e = (double)blockPos.getX() + 0.5 - (double)(j % registry2.size()) * 3.0;
-					double f = (double)blockPos.getY() + 0.5 + (double)(k % i) * 3.0;
-					double g = (double)blockPos.getZ() + 0.5 + (double)(j / registry2.size() * 10);
-					ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, e, f, g);
-					armorStandEntity.setYaw(180.0F);
-					armorStandEntity.setNoGravity(true);
+			for (List<Item> list : map.values()) {
+				double e = (double)blockPos.getX() + 0.5 - (double)(j % registry2.size()) * 3.0;
+				double f = (double)blockPos.getY() + 0.5 + (double)(k % i) * 3.0;
+				double g = (double)blockPos.getZ() + 0.5 + (double)(j / registry2.size() * 10);
+				ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, e, f, g);
+				armorStandEntity.setYaw(180.0F);
+				armorStandEntity.setNoGravity(true);
 
-					for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-						Item item = (Item)ARMOR_PIECES.get(Pair.of(armorMaterial, equipmentSlot));
-						if (item != null) {
-							ItemStack itemStack = new ItemStack(item);
-							itemStack.set(DataComponentTypes.TRIM, armorTrim);
-							armorStandEntity.equipStack(equipmentSlot, itemStack);
-							if (item instanceof ArmorItem) {
-								ArmorItem armorItem = (ArmorItem)item;
-								if (armorItem.getMaterial().matches(ArmorMaterials.TURTLE)) {
-									armorStandEntity.setCustomName(
-										armorTrim.getPattern().value().getDescription(armorTrim.getMaterial()).copy().append(" ").append(armorTrim.getMaterial().value().description())
-									);
-									armorStandEntity.setCustomNameVisible(true);
-									continue;
-								}
-							}
-
-							armorStandEntity.setInvisible(true);
-						}
+				for (Item item : list) {
+					EquippableComponent equippableComponent = (EquippableComponent)Objects.requireNonNull(item.getComponents().get(DataComponentTypes.EQUIPPABLE));
+					ItemStack itemStack = new ItemStack(item);
+					itemStack.set(DataComponentTypes.TRIM, armorTrim);
+					armorStandEntity.equipStack(equippableComponent.slot(), itemStack);
+					if (itemStack.isOf(Items.TURTLE_HELMET)) {
+						armorStandEntity.setCustomName(
+							armorTrim.pattern().value().getDescription(armorTrim.material()).copy().append(" ").append(armorTrim.material().value().description())
+						);
+						armorStandEntity.setCustomNameVisible(true);
+					} else {
+						armorStandEntity.setInvisible(true);
 					}
-
-					world.spawnEntity(armorStandEntity);
-					k++;
 				}
+
+				world.spawnEntity(armorStandEntity);
+				k++;
 			}
 
 			j++;

@@ -48,9 +48,11 @@ public class SignEditScreen extends AbstractSignEditScreen {
 		if (this.model != null) {
 			context.getMatrices().translate(0.0F, 31.0F, 0.0F);
 			context.getMatrices().scale(62.500004F, 62.500004F, -62.500004F);
-			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
-			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(context.getVertexConsumers(), this.model::getLayer);
-			this.model.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+			context.draw(vertexConsumers -> {
+				SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
+				VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, this.model::getLayer);
+				this.model.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
+			});
 		}
 	}
 

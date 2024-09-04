@@ -601,8 +601,8 @@ public class ClientWorld extends World {
 		this.worldRenderer.scheduleChunkRenders3x3x3(x, y, z);
 	}
 
-	public void method_62146(int i, int j, int k, int l, int m, int n) {
-		this.worldRenderer.scheduleChunkRenders(i, j, k, l, m, n);
+	public void scheduleChunkRenders(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		this.worldRenderer.scheduleChunkRenders(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 
 	@Override

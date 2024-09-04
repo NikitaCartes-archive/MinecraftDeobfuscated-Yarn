@@ -111,7 +111,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 	public Map<EquipmentSlot, ItemStack> getEquipment(LivingEntity entity) {
 		Map<EquipmentSlot, ItemStack> map = Maps.newEnumMap(EquipmentSlot.class);
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 			if (this.slotMatches(equipmentSlot)) {
 				ItemStack itemStack = entity.getEquippedStack(equipmentSlot);
 				if (!itemStack.isEmpty()) {

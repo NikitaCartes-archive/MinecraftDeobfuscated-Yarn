@@ -20,12 +20,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.trim.ArmorTrim;
+import net.minecraft.item.equipment.trim.ArmorTrim;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.GlobalPos;
@@ -91,9 +90,10 @@ public class ModelPredicateProviderRegistry {
 		);
 		ClampedModelPredicateProvider clampedModelPredicateProvider = (stack, world, entity, seed) -> {
 			ArmorTrim armorTrim = stack.get(DataComponentTypes.TRIM);
-			return armorTrim != null ? armorTrim.getMaterial().value().itemModelIndex() : Float.NEGATIVE_INFINITY;
+			return armorTrim != null ? armorTrim.material().value().itemModelIndex() : Float.NEGATIVE_INFINITY;
 		};
 		register(ItemModelGenerator.TRIM_TYPE, clampedModelPredicateProvider);
+		register(Identifier.ofVanilla("broken"), (stack, world, entity, seed) -> stack.willBreakNextUse() ? 1.0F : 0.0F);
 		registerCustomModelData(
 			(stack, world, entity, seed) -> (float)stack.getOrDefault(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelDataComponent.DEFAULT).value()
 		);
@@ -193,7 +193,6 @@ public class ModelPredicateProviderRegistry {
 			ChargedProjectilesComponent chargedProjectilesComponent = stack.get(DataComponentTypes.CHARGED_PROJECTILES);
 			return chargedProjectilesComponent != null && chargedProjectilesComponent.contains(Items.FIREWORK_ROCKET) ? 1.0F : 0.0F;
 		});
-		register(Items.ELYTRA, Identifier.ofVanilla("broken"), (stack, world, entity, seed) -> ElytraItem.isUsable(stack) ? 0.0F : 1.0F);
 		register(Items.FISHING_ROD, Identifier.ofVanilla("cast"), (stack, world, entity, seed) -> {
 			if (entity == null) {
 				return 0.0F;

@@ -32,8 +32,8 @@ public class SnowGolemEntityRenderer extends MobEntityRenderer<SnowGolemEntity, 
 
 	public void updateRenderState(SnowGolemEntity snowGolemEntity, LivingEntityRenderState livingEntityRenderState, float f) {
 		super.updateRenderState(snowGolemEntity, livingEntityRenderState, f);
-		livingEntityRenderState.headEquippedStack = snowGolemEntity.hasPumpkin() ? new ItemStack(Items.CARVED_PUMPKIN) : ItemStack.EMPTY;
-		livingEntityRenderState.headEquippedItemModel = this.itemRenderer
-			.getModel(livingEntityRenderState.headEquippedStack, snowGolemEntity, ModelTransformationMode.HEAD);
+		livingEntityRenderState.equippedHeadStack = snowGolemEntity.hasPumpkin() ? new ItemStack(Items.CARVED_PUMPKIN) : ItemStack.EMPTY;
+		livingEntityRenderState.equippedHeadItemModel = this.itemRenderer
+			.getModel(livingEntityRenderState.equippedHeadStack, snowGolemEntity, ModelTransformationMode.HEAD);
 	}
 }

@@ -3,6 +3,7 @@ package net.minecraft.client.input;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.util.PlayerInput;
 
 @Environment(EnvType.CLIENT)
 public class KeyboardInput extends Input {
@@ -22,14 +23,17 @@ public class KeyboardInput extends Input {
 
 	@Override
 	public void tick(boolean slowDown, float slowDownFactor) {
-		this.pressingForward = this.settings.forwardKey.isPressed();
-		this.pressingBack = this.settings.backKey.isPressed();
-		this.pressingLeft = this.settings.leftKey.isPressed();
-		this.pressingRight = this.settings.rightKey.isPressed();
-		this.movementForward = getMovementMultiplier(this.pressingForward, this.pressingBack);
-		this.movementSideways = getMovementMultiplier(this.pressingLeft, this.pressingRight);
-		this.jumping = this.settings.jumpKey.isPressed();
-		this.sneaking = this.settings.sneakKey.isPressed();
+		this.playerInput = new PlayerInput(
+			this.settings.forwardKey.isPressed(),
+			this.settings.backKey.isPressed(),
+			this.settings.leftKey.isPressed(),
+			this.settings.rightKey.isPressed(),
+			this.settings.jumpKey.isPressed(),
+			this.settings.sneakKey.isPressed(),
+			this.settings.sprintKey.isPressed()
+		);
+		this.movementForward = getMovementMultiplier(this.playerInput.forward(), this.playerInput.backward());
+		this.movementSideways = getMovementMultiplier(this.playerInput.left(), this.playerInput.right());
 		if (slowDown) {
 			this.movementSideways *= slowDownFactor;
 			this.movementForward *= slowDownFactor;

@@ -20,9 +20,9 @@ import net.minecraft.world.World;
 
 public class HoneyBlock extends TranslucentBlock {
 	public static final MapCodec<HoneyBlock> CODEC = createCodec(HoneyBlock::new);
-	private static final double field_31101 = 0.13;
-	private static final double field_31102 = 0.08;
-	private static final double field_31103 = 0.05;
+	private static final double field_31101 = 0.2058;
+	private static final double field_31102 = 0.1568;
+	private static final double field_31103 = 0.1274;
 	private static final int TICKS_PER_SECOND = 20;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 
@@ -72,7 +72,7 @@ public class HoneyBlock extends TranslucentBlock {
 			return false;
 		} else if (entity.getY() > (double)pos.getY() + 0.9375 - 1.0E-7) {
 			return false;
-		} else if (entity.getVelocity().y >= -0.08) {
+		} else if (entity.getVelocity().y >= -0.1568) {
 			return false;
 		} else {
 			double d = Math.abs((double)pos.getX() + 0.5 - entity.getX());
@@ -90,11 +90,12 @@ public class HoneyBlock extends TranslucentBlock {
 
 	private void updateSlidingVelocity(Entity entity) {
 		Vec3d vec3d = entity.getVelocity();
-		if (vec3d.y < -0.13) {
-			double d = -0.05 / vec3d.y;
-			entity.setVelocity(new Vec3d(vec3d.x * d, -0.05, vec3d.z * d));
+		if (entity.getVelocity().y < -0.2058) {
+			double d = entity.getVelocity().y / 0.98F + 0.08;
+			double e = -0.1274 / d;
+			entity.setVelocity(new Vec3d(vec3d.x * e, -0.1274, vec3d.z * e));
 		} else {
-			entity.setVelocity(new Vec3d(vec3d.x, -0.05, vec3d.z));
+			entity.setVelocity(new Vec3d(vec3d.x, -0.1274, vec3d.z));
 		}
 
 		entity.onLanding();

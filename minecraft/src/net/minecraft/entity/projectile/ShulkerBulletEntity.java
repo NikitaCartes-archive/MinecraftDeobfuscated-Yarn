@@ -200,6 +200,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	@Override
 	public void tick() {
 		super.tick();
+		HitResult hitResult = null;
 		if (!this.getWorld().isClient) {
 			if (this.target == null && this.targetUuid != null) {
 				this.target = ((ServerWorld)this.getWorld()).getEntity(this.targetUuid);
@@ -218,16 +219,16 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 				this.setVelocity(vec3d.add((this.targetX - vec3d.x) * 0.2, (this.targetY - vec3d.y) * 0.2, (this.targetZ - vec3d.z) * 0.2));
 			}
 
-			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-			if (hitResult.getType() != HitResult.Type.MISS) {
-				this.hitOrDeflect(hitResult);
-			}
-
-			this.tickBlockCollision();
+			hitResult = ProjectileUtil.getCollision(this, this::canHit);
 		}
 
 		Vec3d vec3d = this.getVelocity();
-		this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
+		this.setPosition(this.getPos().add(vec3d));
+		this.tickBlockCollision();
+		if (hitResult != null && this.isAlive() && hitResult.getType() != HitResult.Type.MISS) {
+			this.hitOrDeflect(hitResult);
+		}
+
 		ProjectileUtil.setRotationFromVelocity(this, 0.5F);
 		if (this.getWorld().isClient) {
 			this.getWorld().addParticle(ParticleTypes.END_ROD, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);

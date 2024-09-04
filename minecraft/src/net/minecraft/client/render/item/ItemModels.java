@@ -1,54 +1,39 @@
 package net.minecraft.client.render.item;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.Map.Entry;
-import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.item.Item;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ItemModels {
-	public final Int2ObjectMap<ModelIdentifier> modelIds = new Int2ObjectOpenHashMap<>(256);
-	private final Int2ObjectMap<BakedModel> models = new Int2ObjectOpenHashMap<>(256);
-	private final BakedModelManager modelManager;
+	private final Map<Identifier, BakedModel> models = new HashMap();
+	private final Supplier<BakedModel> missingModelSupplier;
+	private final Function<Identifier, BakedModel> idToModel;
 
 	public ItemModels(BakedModelManager modelManager) {
-		this.modelManager = modelManager;
+		this.missingModelSupplier = modelManager::getMissingModel;
+		this.idToModel = id -> modelManager.getModel(ModelIdentifier.ofInventoryVariant(id));
 	}
 
 	public BakedModel getModel(ItemStack stack) {
-		BakedModel bakedModel = this.getModel(stack.getItem());
-		return bakedModel == null ? this.modelManager.getMissingModel() : bakedModel;
+		Identifier identifier = stack.get(DataComponentTypes.ITEM_MODEL);
+		return identifier == null ? (BakedModel)this.missingModelSupplier.get() : this.getModel(identifier);
 	}
 
-	@Nullable
-	public BakedModel getModel(Item item) {
-		return this.models.get(getModelId(item));
+	public BakedModel getModel(Identifier id) {
+		return (BakedModel)this.models.computeIfAbsent(id, this.idToModel);
 	}
 
-	private static int getModelId(Item item) {
-		return Item.getRawId(item);
-	}
-
-	public void putModel(Item item, ModelIdentifier modelId) {
-		this.modelIds.put(getModelId(item), modelId);
-	}
-
-	public BakedModelManager getModelManager() {
-		return this.modelManager;
-	}
-
-	public void reloadModels() {
+	public void clearModels() {
 		this.models.clear();
-
-		for (Entry<Integer, ModelIdentifier> entry : this.modelIds.entrySet()) {
-			this.models.put((Integer)entry.getKey(), this.modelManager.getModel((ModelIdentifier)entry.getValue()));
-		}
 	}
 }

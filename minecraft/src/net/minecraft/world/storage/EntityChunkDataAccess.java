@@ -20,7 +20,7 @@ import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import org.slf4j.Logger;
 
 public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
@@ -30,12 +30,12 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	private final ServerWorld world;
 	private final ChunkPosKeyedStorage storage;
 	private final LongSet emptyChunks = new LongOpenHashSet();
-	private final TaskExecutor<Runnable> taskExecutor;
+	private final SimpleConsecutiveExecutor taskExecutor;
 
 	public EntityChunkDataAccess(ChunkPosKeyedStorage storage, ServerWorld world, Executor executor) {
 		this.storage = storage;
 		this.world = world;
-		this.taskExecutor = TaskExecutor.create(executor, "entity-deserializer");
+		this.taskExecutor = new SimpleConsecutiveExecutor(executor, "entity-deserializer");
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	@Override
 	public void awaitAll(boolean sync) {
 		this.storage.completeAll(sync).join();
-		this.taskExecutor.awaitAll();
+		this.taskExecutor.runAll();
 	}
 
 	@Override

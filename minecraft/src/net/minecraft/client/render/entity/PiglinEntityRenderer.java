@@ -36,7 +36,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<AbstractPiglinEnti
 				new ArmorEntityModel(ctx.getPart(armorOuterLayer)),
 				new ArmorEntityModel(ctx.getPart(babyArmorInnerLayer)),
 				new ArmorEntityModel(ctx.getPart(babyArmorOuterLayer)),
-				ctx.getModelManager()
+				ctx.getEquipmentRenderer()
 			)
 		);
 	}
