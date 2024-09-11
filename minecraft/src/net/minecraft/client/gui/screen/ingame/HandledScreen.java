@@ -33,6 +33,8 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public abstract class HandledScreen<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
 	public static final Identifier BACKGROUND_TEXTURE = Identifier.ofVanilla("textures/gui/container/inventory.png");
+	private static final Identifier SLOT_HIGHLIGHT_BACK_TEXTURE = Identifier.ofVanilla("container/slot_highlight_back");
+	private static final Identifier SLOT_HIGHLIGHT_FRONT_TEXTURE = Identifier.ofVanilla("container/slot_highlight_front");
 	protected static final int field_52802 = 256;
 	protected static final int field_52803 = 256;
 	private static final float field_32318 = 100.0F;
@@ -110,20 +112,16 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		context.getMatrices().push();
 		context.getMatrices().translate((float)i, (float)j, 0.0F);
 		Slot slot = this.focusedSlot;
-		this.focusedSlot = null;
+		this.focusedSlot = this.getSlotAt((double)mouseX, (double)mouseY);
+		this.drawSlotHighlightBack(context);
 
 		for (Slot slot2 : this.handler.slots) {
 			if (slot2.isEnabled()) {
 				this.drawSlot(context, slot2);
-				if (this.isPointOverSlot(slot2, (double)mouseX, (double)mouseY)) {
-					this.focusedSlot = slot2;
-					if (this.focusedSlot.canBeHighlighted()) {
-						drawSlotHighlight(context, slot2.x, slot2.y, 0);
-					}
-				}
 			}
 		}
 
+		this.drawSlotHighlightFront(context);
 		if (slot != null && slot != this.focusedSlot) {
 			this.resetTooltipSubmenus(slot);
 		}
@@ -183,8 +181,16 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		return false;
 	}
 
-	public static void drawSlotHighlight(DrawContext context, int x, int y, int z) {
-		context.fillGradient(RenderLayer.getGuiOverlay(), x, y, x + 16, y + 16, -2130706433, -2130706433, z);
+	private void drawSlotHighlightBack(DrawContext context) {
+		if (this.focusedSlot != null && this.focusedSlot.canBeHighlighted()) {
+			context.drawGuiTexture(RenderLayer::getGuiTextured, SLOT_HIGHLIGHT_BACK_TEXTURE, this.focusedSlot.x - 4, this.focusedSlot.y - 4, 24, 24);
+		}
+	}
+
+	private void drawSlotHighlightFront(DrawContext context) {
+		if (this.focusedSlot != null && this.focusedSlot.canBeHighlighted()) {
+			context.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, SLOT_HIGHLIGHT_FRONT_TEXTURE, this.focusedSlot.x - 4, this.focusedSlot.y - 4, 24, 24);
+		}
 	}
 
 	protected void drawMouseoverTooltip(DrawContext drawContext, int x, int y) {
@@ -302,10 +308,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	@Nullable
-	private Slot getSlotAt(double x, double y) {
-		for (int i = 0; i < this.handler.slots.size(); i++) {
-			Slot slot = this.handler.slots.get(i);
-			if (this.isPointOverSlot(slot, x, y) && slot.isEnabled()) {
+	private Slot getSlotAt(double mouseX, double mouseY) {
+		for (Slot slot : this.handler.slots) {
+			if (slot.isEnabled() && this.isPointOverSlot(slot, mouseX, mouseY)) {
 				return slot;
 			}
 		}
@@ -602,7 +607,18 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			slotId = slot.id;
 		}
 
+		this.onMouseClick(slot, actionType);
 		this.client.interactionManager.clickSlot(this.handler.syncId, slotId, button, actionType, this.client.player);
+	}
+
+	void onMouseClick(@Nullable Slot slot, SlotActionType actionType) {
+		if (slot != null && slot.hasStack()) {
+			for (TooltipSubmenuHandler tooltipSubmenuHandler : this.tooltipSubmenuHandlers) {
+				if (tooltipSubmenuHandler.isApplicableTo(slot)) {
+					tooltipSubmenuHandler.onMouseClick(slot, actionType);
+				}
+			}
+		}
 	}
 
 	protected void onSlotChangedState(int slotId, int handlerId, boolean newState) {

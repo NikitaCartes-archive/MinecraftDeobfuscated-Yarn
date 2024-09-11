@@ -104,7 +104,7 @@ public class SkullBlockEntity extends BlockEntity {
 				ProfileResult profileResult = apiServices.sessionService().fetchProfile(uuid, true);
 				return Optional.ofNullable(profileResult).map(ProfileResult::profile);
 			}
-		}, Util.getMainWorkerExecutor());
+		}, Util.getMainWorkerExecutor().named("fetchProfile"));
 	}
 
 	public static void clearServices() {

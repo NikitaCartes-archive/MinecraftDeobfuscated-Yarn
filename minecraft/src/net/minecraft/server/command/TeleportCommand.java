@@ -181,21 +181,18 @@ public class TeleportCommand {
 		@Nullable PosArgument rotation,
 		@Nullable TeleportCommand.LookTarget facingLocation
 	) throws CommandSyntaxException {
-		Vec3d vec3d = location.getPos(source, true);
-		Vec2f vec2f = rotation == null ? null : rotation.getRotation(source, true);
+		Vec3d vec3d = location.getPos(source);
+		Vec2f vec2f = rotation == null ? null : rotation.getRotation(source);
 		Set<PositionFlag> set = EnumSet.noneOf(PositionFlag.class);
 		if (location.isXRelative()) {
-			set.add(PositionFlag.X);
 			set.add(PositionFlag.DELTA_X);
 		}
 
 		if (location.isYRelative()) {
-			set.add(PositionFlag.Y);
 			set.add(PositionFlag.DELTA_Y);
 		}
 
 		if (location.isZRelative()) {
-			set.add(PositionFlag.Z);
 			set.add(PositionFlag.DELTA_Z);
 		}
 
@@ -214,27 +211,26 @@ public class TeleportCommand {
 
 		for (Entity entity : targets) {
 			if (rotation == null) {
-				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, 0.0F, 0.0F, facingLocation);
+				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.getYaw(), entity.getPitch(), facingLocation);
 			} else {
 				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, facingLocation);
 			}
 		}
 
-		Vec3d vec3d2 = location.toAbsolutePos(source);
 		if (targets.size() == 1) {
 			source.sendFeedback(
 				() -> Text.translatable(
 						"commands.teleport.success.location.single",
 						((Entity)targets.iterator().next()).getDisplayName(),
-						formatFloat(vec3d2.x),
-						formatFloat(vec3d2.y),
-						formatFloat(vec3d2.z)
+						formatFloat(vec3d.x),
+						formatFloat(vec3d.y),
+						formatFloat(vec3d.z)
 					),
 				true
 			);
 		} else {
 			source.sendFeedback(
-				() -> Text.translatable("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d2.x), formatFloat(vec3d2.y), formatFloat(vec3d2.z)),
+				() -> Text.translatable("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d.x), formatFloat(vec3d.y), formatFloat(vec3d.z)),
 				true
 			);
 		}
@@ -262,9 +258,11 @@ public class TeleportCommand {
 		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
-			float f = MathHelper.wrapDegrees(yaw);
-			float g = MathHelper.wrapDegrees(pitch);
-			if (target.teleport(world, x, y, z, movementFlags, f, g, true)) {
+			float f = movementFlags.contains(PositionFlag.Y_ROT) ? yaw - target.getYaw() : yaw;
+			float g = movementFlags.contains(PositionFlag.X_ROT) ? pitch - target.getPitch() : pitch;
+			float h = MathHelper.wrapDegrees(f);
+			float i = MathHelper.wrapDegrees(g);
+			if (target.teleport(world, x, y, z, movementFlags, h, i, true)) {
 				if (facingLocation != null) {
 					facingLocation.look(source, target);
 				}

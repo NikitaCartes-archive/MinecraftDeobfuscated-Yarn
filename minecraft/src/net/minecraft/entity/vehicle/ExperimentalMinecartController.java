@@ -222,7 +222,7 @@ public class ExperimentalMinecartController extends MinecartController {
 	@Override
 	public void moveOnRail() {
 		for (ExperimentalMinecartController.MoveIteration moveIteration = new ExperimentalMinecartController.MoveIteration();
-			moveIteration.shouldContinue();
+			moveIteration.shouldContinue() && this.minecart.isAlive();
 			moveIteration.initial = false
 		) {
 			Vec3d vec3d = this.getVelocity();
@@ -274,9 +274,10 @@ public class ExperimentalMinecartController extends MinecartController {
 					this.setAngles(f, g);
 				}
 
-				this.stagingLerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)d));
+				this.stagingLerpSteps
+					.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)Math.min(d, this.getMaxSpeed())));
 			} else if (vec3d.horizontalLengthSquared() > 0.0) {
-				this.stagingLerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)vec3d.length()));
+				this.stagingLerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), 1.0F));
 			}
 
 			if (d > 1.0E-5F || moveIteration.initial) {

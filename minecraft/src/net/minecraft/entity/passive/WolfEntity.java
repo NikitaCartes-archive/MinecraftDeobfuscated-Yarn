@@ -391,7 +391,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	private boolean shouldArmorAbsorbDamage(DamageSource source) {
-		return this.hasArmor() && !source.isIn(DamageTypeTags.BYPASSES_WOLF_ARMOR);
+		return this.getBodyArmor().isOf(Items.WOLF_ARMOR) && !source.isIn(DamageTypeTags.BYPASSES_WOLF_ARMOR);
 	}
 
 	@Override
@@ -432,13 +432,13 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 					return super.interactMob(player, hand);
 				}
 
-				if (itemStack.isOf(Items.WOLF_ARMOR) && this.isOwner(player) && this.getBodyArmor().isEmpty() && !this.isBaby()) {
+				if (this.canEquip(itemStack, EquipmentSlot.BODY) && !this.isWearingBodyArmor() && this.isOwner(player) && !this.isBaby()) {
 					this.equipBodyArmor(itemStack.copyWithCount(1));
 					itemStack.decrementUnlessCreative(1, player);
 					return ActionResult.SUCCESS;
 				} else if (itemStack.isOf(Items.SHEARS)
 					&& this.isOwner(player)
-					&& this.hasArmor()
+					&& this.isWearingBodyArmor()
 					&& (!EnchantmentHelper.hasAnyEnchantmentsWith(this.getBodyArmor(), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE) || player.isCreative())) {
 					itemStack.damage(1, player, getSlotForHand(hand));
 					this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
@@ -447,7 +447,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 					this.dropStack(itemStack2);
 					return ActionResult.SUCCESS;
 				} else if (this.isInSittingPose()
-					&& this.hasArmor()
+					&& this.isWearingBodyArmor()
 					&& this.isOwner(player)
 					&& this.getBodyArmor().isDamaged()
 					&& this.getBodyArmor().canRepairWith(itemStack)) {
@@ -554,10 +554,6 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 
 	public DyeColor getCollarColor() {
 		return DyeColor.byId(this.dataTracker.get(COLLAR_COLOR));
-	}
-
-	public boolean hasArmor() {
-		return this.getBodyArmor().isOf(Items.WOLF_ARMOR);
 	}
 
 	private void setCollarColor(DyeColor color) {

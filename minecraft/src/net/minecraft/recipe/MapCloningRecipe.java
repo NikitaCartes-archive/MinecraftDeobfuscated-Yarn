@@ -1,5 +1,6 @@
 package net.minecraft.recipe;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -19,7 +20,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		for (int j = 0; j < craftingRecipeInput.size(); j++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.isOf(Items.FILLED_MAP)) {
+				if (itemStack2.contains(DataComponentTypes.MAP_ID)) {
 					if (!itemStack.isEmpty()) {
 						return false;
 					}
@@ -45,7 +46,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		for (int j = 0; j < craftingRecipeInput.size(); j++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(j);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.isOf(Items.FILLED_MAP)) {
+				if (itemStack2.contains(DataComponentTypes.MAP_ID)) {
 					if (!itemStack.isEmpty()) {
 						return ItemStack.EMPTY;
 					}

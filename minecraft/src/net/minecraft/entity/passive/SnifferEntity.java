@@ -34,11 +34,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -57,6 +53,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -270,21 +268,12 @@ public class SnifferEntity extends AnimalEntity {
 
 	private void dropSeeds() {
 		if (!this.getWorld().isClient() && this.dataTracker.get(FINISH_DIG_TIME) == this.age) {
-			ServerWorld serverWorld = (ServerWorld)this.getWorld();
-			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.SNIFFER_DIGGING_GAMEPLAY);
-			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
-				.add(LootContextParameters.ORIGIN, this.getDigLocation())
-				.add(LootContextParameters.THIS_ENTITY, this)
-				.build(LootContextTypes.GIFT);
-			List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
 			BlockPos blockPos = this.getDigPos();
-
-			for (ItemStack itemStack : list) {
-				ItemEntity itemEntity = new ItemEntity(serverWorld, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
+			this.forEachGiftedItem(LootTables.SNIFFER_DIGGING_GAMEPLAY, stack -> {
+				ItemEntity itemEntity = new ItemEntity(this.getWorld(), (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), stack);
 				itemEntity.setToDefaultPickupDelay();
-				serverWorld.spawnEntity(itemEntity);
-			}
-
+				this.getWorld().spawnEntity(itemEntity);
+			});
 			this.playSound(SoundEvents.ENTITY_SNIFFER_DROP_SEED, 1.0F, 1.0F);
 		}
 	}
@@ -456,11 +445,12 @@ public class SnifferEntity extends AnimalEntity {
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("snifferBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("snifferBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().swap("snifferActivityUpdate");
+		profiler.swap("snifferActivityUpdate");
 		SnifferBrain.updateActivities(this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		super.mobTick();
 	}
 

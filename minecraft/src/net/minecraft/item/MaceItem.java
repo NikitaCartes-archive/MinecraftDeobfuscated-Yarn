@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -193,5 +194,11 @@ public class MaceItem extends Item {
 
 	public static boolean shouldDealAdditionalDamage(LivingEntity attacker) {
 		return attacker.fallDistance > 1.5F && !attacker.isGliding();
+	}
+
+	@Nullable
+	@Override
+	public DamageSource getDamageSource(LivingEntity user) {
+		return shouldDealAdditionalDamage(user) ? user.getDamageSources().maceSmash(user) : super.getDamageSource(user);
 	}
 }

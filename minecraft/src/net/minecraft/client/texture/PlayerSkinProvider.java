@@ -46,23 +46,26 @@ public class PlayerSkinProvider {
 		this.elytraCache = new PlayerSkinProvider.FileCache(textureManager, directory, Type.ELYTRA);
 		this.cache = CacheBuilder.newBuilder()
 			.expireAfterAccess(Duration.ofSeconds(15L))
-			.build(new CacheLoader<PlayerSkinProvider.Key, CompletableFuture<SkinTextures>>() {
-				public CompletableFuture<SkinTextures> load(PlayerSkinProvider.Key key) {
-					return CompletableFuture.supplyAsync(() -> {
-						Property property = key.packedTextures();
-						if (property == null) {
-							return MinecraftProfileTextures.EMPTY;
-						} else {
-							MinecraftProfileTextures minecraftProfileTextures = sessionService.unpackTextures(property);
-							if (minecraftProfileTextures.signatureState() == SignatureState.INVALID) {
-								PlayerSkinProvider.LOGGER.warn("Profile contained invalid signature for textures property (profile id: {})", key.profileId());
-							}
+			.build(
+				new CacheLoader<PlayerSkinProvider.Key, CompletableFuture<SkinTextures>>() {
+					public CompletableFuture<SkinTextures> load(PlayerSkinProvider.Key key) {
+						return CompletableFuture.supplyAsync(() -> {
+								Property property = key.packedTextures();
+								if (property == null) {
+									return MinecraftProfileTextures.EMPTY;
+								} else {
+									MinecraftProfileTextures minecraftProfileTextures = sessionService.unpackTextures(property);
+									if (minecraftProfileTextures.signatureState() == SignatureState.INVALID) {
+										PlayerSkinProvider.LOGGER.warn("Profile contained invalid signature for textures property (profile id: {})", key.profileId());
+									}
 
-							return minecraftProfileTextures;
-						}
-					}, Util.getMainWorkerExecutor()).thenComposeAsync(textures -> PlayerSkinProvider.this.fetchSkinTextures(key.profileId(), textures), executor);
+									return minecraftProfileTextures;
+								}
+							}, Util.getMainWorkerExecutor().named("unpackSkinTextures"))
+							.thenComposeAsync(textures -> PlayerSkinProvider.this.fetchSkinTextures(key.profileId(), textures), executor);
+					}
 				}
-			});
+			);
 	}
 
 	public Supplier<SkinTextures> getSkinTexturesSupplier(GameProfile profile) {

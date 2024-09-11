@@ -2,7 +2,6 @@ package net.minecraft.entity.projectile;
 
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -26,7 +25,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -222,11 +220,20 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			float g = (float)(MathHelper.atan2(vec3d.y, vec3d.horizontalLength()) * 180.0F / (float)Math.PI);
 			this.setPitch(updateRotation(this.getPitch(), g));
 			this.setYaw(updateRotation(this.getYaw(), f));
-			BlockHitResult blockHitResult = this.getWorld()
-				.getCollisionsIncludingWorldBorder(
-					new RaycastContext(vec3d3, vec3d3.add(vec3d), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)
-				);
-			this.applyCollision(blockHitResult);
+			if (!bl) {
+				BlockHitResult blockHitResult = this.getWorld()
+					.getCollisionsIncludingWorldBorder(
+						new RaycastContext(vec3d3, vec3d3.add(vec3d), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)
+					);
+				this.applyCollision(blockHitResult);
+			} else {
+				this.setPosition(vec3d3.add(vec3d));
+				this.tickBlockCollision();
+				if (this.portalManager != null && this.portalManager.isInPortal()) {
+					this.tickPortalTeleportation();
+				}
+			}
+
 			super.tick();
 			this.applyDrag();
 			if (!bl) {
@@ -237,11 +244,11 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	private void applyCollision(BlockHitResult blockHitResult) {
 		while (this.isAlive()) {
-			EntityHitResult entityHitResult = this.getEntityCollision(this.getPos(), blockHitResult.getPos());
-			Vec3d vec3d = ((HitResult)Objects.requireNonNullElse(entityHitResult, blockHitResult)).getPos();
-			this.updatePrevPosition();
-			this.setPosition(vec3d);
-			this.tickBlockCollision();
+			Vec3d vec3d = this.getPos();
+			EntityHitResult entityHitResult = this.getEntityCollision(vec3d, blockHitResult.getPos());
+			Vec3d vec3d2 = ((HitResult)Objects.requireNonNullElse(entityHitResult, blockHitResult)).getPos();
+			this.setPosition(vec3d2);
+			this.tickBlockCollision(vec3d, vec3d2);
 			if (this.portalManager != null && this.portalManager.isInPortal()) {
 				this.tickPortalTeleportation();
 			}
@@ -249,12 +256,13 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			if (entityHitResult == null) {
 				if (this.isAlive() && blockHitResult.getType() != HitResult.Type.MISS) {
 					this.hitOrDeflect(blockHitResult);
+					this.velocityDirty = true;
 				}
 				break;
 			} else if (this.isAlive() && !this.noClip) {
 				ProjectileDeflection projectileDeflection = this.hitOrDeflect(entityHitResult);
 				this.velocityDirty = true;
-				if (projectileDeflection == ProjectileDeflection.NONE) {
+				if (this.getPierceLevel() > 0 && projectileDeflection == ProjectileDeflection.NONE) {
 					continue;
 				}
 				break;
@@ -397,10 +405,10 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				}
 
 				if (!this.getWorld().isClient && entity2 instanceof ServerPlayerEntity serverPlayerEntity) {
-					if (this.piercingKilledEntities != null && this.isShotFromCrossbow()) {
-						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities);
-					} else if (!entity.isAlive() && this.isShotFromCrossbow()) {
-						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, Arrays.asList(entity));
+					if (this.piercingKilledEntities != null) {
+						Criteria.KILLED_BY_ARROW.trigger(serverPlayerEntity, this.piercingKilledEntities, this.weapon);
+					} else if (!entity.isAlive()) {
+						Criteria.KILLED_BY_ARROW.trigger(serverPlayerEntity, List.of(entity), this.weapon);
 					}
 				}
 			}
@@ -451,6 +459,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		Vec3d vec3d2 = new Vec3d(Math.signum(vec3d.x), Math.signum(vec3d.y), Math.signum(vec3d.z));
 		Vec3d vec3d3 = vec3d2.multiply(0.05F);
 		this.setPosition(this.getPos().subtract(vec3d3));
+		this.setVelocity(Vec3d.ZERO);
 		this.playSound(this.getSound(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
 		this.inGround = true;
 		this.shake = 7;
@@ -651,10 +660,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	public boolean isCritical() {
 		byte b = this.dataTracker.get(PROJECTILE_FLAGS);
 		return (b & 1) != 0;
-	}
-
-	public boolean isShotFromCrossbow() {
-		return this.weapon != null && this.weapon.isOf(Items.CROSSBOW);
 	}
 
 	public byte getPierceLevel() {

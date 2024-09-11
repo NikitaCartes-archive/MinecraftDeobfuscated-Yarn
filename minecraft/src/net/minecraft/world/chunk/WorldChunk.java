@@ -39,6 +39,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
@@ -267,7 +268,7 @@ public class WorldChunk extends Chunk {
 				}
 
 				if (ChunkLightProvider.needsLightUpdate(blockState, state)) {
-					Profiler profiler = this.world.getProfiler();
+					Profiler profiler = Profilers.get();
 					profiler.push("updateSkyLightSources");
 					this.chunkSkyLight.isSkyLightAccessible(this, j, i, l);
 					profiler.swap("queueCheckLight");
@@ -686,7 +687,7 @@ public class WorldChunk extends Chunk {
 				BlockPos blockPos = this.blockEntity.getPos();
 				if (WorldChunk.this.canTickBlockEntity(blockPos)) {
 					try {
-						Profiler profiler = WorldChunk.this.world.getProfiler();
+						Profiler profiler = Profilers.get();
 						profiler.push(this::getName);
 						BlockState blockState = WorldChunk.this.getBlockState(blockPos);
 						if (this.blockEntity.getType().supports(blockState)) {

@@ -45,7 +45,7 @@ public class SelectWorldScreen extends Screen {
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this))
+			ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> CreateWorldScreen.show(this.client, this))
 				.dimensions(this.width / 2 + 4, this.height - 52, 150, 20)
 				.build()
 		);

@@ -61,6 +61,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -243,7 +244,7 @@ public class InGameHud {
 
 	private void renderSleepOverlay(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.client.player.getSleepTimer() > 0) {
-			this.client.getProfiler().push("sleep");
+			Profilers.get().push("sleep");
 			float f = (float)this.client.player.getSleepTimer();
 			float g = f / 100.0F;
 			if (g > 1.0F) {
@@ -252,14 +253,14 @@ public class InGameHud {
 
 			int i = (int)(220.0F * g) << 24 | 1052704;
 			context.fill(RenderLayer.getGuiOverlay(), 0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight(), i);
-			this.client.getProfiler().pop();
+			Profilers.get().pop();
 		}
 	}
 
 	private void renderOverlayMessage(DrawContext context, RenderTickCounter tickCounter) {
 		TextRenderer textRenderer = this.getTextRenderer();
 		if (this.overlayMessage != null && this.overlayRemaining > 0) {
-			this.client.getProfiler().push("overlayMessage");
+			Profilers.get().push("overlayMessage");
 			float f = (float)this.overlayRemaining - tickCounter.getTickDelta(false);
 			int i = (int)(f * 255.0F / 20.0F);
 			if (i > 255) {
@@ -281,14 +282,14 @@ public class InGameHud {
 				context.getMatrices().pop();
 			}
 
-			this.client.getProfiler().pop();
+			Profilers.get().pop();
 		}
 	}
 
 	private void renderTitleAndSubtitle(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.title != null && this.titleRemainTicks > 0) {
 			TextRenderer textRenderer = this.getTextRenderer();
-			this.client.getProfiler().push("titleAndSubtitle");
+			Profilers.get().push("titleAndSubtitle");
 			float f = (float)this.titleRemainTicks - tickCounter.getTickDelta(false);
 			int i = 255;
 			if (this.titleRemainTicks > this.titleFadeOutTicks + this.titleStayTicks) {
@@ -321,7 +322,7 @@ public class InGameHud {
 				context.getMatrices().pop();
 			}
 
-			this.client.getProfiler().pop();
+			Profilers.get().pop();
 		}
 	}
 
@@ -569,7 +570,7 @@ public class InGameHud {
 	}
 
 	private void renderMountJumpBar(JumpingMount mount, DrawContext context, int x) {
-		this.client.getProfiler().push("jumpBar");
+		Profilers.get().push("jumpBar");
 		float f = this.client.player.getMountJumpStrength();
 		int i = 182;
 		int j = (int)(f * 183.0F);
@@ -581,11 +582,11 @@ public class InGameHud {
 			context.drawGuiTexture(RenderLayer::getGuiTextured, JUMP_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, k, j, 5);
 		}
 
-		this.client.getProfiler().pop();
+		Profilers.get().pop();
 	}
 
 	private void renderExperienceBar(DrawContext context, int x) {
-		this.client.getProfiler().push("expBar");
+		Profilers.get().push("expBar");
 		int i = this.client.player.getNextLevelExperience();
 		if (i > 0) {
 			int j = 182;
@@ -597,13 +598,13 @@ public class InGameHud {
 			}
 		}
 
-		this.client.getProfiler().pop();
+		Profilers.get().pop();
 	}
 
 	private void renderExperienceLevel(DrawContext context, RenderTickCounter tickCounter) {
 		int i = this.client.player.experienceLevel;
 		if (this.shouldRenderExperience() && i > 0) {
-			this.client.getProfiler().push("expLevel");
+			Profilers.get().push("expLevel");
 			String string = i + "";
 			int j = (context.getScaledWindowWidth() - this.getTextRenderer().getWidth(string)) / 2;
 			int k = context.getScaledWindowHeight() - 31 - 4;
@@ -612,7 +613,7 @@ public class InGameHud {
 			context.drawText(this.getTextRenderer(), string, j, k + 1, 0, false);
 			context.drawText(this.getTextRenderer(), string, j, k - 1, 0, false);
 			context.drawText(this.getTextRenderer(), string, j, k, 8453920, false);
-			this.client.getProfiler().pop();
+			Profilers.get().pop();
 		}
 	}
 
@@ -621,7 +622,7 @@ public class InGameHud {
 	}
 
 	private void renderHeldItemTooltip(DrawContext context) {
-		this.client.getProfiler().push("selectedItemName");
+		Profilers.get().push("selectedItemName");
 		if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
 			MutableText mutableText = Text.empty().append(this.currentStack.getName()).formatted(this.currentStack.getRarity().getFormatting());
 			if (this.currentStack.contains(DataComponentTypes.CUSTOM_NAME)) {
@@ -645,12 +646,12 @@ public class InGameHud {
 			}
 		}
 
-		this.client.getProfiler().pop();
+		Profilers.get().pop();
 	}
 
 	private void renderDemoTimer(DrawContext context, RenderTickCounter tickCounter) {
 		if (this.client.isDemo()) {
-			this.client.getProfiler().push("demo");
+			Profilers.get().push("demo");
 			Text text;
 			if (this.client.world.getTime() >= 120500L) {
 				text = DEMO_EXPIRED_MESSAGE;
@@ -664,7 +665,7 @@ public class InGameHud {
 			int j = context.getScaledWindowWidth() - i - 10;
 			int k = 5;
 			context.drawTextWithBackground(this.getTextRenderer(), text, j, 5, i, -1);
-			this.client.getProfiler().pop();
+			Profilers.get().pop();
 		}
 	}
 
@@ -798,19 +799,19 @@ public class InGameHud {
 				s = this.ticks % MathHelper.ceil(f + 5.0F);
 			}
 
-			this.client.getProfiler().push("armor");
+			Profilers.get().push("armor");
 			renderArmor(context, playerEntity, n, p, q, k);
-			this.client.getProfiler().swap("health");
+			Profilers.get().swap("health");
 			this.renderHealthBar(context, playerEntity, k, n, q, s, f, i, j, o, bl);
 			LivingEntity livingEntity = this.getRiddenEntity();
 			int t = this.getHeartCount(livingEntity);
 			if (t == 0) {
-				this.client.getProfiler().swap("food");
+				Profilers.get().swap("food");
 				this.renderFood(context, playerEntity, n, m);
 				r -= 10;
 			}
 
-			this.client.getProfiler().swap("air");
+			Profilers.get().swap("air");
 			int u = playerEntity.getMaxAir();
 			int v = Math.min(playerEntity.getAir(), u);
 			if (playerEntity.isSubmergedIn(FluidTags.WATER) || v < u) {
@@ -828,7 +829,7 @@ public class InGameHud {
 				}
 			}
 
-			this.client.getProfiler().pop();
+			Profilers.get().pop();
 		}
 	}
 
@@ -954,7 +955,7 @@ public class InGameHud {
 			int i = this.getHeartCount(livingEntity);
 			if (i != 0) {
 				int j = (int)Math.ceil((double)livingEntity.getHealth());
-				this.client.getProfiler().swap("mountHealth");
+				Profilers.get().swap("mountHealth");
 				int k = context.getScaledWindowHeight() - 39;
 				int l = context.getScaledWindowWidth() / 2 + 91;
 				int m = k;

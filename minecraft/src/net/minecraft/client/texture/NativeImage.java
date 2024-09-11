@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.jtracy.MemoryPool;
+import com.mojang.jtracy.TracyClient;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +44,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public final class NativeImage implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final MemoryPool MEMORY_POOL = TracyClient.createMemoryPool("NativeImage");
 	private static final Set<StandardOpenOption> WRITE_TO_FILE_OPEN_OPTIONS = EnumSet.of(
 		StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
 	);
@@ -69,6 +72,7 @@ public final class NativeImage implements AutoCloseable {
 				this.pointer = MemoryUtil.nmemAlloc(this.sizeBytes);
 			}
 
+			MEMORY_POOL.malloc(this.pointer, (int)this.sizeBytes);
 			if (this.pointer == 0L) {
 				throw new IllegalStateException("Unable to allocate texture of size " + width + "x" + height + " (" + format.getChannelCount() + " channels)");
 			}
@@ -142,7 +146,7 @@ public final class NativeImage implements AutoCloseable {
 		} else {
 			PngMetadata.validate(buffer);
 
-			NativeImage var7;
+			NativeImage var9;
 			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 				IntBuffer intBuffer = memoryStack.mallocInt(1);
 				IntBuffer intBuffer2 = memoryStack.mallocInt(1);
@@ -152,16 +156,12 @@ public final class NativeImage implements AutoCloseable {
 					throw new IOException("Could not load image: " + STBImage.stbi_failure_reason());
 				}
 
-				var7 = new NativeImage(
-					format == null ? NativeImage.Format.fromChannelCount(intBuffer3.get(0)) : format,
-					intBuffer.get(0),
-					intBuffer2.get(0),
-					true,
-					MemoryUtil.memAddress(byteBuffer)
-				);
+				long l = MemoryUtil.memAddress(byteBuffer);
+				MEMORY_POOL.malloc(l, byteBuffer.limit());
+				var9 = new NativeImage(format == null ? NativeImage.Format.fromChannelCount(intBuffer3.get(0)) : format, intBuffer.get(0), intBuffer2.get(0), true, l);
 			}
 
-			return var7;
+			return var9;
 		}
 	}
 
@@ -189,6 +189,8 @@ public final class NativeImage implements AutoCloseable {
 			} else {
 				MemoryUtil.nmemFree(this.pointer);
 			}
+
+			MEMORY_POOL.free(this.pointer);
 		}
 
 		this.pointer = 0L;

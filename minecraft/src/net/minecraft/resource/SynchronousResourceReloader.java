@@ -4,6 +4,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.util.Unit;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 /**
  * A base resource reloader that does all its work in the apply executor,
@@ -17,20 +18,12 @@ import net.minecraft.util.profiler.Profiler;
  */
 public interface SynchronousResourceReloader extends ResourceReloader {
 	@Override
-	default CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
-	) {
+	default CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
 		return synchronizer.whenPrepared(Unit.INSTANCE).thenRunAsync(() -> {
-			applyProfiler.startTick();
-			applyProfiler.push("listener");
+			Profiler profiler = Profilers.get();
+			profiler.push("listener");
 			this.reload(manager);
-			applyProfiler.pop();
-			applyProfiler.endTick();
+			profiler.pop();
 		}, applyExecutor);
 	}
 

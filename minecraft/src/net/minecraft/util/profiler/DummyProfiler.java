@@ -45,6 +45,16 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
+	public ScopedProfiler scoped(String name) {
+		return ScopedProfiler.DUMMY;
+	}
+
+	@Override
+	public ScopedProfiler scoped(Supplier<String> nameSupplier) {
+		return ScopedProfiler.DUMMY;
+	}
+
+	@Override
 	public void visit(String marker, int num) {
 	}
 

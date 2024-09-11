@@ -103,18 +103,25 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
 		if (nbt.containsUuid("Owner")) {
-			this.ownerUuid = nbt.getUuid("Owner");
-			this.owner = null;
+			this.setOwner(nbt.getUuid("Owner"));
 		}
 
 		this.leftOwner = nbt.getBoolean("LeftOwner");
 		this.shot = nbt.getBoolean("HasBeenShot");
 	}
 
+	protected void setOwner(UUID uuid) {
+		if (this.ownerUuid != uuid) {
+			this.ownerUuid = uuid;
+			this.owner = this.getEntity(uuid);
+		}
+	}
+
 	@Override
 	public void copyFrom(Entity original) {
 		super.copyFrom(original);
 		if (original instanceof ProjectileEntity projectileEntity) {
+			this.ownerUuid = projectileEntity.ownerUuid;
 			this.owner = projectileEntity.owner;
 		}
 	}
@@ -289,8 +296,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	}
 
 	public boolean deflect(ProjectileDeflection deflection, @Nullable Entity deflector, @Nullable Entity owner, boolean fromAttack) {
+		deflection.deflect(this, deflector, this.random);
 		if (!this.getWorld().isClient) {
-			deflection.deflect(this, deflector, this.random);
 			this.setOwner(owner);
 			this.onDeflected(deflector, fromAttack);
 		}

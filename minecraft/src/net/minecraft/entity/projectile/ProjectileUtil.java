@@ -104,21 +104,23 @@ public final class ProjectileUtil {
 	@Nullable
 	public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, float margin) {
 		double d = Double.MAX_VALUE;
+		Optional<Vec3d> optional = Optional.empty();
 		Entity entity2 = null;
 
 		for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
 			Box box2 = entity3.getBoundingBox().expand((double)margin);
-			Optional<Vec3d> optional = box2.raycast(min, max);
-			if (optional.isPresent()) {
-				double e = min.squaredDistanceTo((Vec3d)optional.get());
+			Optional<Vec3d> optional2 = box2.raycast(min, max);
+			if (optional2.isPresent()) {
+				double e = min.squaredDistanceTo((Vec3d)optional2.get());
 				if (e < d) {
 					entity2 = entity3;
 					d = e;
+					optional = optional2;
 				}
 			}
 		}
 
-		return entity2 == null ? null : new EntityHitResult(entity2);
+		return entity2 == null ? null : new EntityHitResult(entity2, (Vec3d)optional.get());
 	}
 
 	public static void setRotationFromVelocity(Entity entity, float delta) {

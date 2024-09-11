@@ -201,6 +201,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		boolean bl = actionType == SlotActionType.QUICK_MOVE;
 		actionType = slotId == -999 && actionType == SlotActionType.PICKUP ? SlotActionType.THROW : actionType;
+		this.onMouseClick(slot, actionType);
 		if (slot == null && selectedTab.getType() != ItemGroup.Type.INVENTORY && actionType != SlotActionType.QUICK_CRAFT) {
 			if (!this.handler.getCursorStack().isEmpty() && this.lastClickOutsideBounds) {
 				if (button == 0) {

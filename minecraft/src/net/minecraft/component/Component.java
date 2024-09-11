@@ -36,7 +36,7 @@ public record Component<T>(ComponentType<T> type, T value) {
 		return new Component<>(type, (T)value);
 	}
 
-	public void apply(ComponentMapImpl components) {
+	public void apply(MergedComponentMap components) {
 		components.set(this.type, this.value);
 	}
 

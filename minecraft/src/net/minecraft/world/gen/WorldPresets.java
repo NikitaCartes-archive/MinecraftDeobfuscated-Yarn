@@ -71,6 +71,10 @@ public class WorldPresets {
 		return (DimensionOptions)registries.getOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(DEFAULT).value().getOverworld().orElseThrow();
 	}
 
+	public static DimensionOptionsRegistryHolder createTestOptions(RegistryWrapper.WrapperLookup registries) {
+		return registries.getOrThrow(RegistryKeys.WORLD_PRESET).getOrThrow(FLAT).value().createDimensionsRegistryHolder();
+	}
+
 	static class Registrar {
 		private final Registerable<WorldPreset> presetRegisterable;
 		private final RegistryEntryLookup<ChunkGeneratorSettings> chunkGeneratorSettingsLookup;

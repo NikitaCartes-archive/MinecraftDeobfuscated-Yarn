@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.profiler.SampleType;
 import net.minecraft.world.chunk.ChunkCache;
 
@@ -44,16 +45,15 @@ public class PathNodeNavigator {
 		} else {
 			Map<TargetPathNode, BlockPos> map = (Map<TargetPathNode, BlockPos>)positions.stream()
 				.collect(Collectors.toMap(pos -> this.pathNodeMaker.getNode((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), Function.identity()));
-			Path path = this.findPathToAny(world.getProfiler(), pathNode, map, followRange, distance, rangeMultiplier);
+			Path path = this.findPathToAny(pathNode, map, followRange, distance, rangeMultiplier);
 			this.pathNodeMaker.clear();
 			return path;
 		}
 	}
 
 	@Nullable
-	private Path findPathToAny(
-		Profiler profiler, PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance, float rangeMultiplier
-	) {
+	private Path findPathToAny(PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
+		Profiler profiler = Profilers.get();
 		profiler.push("find_path");
 		profiler.markSampleType(SampleType.PATH_FINDING);
 		Set<TargetPathNode> set = positions.keySet();

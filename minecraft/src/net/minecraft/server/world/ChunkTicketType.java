@@ -24,6 +24,7 @@ public class ChunkTicketType<T> {
 	 * Used by a nether portal to load chunks in the other dimension.
 	 */
 	public static final ChunkTicketType<BlockPos> PORTAL = create("portal", Vec3i::compareTo, 300);
+	public static final ChunkTicketType<ChunkPos> ENDER_PEARL = create("ender_pearl", Comparator.comparingLong(ChunkPos::toLong), 40);
 	/**
 	 * Used to load the chunks at the destination of teleportation.
 	 */

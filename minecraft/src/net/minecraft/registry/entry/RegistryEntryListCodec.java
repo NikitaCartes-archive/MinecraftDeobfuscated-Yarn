@@ -80,7 +80,7 @@ public class RegistryEntryListCodec<E> implements Codec<RegistryEntryList<E>> {
 	private static <E> DataResult<RegistryEntryList<E>> get(RegistryEntryLookup<E> registry, TagKey<E> tag) {
 		return (DataResult<RegistryEntryList<E>>)registry.getOptional(tag)
 			.map(DataResult::success)
-			.orElseGet(() -> DataResult.error(() -> "Missing tag: '" + tag.id() + "' in '" + tag.registry().getValue() + "'"));
+			.orElseGet(() -> DataResult.error(() -> "Missing tag: '" + tag.id() + "' in '" + tag.registryRef().getValue() + "'"));
 	}
 
 	public <T> DataResult<T> encode(RegistryEntryList<E> registryEntryList, DynamicOps<T> dynamicOps, T object) {

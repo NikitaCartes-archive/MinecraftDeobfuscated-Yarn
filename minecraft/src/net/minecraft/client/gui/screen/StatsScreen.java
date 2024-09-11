@@ -21,6 +21,7 @@ import net.minecraft.client.realms.gui.RealmsLoadingWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -109,11 +110,11 @@ public class StatsScreen extends Screen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		if (this.selectedList != null) {
 			this.selectedList.position(this.width, this.layout);
@@ -148,7 +149,7 @@ public class StatsScreen extends Screen {
 		if (list != null) {
 			this.addDrawableChild(list);
 			this.selectedList = list;
-			this.initTabNavigation();
+			this.refreshWidgetPositions();
 		}
 	}
 
@@ -413,7 +414,7 @@ public class StatsScreen extends Screen {
 					}
 
 					Item item = entry.getItem();
-					context.drawTooltip(StatsScreen.this.textRenderer, item.getName(), mouseX, mouseY);
+					context.drawTooltip(StatsScreen.this.textRenderer, item.getName(), mouseX, mouseY, item.getComponents().get(DataComponentTypes.TOOLTIP_STYLE));
 				} else {
 					Text text = null;
 					int j = mouseX - i;

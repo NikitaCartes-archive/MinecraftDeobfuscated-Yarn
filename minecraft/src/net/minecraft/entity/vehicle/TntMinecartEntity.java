@@ -100,14 +100,18 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	protected void explode(@Nullable DamageSource damageSource, double power) {
 		if (!this.getWorld().isClient) {
-			double d = Math.sqrt(power);
-			if (d > 5.0) {
-				d = 5.0;
-			}
-
+			double d = Math.min(Math.sqrt(power), 5.0);
 			this.getWorld()
 				.createExplosion(
-					this, damageSource, null, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * d), false, World.ExplosionSourceType.TNT
+					this,
+					damageSource,
+					null,
+					this.getX(),
+					this.getY(),
+					this.getZ(),
+					(float)((double)this.explosionPower + this.random.nextDouble() * 1.5 * d),
+					false,
+					World.ExplosionSourceType.TNT
 				);
 			this.discard();
 		}

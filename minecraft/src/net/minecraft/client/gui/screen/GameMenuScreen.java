@@ -181,11 +181,11 @@ public class GameMenuScreen extends Screen {
 			GameMenuScreen.addFeedbackAndBugsButtons(this, adder);
 			this.layoutWidget.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(200).build());
 			this.layoutWidget.forEachChild(this::addDrawableChild);
-			this.initTabNavigation();
+			this.refreshWidgetPositions();
 		}
 
 		@Override
-		protected void initTabNavigation() {
+		protected void refreshWidgetPositions() {
 			this.layoutWidget.refreshPositions();
 		}
 

@@ -218,7 +218,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		if (this.layout != null) {
 			this.realmSelectionList.position(this.width, this.layout);
 			this.layout.refreshPositions();
@@ -249,7 +249,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.layout.forEachChild(child -> {
 				ClickableWidget var10000 = this.addDrawableChild(child);
 			});
-			this.initTabNavigation();
+			this.refreshWidgetPositions();
 		}
 	}
 

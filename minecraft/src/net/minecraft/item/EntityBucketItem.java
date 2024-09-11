@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Bucketable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.TropicalFishEntity;
@@ -49,10 +50,15 @@ public class EntityBucketItem extends BucketItem {
 	}
 
 	private void spawnEntity(ServerWorld world, ItemStack stack, BlockPos pos) {
-		if (this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false) instanceof Bucketable bucketable) {
+		Entity entity = this.entityType.create(world, EntityType.copier(world, stack, null), pos, SpawnReason.BUCKET, true, false);
+		if (entity instanceof Bucketable bucketable) {
 			NbtComponent nbtComponent = stack.getOrDefault(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT);
 			bucketable.copyDataFromNbt(nbtComponent.copyNbt());
 			bucketable.setFromBucket(true);
+		}
+
+		if (entity != null) {
+			world.spawnEntityAndPassengers(entity);
 		}
 	}
 

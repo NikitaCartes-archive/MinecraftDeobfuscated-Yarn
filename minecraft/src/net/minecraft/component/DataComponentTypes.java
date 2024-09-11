@@ -14,6 +14,8 @@ import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.ContainerLootComponent;
 import net.minecraft.component.type.CustomModelDataComponent;
+import net.minecraft.component.type.DamageResistantComponent;
+import net.minecraft.component.type.DeathProtectionComponent;
 import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.EnchantableComponent;
@@ -124,8 +126,8 @@ public class DataComponentTypes {
 	public static final ComponentType<UseCooldownComponent> USE_COOLDOWN = register(
 		"use_cooldown", builder -> builder.codec(UseCooldownComponent.CODEC).packetCodec(UseCooldownComponent.PACKET_CODEC).cache()
 	);
-	public static final ComponentType<Unit> FIRE_RESISTANT = register(
-		"fire_resistant", builder -> builder.codec(Unit.CODEC).packetCodec(PacketCodec.unit(Unit.INSTANCE))
+	public static final ComponentType<DamageResistantComponent> DAMAGE_RESISTANT = register(
+		"damage_resistant", builder -> builder.codec(DamageResistantComponent.CODEC).packetCodec(DamageResistantComponent.PACKET_CODEC).cache()
 	);
 	public static final ComponentType<ToolComponent> TOOL = register(
 		"tool", builder -> builder.codec(ToolComponent.CODEC).packetCodec(ToolComponent.PACKET_CODEC).cache()
@@ -142,6 +144,9 @@ public class DataComponentTypes {
 	public static final ComponentType<Unit> GLIDER = register("glider", builder -> builder.codec(Unit.CODEC).packetCodec(PacketCodec.unit(Unit.INSTANCE)));
 	public static final ComponentType<Identifier> TOOLTIP_STYLE = register(
 		"tooltip_style", builder -> builder.codec(Identifier.CODEC).packetCodec(Identifier.PACKET_CODEC).cache()
+	);
+	public static final ComponentType<DeathProtectionComponent> DEATH_PROTECTION = register(
+		"death_protection", builder -> builder.codec(DeathProtectionComponent.CODEC).packetCodec(DeathProtectionComponent.PACKET_CODEC).cache()
 	);
 	public static final ComponentType<ItemEnchantmentsComponent> STORED_ENCHANTMENTS = register(
 		"stored_enchantments", builder -> builder.codec(ItemEnchantmentsComponent.CODEC).packetCodec(ItemEnchantmentsComponent.PACKET_CODEC).cache()

@@ -51,7 +51,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 		this.addSlot(new Slot(this.inventory, 0, 15, 15) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
-				return stack.isOf(Items.FILLED_MAP);
+				return stack.contains(DataComponentTypes.MAP_ID);
 			}
 		});
 		this.addSlot(new Slot(this.inventory, 1, 15, 52) {
@@ -155,7 +155,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 
 				slot2.onQuickTransfer(itemStack2, itemStack);
 			} else if (slot != 1 && slot != 0) {
-				if (itemStack2.isOf(Items.FILLED_MAP)) {
+				if (itemStack2.contains(DataComponentTypes.MAP_ID)) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
 					}

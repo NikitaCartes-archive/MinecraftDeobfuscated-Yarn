@@ -153,7 +153,9 @@ public class UserCache {
 			if (completableFuture != null) {
 				return completableFuture;
 			} else {
-				CompletableFuture<Optional<GameProfile>> completableFuture2 = CompletableFuture.supplyAsync(() -> this.findByName(username), Util.getMainWorkerExecutor())
+				CompletableFuture<Optional<GameProfile>> completableFuture2 = CompletableFuture.supplyAsync(
+						() -> this.findByName(username), Util.getMainWorkerExecutor().named("getProfile")
+					)
 					.whenCompleteAsync((profile, throwable) -> this.pendingRequests.remove(username), this.executor);
 				this.pendingRequests.put(username, completableFuture2);
 				return completableFuture2;

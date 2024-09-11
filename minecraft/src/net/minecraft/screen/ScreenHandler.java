@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -850,29 +851,36 @@ public abstract class ScreenHandler {
 		if (player instanceof ServerPlayerEntity) {
 			ItemStack itemStack = this.getCursorStack();
 			if (!itemStack.isEmpty()) {
-				if (player.isAlive() && !((ServerPlayerEntity)player).isDisconnected()) {
-					player.getInventory().offerOrDrop(itemStack);
-				} else {
-					player.dropItem(itemStack, false);
-				}
-
+				offerOrDropStack(player, itemStack);
 				this.setCursorStack(ItemStack.EMPTY);
 			}
 		}
 	}
 
+	private static void offerOrDropStack(PlayerEntity player, ItemStack stack) {
+		boolean bl;
+		boolean var10000;
+		label27: {
+			bl = player.isRemoved() && player.getRemovalReason() != Entity.RemovalReason.CHANGED_DIMENSION;
+			if (player instanceof ServerPlayerEntity serverPlayerEntity && serverPlayerEntity.isDisconnected()) {
+				var10000 = true;
+				break label27;
+			}
+
+			var10000 = false;
+		}
+
+		boolean bl2 = var10000;
+		if (bl || bl2) {
+			player.dropItem(stack, false);
+		} else if (player instanceof ServerPlayerEntity) {
+			player.getInventory().offerOrDrop(stack);
+		}
+	}
+
 	protected void dropInventory(PlayerEntity player, Inventory inventory) {
-		if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
-			for (int i = 0; i < inventory.size(); i++) {
-				player.dropItem(inventory.removeStack(i), false);
-			}
-		} else {
-			for (int i = 0; i < inventory.size(); i++) {
-				PlayerInventory playerInventory = player.getInventory();
-				if (playerInventory.player instanceof ServerPlayerEntity) {
-					playerInventory.offerOrDrop(inventory.removeStack(i));
-				}
-			}
+		for (int i = 0; i < inventory.size(); i++) {
+			offerOrDropStack(player, inventory.removeStack(i));
 		}
 	}
 

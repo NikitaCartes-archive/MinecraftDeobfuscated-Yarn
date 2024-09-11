@@ -19,11 +19,11 @@ public class MessageScreen extends Screen {
 	@Override
 	protected void init() {
 		this.textWidget = this.addDrawableChild(new NarratedMultilineTextWidget(this.width, this.title, this.textRenderer, 12));
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		if (this.textWidget != null) {
 			this.textWidget.initMaxWidth(this.width);
 			this.textWidget.setPosition(this.width / 2 - this.textWidget.getWidth() / 2, this.height / 2 - 9 / 2);

@@ -119,11 +119,11 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		SimplePositioningWidget.setPos(this.layout, this.getNavigationFocus());
 	}

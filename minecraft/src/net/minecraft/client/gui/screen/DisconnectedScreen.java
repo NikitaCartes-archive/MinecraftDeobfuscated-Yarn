@@ -64,11 +64,11 @@ public class DisconnectedScreen extends Screen {
 		this.grid.add(buttonWidget);
 		this.grid.refreshPositions();
 		this.grid.forEachChild(this::addDrawableChild);
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		SimplePositioningWidget.setPos(this.grid, this.getNavigationFocus());
 	}
 

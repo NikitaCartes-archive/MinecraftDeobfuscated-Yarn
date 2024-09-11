@@ -14,7 +14,6 @@ import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 
@@ -212,12 +211,6 @@ public class PlayerEntityModel extends BipedEntityModel<PlayerEntityRenderState>
 	}
 
 	protected BipedEntityModel.ArmPose getArmPose(PlayerEntityRenderState playerEntityRenderState, Arm arm) {
-		BipedEntityModel.ArmPose armPose = PlayerEntityRenderer.getArmPose(playerEntityRenderState, playerEntityRenderState.mainHandState, Hand.MAIN_HAND);
-		BipedEntityModel.ArmPose armPose2 = PlayerEntityRenderer.getArmPose(playerEntityRenderState, playerEntityRenderState.offHandState, Hand.OFF_HAND);
-		if (armPose.isTwoHanded()) {
-			armPose2 = playerEntityRenderState.offHandState.empty ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
-		}
-
-		return playerEntityRenderState.mainArm == arm ? armPose : armPose2;
+		return PlayerEntityRenderer.getArmPose(playerEntityRenderState, arm);
 	}
 }

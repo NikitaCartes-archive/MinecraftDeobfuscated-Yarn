@@ -125,7 +125,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 							httpURLConnection.disconnect();
 						}
 					}
-				}, Util.getMainWorkerExecutor());
+				}, Util.getMainWorkerExecutor().named("downloadTexture"));
 			}
 		}
 	}

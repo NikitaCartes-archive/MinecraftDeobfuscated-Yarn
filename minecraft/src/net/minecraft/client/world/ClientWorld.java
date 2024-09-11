@@ -72,6 +72,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
+import net.minecraft.util.profiler.ScopedProfiler;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.EntityList;
@@ -176,13 +178,12 @@ public class ClientWorld extends World {
 		RegistryEntry<DimensionType> dimensionType,
 		int loadDistance,
 		int simulationDistance,
-		Supplier<Profiler> profiler,
 		WorldRenderer worldRenderer,
 		boolean debugWorld,
 		long seed,
 		int seaLevel
 	) {
-		super(properties, registryRef, networkHandler.getRegistryManager(), dimensionType, profiler, true, debugWorld, seed, 1000000);
+		super(properties, registryRef, networkHandler.getRegistryManager(), dimensionType, true, debugWorld, seed, 1000000);
 		this.networkHandler = networkHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
 		this.tickManager = new TickManager();
@@ -229,9 +230,9 @@ public class ClientWorld extends World {
 			this.setLightningTicksLeft(this.lightningTicksLeft - 1);
 		}
 
-		this.getProfiler().push("blocks");
-		this.chunkManager.tick(shouldKeepTicking, true);
-		this.getProfiler().pop();
+		try (ScopedProfiler scopedProfiler = Profilers.get().scoped("blocks")) {
+			this.chunkManager.tick(shouldKeepTicking, true);
+		}
 	}
 
 	private void tickTime() {
@@ -261,7 +262,7 @@ public class ClientWorld extends World {
 	}
 
 	public void tickEntities() {
-		Profiler profiler = this.getProfiler();
+		Profiler profiler = Profilers.get();
 		profiler.push("entities");
 		this.entityList.forEach(entity -> {
 			if (!entity.isRemoved() && !entity.hasVehicle() && !this.tickManager.shouldSkipTick(entity)) {
@@ -284,9 +285,9 @@ public class ClientWorld extends World {
 	public void tickEntity(Entity entity) {
 		entity.resetPosition();
 		entity.age++;
-		this.getProfiler().push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
+		Profilers.get().push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
 		entity.tick();
-		this.getProfiler().pop();
+		Profilers.get().pop();
 
 		for (Entity entity2 : entity.getPassengerList()) {
 			this.tickPassenger(entity, entity2);

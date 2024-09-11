@@ -5,6 +5,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileDeflection;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -71,10 +72,6 @@ public class TridentEntity extends PersistentProjectileEntity {
 				this.setNoClip(true);
 				Vec3d vec3d = entity.getEyePos().subtract(this.getPos());
 				this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double)i, this.getZ());
-				if (this.getWorld().isClient) {
-					this.lastRenderY = this.getY();
-				}
-
 				double d = 0.05 * (double)i;
 				this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
 				if (this.returnTimer == 0) {
@@ -129,7 +126,8 @@ public class TridentEntity extends PersistentProjectileEntity {
 			}
 		}
 
-		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
+		this.deflect(ProjectileDeflection.SIMPLE, entity, this.getOwner(), false);
+		this.setVelocity(this.getVelocity().multiply(0.02, 0.2, 0.02));
 		this.playSound(SoundEvents.ITEM_TRIDENT_HIT, 1.0F, 1.0F);
 	}
 

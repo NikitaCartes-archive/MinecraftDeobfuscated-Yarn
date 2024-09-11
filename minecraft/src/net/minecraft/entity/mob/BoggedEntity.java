@@ -70,7 +70,7 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
-			this.sheared(SoundCategory.PLAYERS);
+			this.sheared(SoundCategory.PLAYERS, itemStack);
 			this.emitGameEvent(GameEvent.SHEAR, player);
 			if (!this.getWorld().isClient) {
 				itemStack.damage(1, player, getSlotForHand(hand));
@@ -123,14 +123,14 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	}
 
 	@Override
-	public void sheared(SoundCategory shearedSoundCategory) {
+	public void sheared(SoundCategory shearedSoundCategory, ItemStack shears) {
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_BOGGED_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
-		this.dropShearedItems();
+		this.dropShearedItems(shears);
 		this.setSheared(true);
 	}
 
-	private void dropShearedItems() {
-		this.forEachShearedItem(LootTables.BOGGED_SHEARING, stack -> this.dropStack(stack, this.getHeight()));
+	private void dropShearedItems(ItemStack shears) {
+		this.forEachShearedItem(LootTables.BOGGED_SHEARING, shears, stack -> this.dropStack(stack, this.getHeight()));
 	}
 
 	@Override

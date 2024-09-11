@@ -144,7 +144,7 @@ public final class BundleContentsComponent implements TooltipData {
 			return this;
 		}
 
-		private int addInternal(ItemStack stack) {
+		private int getInsertionIndex(ItemStack stack) {
 			if (!stack.isStackable()) {
 				return -1;
 			} else {
@@ -172,7 +172,7 @@ public final class BundleContentsComponent implements TooltipData {
 					return 0;
 				} else {
 					this.occupancy = this.occupancy.add(BundleContentsComponent.getOccupancy(stack).multiplyBy(Fraction.getFraction(i, 1)));
-					int j = this.addInternal(stack);
+					int j = this.getInsertionIndex(stack);
 					if (j != -1) {
 						ItemStack itemStack = (ItemStack)this.stacks.remove(j);
 						ItemStack itemStack2 = itemStack.copyWithCount(itemStack.getCount() + i);
@@ -198,7 +198,7 @@ public final class BundleContentsComponent implements TooltipData {
 		}
 
 		@Nullable
-		public ItemStack removeFirst() {
+		public ItemStack removeSelected() {
 			if (this.stacks.isEmpty()) {
 				return null;
 			} else {

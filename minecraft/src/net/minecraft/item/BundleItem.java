@@ -72,7 +72,7 @@ public class BundleItem extends Item {
 				stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
 				return true;
 			} else if (clickType == ClickType.RIGHT && itemStack.isEmpty()) {
-				ItemStack itemStack2 = builder.removeFirst();
+				ItemStack itemStack2 = builder.removeSelected();
 				if (itemStack2 != null) {
 					ItemStack itemStack3 = slot.insertStack(itemStack2);
 					if (itemStack3.getCount() > 0) {
@@ -112,7 +112,7 @@ public class BundleItem extends Item {
 					return true;
 				} else if (clickType == ClickType.RIGHT && otherStack.isEmpty()) {
 					if (slot.canTakePartial(player)) {
-						ItemStack itemStack = builder.removeFirst();
+						ItemStack itemStack = builder.removeSelected();
 						if (itemStack != null) {
 							playRemoveOneSound(player);
 							cursorStackReference.set(itemStack);
@@ -122,6 +122,7 @@ public class BundleItem extends Item {
 					stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
 					return true;
 				} else {
+					setSelectedStackIndex(stack, -1);
 					return false;
 				}
 			}
@@ -209,7 +210,7 @@ public class BundleItem extends Item {
 
 	private static Optional<ItemStack> popFirstBundledStack(ItemStack stack, PlayerEntity player, BundleContentsComponent contents) {
 		BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(contents);
-		ItemStack itemStack = builder.removeFirst();
+		ItemStack itemStack = builder.removeSelected();
 		if (itemStack != null) {
 			playRemoveOneSound(player);
 			stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());

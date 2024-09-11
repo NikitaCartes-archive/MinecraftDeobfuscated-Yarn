@@ -57,6 +57,9 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
+import net.minecraft.util.profiler.ScopedProfiler;
 import net.minecraft.util.profiler.ServerTickType;
 import net.minecraft.util.profiler.log.DebugSampleType;
 import net.minecraft.world.Heightmap;
@@ -130,7 +133,8 @@ public class DebugHud {
 	}
 
 	public void render(DrawContext context) {
-		this.client.getProfiler().push("debug");
+		Profiler profiler = Profilers.get();
+		profiler.push("debug");
 		Entity entity = this.client.getCameraEntity();
 		this.blockHit = entity.raycast(20.0, 0.0F, false);
 		this.fluidHit = entity.raycast(20.0, 0.0F, true);
@@ -161,10 +165,11 @@ public class DebugHud {
 			this.pieChart.setBottomMargin(this.pingChart.getHeight());
 		}
 
-		this.client.getProfiler().push("profilerPie");
-		this.pieChart.render(context);
-		this.client.getProfiler().pop();
-		this.client.getProfiler().pop();
+		try (ScopedProfiler scopedProfiler = profiler.scoped("profilerPie")) {
+			this.pieChart.render(context);
+		}
+
+		profiler.pop();
 	}
 
 	protected void drawLeftText(DrawContext context) {

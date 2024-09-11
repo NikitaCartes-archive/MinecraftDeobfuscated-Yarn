@@ -18,8 +18,8 @@ import java.util.function.Function;
 import net.minecraft.command.CommandSource;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.MergedComponentMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
@@ -92,7 +92,7 @@ public class ItemStringReader {
 	}
 
 	private static void validate(StringReader reader, RegistryEntry<Item> item, ComponentChanges components) throws CommandSyntaxException {
-		ComponentMap componentMap = ComponentMapImpl.create(item.value().getComponents(), components);
+		ComponentMap componentMap = MergedComponentMap.create(item.value().getComponents(), components);
 		DataResult<Unit> dataResult = ItemStack.validateComponents(componentMap);
 		dataResult.getOrThrow(error -> MALFORMED_ITEM_EXCEPTION.createWithContext(reader, error));
 	}

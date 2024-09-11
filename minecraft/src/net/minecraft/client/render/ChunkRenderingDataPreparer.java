@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,20 +43,20 @@ public class ChunkRenderingDataPreparer {
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private static final int field_45619 = 60;
 	private static final double CHUNK_INNER_DIAGONAL_LENGTH = Math.ceil(Math.sqrt(3.0) * 16.0);
-	private boolean field_45621 = true;
+	private boolean terrainUpdateScheduled = true;
 	@Nullable
-	private Future<?> field_45622;
+	private Future<?> terrainUpdateFuture;
 	@Nullable
 	private BuiltChunkStorage builtChunkStorage;
-	private final AtomicReference<ChunkRenderingDataPreparer.class_8681> field_45624 = new AtomicReference();
+	private final AtomicReference<ChunkRenderingDataPreparer.PreparerState> state = new AtomicReference();
 	private final AtomicReference<ChunkRenderingDataPreparer.Events> events = new AtomicReference();
 	private final AtomicBoolean field_45626 = new AtomicBoolean(false);
 
 	public void setStorage(@Nullable BuiltChunkStorage storage) {
-		if (this.field_45622 != null) {
+		if (this.terrainUpdateFuture != null) {
 			try {
-				this.field_45622.get();
-				this.field_45622 = null;
+				this.terrainUpdateFuture.get();
+				this.terrainUpdateFuture = null;
 			} catch (Exception var3) {
 				LOGGER.warn("Full update failed", (Throwable)var3);
 			}
@@ -63,24 +64,24 @@ public class ChunkRenderingDataPreparer {
 
 		this.builtChunkStorage = storage;
 		if (storage != null) {
-			this.field_45624.set(new ChunkRenderingDataPreparer.class_8681(storage));
+			this.state.set(new ChunkRenderingDataPreparer.PreparerState(storage));
 			this.scheduleTerrainUpdate();
 		} else {
-			this.field_45624.set(null);
+			this.state.set(null);
 		}
 	}
 
 	public void scheduleTerrainUpdate() {
-		this.field_45621 = true;
+		this.terrainUpdateScheduled = true;
 	}
 
-	public void method_52828(Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks, List<ChunkBuilder.BuiltChunk> list) {
-		((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).storage().octree.visit((node, bl, i, bl2) -> {
+	public void collectChunks(Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks, List<ChunkBuilder.BuiltChunk> nearbyChunks) {
+		((ChunkRenderingDataPreparer.PreparerState)this.state.get()).storage().octree.visit((node, skipVisibilityCheck, depth, nearCenter) -> {
 			ChunkBuilder.BuiltChunk builtChunk = node.getBuiltChunk();
 			if (builtChunk != null) {
 				builtChunks.add(builtChunk);
-				if (bl2) {
-					list.add(builtChunk);
+				if (nearCenter) {
+					nearbyChunks.add(builtChunk);
 				}
 			}
 		}, frustum, 32);
@@ -96,7 +97,7 @@ public class ChunkRenderingDataPreparer {
 			this.addNeighbors(events, chunkPos);
 		}
 
-		ChunkRenderingDataPreparer.Events events2 = ((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).events;
+		ChunkRenderingDataPreparer.Events events2 = ((ChunkRenderingDataPreparer.PreparerState)this.state.get()).events;
 		if (events2 != events) {
 			this.addNeighbors(events2, chunkPos);
 		}
@@ -108,75 +109,77 @@ public class ChunkRenderingDataPreparer {
 			events.sectionsToPropagateFrom.add(builtChunk);
 		}
 
-		ChunkRenderingDataPreparer.Events events2 = ((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).events;
+		ChunkRenderingDataPreparer.Events events2 = ((ChunkRenderingDataPreparer.PreparerState)this.state.get()).events;
 		if (events2 != events) {
 			events2.sectionsToPropagateFrom.add(builtChunk);
 		}
 	}
 
-	public void method_52834(boolean cullChunks, Camera camera, Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunk, LongOpenHashSet longOpenHashSet) {
+	public void updateSectionOcculusionGraph(
+		boolean cullChunks, Camera camera, Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunk, LongOpenHashSet activeSections
+	) {
 		Vec3d vec3d = camera.getPos();
-		if (this.field_45621 && (this.field_45622 == null || this.field_45622.isDone())) {
-			this.method_52833(cullChunks, camera, vec3d, longOpenHashSet);
+		if (this.terrainUpdateScheduled && (this.terrainUpdateFuture == null || this.terrainUpdateFuture.isDone())) {
+			this.updateTerrain(cullChunks, camera, vec3d, activeSections);
 		}
 
-		this.method_52835(cullChunks, frustum, builtChunk, vec3d, longOpenHashSet);
+		this.method_52835(cullChunks, frustum, builtChunk, vec3d, activeSections);
 	}
 
-	private void method_52833(boolean cullChunks, Camera camera, Vec3d cameraPos, LongOpenHashSet longOpenHashSet) {
-		this.field_45621 = false;
-		LongOpenHashSet longOpenHashSet2 = longOpenHashSet.clone();
-		this.field_45622 = Util.getMainWorkerExecutor().submit(() -> {
-			ChunkRenderingDataPreparer.class_8681 lv = new ChunkRenderingDataPreparer.class_8681(this.builtChunkStorage);
-			this.events.set(lv.events);
+	private void updateTerrain(boolean cullChunks, Camera camera, Vec3d cameraPos, LongOpenHashSet activeSections) {
+		this.terrainUpdateScheduled = false;
+		LongOpenHashSet longOpenHashSet = activeSections.clone();
+		this.terrainUpdateFuture = CompletableFuture.runAsync(() -> {
+			ChunkRenderingDataPreparer.PreparerState preparerState = new ChunkRenderingDataPreparer.PreparerState(this.builtChunkStorage);
+			this.events.set(preparerState.events);
 			Queue<ChunkRenderingDataPreparer.ChunkInfo> queue = Queues.<ChunkRenderingDataPreparer.ChunkInfo>newArrayDeque();
 			this.method_52821(camera, queue);
-			queue.forEach(chunkInfo -> lv.storage.infoList.setInfo(chunkInfo.chunk, chunkInfo));
-			this.method_52825(lv.storage, cameraPos, queue, cullChunks, builtChunk -> {
-			}, longOpenHashSet2);
-			this.field_45624.set(lv);
+			queue.forEach(info -> preparerState.storage.infoList.setInfo(info.chunk, info));
+			this.method_52825(preparerState.storage, cameraPos, queue, cullChunks, builtChunk -> {
+			}, longOpenHashSet);
+			this.state.set(preparerState);
 			this.events.set(null);
 			this.field_45626.set(true);
-		});
+		}, Util.getMainWorkerExecutor());
 	}
 
-	private void method_52835(boolean bl, Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks, Vec3d vec3d, LongOpenHashSet longOpenHashSet) {
-		ChunkRenderingDataPreparer.class_8681 lv = (ChunkRenderingDataPreparer.class_8681)this.field_45624.get();
-		this.method_52823(lv);
-		if (!lv.events.sectionsToPropagateFrom.isEmpty()) {
+	private void method_52835(boolean bl, Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunks, Vec3d cameraPos, LongOpenHashSet activeSections) {
+		ChunkRenderingDataPreparer.PreparerState preparerState = (ChunkRenderingDataPreparer.PreparerState)this.state.get();
+		this.method_52823(preparerState);
+		if (!preparerState.events.sectionsToPropagateFrom.isEmpty()) {
 			Queue<ChunkRenderingDataPreparer.ChunkInfo> queue = Queues.<ChunkRenderingDataPreparer.ChunkInfo>newArrayDeque();
 
-			while (!lv.events.sectionsToPropagateFrom.isEmpty()) {
-				ChunkBuilder.BuiltChunk builtChunk = (ChunkBuilder.BuiltChunk)lv.events.sectionsToPropagateFrom.poll();
-				ChunkRenderingDataPreparer.ChunkInfo chunkInfo = lv.storage.infoList.getInfo(builtChunk);
+			while (!preparerState.events.sectionsToPropagateFrom.isEmpty()) {
+				ChunkBuilder.BuiltChunk builtChunk = (ChunkBuilder.BuiltChunk)preparerState.events.sectionsToPropagateFrom.poll();
+				ChunkRenderingDataPreparer.ChunkInfo chunkInfo = preparerState.storage.infoList.getInfo(builtChunk);
 				if (chunkInfo != null && chunkInfo.chunk == builtChunk) {
 					queue.add(chunkInfo);
 				}
 			}
 
-			Frustum frustum2 = WorldRenderer.method_52816(frustum);
+			Frustum frustum2 = WorldRenderer.offsetFrustum(frustum);
 			Consumer<ChunkBuilder.BuiltChunk> consumer = builtChunk -> {
 				if (frustum2.isVisible(builtChunk.getBoundingBox())) {
 					this.field_45626.set(true);
 				}
 			};
-			this.method_52825(lv.storage, vec3d, queue, bl, consumer, longOpenHashSet);
+			this.method_52825(preparerState.storage, cameraPos, queue, bl, consumer, activeSections);
 		}
 	}
 
-	private void method_52823(ChunkRenderingDataPreparer.class_8681 arg) {
-		LongIterator longIterator = arg.events.chunksWhichReceivedNeighbors.iterator();
+	private void method_52823(ChunkRenderingDataPreparer.PreparerState preparerState) {
+		LongIterator longIterator = preparerState.events.chunksWhichReceivedNeighbors.iterator();
 
 		while (longIterator.hasNext()) {
 			long l = longIterator.nextLong();
-			List<ChunkBuilder.BuiltChunk> list = arg.storage.field_45628.get(l);
+			List<ChunkBuilder.BuiltChunk> list = preparerState.storage.field_45628.get(l);
 			if (list != null && ((ChunkBuilder.BuiltChunk)list.get(0)).shouldBuild()) {
-				arg.events.sectionsToPropagateFrom.addAll(list);
-				arg.storage.field_45628.remove(l);
+				preparerState.events.sectionsToPropagateFrom.addAll(list);
+				preparerState.storage.field_45628.remove(l);
 			}
 		}
 
-		arg.events.chunksWhichReceivedNeighbors.clear();
+		preparerState.events.chunksWhichReceivedNeighbors.clear();
 	}
 
 	private void addNeighbors(ChunkRenderingDataPreparer.Events events, ChunkPos chunkPos) {
@@ -252,7 +255,7 @@ public class ChunkRenderingDataPreparer {
 					consumer.accept(chunkInfo.chunk);
 				}
 			} else {
-				chunkInfo.chunk.data.compareAndSet(ChunkBuilder.ChunkData.EMPTY, ChunkBuilder.ChunkData.field_52172);
+				chunkInfo.chunk.data.compareAndSet(ChunkBuilder.ChunkData.UNPROCESSED, ChunkBuilder.ChunkData.EMPTY);
 			}
 
 			boolean bl = Math.abs(builtChunk.getOrigin().getX() - blockPos.getX()) > 60
@@ -354,11 +357,11 @@ public class ChunkRenderingDataPreparer {
 	@Nullable
 	@Debug
 	public ChunkRenderingDataPreparer.ChunkInfo getInfo(ChunkBuilder.BuiltChunk chunk) {
-		return ((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).storage.infoList.getInfo(chunk);
+		return ((ChunkRenderingDataPreparer.PreparerState)this.state.get()).storage.infoList.getInfo(chunk);
 	}
 
 	public Octree getOctree() {
-		return ((ChunkRenderingDataPreparer.class_8681)this.field_45624.get()).storage.octree;
+		return ((ChunkRenderingDataPreparer.PreparerState)this.state.get()).storage.octree;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -438,6 +441,14 @@ public class ChunkRenderingDataPreparer {
 	}
 
 	@Environment(EnvType.CLIENT)
+	static record PreparerState(ChunkRenderingDataPreparer.RenderableChunks storage, ChunkRenderingDataPreparer.Events events) {
+
+		PreparerState(BuiltChunkStorage storage) {
+			this(new ChunkRenderingDataPreparer.RenderableChunks(storage), new ChunkRenderingDataPreparer.Events());
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	static class RenderableChunks {
 		public final ChunkRenderingDataPreparer.ChunkInfoList infoList;
 		public final Octree octree;
@@ -447,14 +458,6 @@ public class ChunkRenderingDataPreparer {
 			this.infoList = new ChunkRenderingDataPreparer.ChunkInfoList(storage.chunks.length);
 			this.octree = new Octree(storage.getSectionPos(), storage.getViewDistance(), storage.sizeY, storage.world.getBottomY());
 			this.field_45628 = new Long2ObjectOpenHashMap<>();
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static record class_8681(ChunkRenderingDataPreparer.RenderableChunks storage, ChunkRenderingDataPreparer.Events events) {
-
-		class_8681(BuiltChunkStorage storage) {
-			this(new ChunkRenderingDataPreparer.RenderableChunks(storage), new ChunkRenderingDataPreparer.Events());
 		}
 	}
 }

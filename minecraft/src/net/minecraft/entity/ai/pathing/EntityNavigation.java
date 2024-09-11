@@ -16,6 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkCache;
@@ -150,12 +152,13 @@ public abstract class EntityNavigation {
 		} else if (this.currentPath != null && !this.currentPath.isFinished() && positions.contains(this.currentTarget)) {
 			return this.currentPath;
 		} else {
-			this.world.getProfiler().push("pathfind");
+			Profiler profiler = Profilers.get();
+			profiler.push("pathfind");
 			BlockPos blockPos = useHeadPos ? this.entity.getBlockPos().up() : this.entity.getBlockPos();
 			int i = (int)(followRange + (float)range);
 			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));
 			Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, positions, followRange, distance, this.rangeMultiplier);
-			this.world.getProfiler().pop();
+			profiler.pop();
 			if (path != null && path.getTarget() != null) {
 				this.currentTarget = path.getTarget();
 				this.currentDistance = distance;

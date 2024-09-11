@@ -16,8 +16,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -48,6 +50,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.world.GeneratorOptionsFactory;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.RegistryKey;
@@ -76,6 +79,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
+import net.minecraft.world.gen.FlatLevelGeneratorPresets;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
@@ -115,29 +119,59 @@ public class CreateWorldScreen extends Screen {
 	@Nullable
 	private TabNavigationWidget tabNavigation;
 
-	public static void create(MinecraftClient client, @Nullable Screen parent) {
+	public static void show(MinecraftClient client, @Nullable Screen parent) {
+		GeneratorOptionsFactory generatorOptionsFactory = (dataPackContents, dynamicRegistries, settings) -> new GeneratorOptionsHolder(
+				settings.worldGenSettings(), dynamicRegistries, dataPackContents, settings.dataConfiguration()
+			);
+		Function<SaveLoading.LoadContextSupplierContext, WorldGenSettings> function = context -> new WorldGenSettings(
+				GeneratorOptions.createRandom(), WorldPresets.createDemoOptions(context.worldGenRegistryManager())
+			);
+		show(client, parent, function, generatorOptionsFactory, WorldPresets.DEFAULT);
+	}
+
+	public static void showTestWorld(MinecraftClient client, @Nullable Screen parent) {
+		GeneratorOptionsFactory generatorOptionsFactory = (dataPackContents, dynamicRegistries, settings) -> new GeneratorOptionsHolder(
+				settings.worldGenSettings().generatorOptions(),
+				settings.worldGenSettings().dimensionOptionsRegistryHolder(),
+				dynamicRegistries,
+				dataPackContents,
+				settings.dataConfiguration(),
+				new InitialWorldOptions(
+					WorldCreator.Mode.CREATIVE,
+					Set.of(GameRules.DO_DAYLIGHT_CYCLE, GameRules.DO_WEATHER_CYCLE, GameRules.DO_MOB_SPAWNING),
+					FlatLevelGeneratorPresets.REDSTONE_READY
+				)
+			);
+		Function<SaveLoading.LoadContextSupplierContext, WorldGenSettings> function = context -> new WorldGenSettings(
+				GeneratorOptions.createTestWorld(), WorldPresets.createTestOptions(context.worldGenRegistryManager())
+			);
+		show(client, parent, function, generatorOptionsFactory, WorldPresets.FLAT);
+	}
+
+	private static void show(
+		MinecraftClient client,
+		@Nullable Screen parent,
+		Function<SaveLoading.LoadContextSupplierContext, WorldGenSettings> settingsSupplier,
+		GeneratorOptionsFactory generatorOptionsFactory,
+		RegistryKey<WorldPreset> presetKey
+	) {
 		showMessage(client, PREPARING_TEXT);
 		ResourcePackManager resourcePackManager = new ResourcePackManager(new VanillaDataPackProvider(client.getSymlinkFinder()));
 		SaveLoading.ServerConfig serverConfig = createServerConfig(resourcePackManager, DataConfiguration.SAFE_MODE);
 		CompletableFuture<GeneratorOptionsHolder> completableFuture = SaveLoading.load(
 			serverConfig,
 			context -> new SaveLoading.LoadContext<>(
-					new CreateWorldScreen.WorldCreationSettings(
-						new WorldGenSettings(GeneratorOptions.createRandom(), WorldPresets.createDemoOptions(context.worldGenRegistryManager())), context.dataConfiguration()
-					),
-					context.dimensionsRegistryManager()
+					new WorldCreationSettings((WorldGenSettings)settingsSupplier.apply(context), context.dataConfiguration()), context.dimensionsRegistryManager()
 				),
-			(resourceManager, dataPackContents, combinedDynamicRegistries, generatorOptions) -> {
+			(resourceManager, dataPackContents, dynamicRegistries, settings) -> {
 				resourceManager.close();
-				return new GeneratorOptionsHolder(generatorOptions.worldGenSettings(), combinedDynamicRegistries, dataPackContents, generatorOptions.dataConfiguration());
+				return generatorOptionsFactory.apply(dataPackContents, dynamicRegistries, settings);
 			},
 			Util.getMainWorkerExecutor(),
 			client
 		);
 		client.runTasks(completableFuture::isDone);
-		client.setScreen(
-			new CreateWorldScreen(client, parent, (GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty())
-		);
+		client.setScreen(new CreateWorldScreen(client, parent, (GeneratorOptionsHolder)completableFuture.join(), Optional.of(presetKey), OptionalLong.empty()));
 	}
 
 	public static CreateWorldScreen create(
@@ -199,7 +233,7 @@ public class CreateWorldScreen extends Screen {
 		});
 		this.tabNavigation.selectTab(0, false);
 		this.worldCreator.update();
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
@@ -207,7 +241,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
-	public void initTabNavigation() {
+	public void refreshWidgetPositions() {
 		if (this.tabNavigation != null) {
 			this.tabNavigation.setWidth(this.width);
 			this.tabNavigation.init();
@@ -389,7 +423,7 @@ public class CreateWorldScreen extends Screen {
 	private void validateDataPacks(ResourcePackManager dataPackManager, DataConfiguration dataConfiguration, Consumer<DataConfiguration> configurationSetter) {
 		this.client.setScreenAndRender(new MessageScreen(Text.translatable("dataPack.validation.working")));
 		SaveLoading.ServerConfig serverConfig = createServerConfig(dataPackManager, dataConfiguration);
-		SaveLoading.<CreateWorldScreen.WorldCreationSettings, GeneratorOptionsHolder>load(
+		SaveLoading.<WorldCreationSettings, GeneratorOptionsHolder>load(
 				serverConfig,
 				context -> {
 					if (context.worldGenRegistryManager().getOrThrow(RegistryKeys.WORLD_PRESET).streamEntries().findAny().isEmpty()) {
@@ -406,9 +440,7 @@ public class CreateWorldScreen extends Screen {
 						DynamicOps<JsonElement> dynamicOps2 = context.worldGenRegistryManager().getOps(JsonOps.INSTANCE);
 						WorldGenSettings worldGenSettings = dataResult.<WorldGenSettings>flatMap(json -> WorldGenSettings.CODEC.parse(dynamicOps2, json))
 							.getOrThrow(string -> new IllegalStateException("Error parsing worldgen settings after loading data packs: " + string));
-						return new SaveLoading.LoadContext<>(
-							new CreateWorldScreen.WorldCreationSettings(worldGenSettings, context.dataConfiguration()), context.dimensionsRegistryManager()
-						);
+						return new SaveLoading.LoadContext<>(new WorldCreationSettings(worldGenSettings, context.dataConfiguration()), context.dimensionsRegistryManager());
 					}
 				},
 				(resourceManager, dataPackContents, combinedDynamicRegistries, context) -> {
@@ -722,10 +754,6 @@ public class CreateWorldScreen extends Screen {
 					)
 				);
 		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static record WorldCreationSettings(WorldGenSettings worldGenSettings, DataConfiguration dataConfiguration) {
 	}
 
 	@Environment(EnvType.CLIENT)

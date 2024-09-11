@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -75,7 +75,7 @@ public abstract class Property<T extends Comparable<T>> {
 	/**
 	 * Returns all possible values of this property.
 	 */
-	public abstract Collection<T> getValues();
+	public abstract List<T> getValues();
 
 	/**
 	 * Returns the name of the given value of this property.
@@ -83,6 +83,8 @@ public abstract class Property<T extends Comparable<T>> {
 	public abstract String name(T value);
 
 	public abstract Optional<T> parse(String name);
+
+	public abstract int ordinal(T value);
 
 	public String toString() {
 		return MoreObjects.toStringHelper(this).add("name", this.name).add("clazz", this.type).add("values", this.getValues()).toString();

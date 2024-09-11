@@ -25,6 +25,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.tracy.TracyFrameCapturer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeSupplier;
 import net.minecraft.util.Util;
@@ -133,11 +134,15 @@ public class RenderSystem {
 		return pollingEvents.get() && Util.getMeasuringTimeMs() - pollEventsWaitStart.get() > 200L;
 	}
 
-	public static void flipFrame(long window) {
+	public static void flipFrame(long window, @Nullable TracyFrameCapturer capturer) {
 		pollEvents();
 		replayQueue();
 		Tessellator.getInstance().clear();
 		GLFW.glfwSwapBuffers(window);
+		if (capturer != null) {
+			capturer.markFrame();
+		}
+
 		pollEvents();
 	}
 

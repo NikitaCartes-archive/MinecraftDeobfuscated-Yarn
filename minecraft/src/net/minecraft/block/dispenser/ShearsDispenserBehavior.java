@@ -23,7 +23,7 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 		ServerWorld serverWorld = pointer.world();
 		if (!serverWorld.isClient()) {
 			BlockPos blockPos = pointer.pos().offset(pointer.state().get(DispenserBlock.FACING));
-			this.setSuccess(tryShearBlock(serverWorld, blockPos) || tryShearEntity(serverWorld, blockPos));
+			this.setSuccess(tryShearBlock(serverWorld, blockPos) || tryShearEntity(serverWorld, blockPos, stack));
 			if (this.isSuccess()) {
 				stack.damage(1, serverWorld, null, item -> {
 				});
@@ -49,10 +49,10 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 		return false;
 	}
 
-	private static boolean tryShearEntity(ServerWorld world, BlockPos pos) {
+	private static boolean tryShearEntity(ServerWorld world, BlockPos pos, ItemStack shears) {
 		for (LivingEntity livingEntity : world.getEntitiesByClass(LivingEntity.class, new Box(pos), EntityPredicates.EXCEPT_SPECTATOR)) {
 			if (livingEntity instanceof Shearable shearable && shearable.isShearable()) {
-				shearable.sheared(SoundCategory.BLOCKS);
+				shearable.sheared(SoundCategory.BLOCKS, shears);
 				world.emitGameEvent(null, GameEvent.SHEAR, pos);
 				return true;
 			}

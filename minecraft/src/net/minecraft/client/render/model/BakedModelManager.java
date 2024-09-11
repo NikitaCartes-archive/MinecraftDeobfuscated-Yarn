@@ -44,6 +44,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -100,14 +101,8 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 
 	@Override
 	public final CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
+		ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor
 	) {
-		prepareProfiler.startTick();
 		UnbakedModel unbakedModel = MissingModel.create();
 		BlockStatesLoader blockStatesLoader = new BlockStatesLoader(unbakedModel);
 		CompletableFuture<Map<Identifier, UnbakedModel>> completableFuture = reloadModels(manager, prepareExecutor);
@@ -130,7 +125,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 					ReferencedModelsCollector referencedModelsCollector = (ReferencedModelsCollector)completableFuture3.join();
 					Object2IntMap<BlockState> object2IntMap = (Object2IntMap<BlockState>)completableFuture4.join();
 					return this.bake(
-						prepareProfiler,
+						Profilers.get(),
 						map2,
 						new ModelBaker(referencedModelsCollector.getTopLevelModels(), referencedModelsCollector.getResolvedModels(), unbakedModel),
 						object2IntMap
@@ -140,7 +135,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			)
 			.thenCompose(result -> result.readyForUpload.thenApply(void_ -> result))
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(result -> this.upload(result, applyProfiler), applyExecutor);
+			.thenAcceptAsync(bakingResult -> this.upload(bakingResult, Profilers.get()), applyExecutor);
 	}
 
 	private static CompletableFuture<Map<Identifier, UnbakedModel>> reloadModels(ResourceManager resourceManager, Executor executor) {
@@ -271,8 +266,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 	private BakedModelManager.BakingResult bake(
 		Profiler profiler, Map<Identifier, SpriteAtlasManager.AtlasPreparation> preparations, ModelBaker modelLoader, Object2IntMap<BlockState> modelGroups
 	) {
-		profiler.push("load");
-		profiler.swap("baking");
+		profiler.push("baking");
 		Multimap<ModelIdentifier, SpriteIdentifier> multimap = HashMultimap.create();
 		modelLoader.bake((modelId, spriteId) -> {
 			SpriteAtlasManager.AtlasPreparation atlasPreparation = (SpriteAtlasManager.AtlasPreparation)preparations.get(spriteId.getAtlasId());
@@ -312,7 +306,6 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 			(CompletableFuture[])preparations.values().stream().map(SpriteAtlasManager.AtlasPreparation::whenComplete).toArray(CompletableFuture[]::new)
 		);
 		profiler.pop();
-		profiler.endTick();
 		return new BakedModelManager.BakingResult(modelLoader, modelGroups, bakedModel, map2, preparations, completableFuture);
 	}
 
@@ -321,7 +314,6 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 	}
 
 	private void upload(BakedModelManager.BakingResult bakingResult, Profiler profiler) {
-		profiler.startTick();
 		profiler.push("upload");
 		bakingResult.atlasPreparations.values().forEach(SpriteAtlasManager.AtlasPreparation::upload);
 		ModelBaker modelBaker = bakingResult.modelLoader;
@@ -331,7 +323,6 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		profiler.swap("cache");
 		this.blockModelCache.setModels(bakingResult.modelCache);
 		profiler.pop();
-		profiler.endTick();
 	}
 
 	public boolean shouldRerender(BlockState from, BlockState to) {

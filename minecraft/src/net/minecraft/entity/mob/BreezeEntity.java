@@ -28,6 +28,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.World;
 
 public class BreezeEntity extends HostileEntity {
@@ -227,11 +229,12 @@ public class BreezeEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("breezeBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("breezeBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().swap("breezeActivityUpdate");
+		profiler.swap("breezeActivityUpdate");
 		BreezeBrain.updateActivities(this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		super.mobTick();
 	}
 

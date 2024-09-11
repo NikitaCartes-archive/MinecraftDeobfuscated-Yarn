@@ -219,6 +219,14 @@ public record VanillaGiftLootTableGenerator(RegistryWrapper.WrapperLookup regist
 				)
 		);
 		lootTableBiConsumer.accept(
+			LootTables.HERO_OF_THE_VILLAGE_UNEMPLOYED_GIFT_GAMEPLAY,
+			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.WHEAT_SEEDS)))
+		);
+		lootTableBiConsumer.accept(
+			LootTables.HERO_OF_THE_VILLAGE_BABY_GIFT_GAMEPLAY,
+			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.POPPY)))
+		);
+		lootTableBiConsumer.accept(
 			LootTables.SNIFFER_DIGGING_GAMEPLAY,
 			LootTable.builder()
 				.pool(
@@ -237,6 +245,14 @@ public record VanillaGiftLootTableGenerator(RegistryWrapper.WrapperLookup regist
 						.with(ItemEntry.builder(Items.SLIME_BALL).weight(1))
 						.with(EmptyEntry.builder().weight(699))
 				)
+		);
+		lootTableBiConsumer.accept(
+			LootTables.CHICKEN_LAY_GAMEPLAY,
+			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.EGG)))
+		);
+		lootTableBiConsumer.accept(
+			LootTables.ARMADILLO_SHED_GAMEPLAY,
+			LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.ARMADILLO_SCUTE)))
 		);
 	}
 }

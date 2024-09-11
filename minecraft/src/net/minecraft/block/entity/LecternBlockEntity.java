@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -135,7 +134,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	public boolean hasBook() {
-		return this.book.isOf(Items.WRITABLE_BOOK) || this.book.isOf(Items.WRITTEN_BOOK);
+		return this.book.contains(DataComponentTypes.WRITABLE_BOOK_CONTENT) || this.book.contains(DataComponentTypes.WRITTEN_BOOK_CONTENT);
 	}
 
 	public void setBook(ItemStack book) {
@@ -174,14 +173,14 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	private ItemStack resolveBook(ItemStack book, @Nullable PlayerEntity player) {
-		if (this.world instanceof ServerWorld && book.isOf(Items.WRITTEN_BOOK)) {
-			WrittenBookItem.resolve(book, this.getCommandSource(player), player);
+		if (this.world instanceof ServerWorld serverWorld) {
+			WrittenBookItem.resolve(book, this.getCommandSource(player, serverWorld), player);
 		}
 
 		return book;
 	}
 
-	private ServerCommandSource getCommandSource(@Nullable PlayerEntity player) {
+	private ServerCommandSource getCommandSource(@Nullable PlayerEntity player, ServerWorld world) {
 		String string;
 		Text text;
 		if (player == null) {
@@ -193,7 +192,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		}
 
 		Vec3d vec3d = Vec3d.ofCenter(this.pos);
-		return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
+		return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, world, 2, string, text, world.getServer(), player);
 	}
 
 	@Override

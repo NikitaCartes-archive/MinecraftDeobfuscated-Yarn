@@ -76,11 +76,11 @@ public class TelemetryInfoScreen extends Screen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		if (this.telemetryEventWidget != null) {
 			this.telemetryEventWidget.setScrollY(this.scroll);
 			this.telemetryEventWidget.setWidth(this.width - 40);

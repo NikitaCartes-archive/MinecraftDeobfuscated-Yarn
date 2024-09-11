@@ -41,7 +41,7 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		if (this.privacyInfoWidget != null) {
 			this.privacyInfoWidget.setMaxWidth(this.width - 15);
 		}

@@ -29,6 +29,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.event.GameEvent;
@@ -246,9 +248,10 @@ public class ExplosionImpl implements Explosion {
 		List<BlockPos> list = this.getBlocksToDestroy();
 		this.damageEntities();
 		if (this.shouldDestroyBlocks()) {
-			this.world.getProfiler().push("explosion_blocks");
+			Profiler profiler = Profilers.get();
+			profiler.push("explosion_blocks");
 			this.destroyBlocks(list);
-			this.world.getProfiler().pop();
+			profiler.pop();
 		}
 
 		if (this.createFire) {

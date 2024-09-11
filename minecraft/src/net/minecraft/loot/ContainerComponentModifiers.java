@@ -28,7 +28,7 @@ public interface ContainerComponentModifiers {
 			return ContainerComponent.DEFAULT;
 		}
 
-		public ContainerComponent create(ContainerComponent containerComponent, Stream<ItemStack> stream) {
+		public ContainerComponent apply(ContainerComponent containerComponent, Stream<ItemStack> stream) {
 			return ContainerComponent.fromStacks(stream.toList());
 		}
 	};
@@ -46,7 +46,7 @@ public interface ContainerComponentModifiers {
 			return bundleContentsComponent.stream();
 		}
 
-		public BundleContentsComponent create(BundleContentsComponent bundleContentsComponent, Stream<ItemStack> stream) {
+		public BundleContentsComponent apply(BundleContentsComponent bundleContentsComponent, Stream<ItemStack> stream) {
 			BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent).clear();
 			stream.forEach(builder::add);
 			return builder.build();
@@ -66,7 +66,7 @@ public interface ContainerComponentModifiers {
 			return chargedProjectilesComponent.getProjectiles().stream();
 		}
 
-		public ChargedProjectilesComponent create(ChargedProjectilesComponent chargedProjectilesComponent, Stream<ItemStack> stream) {
+		public ChargedProjectilesComponent apply(ChargedProjectilesComponent chargedProjectilesComponent, Stream<ItemStack> stream) {
 			return ChargedProjectilesComponent.of(stream.toList());
 		}
 	};

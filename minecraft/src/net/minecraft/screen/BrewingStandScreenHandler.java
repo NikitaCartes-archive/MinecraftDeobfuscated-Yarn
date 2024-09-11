@@ -13,6 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -130,7 +131,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		public static boolean matches(ItemStack stack) {
-			return stack.isOf(Items.BLAZE_POWDER);
+			return stack.isIn(ItemTags.BREWING_FUEL);
 		}
 	}
 

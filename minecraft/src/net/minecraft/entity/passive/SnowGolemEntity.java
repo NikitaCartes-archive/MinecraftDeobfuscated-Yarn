@@ -134,7 +134,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
-			this.sheared(SoundCategory.PLAYERS);
+			this.sheared(SoundCategory.PLAYERS, itemStack);
 			this.emitGameEvent(GameEvent.SHEAR, player);
 			if (!this.getWorld().isClient) {
 				itemStack.damage(1, player, getSlotForHand(hand));
@@ -147,11 +147,11 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	public void sheared(SoundCategory shearedSoundCategory) {
+	public void sheared(SoundCategory shearedSoundCategory, ItemStack shears) {
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		if (!this.getWorld().isClient()) {
 			this.setHasPumpkin(false);
-			this.forEachShearedItem(LootTables.SNOW_GOLEM_SHEARING, itemStack -> this.dropStack(itemStack, this.getStandingEyeHeight()));
+			this.forEachShearedItem(LootTables.SNOW_GOLEM_SHEARING, shears, stack -> this.dropStack(stack, this.getStandingEyeHeight()));
 		}
 	}
 

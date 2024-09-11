@@ -54,6 +54,8 @@ public final class ItemTags {
 	public static final TagKey<Item> PIGLIN_LOVED = of("piglin_loved");
 	public static final TagKey<Item> IGNORED_BY_PIGLIN_BABIES = of("ignored_by_piglin_babies");
 	public static final TagKey<Item> PIGLIN_SAFE_ARMOR = of("piglin_safe_armor");
+	public static final TagKey<Item> DUPLICATES_ALLAYS = of("duplicates_allays");
+	public static final TagKey<Item> BREWING_FUEL = of("brewing_fuel");
 	public static final TagKey<Item> MEAT = of("meat");
 	public static final TagKey<Item> SNIFFER_FOOD = of("sniffer_food");
 	public static final TagKey<Item> PIGLIN_FOOD = of("piglin_food");
@@ -75,6 +77,7 @@ public final class ItemTags {
 	public static final TagKey<Item> LLAMA_TEMPT_ITEMS = of("llama_tempt_items");
 	public static final TagKey<Item> OCELOT_FOOD = of("ocelot_food");
 	public static final TagKey<Item> PANDA_FOOD = of("panda_food");
+	public static final TagKey<Item> PANDA_EATS_FROM_GROUND = of("panda_eats_from_ground");
 	public static final TagKey<Item> PIG_FOOD = of("pig_food");
 	public static final TagKey<Item> RABBIT_FOOD = of("rabbit_food");
 	public static final TagKey<Item> STRIDER_FOOD = of("strider_food");

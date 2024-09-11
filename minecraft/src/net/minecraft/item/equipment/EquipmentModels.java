@@ -30,12 +30,12 @@ public interface EquipmentModels {
 				.addLayers(EquipmentModel.LayerType.HORSE_BODY, EquipmentModel.Layer.createDyeableLeather(Identifier.ofVanilla("leather"), true))
 				.build()
 		);
-		equipmentModelBiConsumer.accept(CHAINMAIL, buildHumanoid("chain"));
+		equipmentModelBiConsumer.accept(CHAINMAIL, buildHumanoid("chainmail"));
 		equipmentModelBiConsumer.accept(IRON, buildHumanoidAndHorse("iron"));
 		equipmentModelBiConsumer.accept(GOLD, buildHumanoidAndHorse("gold"));
 		equipmentModelBiConsumer.accept(DIAMOND, buildHumanoidAndHorse("diamond"));
 		equipmentModelBiConsumer.accept(TURTLE_SCUTE, EquipmentModel.builder().addMainHumanoidLayer(Identifier.ofVanilla("turtle_scute"), false).build());
-		equipmentModelBiConsumer.accept(NETHERITE, buildHumanoid("diamond"));
+		equipmentModelBiConsumer.accept(NETHERITE, buildHumanoid("netherite"));
 		equipmentModelBiConsumer.accept(
 			ARMADILLO_SCUTE,
 			EquipmentModel.builder()

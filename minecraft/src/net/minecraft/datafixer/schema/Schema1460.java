@@ -248,6 +248,7 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 			TypeReferences.PLAYER,
 			() -> DSL.optionalFields(
 					Pair.of("RootVehicle", DSL.optionalFields("Entity", TypeReferences.ENTITY_TREE.in(schema))),
+					Pair.of("ender_pearls", DSL.list(TypeReferences.ENTITY_TREE.in(schema))),
 					Pair.of("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
 					Pair.of("EnderItems", DSL.list(TypeReferences.ITEM_STACK.in(schema))),
 					Pair.of("ShoulderEntityLeft", TypeReferences.ENTITY_TREE.in(schema)),

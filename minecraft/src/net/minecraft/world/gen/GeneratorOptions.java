@@ -32,6 +32,10 @@ public class GeneratorOptions {
 		return new GeneratorOptions(getRandomSeed(), true, false);
 	}
 
+	public static GeneratorOptions createTestWorld() {
+		return new GeneratorOptions(getRandomSeed(), false, false);
+	}
+
 	private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, Optional<String> legacyCustomOptions) {
 		this.seed = seed;
 		this.generateStructures = generateStructures;

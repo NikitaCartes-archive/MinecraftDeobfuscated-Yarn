@@ -54,13 +54,15 @@ public class RunArgs {
 		public final String versionType;
 		public final boolean multiplayerDisabled;
 		public final boolean onlineChatDisabled;
+		public final boolean tracyEnabled;
 
-		public Game(boolean demo, String version, String versionType, boolean multiplayerDisabled, boolean onlineChatDisabled) {
+		public Game(boolean demo, String version, String versionType, boolean multiplayerDisabled, boolean onlineChatDisabled, boolean tracyEnabled) {
 			this.demo = demo;
 			this.version = version;
 			this.versionType = versionType;
 			this.multiplayerDisabled = multiplayerDisabled;
 			this.onlineChatDisabled = onlineChatDisabled;
+			this.tracyEnabled = tracyEnabled;
 		}
 	}
 

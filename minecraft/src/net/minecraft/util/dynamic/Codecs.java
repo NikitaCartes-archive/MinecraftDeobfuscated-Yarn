@@ -92,22 +92,22 @@ public class Codecs {
 			list -> Util.decodeFixedLengthList(list, 4).map(listx -> new Vector4f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2), (Float)listx.get(3))),
 			vec4f -> List.of(vec4f.x(), vec4f.y(), vec4f.z(), vec4f.w())
 		);
-	public static final Codec<Quaternionf> QUATERNIONF = Codec.FLOAT
+	public static final Codec<Quaternionf> QUATERNION_F = Codec.FLOAT
 		.listOf()
 		.comapFlatMap(
 			list -> Util.decodeFixedLengthList(list, 4)
 					.map(listx -> new Quaternionf((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2), (Float)listx.get(3)).normalize()),
 			quaternion -> List.of(quaternion.x, quaternion.y, quaternion.z, quaternion.w)
 		);
-	public static final Codec<AxisAngle4f> AXIS_ANGLE4F = RecordCodecBuilder.create(
+	public static final Codec<AxisAngle4f> AXIS_ANGLE_4F = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.FLOAT.fieldOf("angle").forGetter(axisAngle -> axisAngle.angle),
 					VECTOR_3F.fieldOf("axis").forGetter(axisAngle -> new Vector3f(axisAngle.x, axisAngle.y, axisAngle.z))
 				)
 				.apply(instance, AxisAngle4f::new)
 	);
-	public static final Codec<Quaternionf> ROTATION = Codec.withAlternative(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new));
-	public static Codec<Matrix4f> MATRIX4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.decodeFixedLengthList(list, 16).map(listx -> {
+	public static final Codec<Quaternionf> ROTATION = Codec.withAlternative(QUATERNION_F, AXIS_ANGLE_4F.xmap(Quaternionf::new, AxisAngle4f::new));
+	public static Codec<Matrix4f> MATRIX_4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.decodeFixedLengthList(list, 16).map(listx -> {
 			Matrix4f matrix4f = new Matrix4f();
 
 			for (int i = 0; i < listx.size(); i++) {

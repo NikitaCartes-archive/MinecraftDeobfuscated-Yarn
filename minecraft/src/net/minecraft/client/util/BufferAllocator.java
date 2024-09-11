@@ -1,5 +1,7 @@
 package net.minecraft.client.util;
 
+import com.mojang.jtracy.MemoryPool;
+import com.mojang.jtracy.TracyClient;
 import com.mojang.logging.LogUtils;
 import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class BufferAllocator implements AutoCloseable {
+	private static final MemoryPool MEMORY_POOL = TracyClient.createMemoryPool("ByteBufferBuilder");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final MemoryAllocator allocator = MemoryUtil.getAllocator(false);
 	private static final int MIN_GROWTH = 2097152;
@@ -25,6 +28,7 @@ public class BufferAllocator implements AutoCloseable {
 	public BufferAllocator(int size) {
 		this.size = size;
 		this.pointer = allocator.malloc((long)size);
+		MEMORY_POOL.malloc(this.pointer, size);
 		if (this.pointer == 0L) {
 			throw new OutOfMemoryError("Failed to allocate " + size + " bytes");
 		}
@@ -47,7 +51,9 @@ public class BufferAllocator implements AutoCloseable {
 	}
 
 	private void grow(int targetSize) {
+		MEMORY_POOL.free(this.pointer);
 		this.pointer = allocator.realloc(this.pointer, (long)targetSize);
+		MEMORY_POOL.malloc(this.pointer, targetSize);
 		LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", this.size, targetSize);
 		if (this.pointer == 0L) {
 			throw new OutOfMemoryError("Failed to resize buffer from " + this.size + " bytes to " + targetSize + " bytes");
@@ -109,6 +115,7 @@ public class BufferAllocator implements AutoCloseable {
 
 	public void close() {
 		if (this.pointer != 0L) {
+			MEMORY_POOL.free(this.pointer);
 			allocator.free(this.pointer);
 			this.pointer = 0L;
 			this.clearCount = -1;

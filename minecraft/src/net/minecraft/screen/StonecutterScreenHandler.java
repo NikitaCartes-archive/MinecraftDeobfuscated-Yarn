@@ -217,6 +217,10 @@ public class StonecutterScreenHandler extends ScreenHandler {
 			}
 
 			slot2.onTakeItem(player, itemStack2);
+			if (slot == 1) {
+				player.dropItem(itemStack2, false);
+			}
+
 			this.sendContentUpdates();
 		}
 

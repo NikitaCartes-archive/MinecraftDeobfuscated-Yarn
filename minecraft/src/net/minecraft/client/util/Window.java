@@ -17,6 +17,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.tracy.TracyFrameCapturer;
 import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.util.crash.CrashException;
@@ -291,11 +292,11 @@ public final class Window implements AutoCloseable {
 		this.minimized = minimized;
 	}
 
-	public void swapBuffers() {
-		RenderSystem.flipFrame(this.handle);
+	public void swapBuffers(@Nullable TracyFrameCapturer capturer) {
+		RenderSystem.flipFrame(this.handle, capturer);
 		if (this.fullscreen != this.currentFullscreen) {
 			this.currentFullscreen = this.fullscreen;
-			this.updateFullscreen(this.vsync);
+			this.updateFullscreen(this.vsync, capturer);
 		}
 	}
 
@@ -368,16 +369,16 @@ public final class Window implements AutoCloseable {
 		this.updateWindowRegion();
 	}
 
-	private void updateFullscreen(boolean vsync) {
+	private void updateFullscreen(boolean vsync, @Nullable TracyFrameCapturer capturer) {
 		RenderSystem.assertOnRenderThread();
 
 		try {
 			this.updateWindowRegion();
 			this.eventHandler.onResolutionChanged();
 			this.setVsync(vsync);
-			this.swapBuffers();
-		} catch (Exception var3) {
-			LOGGER.error("Couldn't toggle fullscreen", (Throwable)var3);
+			this.swapBuffers(capturer);
+		} catch (Exception var4) {
+			LOGGER.error("Couldn't toggle fullscreen", (Throwable)var4);
 		}
 	}
 

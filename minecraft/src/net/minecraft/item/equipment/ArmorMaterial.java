@@ -1,7 +1,6 @@
 package net.minecraft.item.equipment;
 
 import java.util.Map;
-import java.util.Optional;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -37,7 +36,9 @@ public record ArmorMaterial(
 		return settings.maxDamage(equipmentType.getMaxDamage(this.durability))
 			.attributeModifiers(this.createAttributeModifiers(equipmentType))
 			.enchantable(this.enchantmentValue)
-			.equippable(equipmentType.getEquipmentSlot(), this.equipSound, this.modelId)
+			.component(
+				DataComponentTypes.EQUIPPABLE, EquippableComponent.builder(equipmentType.getEquipmentSlot()).equipSound(this.equipSound).model(this.modelId).build()
+			)
 			.repairable(this.repairIngredient);
 	}
 
@@ -46,7 +47,8 @@ public record ArmorMaterial(
 			.attributeModifiers(this.createAttributeModifiers(EquipmentType.BODY))
 			.repairable(this.repairIngredient)
 			.component(
-				DataComponentTypes.EQUIPPABLE, new EquippableComponent(EquipmentSlot.BODY, this.equipSound, Optional.of(this.modelId), Optional.of(allowedEntities), true)
+				DataComponentTypes.EQUIPPABLE,
+				EquippableComponent.builder(EquipmentSlot.BODY).equipSound(this.equipSound).model(this.modelId).allowedEntities(allowedEntities).build()
 			);
 	}
 

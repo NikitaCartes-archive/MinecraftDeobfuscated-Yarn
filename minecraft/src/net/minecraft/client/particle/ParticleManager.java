@@ -62,6 +62,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.shape.VoxelShape;
 import org.slf4j.Logger;
 
@@ -230,14 +231,7 @@ public class ParticleManager implements ResourceReloader {
 	}
 
 	@Override
-	public CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
-	) {
+	public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
 		@Environment(EnvType.CLIENT)
 		record ReloadResult(Identifier id, Optional<List<Identifier>> sprites) {
 		}
@@ -256,11 +250,11 @@ public class ParticleManager implements ResourceReloader {
 			.thenCompose(SpriteLoader.StitchResult::whenComplete);
 		return CompletableFuture.allOf(completableFuture2, completableFuture).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
 			this.clearParticles();
-			applyProfiler.startTick();
-			applyProfiler.push("upload");
+			Profiler profiler = Profilers.get();
+			profiler.push("upload");
 			SpriteLoader.StitchResult stitchResult = (SpriteLoader.StitchResult)completableFuture2.join();
 			this.particleAtlasTexture.upload(stitchResult);
-			applyProfiler.swap("bindSpriteSets");
+			profiler.swap("bindSpriteSets");
 			Set<Identifier> set = new HashSet();
 			Sprite sprite = stitchResult.missing();
 			((List)completableFuture.join()).forEach(result -> {
@@ -289,8 +283,7 @@ public class ParticleManager implements ResourceReloader {
 				LOGGER.warn("Missing particle sprites: {}", set.stream().sorted().map(Identifier::toString).collect(Collectors.joining(",")));
 			}
 
-			applyProfiler.pop();
-			applyProfiler.endTick();
+			profiler.pop();
 		}, applyExecutor);
 	}
 
@@ -372,9 +365,9 @@ public class ParticleManager implements ResourceReloader {
 
 	public void tick() {
 		this.particles.forEach((sheet, queue) -> {
-			this.world.getProfiler().push(sheet.toString());
+			Profilers.get().push(sheet.toString());
 			this.tickParticles(queue);
-			this.world.getProfiler().pop();
+			Profilers.get().pop();
 		});
 		if (!this.newEmitterParticles.isEmpty()) {
 			List<EmitterParticle> list = Lists.<EmitterParticle>newArrayList();

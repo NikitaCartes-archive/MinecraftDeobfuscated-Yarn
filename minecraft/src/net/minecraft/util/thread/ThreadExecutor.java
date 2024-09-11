@@ -2,6 +2,8 @@ package net.minecraft.util.thread;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
+import com.mojang.jtracy.TracyClient;
+import com.mojang.jtracy.Zone;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Queue;
@@ -11,6 +13,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.CheckReturnValue;
+import net.minecraft.SharedConstants;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.profiler.SampleType;
 import net.minecraft.util.profiler.Sampler;
@@ -138,10 +141,12 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 
 	protected void executeTask(R task) {
 		try {
-			task.run();
-		} catch (Exception var3) {
-			LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", this.getName(), var3);
-			throw var3;
+			try (Zone zone = TracyClient.beginZone("Task", SharedConstants.isDevelopment)) {
+				task.run();
+			}
+		} catch (Exception var7) {
+			LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", this.getName(), var7);
+			throw var7;
 		}
 	}
 

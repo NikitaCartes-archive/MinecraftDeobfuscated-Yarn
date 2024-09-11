@@ -32,16 +32,18 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 
-public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Optional<Integer> customColor, List<StatusEffectInstance> customEffects)
-	implements Consumable {
-	public static final PotionContentsComponent DEFAULT = new PotionContentsComponent(Optional.empty(), Optional.empty(), List.of());
+public record PotionContentsComponent(
+	Optional<RegistryEntry<Potion>> potion, Optional<Integer> customColor, List<StatusEffectInstance> customEffects, Optional<String> customName
+) implements Consumable {
+	public static final PotionContentsComponent DEFAULT = new PotionContentsComponent(Optional.empty(), Optional.empty(), List.of(), Optional.empty());
 	private static final Text NONE_TEXT = Text.translatable("effect.none").formatted(Formatting.GRAY);
 	private static final int EFFECTLESS_COLOR = -13083194;
 	private static final Codec<PotionContentsComponent> BASE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Potion.CODEC.optionalFieldOf("potion").forGetter(PotionContentsComponent::potion),
 					Codec.INT.optionalFieldOf("custom_color").forGetter(PotionContentsComponent::customColor),
-					StatusEffectInstance.CODEC.listOf().optionalFieldOf("custom_effects", List.of()).forGetter(PotionContentsComponent::customEffects)
+					StatusEffectInstance.CODEC.listOf().optionalFieldOf("custom_effects", List.of()).forGetter(PotionContentsComponent::customEffects),
+					Codec.STRING.optionalFieldOf("custom_name").forGetter(PotionContentsComponent::customName)
 				)
 				.apply(instance, PotionContentsComponent::new)
 	);
@@ -53,11 +55,13 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 		PotionContentsComponent::customColor,
 		StatusEffectInstance.PACKET_CODEC.collect(PacketCodecs.toList()),
 		PotionContentsComponent::customEffects,
+		PacketCodecs.STRING.collect(PacketCodecs::optional),
+		PotionContentsComponent::customName,
 		PotionContentsComponent::new
 	);
 
 	public PotionContentsComponent(RegistryEntry<Potion> potion) {
-		this(Optional.of(potion), Optional.empty(), List.of());
+		this(Optional.of(potion), Optional.empty(), List.of(), Optional.empty());
 	}
 
 	public static ItemStack createStack(Item item, RegistryEntry<Potion> potion) {
@@ -93,11 +97,11 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 	}
 
 	public PotionContentsComponent with(RegistryEntry<Potion> potion) {
-		return new PotionContentsComponent(Optional.of(potion), this.customColor, this.customEffects);
+		return new PotionContentsComponent(Optional.of(potion), this.customColor, this.customEffects, this.customName);
 	}
 
 	public PotionContentsComponent with(StatusEffectInstance customEffect) {
-		return new PotionContentsComponent(this.potion, this.customColor, Util.withAppended(this.customEffects, customEffect));
+		return new PotionContentsComponent(this.potion, this.customColor, Util.withAppended(this.customEffects, customEffect), this.customName);
 	}
 
 	public int getColor() {
@@ -110,6 +114,11 @@ public record PotionContentsComponent(Optional<RegistryEntry<Potion>> potion, Op
 
 	public static int getColor(Iterable<StatusEffectInstance> effects) {
 		return mixColors(effects).orElse(-13083194);
+	}
+
+	public Text getName(String prefix) {
+		String string = (String)this.customName.or(() -> this.potion.map(potionEntry -> ((Potion)potionEntry.value()).getBaseName())).orElse("empty");
+		return Text.translatable(prefix + string);
 	}
 
 	public static OptionalInt mixColors(Iterable<StatusEffectInstance> effects) {

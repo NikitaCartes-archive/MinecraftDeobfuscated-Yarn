@@ -21,6 +21,7 @@ import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.CreditsAndAttributionScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
+import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -114,31 +115,34 @@ public class TitleScreen extends Screen {
 		int k = 24;
 		int l = this.height / 4 + 48;
 		if (this.client.isDemo()) {
-			this.initWidgetsDemo(l, 24);
+			l = this.addDemoWidgets(l, 24);
 		} else {
-			this.initWidgetsNormal(l, 24);
+			l = this.addNormalWidgets(l, 24);
 		}
 
+		l = this.addDevelopmentWidgets(l, 24);
 		TextIconButtonWidget textIconButtonWidget = this.addDrawableChild(
 			AccessibilityOnboardingButtons.createLanguageButton(
 				20, button -> this.client.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())), true
 			)
 		);
-		textIconButtonWidget.setPosition(this.width / 2 - 124, l + 72 + 12);
+		int var10001 = this.width / 2 - 124;
+		l += 36;
+		textIconButtonWidget.setPosition(var10001, l);
 		this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options)))
-				.dimensions(this.width / 2 - 100, l + 72 + 12, 98, 20)
+				.dimensions(this.width / 2 - 100, l, 98, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).dimensions(this.width / 2 + 2, l + 72 + 12, 98, 20).build()
+			ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).dimensions(this.width / 2 + 2, l, 98, 20).build()
 		);
 		TextIconButtonWidget textIconButtonWidget2 = this.addDrawableChild(
 			AccessibilityOnboardingButtons.createAccessibilityButton(
 				20, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), true
 			)
 		);
-		textIconButtonWidget2.setPosition(this.width / 2 + 104, l + 72 + 12);
+		textIconButtonWidget2.setPosition(this.width / 2 + 104, l);
 		this.addDrawableChild(
 			new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsAndAttributionScreen(this)), this.textRenderer)
 		);
@@ -151,7 +155,19 @@ public class TitleScreen extends Screen {
 		}
 	}
 
-	private void initWidgetsNormal(int y, int spacingY) {
+	private int addDevelopmentWidgets(int y, int spacingY) {
+		if (SharedConstants.isDevelopment) {
+			this.addDrawableChild(
+				ButtonWidget.builder(Text.literal("Create Test World"), button -> CreateWorldScreen.showTestWorld(this.client, this))
+					.dimensions(this.width / 2 - 100, y += spacingY, 200, 20)
+					.build()
+			);
+		}
+
+		return y;
+	}
+
+	private int addNormalWidgets(int y, int spacingY) {
 		this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
 				.dimensions(this.width / 2 - 100, y, 200, 20)
@@ -160,17 +176,19 @@ public class TitleScreen extends Screen {
 		Text text = this.getMultiplayerDisabledText();
 		boolean bl = text == null;
 		Tooltip tooltip = text != null ? Tooltip.of(text) : null;
+		int var6;
 		this.addDrawableChild(ButtonWidget.builder(Text.translatable("menu.multiplayer"), button -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
 			this.client.setScreen(screen);
-		}).dimensions(this.width / 2 - 100, y + spacingY * 1, 200, 20).tooltip(tooltip).build()).active = bl;
+		}).dimensions(this.width / 2 - 100, var6 = y + spacingY, 200, 20).tooltip(tooltip).build()).active = bl;
 		this.addDrawableChild(
-				ButtonWidget.builder(Text.translatable("menu.online"), buttonWidget -> this.client.setScreen(new RealmsMainScreen(this)))
-					.dimensions(this.width / 2 - 100, y + spacingY * 2, 200, 20)
+				ButtonWidget.builder(Text.translatable("menu.online"), button -> this.client.setScreen(new RealmsMainScreen(this)))
+					.dimensions(this.width / 2 - 100, y = var6 + spacingY, 200, 20)
 					.tooltip(tooltip)
 					.build()
 			)
 			.active = bl;
+		return y;
 	}
 
 	@Nullable
@@ -191,7 +209,7 @@ public class TitleScreen extends Screen {
 		}
 	}
 
-	private void initWidgetsDemo(int y, int spacingY) {
+	private int addDemoWidgets(int y, int spacingY) {
 		boolean bl = this.canReadDemoWorldData();
 		this.addDrawableChild(
 			ButtonWidget.builder(
@@ -209,6 +227,7 @@ public class TitleScreen extends Screen {
 				.dimensions(this.width / 2 - 100, y, 200, 20)
 				.build()
 		);
+		int var4;
 		this.buttonResetDemo = this.addDrawableChild(
 			ButtonWidget.builder(
 					Text.translatable("menu.resetdemo"),
@@ -234,10 +253,11 @@ public class TitleScreen extends Screen {
 						}
 					}
 				)
-				.dimensions(this.width / 2 - 100, y + spacingY * 1, 200, 20)
+				.dimensions(this.width / 2 - 100, var4 = y + spacingY, 200, 20)
 				.build()
 		);
 		this.buttonResetDemo.active = bl;
+		return var4;
 	}
 
 	private boolean canReadDemoWorldData() {

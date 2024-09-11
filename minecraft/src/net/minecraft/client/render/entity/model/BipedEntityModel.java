@@ -138,17 +138,12 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 		BipedEntityModel.ArmPose armPose2 = this.getArmPose(bipedEntityRenderState, Arm.RIGHT);
 		float f = bipedEntityRenderState.leaningPitch;
 		boolean bl = bipedEntityRenderState.isGliding;
+		this.head.pitch = bipedEntityRenderState.pitch * (float) (Math.PI / 180.0);
 		this.head.yaw = bipedEntityRenderState.yawDegrees * (float) (Math.PI / 180.0);
 		if (bl) {
 			this.head.pitch = (float) (-Math.PI / 4);
 		} else if (f > 0.0F) {
-			if (bipedEntityRenderState.isSwimming) {
-				this.head.pitch = MathHelper.lerpAngleRadians(f, this.head.pitch, (float) (-Math.PI / 4));
-			} else {
-				this.head.pitch = MathHelper.lerpAngleRadians(f, this.head.pitch, bipedEntityRenderState.pitch * (float) (Math.PI / 180.0));
-			}
-		} else {
-			this.head.pitch = bipedEntityRenderState.pitch * (float) (Math.PI / 180.0);
+			this.head.pitch = MathHelper.lerpAngleRadians(f, this.head.pitch, (float) (-Math.PI / 4));
 		}
 
 		float g = bipedEntityRenderState.limbFrequency;
@@ -372,6 +367,15 @@ public class BipedEntityModel<T extends BipedEntityRenderState> extends EntityMo
 
 	private float method_2807(float f) {
 		return -65.0F * f + f * f;
+	}
+
+	public void copyTransforms(BipedEntityModel<T> model) {
+		model.head.copyTransform(this.head);
+		model.body.copyTransform(this.body);
+		model.rightArm.copyTransform(this.rightArm);
+		model.leftArm.copyTransform(this.leftArm);
+		model.rightLeg.copyTransform(this.rightLeg);
+		model.leftLeg.copyTransform(this.leftLeg);
 	}
 
 	public void setVisible(boolean visible) {

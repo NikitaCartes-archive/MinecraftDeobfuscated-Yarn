@@ -47,17 +47,17 @@ public class StateManager<O, S extends State<O, S>> {
 		Stream<List<Pair<Property<?>, Comparable<?>>>> stream = Stream.of(Collections.emptyList());
 
 		for (Property<?> property : this.properties.values()) {
-			stream = stream.flatMap(listx -> property.getValues().stream().map(comparable -> {
-					List<Pair<Property<?>, Comparable<?>>> list2 = Lists.<Pair<Property<?>, Comparable<?>>>newArrayList(listx);
-					list2.add(Pair.of(property, comparable));
+			stream = stream.flatMap(entries -> property.getValues().stream().map(value -> {
+					List<Pair<Property<?>, Comparable<?>>> list2 = Lists.<Pair<Property<?>, Comparable<?>>>newArrayList(entries);
+					list2.add(Pair.of(property, value));
 					return list2;
 				}));
 		}
 
-		stream.forEach(list2 -> {
-			Reference2ObjectArrayMap<Property<?>, Comparable<?>> reference2ObjectArrayMap = new Reference2ObjectArrayMap<>(list2.size());
+		stream.forEach(entries -> {
+			Reference2ObjectArrayMap<Property<?>, Comparable<?>> reference2ObjectArrayMap = new Reference2ObjectArrayMap<>(entries.size());
 
-			for (Pair<Property<?>, Comparable<?>> pair : list2) {
+			for (Pair<Property<?>, Comparable<?>> pair : entries) {
 				reference2ObjectArrayMap.put(pair.getFirst(), pair.getSecond());
 			}
 
@@ -67,7 +67,7 @@ public class StateManager<O, S extends State<O, S>> {
 		});
 
 		for (S state : list) {
-			state.createWithTable(map);
+			state.createWithMap(map);
 		}
 
 		this.states = ImmutableList.copyOf(list);
@@ -76,7 +76,7 @@ public class StateManager<O, S extends State<O, S>> {
 	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> addFieldToMapCodec(
 		MapCodec<S> mapCodec, Supplier<S> defaultStateGetter, String key, Property<T> property
 	) {
-		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(key).orElseGet((Consumer<String>)(string -> {
+		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(key).orElseGet((Consumer<String>)(value -> {
 			}), () -> property.createValue((State<?, ?>)defaultStateGetter.get())))
 			.xmap(
 				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).value()), state -> Pair.of(state, property.createValue(state))

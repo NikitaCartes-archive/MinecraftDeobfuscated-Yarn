@@ -83,10 +83,10 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public CompletableFuture<Chunk> populateBiomes(NoiseConfig noiseConfig, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
-		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
+		return CompletableFuture.supplyAsync(() -> {
 			this.populateBiomes(blender, noiseConfig, structureAccessor, chunk);
 			return chunk;
-		}), Util.getMainWorkerExecutor());
+		}, Util.getMainWorkerExecutor().named("init_biomes"));
 	}
 
 	private void populateBiomes(Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
@@ -328,7 +328,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int i = generationShapeConfig.minimumY();
 		int j = MathHelper.floorDiv(i, generationShapeConfig.verticalCellBlockCount());
 		int k = MathHelper.floorDiv(generationShapeConfig.height(), generationShapeConfig.verticalCellBlockCount());
-		return k <= 0 ? CompletableFuture.completedFuture(chunk) : CompletableFuture.supplyAsync(Util.debugSupplier("wgen_fill_noise", () -> {
+		return k <= 0 ? CompletableFuture.completedFuture(chunk) : CompletableFuture.supplyAsync(() -> {
 			int l = chunk.getSectionIndex(k * generationShapeConfig.verticalCellBlockCount() - 1 + i);
 			int m = chunk.getSectionIndex(i);
 			Set<ChunkSection> set = Sets.<ChunkSection>newHashSet();
@@ -349,7 +349,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			}
 
 			return var20;
-		}), Util.getMainWorkerExecutor());
+		}, Util.getMainWorkerExecutor().named("wgen_fill_noise"));
 	}
 
 	private Chunk populateNoise(Blender blender, StructureAccessor structureAccessor, NoiseConfig noiseConfig, Chunk chunk, int minimumCellY, int cellHeight) {

@@ -181,7 +181,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		if (levelList.isEmpty()) {
-			CreateWorldScreen.create(this.client, null);
+			CreateWorldScreen.show(this.client, null);
 			return CompletableFuture.completedFuture(List.of());
 		} else {
 			return this.client.getLevelStorage().loadSummaries(levelList).exceptionally(throwable -> {

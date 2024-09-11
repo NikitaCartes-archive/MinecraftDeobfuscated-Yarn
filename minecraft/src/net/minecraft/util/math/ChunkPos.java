@@ -1,10 +1,16 @@
 package net.minecraft.util.math;
 
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.util.Util;
 
 /**
  * An immutable pair of two integers representing the X and Z coordinates of a chunk.
@@ -12,6 +18,21 @@ import javax.annotation.Nullable;
  * <p>Chunk positions are usually serialized as a {@code long}.
  */
 public class ChunkPos {
+	public static final Codec<ChunkPos> CODEC = Codec.INT_STREAM
+		.<ChunkPos>comapFlatMap(
+			stream -> Util.decodeFixedLengthArray(stream, 2).map(coords -> new ChunkPos(coords[0], coords[1])),
+			chunkPos -> IntStream.of(new int[]{chunkPos.x, chunkPos.z})
+		)
+		.stable();
+	public static final PacketCodec<ByteBuf, ChunkPos> PACKET_CODEC = new PacketCodec<ByteBuf, ChunkPos>() {
+		public ChunkPos decode(ByteBuf byteBuf) {
+			return PacketByteBuf.readChunkPos(byteBuf);
+		}
+
+		public void encode(ByteBuf byteBuf, ChunkPos chunkPos) {
+			PacketByteBuf.writeChunkPos(byteBuf, chunkPos);
+		}
+	};
 	private static final int field_36299 = 1056;
 	/**
 	 * A {@code long}-serialized chunk position {@code 1875066, 1875066}. This is a

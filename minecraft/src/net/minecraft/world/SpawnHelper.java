@@ -37,6 +37,8 @@ import net.minecraft.util.math.GravityField;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeCoords;
@@ -114,7 +116,8 @@ public final class SpawnHelper {
 	}
 
 	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, List<SpawnGroup> spawnableGroups) {
-		world.getProfiler().push("spawner");
+		Profiler profiler = Profilers.get();
+		profiler.push("spawner");
 
 		for (SpawnGroup spawnGroup : spawnableGroups) {
 			if (info.canSpawn(spawnGroup, chunk.getPos())) {
@@ -122,7 +125,7 @@ public final class SpawnHelper {
 			}
 		}
 
-		world.getProfiler().pop();
+		profiler.pop();
 	}
 
 	public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, WorldChunk chunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner) {

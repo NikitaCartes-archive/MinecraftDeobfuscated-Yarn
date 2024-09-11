@@ -75,6 +75,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
@@ -263,9 +265,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("villagerBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("villagerBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		if (this.natural) {
 			this.natural = false;
 		}

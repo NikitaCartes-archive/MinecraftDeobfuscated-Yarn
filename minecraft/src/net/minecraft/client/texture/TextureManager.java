@@ -26,7 +26,6 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.profiler.Profiler;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -153,14 +152,7 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 	}
 
 	@Override
-	public CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
-	) {
+	public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
 		CompletableFuture<Void> completableFuture = new CompletableFuture();
 		TitleScreen.loadTexturesAsync(this, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
 			MissingSprite.getMissingSpriteTexture();

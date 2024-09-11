@@ -16,6 +16,8 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.jtracy.DiscontinuousFrame;
+import com.mojang.jtracy.TracyClient;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
@@ -165,6 +167,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
+import net.minecraft.client.util.tracy.TracyFrameCapturer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -241,8 +244,10 @@ import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
+import net.minecraft.util.profiler.ScopedProfiler;
 import net.minecraft.util.profiler.TickTimeTracker;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
@@ -359,6 +364,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final BlockColors blockColors;
 	private final ItemColors itemColors;
 	private final Framebuffer framebuffer;
+	@Nullable
+	private final TracyFrameCapturer tracyFrameCapturer;
 	private final SoundManager soundManager;
 	private final MusicTracker musicTracker;
 	private final FontManager fontManager;
@@ -460,7 +467,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private CompletableFuture<Void> resourceReloadFuture;
 	@Nullable
 	private TutorialToast socialInteractionsToast;
-	private Profiler profiler = DummyProfiler.INSTANCE;
 	private int trackingTick;
 	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
 	private Recorder recorder = DummyRecorder.INSTANCE;
@@ -713,7 +719,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setScreen(new MessageScreen(Text.translatable("gui.loadingMinecraft")));
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
-		ResourceReload resourceReload = this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list);
+		ResourceReload resourceReload = this.resourceManager.reload(Util.getMainWorkerExecutor().named("resourceLoad"), this, COMPLETED_UNIT_FUTURE, list);
 		GameLoadTimeEvent.INSTANCE.startTimer(TelemetryEventProperty.LOAD_TIME_LOADING_OVERLAY_MS);
 		MinecraftClient.LoadingContext loadingContext = new MinecraftClient.LoadingContext(realmsClient, args.quickPlay);
 		this.setOverlay(
@@ -730,6 +736,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		);
 		this.quickPlayLogger = QuickPlayLogger.create(args.quickPlay.path());
 		this.inactivityFpsLimiter = new InactivityFpsLimiter(this.options, this);
+		if (TracyClient.isAvailable() && args.game.tracyEnabled) {
+			this.tracyFrameCapturer = new TracyFrameCapturer();
+		} else {
+			this.tracyFrameCapturer = null;
+		}
 	}
 
 	private void onFinishedLoading(@Nullable MinecraftClient.LoadingContext loadingContext) {
@@ -902,6 +913,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.thread.setPriority(10);
 		}
 
+		DiscontinuousFrame discontinuousFrame = TracyClient.createDiscontinuousFrame("Client Tick");
+
 		try {
 			boolean bl = false;
 
@@ -911,31 +924,34 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				try {
 					TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Renderer");
 					boolean bl2 = this.getDebugHud().shouldShowRenderingChart();
-					this.profiler = this.startMonitor(bl2, tickDurationMonitor);
-					this.profiler.startTick();
-					this.recorder.startTick();
-					this.render(!bl);
-					this.recorder.endTick();
-					this.profiler.endTick();
+
+					try (Profilers.Scoped scoped = Profilers.using(this.startMonitor(bl2, tickDurationMonitor))) {
+						this.recorder.startTick();
+						discontinuousFrame.start();
+						this.render(!bl);
+						discontinuousFrame.end();
+						this.recorder.endTick();
+					}
+
 					this.endMonitor(bl2, tickDurationMonitor);
-				} catch (OutOfMemoryError var4) {
+				} catch (OutOfMemoryError var10) {
 					if (bl) {
-						throw var4;
+						throw var10;
 					}
 
 					this.cleanUpAfterCrash();
 					this.setScreen(new OutOfMemoryScreen());
 					System.gc();
-					LOGGER.error(LogUtils.FATAL_MARKER, "Out of memory", (Throwable)var4);
+					LOGGER.error(LogUtils.FATAL_MARKER, "Out of memory", (Throwable)var10);
 					bl = true;
 				}
 			}
-		} catch (CrashException var5) {
-			LOGGER.error(LogUtils.FATAL_MARKER, "Reported exception thrown!", (Throwable)var5);
-			this.printCrashReport(var5.getReport());
-		} catch (Throwable var6) {
-			LOGGER.error(LogUtils.FATAL_MARKER, "Unreported exception thrown!", var6);
-			this.printCrashReport(new CrashReport("Unexpected error", var6));
+		} catch (CrashException var11) {
+			LOGGER.error(LogUtils.FATAL_MARKER, "Reported exception thrown!", (Throwable)var11);
+			this.printCrashReport(var11.getReport());
+		} catch (Throwable var12) {
+			LOGGER.error(LogUtils.FATAL_MARKER, "Unreported exception thrown!", var12);
+			this.printCrashReport(new CrashReport("Unexpected error", var12));
 		}
 	}
 
@@ -1030,7 +1046,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 				this.setOverlay(
 					new SplashOverlay(
-						this, this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), error -> Util.ifPresentOrElse(error, throwable -> {
+						this,
+						this.resourceManager.reload(Util.getMainWorkerExecutor().named("resourceLoad"), this, COMPLETED_UNIT_FUTURE, list),
+						error -> Util.ifPresentOrElse(error, throwable -> {
 								if (force) {
 									this.serverResourcePackLoader.onForcedReloadFailure();
 									this.onForcedResourceReloadFailure();
@@ -1043,7 +1061,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 								this.serverResourcePackLoader.onReloadSuccess();
 								completableFuture.complete(null);
 								this.onFinishedLoading(loadingContext);
-							}), !force
+							}),
+						!force
 					)
 				);
 				return completableFuture;
@@ -1237,6 +1256,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.mapTextureManager.close();
 			this.textureManager.close();
 			this.resourceManager.close();
+			if (this.tracyFrameCapturer != null) {
+				this.tracyFrameCapturer.close();
+			}
+
 			FreeTypeUtil.release();
 			Util.shutdownExecutors();
 		} catch (Throwable var5) {
@@ -1266,26 +1289,27 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		int i = this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs(), tick);
+		Profiler profiler = Profilers.get();
 		if (tick) {
-			this.profiler.push("scheduledExecutables");
+			profiler.push("scheduledExecutables");
 			this.runTasks();
-			this.profiler.pop();
-			this.profiler.push("tick");
+			profiler.pop();
+			profiler.push("tick");
 
 			for (int j = 0; j < Math.min(10, i); j++) {
-				this.profiler.visit("clientTick");
+				profiler.visit("clientTick");
 				this.tick();
 			}
 
-			this.profiler.pop();
+			profiler.pop();
 		}
 
 		this.window.setPhase("Render");
-		this.profiler.push("sound");
+		profiler.push("sound");
 		this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
-		this.profiler.swap("toasts");
+		profiler.swap("toasts");
 		this.toastManager.update();
-		this.profiler.swap("render");
+		profiler.swap("render");
 		long l = Util.getMeasuringTimeNano();
 		boolean bl;
 		if (!this.getDebugHud().shouldShowDebugHud() && !this.recorder.isActive()) {
@@ -1301,18 +1325,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		RenderSystem.clear(16640);
 		this.framebuffer.beginWrite(true);
 		RenderSystem.setShaderFog(Fog.DUMMY);
-		this.profiler.push("display");
+		profiler.push("display");
 		RenderSystem.enableCull();
-		this.profiler.swap("mouse");
+		profiler.swap("mouse");
 		this.mouse.tick();
-		this.profiler.pop();
+		profiler.pop();
 		if (!this.skipGameRender) {
-			this.profiler.swap("gameRenderer");
+			profiler.swap("gameRenderer");
 			this.gameRenderer.render(this.renderTickCounter, tick);
-			this.profiler.pop();
+			profiler.pop();
 		}
 
-		this.profiler.push("blit");
+		profiler.push("blit");
 		this.framebuffer.endWrite();
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		this.renderTime = Util.getMeasuringTimeNano() - l;
@@ -1320,16 +1344,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			GlTimer.getInstance().ifPresent(glTimer -> this.currentGlTimerQuery = glTimer.endProfile());
 		}
 
-		this.profiler.swap("updateDisplay");
-		this.window.swapBuffers();
+		profiler.swap("updateDisplay");
+		if (this.tracyFrameCapturer != null) {
+			this.tracyFrameCapturer.upload();
+			this.tracyFrameCapturer.capture(this.framebuffer);
+		}
+
+		this.window.swapBuffers(this.tracyFrameCapturer);
 		int k = this.inactivityFpsLimiter.update();
 		if (k < 260) {
 			RenderSystem.limitDisplayFPS(k);
 		}
 
-		this.profiler.swap("yield");
+		profiler.swap("yield");
 		Thread.yield();
-		this.profiler.pop();
+		profiler.pop();
 		this.window.setPhase("Post render");
 		this.fpsCounter++;
 		this.paused = this.isIntegratedServerRunning()
@@ -1345,7 +1374,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		this.getDebugHud().pushToFrameLog(n);
 		this.lastMetricsSampleTime = m;
-		this.profiler.push("fpsUpdate");
+		profiler.push("fpsUpdate");
 		if (this.currentGlTimerQuery != null && this.currentGlTimerQuery.isResultAvailable()) {
 			this.gpuUtilizationPercentage = (double)this.currentGlTimerQuery.queryResult() * 100.0 / (double)this.metricsSampleDuration;
 		}
@@ -1376,7 +1405,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.fpsCounter = 0;
 		}
 
-		this.profiler.pop();
+		profiler.pop();
 	}
 
 	private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
@@ -1418,8 +1447,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else {
 			pieChart.setProfileResult(null);
 		}
-
-		this.profiler = this.tickTimeTracker.getProfiler();
 	}
 
 	@Override
@@ -1770,18 +1797,19 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.itemUseCooldown--;
 		}
 
-		this.profiler.push("gui");
+		Profiler profiler = Profilers.get();
+		profiler.push("gui");
 		this.messageHandler.processDelayedMessages();
 		this.inGameHud.tick(this.paused);
-		this.profiler.pop();
+		profiler.pop();
 		this.gameRenderer.updateCrosshairTarget(1.0F);
 		this.tutorialManager.tick(this.world, this.crosshairTarget);
-		this.profiler.push("gameMode");
+		profiler.push("gameMode");
 		if (!this.paused && this.world != null) {
 			this.interactionManager.tick();
 		}
 
-		this.profiler.swap("textures");
+		profiler.swap("textures");
 		if (this.shouldTick()) {
 			this.textureManager.tick();
 		}
@@ -1809,7 +1837,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (this.overlay == null && this.currentScreen == null) {
-			this.profiler.swap("Keybindings");
+			profiler.swap("Keybindings");
 			this.handleInputEvents();
 			if (this.attackCooldown > 0) {
 				this.attackCooldown--;
@@ -1817,17 +1845,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (this.world != null) {
-			this.profiler.swap("gameRenderer");
+			profiler.swap("gameRenderer");
 			if (!this.paused) {
 				this.gameRenderer.tick();
 			}
 
-			this.profiler.swap("levelRenderer");
+			profiler.swap("levelRenderer");
 			if (!this.paused) {
 				this.worldRenderer.tick();
 			}
 
-			this.profiler.swap("level");
+			profiler.swap("level");
 			if (!this.paused) {
 				this.world.tickEntities();
 			}
@@ -1855,8 +1883,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 				try {
 					this.world.tick(() -> true);
-				} catch (Throwable var4) {
-					CrashReport crashReport = CrashReport.create(var4, "Exception in world tick");
+				} catch (Throwable var5) {
+					CrashReport crashReport = CrashReport.create(var5, "Exception in world tick");
 					if (this.world == null) {
 						CrashReportSection crashReportSection = crashReport.addElement("Affected level");
 						crashReportSection.add("Problem", "Level is null!");
@@ -1868,12 +1896,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 			}
 
-			this.profiler.swap("animateTick");
+			profiler.swap("animateTick");
 			if (!this.paused && this.shouldTick()) {
 				this.world.doRandomBlockDisplayTicks(this.player.getBlockX(), this.player.getBlockY(), this.player.getBlockZ());
 			}
 
-			this.profiler.swap("particles");
+			profiler.swap("particles");
 			if (!this.paused && this.shouldTick()) {
 				this.particleManager.tick();
 			}
@@ -1883,13 +1911,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				clientPlayNetworkHandler.sendPacket(ClientTickEndC2SPacket.INSTANCE);
 			}
 		} else if (this.integratedServerConnection != null) {
-			this.profiler.swap("pendingConnection");
+			profiler.swap("pendingConnection");
 			this.integratedServerConnection.tick();
 		}
 
-		this.profiler.swap("keyboard");
+		profiler.swap("keyboard");
 		this.keyboard.pollDebugCrash();
-		this.profiler.pop();
+		profiler.pop();
 	}
 
 	private boolean shouldTick() {
@@ -2048,8 +2076,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.integratedServerRunning = true;
 			this.ensureAbuseReportContext(ReporterEnvironment.ofIntegratedServer());
 			this.quickPlayLogger.setWorld(QuickPlayLogger.WorldType.SINGLEPLAYER, session.getDirectoryName(), saveLoader.saveProperties().getLevelName());
-		} catch (Throwable var11) {
-			CrashReport crashReport = CrashReport.create(var11, "Starting integrated server");
+		} catch (Throwable var12) {
+			CrashReport crashReport = CrashReport.create(var12, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
 			crashReportSection.add("Level ID", session.getDirectoryName());
 			crashReportSection.add("Level Name", (CrashCallable<String>)(() -> saveLoader.saveProperties().getLevelName()));
@@ -2061,8 +2089,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen((WorldGenerationProgressTracker)this.worldGenProgressTracker.get());
+		Profiler profiler = Profilers.get();
 		this.setScreen(levelLoadingScreen);
-		this.profiler.push("waitForServer");
+		profiler.push("waitForServer");
 
 		for (; !this.server.isLoading() || this.overlay != null; this.printCrashReport()) {
 			levelLoadingScreen.tick();
@@ -2070,11 +2099,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			try {
 				Thread.sleep(16L);
-			} catch (InterruptedException var10) {
+			} catch (InterruptedException var11) {
 			}
 		}
 
-		this.profiler.pop();
+		profiler.pop();
 		Duration duration = Duration.between(instant, Instant.now());
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
@@ -2130,13 +2159,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.reset(disconnectionScreen);
 			if (this.world != null) {
 				if (integratedServer != null) {
-					this.profiler.push("waitForServer");
+					Profiler profiler = Profilers.get();
+					profiler.push("waitForServer");
 
 					while (!integratedServer.isStopping()) {
 						this.render(false);
 					}
 
-					this.profiler.pop();
+					profiler.pop();
 				}
 
 				this.inGameHud.clear();
@@ -2187,20 +2217,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void reset(Screen resettingScreen) {
-		this.profiler.push("forcedTick");
+		Profiler profiler = Profilers.get();
+		profiler.push("forcedTick");
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
 		this.integratedServerConnection = null;
 		this.setScreen(resettingScreen);
 		this.render(false);
-		this.profiler.pop();
+		profiler.pop();
 	}
 
 	public void setScreenAndRender(Screen screen) {
-		this.profiler.push("forcedTick");
-		this.setScreen(screen);
-		this.render(false);
-		this.profiler.pop();
+		try (ScopedProfiler scopedProfiler = Profilers.get().scoped("forcedTick")) {
+			this.setScreen(screen);
+			this.render(false);
+		}
 	}
 
 	private void setWorld(@Nullable ClientWorld world) {
@@ -2838,10 +2869,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			LOGGER.warn("Couldn't save screenshot", (Throwable)var15);
 			return Text.translatable("screenshot.failure", var15.getMessage());
 		}
-	}
-
-	public Profiler getProfiler() {
-		return this.profiler;
 	}
 
 	@Nullable

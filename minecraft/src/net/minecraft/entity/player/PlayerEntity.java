@@ -22,7 +22,9 @@ import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAttachmentType;
@@ -56,9 +58,9 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.MaceItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -310,7 +312,10 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.selectedItem = itemStack.copy();
 		}
 
-		this.updateTurtleHelmet();
+		if (!this.isSubmergedIn(FluidTags.WATER) && this.isEquipped(Items.TURTLE_HELMET)) {
+			this.updateTurtleHelmet();
+		}
+
 		this.itemCooldownManager.update();
 		this.updatePose();
 		if (this.currentExplosionResetGraceTime > 0) {
@@ -355,10 +360,19 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	private void updateTurtleHelmet() {
-		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
-		if (itemStack.isOf(Items.TURTLE_HELMET) && !this.isSubmergedIn(FluidTags.WATER)) {
-			this.addStatusEffect(new StatusEffectInstance(StatusEffects.WATER_BREATHING, 200, 0, false, false, true));
+		this.addStatusEffect(new StatusEffectInstance(StatusEffects.WATER_BREATHING, 200, 0, false, false, true));
+	}
+
+	private boolean isEquipped(Item item) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
+			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+			EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
+			if (itemStack.isOf(item) && equippableComponent != null && equippableComponent.slot() == equipmentSlot) {
+				return true;
+			}
 		}
+
+		return false;
 	}
 
 	protected ItemCooldownManager createCooldownManager() {
@@ -1162,13 +1176,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (!target.handleAttack(this)) {
 				float f = this.isUsingRiptide() ? this.riptideAttackDamage : (float)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
 				ItemStack itemStack = this.getWeaponStack();
-				DamageSource damageSource;
-				if (itemStack.getItem() == Items.MACE && MaceItem.shouldDealAdditionalDamage(this)) {
-					damageSource = this.getDamageSources().maceSmash(this);
-				} else {
-					damageSource = this.getDamageSources().playerAttack(this);
-				}
-
+				DamageSource damageSource = (DamageSource)Optional.ofNullable(itemStack.getItem().getDamageSource(this)).orElse(this.getDamageSources().playerAttack(this));
 				float g = this.getDamageAgainst(target, f, damageSource) - f;
 				float h = this.getAttackCooldownProgress(0.5F);
 				f *= 0.2F + h * h * 0.8F;

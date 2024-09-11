@@ -7,7 +7,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class EmptyMapItem extends NetworkSyncedItem {
+public class EmptyMapItem extends Item {
 	public EmptyMapItem(Item.Settings settings) {
 		super(settings);
 	}

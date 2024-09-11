@@ -53,7 +53,7 @@ public class BookEditScreen extends Screen {
 	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.BLACK));
 	private static final OrderedText GRAY_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.GRAY));
 	private final PlayerEntity player;
-	private final ItemStack itemStack;
+	private final ItemStack stack;
 	private boolean dirty;
 	private boolean signing;
 	private int tickCounter;
@@ -84,16 +84,12 @@ public class BookEditScreen extends Screen {
 	private Text pageIndicatorText = ScreenTexts.EMPTY;
 	private final Text signedByText;
 
-	public BookEditScreen(PlayerEntity player, ItemStack itemStack, Hand hand) {
+	public BookEditScreen(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent) {
 		super(NarratorManager.EMPTY);
 		this.player = player;
-		this.itemStack = itemStack;
+		this.stack = stack;
 		this.hand = hand;
-		WritableBookContentComponent writableBookContentComponent = itemStack.get(DataComponentTypes.WRITABLE_BOOK_CONTENT);
-		if (writableBookContentComponent != null) {
-			writableBookContentComponent.stream(MinecraftClient.getInstance().shouldFilterText()).forEach(this.pages::add);
-		}
-
+		writableBookContent.stream(MinecraftClient.getInstance().shouldFilterText()).forEach(this.pages::add);
 		if (this.pages.isEmpty()) {
 			this.pages.add("");
 		}
@@ -203,7 +199,7 @@ public class BookEditScreen extends Screen {
 	}
 
 	private void writeNbtData() {
-		this.itemStack.set(DataComponentTypes.WRITABLE_BOOK_CONTENT, new WritableBookContentComponent(this.pages.stream().map(RawFilteredPair::of).toList()));
+		this.stack.set(DataComponentTypes.WRITABLE_BOOK_CONTENT, new WritableBookContentComponent(this.pages.stream().map(RawFilteredPair::of).toList()));
 	}
 
 	private void appendNewPage() {

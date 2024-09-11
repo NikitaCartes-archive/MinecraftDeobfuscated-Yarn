@@ -8,6 +8,7 @@ import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.item.consume.UseAction;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityRenderState extends BipedEntityRenderState {
@@ -40,6 +41,10 @@ public class PlayerEntityRenderState extends BipedEntityRenderState {
 	public ParrotEntity.Variant rightShoulderParrotVariant;
 	public int id;
 	public String name = "Steve";
+
+	public float getGlidingProgress() {
+		return MathHelper.clamp(this.glidingTicks * this.glidingTicks / 100.0F, 0.0F, 1.0F);
+	}
 
 	@Environment(EnvType.CLIENT)
 	public static class HandState {

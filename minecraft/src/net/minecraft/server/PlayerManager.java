@@ -25,13 +25,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.RegistryByteBuf;
@@ -225,41 +223,8 @@ public abstract class PlayerManager {
 		serverWorld2.onPlayerConnected(player);
 		this.server.getBossBarManager().onPlayerConnect(player);
 		this.sendStatusEffects(player);
-		if (optional.isPresent() && ((NbtCompound)optional.get()).contains("RootVehicle", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = ((NbtCompound)optional.get()).getCompound("RootVehicle");
-			Entity entity = EntityType.loadEntityWithPassengers(
-				nbtCompound.getCompound("Entity"), serverWorld2, SpawnReason.LOAD, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
-			);
-			if (entity != null) {
-				UUID uUID;
-				if (nbtCompound.containsUuid("Attach")) {
-					uUID = nbtCompound.getUuid("Attach");
-				} else {
-					uUID = null;
-				}
-
-				if (entity.getUuid().equals(uUID)) {
-					player.startRiding(entity, true);
-				} else {
-					for (Entity entity2 : entity.getPassengersDeep()) {
-						if (entity2.getUuid().equals(uUID)) {
-							player.startRiding(entity2, true);
-							break;
-						}
-					}
-				}
-
-				if (!player.hasVehicle()) {
-					LOGGER.warn("Couldn't reattach entity to player");
-					entity.discard();
-
-					for (Entity entity2x : entity.getPassengersDeep()) {
-						entity2x.discard();
-					}
-				}
-			}
-		}
-
+		player.readEnderPearls(optional);
+		player.readRootVehicle(optional);
 		player.onSpawn();
 	}
 
@@ -360,6 +325,11 @@ public abstract class PlayerManager {
 		}
 
 		player.detach();
+
+		for (EnderPearlEntity enderPearlEntity : player.getEnderPearls()) {
+			enderPearlEntity.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER);
+		}
+
 		serverWorld.removePlayer(player, Entity.RemovalReason.UNLOADED_WITH_PLAYER);
 		player.getAdvancementTracker().clearCriteria();
 		this.players.remove(player);

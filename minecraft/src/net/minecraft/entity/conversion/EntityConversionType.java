@@ -16,9 +16,17 @@ public enum EntityConversionType {
 		@Override
 		void setUpNewEntity(MobEntity oldEntity, MobEntity newEntity, EntityConversionContext context) {
 			Entity entity = oldEntity.getFirstPassenger();
+			newEntity.copyPositionAndRotation(oldEntity);
+			newEntity.setVelocity(oldEntity.getVelocity());
 			if (entity != null) {
 				entity.stopRiding();
 				entity.ridingCooldown = 0;
+
+				for (Entity entity2 : newEntity.getPassengerList()) {
+					entity2.stopRiding();
+					entity2.remove(Entity.RemovalReason.DISCARDED);
+				}
+
 				entity.startRiding(newEntity);
 			}
 
@@ -32,21 +40,16 @@ public enum EntityConversionType {
 				}
 			}
 
-			newEntity.getAttributes().setFrom(oldEntity.getAttributes());
 			newEntity.fallDistance = oldEntity.fallDistance;
 			newEntity.setFlag(Entity.GLIDING_FLAG_INDEX, oldEntity.isGliding());
-			float f = oldEntity.getHealth() / oldEntity.getMaxHealth();
-			newEntity.setHealth(newEntity.getMaxHealth() * f);
 			newEntity.playerHitTimer = oldEntity.playerHitTimer;
 			newEntity.hurtTime = oldEntity.hurtTime;
 			newEntity.bodyYaw = oldEntity.bodyYaw;
-			newEntity.copyPositionAndRotation(oldEntity);
-			newEntity.setVelocity(oldEntity.getVelocity());
 			newEntity.setOnGround(oldEntity.isOnGround());
 			oldEntity.getSleepingPosition().ifPresent(newEntity::setSleepingPosition);
-			Entity entity2 = oldEntity.getLeashHolder();
-			if (entity2 != null) {
-				newEntity.attachLeash(entity2, true);
+			Entity entity3 = oldEntity.getLeashHolder();
+			if (entity3 != null) {
+				newEntity.attachLeash(entity3, true);
 			}
 
 			this.copyData(oldEntity, newEntity, context);
@@ -114,8 +117,6 @@ public enum EntityConversionType {
 			newEntity.setPersistent();
 		}
 
-		newEntity.setLootTable(oldEntity.getLootTable());
-		newEntity.setLootTableSeed(oldEntity.getLootTableSeed());
 		if (oldEntity.hasCustomName()) {
 			newEntity.setCustomName(oldEntity.getCustomName());
 			newEntity.setCustomNameVisible(oldEntity.isCustomNameVisible());

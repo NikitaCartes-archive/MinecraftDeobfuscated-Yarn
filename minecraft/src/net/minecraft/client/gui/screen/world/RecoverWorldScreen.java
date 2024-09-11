@@ -139,11 +139,11 @@ public class RecoverWorldScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.exceptionWidget.setMaxWidth(this.width - 50);
 		this.messageWidget.setMaxWidth(this.width - 50);
 		this.layout.refreshPositions();

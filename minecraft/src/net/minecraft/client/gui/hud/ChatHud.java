@@ -22,6 +22,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Nullables;
 import net.minecraft.util.collection.ArrayListDeque;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import org.slf4j.Logger;
 
 /**
@@ -64,7 +66,8 @@ public class ChatHud {
 			int i = this.getVisibleLineCount();
 			int j = this.visibleMessages.size();
 			if (j > 0) {
-				this.client.getProfiler().push("chat");
+				Profiler profiler = Profilers.get();
+				profiler.push("chat");
 				float f = (float)this.getChatScale();
 				int k = MathHelper.ceil((float)this.getWidth() / f);
 				int l = context.getScaledWindowHeight();
@@ -143,7 +146,7 @@ public class ChatHud {
 				}
 
 				context.getMatrices().pop();
-				this.client.getProfiler().pop();
+				profiler.pop();
 			}
 		}
 	}

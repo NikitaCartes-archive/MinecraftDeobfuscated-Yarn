@@ -41,11 +41,11 @@ public class ServerLinksScreen extends Screen {
 		this.layoutWidget.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layoutWidget.refreshPositions();
 		if (this.list != null) {
 			this.list.position(this.width, this.layoutWidget);

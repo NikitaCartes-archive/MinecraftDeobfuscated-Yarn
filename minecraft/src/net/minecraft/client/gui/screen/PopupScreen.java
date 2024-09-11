@@ -71,7 +71,7 @@ public class PopupScreen extends Screen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	private DirectionalLayoutWidget createButtonLayout() {
@@ -88,7 +88,7 @@ public class PopupScreen extends Screen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.backgroundScreen.resize(this.client, this.width, this.height);
 		this.layout.refreshPositions();
 		SimplePositioningWidget.setPos(this.layout, this.getNavigationFocus());

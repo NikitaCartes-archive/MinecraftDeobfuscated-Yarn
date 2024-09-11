@@ -51,7 +51,6 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
-			bipedEntityRenderState,
 			bipedEntityRenderState.equippedChestStack,
 			EquipmentSlot.CHEST,
 			i,
@@ -60,7 +59,6 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
-			bipedEntityRenderState,
 			bipedEntityRenderState.equippedLegsStack,
 			EquipmentSlot.LEGS,
 			i,
@@ -69,7 +67,6 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
-			bipedEntityRenderState,
 			bipedEntityRenderState.equippedFeetStack,
 			EquipmentSlot.FEET,
 			i,
@@ -78,7 +75,6 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		this.renderArmor(
 			matrixStack,
 			vertexConsumerProvider,
-			bipedEntityRenderState,
 			bipedEntityRenderState.equippedHeadStack,
 			EquipmentSlot.HEAD,
 			i,
@@ -86,10 +82,10 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 		);
 	}
 
-	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, S state, ItemStack stack, EquipmentSlot slot, int light, A armorModel) {
+	private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, ItemStack stack, EquipmentSlot slot, int light, A armorModel) {
 		EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
 		if (equippableComponent != null && hasModel(equippableComponent, slot)) {
-			armorModel.setAngles(state);
+			this.getContextModel().copyTransforms(armorModel);
 			this.setVisible(armorModel, slot);
 			Identifier identifier = (Identifier)equippableComponent.model().orElseThrow();
 			EquipmentModel.LayerType layerType = this.usesInnerModel(slot) ? EquipmentModel.LayerType.HUMANOID_LEGGINGS : EquipmentModel.LayerType.HUMANOID;

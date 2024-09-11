@@ -85,11 +85,11 @@ public class CustomizeBuffetLevelScreen extends Screen {
 					.orElse(null)
 			);
 		this.layout.forEachChild(this::addDrawableChild);
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		this.biomeSelectionList.position(this.width, this.layout);
 	}

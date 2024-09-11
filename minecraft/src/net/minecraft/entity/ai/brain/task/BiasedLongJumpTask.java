@@ -43,14 +43,14 @@ public class BiasedLongJumpTask<E extends MobEntity> extends LongJumpTask<E> {
 	}
 
 	@Override
-	protected Optional<LongJumpTask.Target> getTarget(ServerWorld world) {
+	protected Optional<LongJumpTask.Target> removeRandomTarget(ServerWorld world) {
 		if (!this.useBias) {
-			return super.getTarget(world);
+			return super.removeRandomTarget(world);
 		} else {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			while (!this.targets.isEmpty()) {
-				Optional<LongJumpTask.Target> optional = super.getTarget(world);
+			while (!this.potentialTargets.isEmpty()) {
+				Optional<LongJumpTask.Target> optional = super.removeRandomTarget(world);
 				if (optional.isPresent()) {
 					LongJumpTask.Target target = (LongJumpTask.Target)optional.get();
 					if (world.getBlockState(mutable.set(target.getPos(), Direction.DOWN)).isIn(this.favoredBlocks)) {

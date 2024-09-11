@@ -227,6 +227,6 @@ public class ModelPredicateProviderRegistry {
 			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 		register(Items.BEE_NEST, Identifier.ofVanilla("honey_level"), (stack, world, entity, seed) -> (float)getHoneyLevel(stack));
-		register(Items.BEEHIVE, Identifier.ofVanilla("honey_level"), (stack, workd, entity, seed) -> (float)getHoneyLevel(stack));
+		register(Items.BEEHIVE, Identifier.ofVanilla("honey_level"), (stack, world, entity, seed) -> (float)getHoneyLevel(stack));
 	}
 }

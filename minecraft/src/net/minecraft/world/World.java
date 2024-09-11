@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
@@ -60,6 +59,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.block.ChainRestrictedNeighborUpdater;
@@ -108,7 +108,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final Random threadSafeRandom = Random.createThreadSafe();
 	private final RegistryEntry<DimensionType> dimensionEntry;
 	protected final MutableWorldProperties properties;
-	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
 	private final WorldBorder border;
 	private final BiomeAccess biomeAccess;
@@ -122,13 +121,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		RegistryKey<World> registryRef,
 		DynamicRegistryManager registryManager,
 		RegistryEntry<DimensionType> dimensionEntry,
-		Supplier<Profiler> profiler,
 		boolean isClient,
 		boolean debugWorld,
-		long biomeAccess,
+		long seed,
 		int maxChainedNeighborUpdates
 	) {
-		this.profiler = profiler;
 		this.properties = properties;
 		this.dimensionEntry = dimensionEntry;
 		final DimensionType dimensionType = dimensionEntry.value();
@@ -151,7 +148,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 
 		this.thread = Thread.currentThread();
-		this.biomeAccess = new BiomeAccess(this, biomeAccess);
+		this.biomeAccess = new BiomeAccess(this, seed);
 		this.debugWorld = debugWorld;
 		this.neighborUpdater = new ChainRestrictedNeighborUpdater(this, maxChainedNeighborUpdates);
 		this.registryManager = registryManager;
@@ -374,8 +371,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public void replaceWithStateForNeighborUpdate(Direction direction, BlockPos blockPos, BlockPos pos, BlockState blockState, int flags, int maxUpdateDepth) {
-		this.neighborUpdater.replaceWithStateForNeighborUpdate(direction, blockState, blockPos, pos, flags, maxUpdateDepth);
+	public void replaceWithStateForNeighborUpdate(Direction direction, BlockPos pos, BlockPos neighborPos, BlockState neighborState, int flags, int maxUpdateDepth) {
+		this.neighborUpdater.replaceWithStateForNeighborUpdate(direction, neighborState, pos, neighborPos, flags, maxUpdateDepth);
 	}
 
 	@Override
@@ -523,7 +520,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	protected void tickBlockEntities() {
-		Profiler profiler = this.getProfiler();
+		Profiler profiler = Profilers.get();
 		profiler.push("blockEntities");
 		this.iteratingTickingBlockEntities = true;
 		if (!this.pendingBlockEntityTickers.isEmpty()) {
@@ -794,7 +791,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Override
 	public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
-		this.getProfiler().visit("getEntities");
+		Profilers.get().visit("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
 		this.getEntityLookup().forEachIntersects(box, entity -> {
 			if (entity != except && predicate.test(entity)) {
@@ -830,7 +827,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @see #getEntitiesByType
 	 */
 	public <T extends Entity> void collectEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate, List<? super T> result, int limit) {
-		this.getProfiler().visit("getEntities");
+		Profilers.get().visit("getEntities");
 		this.getEntityLookup().forEachIntersects(filter, box, entity -> {
 			if (predicate.test(entity)) {
 				result.add(entity);
@@ -1117,14 +1114,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public boolean isSavingDisabled() {
 		return false;
-	}
-
-	public Profiler getProfiler() {
-		return (Profiler)this.profiler.get();
-	}
-
-	public Supplier<Profiler> getProfilerSupplier() {
-		return this.profiler;
 	}
 
 	@Override

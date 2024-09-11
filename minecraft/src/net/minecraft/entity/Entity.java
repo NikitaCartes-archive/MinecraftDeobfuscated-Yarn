@@ -1,7 +1,6 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
@@ -11,16 +10,18 @@ import it.unimi.dsi.fastutil.floats.FloatArrays;
 import it.unimi.dsi.fastutil.floats.FloatSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -116,6 +117,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
@@ -377,7 +380,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	private boolean hasVisualFire;
 	@Nullable
 	private BlockState stateAtPos = null;
-	private final Set<BlockState> collidedBlocks = new ReferenceArraySet<>();
+	private final Map<BlockPos, BlockState> collidedBlocks = new HashMap();
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -669,7 +672,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public void baseTick() {
-		this.getWorld().getProfiler().push("entityBaseTick");
+		Profiler profiler = Profilers.get();
+		profiler.push("entityBaseTick");
 		this.stateAtPos = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
 			this.stopRiding();
@@ -728,7 +732,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			Leashable.tickLeash((Entity)((Leashable)this));
 		}
 
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 	}
 
 	public void setOnFire(boolean onFire) {
@@ -900,7 +904,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				}
 			}
 
-			this.getWorld().getProfiler().push("move");
+			Profiler profiler = Profilers.get();
+			profiler.push("move");
 			if (this.movementMultiplier.lengthSquared() > 1.0E-7) {
 				movement = movement.multiply(this.movementMultiplier);
 				this.movementMultiplier = Vec3d.ZERO;
@@ -924,8 +929,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 			}
 
-			this.getWorld().getProfiler().pop();
-			this.getWorld().getProfiler().push("rest");
+			profiler.pop();
+			profiler.push("rest");
 			boolean bl = !MathHelper.approximatelyEquals(movement.x, vec3d.x);
 			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.horizontalCollision = bl || bl2;
@@ -948,7 +953,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			}
 
 			if (this.isRemoved()) {
-				this.getWorld().getProfiler().pop();
+				profiler.pop();
 			} else {
 				if (this.horizontalCollision) {
 					Vec3d vec3d2 = this.getVelocity();
@@ -971,7 +976,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 
 				float f = this.getVelocityMultiplier();
 				this.setVelocity(this.getVelocity().multiply((double)f, 1.0, (double)f));
-				this.getWorld().getProfiler().pop();
+				profiler.pop();
 			}
 		}
 	}
@@ -1010,6 +1015,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public void tickBlockCollision() {
+		this.tickBlockCollision(this.getLastRenderPos(), this.pos);
+	}
+
+	public void tickBlockCollision(Vec3d lastRenderPos, Vec3d pos) {
 		if (this.shouldTickBlockCollision()) {
 			boolean bl = this.isOnFire();
 			if (this.isOnGround()) {
@@ -1018,8 +1027,17 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				blockState.getBlock().onSteppedOn(this.getWorld(), blockPos, blockState, this);
 			}
 
-			this.checkBlockCollision(this.collidedBlocks);
-			boolean bl2 = Iterables.any(this.collidedBlocks, state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA));
+			this.checkBlockCollision(this.collidedBlocks, lastRenderPos, pos);
+			boolean bl2 = false;
+
+			for (Entry<BlockPos, BlockState> entry : this.collidedBlocks.entrySet()) {
+				((BlockState)entry.getValue()).onEntityCollision(this.getWorld(), (BlockPos)entry.getKey(), this);
+				this.onBlockCollision((BlockState)entry.getValue());
+				if (((BlockState)entry.getValue()).isIn(BlockTags.FIRE) || ((BlockState)entry.getValue()).isOf(Blocks.LAVA)) {
+					bl2 = true;
+				}
+			}
+
 			this.collidedBlocks.clear();
 			if (!bl2) {
 				if (this.fireTicks <= 0) {
@@ -1337,32 +1355,24 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return SoundEvents.ENTITY_GENERIC_SPLASH;
 	}
 
-	/**
-	 * Checks the entity's block collision, calling {@link
-	 * net.minecraft.block.AbstractBlock#onEntityCollision} and {@link #onBlockCollision}.
-	 * This should be called manually if {@link #tick} is overridden.
-	 */
-	protected void checkBlockCollision() {
-		this.checkBlockCollision(null);
+	public void checkBlockCollision(Vec3d oldPos, Vec3d newPos) {
+		this.checkBlockCollision(this.collidedBlocks, oldPos, newPos);
 	}
 
-	protected void checkBlockCollision(@Nullable Set<BlockState> result) {
-		Vec3d vec3d = this.getLastRenderPos();
-		Vec3d vec3d2 = this.pos;
+	private void checkBlockCollision(Map<BlockPos, BlockState> collidedBlocks, Vec3d oldPos, Vec3d newPos) {
 		Box box = this.getBoundingBox().contract(1.0E-5F);
 
-		for (BlockPos blockPos : BlockView.collectCollisionsBetween(vec3d, vec3d2, box)) {
+		for (BlockPos blockPos : BlockView.collectCollisionsBetween(oldPos, newPos, box)) {
 			if (!this.isAlive()) {
 				return;
 			}
 
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
-			if (!blockState.isAir()) {
+			if (!blockState.isAir() && !collidedBlocks.containsKey(blockPos)) {
 				try {
 					VoxelShape voxelShape = blockState.getInsideCollisionShape(this.getWorld(), blockPos);
-					if (voxelShape == VoxelShapes.fullCube() || this.collides(vec3d, blockPos, voxelShape)) {
-						blockState.onEntityCollision(this.getWorld(), blockPos, this);
-						this.onBlockCollision(blockState);
+					if (voxelShape == VoxelShapes.fullCube() || this.collides(oldPos, newPos, blockPos, voxelShape)) {
+						collidedBlocks.put(blockPos.toImmutable(), blockState);
 					}
 				} catch (Throwable var12) {
 					CrashReport crashReport = CrashReport.create(var12, "Colliding entity with block");
@@ -1372,18 +1382,14 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					this.populateCrashReport(crashReportSection2);
 					throw new CrashException(crashReport);
 				}
-
-				if (result != null) {
-					result.add(blockState);
-				}
 			}
 		}
 	}
 
-	private boolean collides(Vec3d pos, BlockPos collisionPos, VoxelShape shape) {
-		Box box = this.getBoundingBox();
-		Vec3d vec3d = pos.subtract(box.getHorizontalCenter());
-		return this.getBoundingBox().collides(vec3d, shape.offset(new Vec3d(collisionPos)).getBoundingBoxes());
+	private boolean collides(Vec3d oldPos, Vec3d newPos, BlockPos blockPos, VoxelShape shape) {
+		Box box = this.getBoundingBox().offset(this.getBoundingBox().getCenter().multiply(-1.0)).offset(newPos);
+		Vec3d vec3d = oldPos.subtract(box.getHorizontalCenter());
+		return this.getBoundingBox().collides(vec3d, shape.offset(new Vec3d(blockPos)).getBoundingBoxes());
 	}
 
 	/**
@@ -2359,6 +2365,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			double e = nbtList2.getDouble(1);
 			double f = nbtList2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
+			this.velocityDirty = true;
 			double g = 3.0000512E7;
 			this.setPos(
 				MathHelper.clamp(nbtList.getDouble(0), -3.0000512E7, 3.0000512E7),
@@ -2998,7 +3005,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			this.tickPortalCooldown();
 			if (this.portalManager != null) {
 				if (this.portalManager.tick(serverWorld, this, this.canUsePortals(false))) {
-					serverWorld.getProfiler().push("portal");
+					Profiler profiler = Profilers.get();
+					profiler.push("portal");
 					this.resetPortalCooldown();
 					TeleportTarget teleportTarget = this.portalManager.createTeleportTarget(serverWorld, this);
 					if (teleportTarget != null) {
@@ -3009,7 +3017,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 						}
 					}
 
-					serverWorld.getProfiler().pop();
+					profiler.pop();
 				} else if (this.portalManager.hasExpired()) {
 					this.portalManager = null;
 				}
@@ -3910,31 +3918,31 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 				}
 			}
 
-			serverWorld.getProfiler().push("changeDimension");
-			Entity entity3 = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2, SpawnReason.DIMENSION_TRAVEL);
-			if (entity3 != null) {
-				if (this != entity3) {
-					entity3.copyFrom(this);
+			Profiler profiler = Profilers.get();
+			profiler.push("changeDimension");
+			Entity entityx = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2, SpawnReason.DIMENSION_TRAVEL);
+			if (entityx != null) {
+				if (this != entityx) {
+					entityx.copyFrom(this);
 					this.removeFromDimension();
 				}
 
-				entity3.setPosition(teleportTarget);
-				entity3.checkBlockCollision();
-				if (this != entity3) {
-					serverWorld2.onDimensionChanged(entity3);
+				entityx.setPosition(teleportTarget);
+				if (this != entityx) {
+					serverWorld2.onDimensionChanged(entityx);
 				}
 
-				for (Entity entity4 : list2) {
-					entity4.startRiding(entity3, true);
+				for (Entity entity3 : list2) {
+					entity3.startRiding(entityx, true);
 				}
 
 				serverWorld.resetIdleTimeout();
 				serverWorld2.resetIdleTimeout();
-				teleportTarget.postDimensionTransition().onTransition(entity3);
+				teleportTarget.postDimensionTransition().onTransition(entityx);
 			}
 
-			serverWorld.getProfiler().pop();
-			return entity3;
+			profiler.pop();
+			return entityx;
 		}
 
 		return null;
@@ -3950,6 +3958,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.refreshPosition();
 		this.resetPosition();
 		this.setVelocity(playerPosition2.deltaMovement());
+		this.collidedBlocks.clear();
 	}
 
 	public void addPortalChunkTicketAt(BlockPos pos) {

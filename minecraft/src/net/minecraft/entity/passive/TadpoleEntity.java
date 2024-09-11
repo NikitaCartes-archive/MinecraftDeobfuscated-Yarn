@@ -33,6 +33,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.World;
 
 public class TadpoleEntity extends FishEntity {
@@ -91,12 +93,13 @@ public class TadpoleEntity extends FishEntity {
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("tadpoleBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("tadpoleBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().pop();
-		this.getWorld().getProfiler().push("tadpoleActivityUpdate");
+		profiler.pop();
+		profiler.push("tadpoleActivityUpdate");
 		TadpoleBrain.updateActivities(this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		super.mobTick();
 	}
 

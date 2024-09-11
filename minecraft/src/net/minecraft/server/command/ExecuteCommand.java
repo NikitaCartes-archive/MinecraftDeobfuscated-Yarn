@@ -206,8 +206,7 @@ public class ExecuteCommand {
 						.then(
 							CommandManager.argument("rot", RotationArgumentType.rotation())
 								.redirect(
-									literalCommandNode,
-									context -> context.getSource().withRotation(RotationArgumentType.getRotation(context, "rot").toAbsoluteRotation(context.getSource()))
+									literalCommandNode, context -> context.getSource().withRotation(RotationArgumentType.getRotation(context, "rot").getRotation(context.getSource()))
 								)
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, context -> {

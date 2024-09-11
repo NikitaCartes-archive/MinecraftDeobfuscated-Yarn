@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.MergedComponentMap;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -464,7 +464,7 @@ public abstract class BlockEntity {
 	public final void readComponents(ComponentMap defaultComponents, ComponentChanges components) {
 		final Set<ComponentType<?>> set = new HashSet();
 		set.add(DataComponentTypes.BLOCK_ENTITY_DATA);
-		final ComponentMap componentMap = ComponentMapImpl.create(defaultComponents, components);
+		final ComponentMap componentMap = MergedComponentMap.create(defaultComponents, components);
 		this.readComponents(new BlockEntity.ComponentsAccess() {
 			@Nullable
 			@Override

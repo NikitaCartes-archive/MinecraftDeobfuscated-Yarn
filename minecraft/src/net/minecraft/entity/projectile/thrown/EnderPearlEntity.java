@@ -21,13 +21,17 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 
 public class EnderPearlEntity extends ThrownItemEntity {
+	private long chunkTicketExpiryTicks = 0L;
+
 	public EnderPearlEntity(EntityType<? extends EnderPearlEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -39,6 +43,32 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	@Override
 	protected Item getDefaultItem() {
 		return Items.ENDER_PEARL;
+	}
+
+	@Override
+	protected void setOwner(UUID uuid) {
+		this.removeFromOwner();
+		super.setOwner(uuid);
+		this.addToOwner();
+	}
+
+	@Override
+	public void setOwner(@Nullable Entity entity) {
+		this.removeFromOwner();
+		super.setOwner(entity);
+		this.addToOwner();
+	}
+
+	private void removeFromOwner() {
+		if (this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity) {
+			serverPlayerEntity.removeEnderPearl(this);
+		}
+	}
+
+	private void addToOwner() {
+		if (this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity) {
+			serverPlayerEntity.addEnderPearl(this);
+		}
 	}
 
 	@Nullable
@@ -111,7 +141,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 						}
 
 						PlayerEntity playerEntity = serverPlayerEntity.teleportTo(
-							new TeleportTarget(serverWorld, vec3d4, Vec3d.ZERO, 0.0F, 0.0F, PositionFlag.VALUES, TeleportTarget.NO_OP)
+							new TeleportTarget(serverWorld, vec3d4, Vec3d.ZERO, 0.0F, 0.0F, PositionFlag.combine(PositionFlag.ROT, PositionFlag.DELTA), TeleportTarget.NO_OP)
 						);
 						if (playerEntity != null) {
 							playerEntity.onLanding();
@@ -149,16 +179,35 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Override
 	public void tick() {
+		int i = ChunkSectionPos.getSectionCoordFloored(this.getPos().getX());
+		int j = ChunkSectionPos.getSectionCoordFloored(this.getPos().getZ());
 		Entity entity = this.getOwner();
 		if (entity instanceof ServerPlayerEntity && !entity.isAlive() && this.getWorld().getGameRules().getBoolean(GameRules.ENDER_PEARLS_VANISH_ON_DEATH)) {
 			this.discard();
 		} else {
 			super.tick();
 		}
+
+		BlockPos blockPos = BlockPos.ofFloored(this.getPos());
+		if ((--this.chunkTicketExpiryTicks <= 0L || i != ChunkSectionPos.getSectionCoord(blockPos.getX()) || j != ChunkSectionPos.getSectionCoord(blockPos.getZ()))
+			&& entity instanceof ServerPlayerEntity serverPlayerEntity) {
+			this.chunkTicketExpiryTicks = serverPlayerEntity.handleThrownEnderPearl(this);
+		}
 	}
 
 	private void playTeleportSound(World world, Vec3d pos) {
 		world.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENTITY_PLAYER_TELEPORT, SoundCategory.PLAYERS);
+	}
+
+	@Nullable
+	@Override
+	public Entity teleportTo(TeleportTarget teleportTarget) {
+		Entity entity = super.teleportTo(teleportTarget);
+		if (entity != null) {
+			entity.addPortalChunkTicketAt(BlockPos.ofFloored(entity.getPos()));
+		}
+
+		return entity;
 	}
 
 	@Override
@@ -174,5 +223,14 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		if (state.isOf(Blocks.END_GATEWAY) && this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity) {
 			serverPlayerEntity.onBlockCollision(state);
 		}
+	}
+
+	@Override
+	public void remove(Entity.RemovalReason reason) {
+		if (reason != Entity.RemovalReason.UNLOADED_WITH_PLAYER) {
+			this.removeFromOwner();
+		}
+
+		super.remove(reason);
 	}
 }

@@ -41,6 +41,8 @@ import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
@@ -56,7 +58,6 @@ import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
@@ -600,8 +601,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void useBook(ItemStack book, Hand hand) {
-		if (book.isOf(Items.WRITABLE_BOOK)) {
-			this.client.setScreen(new BookEditScreen(this, book, hand));
+		WritableBookContentComponent writableBookContentComponent = book.get(DataComponentTypes.WRITABLE_BOOK_CONTENT);
+		if (writableBookContentComponent != null) {
+			this.client.setScreen(new BookEditScreen(this, book, hand, writableBookContentComponent));
 		}
 	}
 

@@ -62,6 +62,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -282,9 +284,10 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	@Override
 	protected void mobTick() {
 		ServerWorld serverWorld = (ServerWorld)this.getWorld();
-		serverWorld.getProfiler().push("wardenBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("wardenBrain");
 		this.getBrain().tick(serverWorld, this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		super.mobTick();
 		if ((this.age + this.getId()) % 120 == 0) {
 			addDarknessToClosePlayers(serverWorld, this.getPos(), this, 20);

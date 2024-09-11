@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
-import net.minecraft.util.profiler.ProfileResult;
-import net.minecraft.util.profiler.ProfilerSystem;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import org.slf4j.Logger;
 
 /**
@@ -29,25 +29,18 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 			applyExecutor,
 			manager,
 			reloaders,
-			(synchronizer, resourceManager, reloader, prepare, apply) -> {
+			(synchronizer, resourceManager, resourceReloader, executor2, executor3) -> {
 				AtomicLong atomicLong = new AtomicLong();
 				AtomicLong atomicLong2 = new AtomicLong();
-				ProfilerSystem profilerSystem = new ProfilerSystem(Util.nanoTimeSupplier, () -> 0, false);
-				ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.nanoTimeSupplier, () -> 0, false);
-				CompletableFuture<Void> completableFuture = reloader.reload(
-					synchronizer, resourceManager, profilerSystem, profilerSystem2, preparation -> prepare.execute(() -> {
-							long l = Util.getMeasuringTimeNano();
-							preparation.run();
-							atomicLong.addAndGet(Util.getMeasuringTimeNano() - l);
-						}), application -> apply.execute(() -> {
-							long l = Util.getMeasuringTimeNano();
-							application.run();
-							atomicLong2.addAndGet(Util.getMeasuringTimeNano() - l);
-						})
+				CompletableFuture<Void> completableFuture = resourceReloader.reload(
+					synchronizer,
+					resourceManager,
+					method_64141(executor2, atomicLong, resourceReloader.getName()),
+					method_64141(executor3, atomicLong2, resourceReloader.getName())
 				);
-				return completableFuture.thenApplyAsync(dummy -> {
-					LOGGER.debug("Finished reloading " + reloader.getName());
-					return new ProfiledResourceReload.Summary(reloader.getName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2);
+				return completableFuture.thenApplyAsync(void_ -> {
+					LOGGER.debug("Finished reloading {}", resourceReloader.getName());
+					return new ProfiledResourceReload.Summary(resourceReloader.getName(), atomicLong, atomicLong2);
 				}, applyExecutor);
 			},
 			initialStage
@@ -56,14 +49,23 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 		this.applyStageFuture = this.applyStageFuture.thenApplyAsync(this::finish, applyExecutor);
 	}
 
+	private static Executor method_64141(Executor executor, AtomicLong atomicLong, String string) {
+		return runnable -> executor.execute(() -> {
+				Profiler profiler = Profilers.get();
+				profiler.push(string);
+				long l = Util.getMeasuringTimeNano();
+				runnable.run();
+				atomicLong.addAndGet(Util.getMeasuringTimeNano() - l);
+				profiler.pop();
+			});
+	}
+
 	private List<ProfiledResourceReload.Summary> finish(List<ProfiledResourceReload.Summary> summaries) {
 		this.reloadTimer.stop();
 		long l = 0L;
 		LOGGER.info("Resource reload finished after {} ms", this.reloadTimer.elapsed(TimeUnit.MILLISECONDS));
 
 		for (ProfiledResourceReload.Summary summary : summaries) {
-			ProfileResult profileResult = summary.prepareProfile;
-			ProfileResult profileResult2 = summary.applyProfile;
 			long m = TimeUnit.NANOSECONDS.toMillis(summary.prepareTimeMs.get());
 			long n = TimeUnit.NANOSECONDS.toMillis(summary.applyTimeMs.get());
 			long o = m + n;
@@ -79,19 +81,6 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 	/**
 	 * The profiling summary for each reloader in the reload.
 	 */
-	public static class Summary {
-		final String name;
-		final ProfileResult prepareProfile;
-		final ProfileResult applyProfile;
-		final AtomicLong prepareTimeMs;
-		final AtomicLong applyTimeMs;
-
-		Summary(String name, ProfileResult prepareProfile, ProfileResult applyProfile, AtomicLong prepareTimeMs, AtomicLong applyTimeMs) {
-			this.name = name;
-			this.prepareProfile = prepareProfile;
-			this.applyProfile = applyProfile;
-			this.prepareTimeMs = prepareTimeMs;
-			this.applyTimeMs = applyTimeMs;
-		}
+	public static record Summary(String name, AtomicLong prepareTimeMs, AtomicLong applyTimeMs) {
 	}
 }

@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
@@ -55,7 +56,7 @@ import org.slf4j.Logger;
 public class ServerChunkManager extends ChunkManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final ChunkTicketManager ticketManager;
-	final ServerWorld world;
+	private final ServerWorld world;
 	final Thread serverThread;
 	final ServerLightingProvider lightingProvider;
 	private final ServerChunkManager.MainThreadExecutor mainThreadExecutor;
@@ -152,7 +153,7 @@ public class ServerChunkManager extends ChunkManager {
 		if (Thread.currentThread() != this.serverThread) {
 			return (Chunk)CompletableFuture.supplyAsync(() -> this.getChunk(x, z, leastStatus, create), this.mainThreadExecutor).join();
 		} else {
-			Profiler profiler = this.world.getProfiler();
+			Profiler profiler = Profilers.get();
 			profiler.visit("getChunk");
 			long l = ChunkPos.toLong(x, z);
 
@@ -185,7 +186,7 @@ public class ServerChunkManager extends ChunkManager {
 		if (Thread.currentThread() != this.serverThread) {
 			return null;
 		} else {
-			this.world.getProfiler().visit("getChunkNow");
+			Profilers.get().visit("getChunkNow");
 			long l = ChunkPos.toLong(chunkX, chunkZ);
 
 			for (int i = 0; i < 4; i++) {
@@ -240,7 +241,7 @@ public class ServerChunkManager extends ChunkManager {
 		if (create) {
 			this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, i, chunkPos);
 			if (this.isMissingForLevel(chunkHolder, i)) {
-				Profiler profiler = this.world.getProfiler();
+				Profiler profiler = Profilers.get();
 				profiler.push("chunkLoad");
 				this.updateChunks();
 				chunkHolder = this.getChunkHolder(l);
@@ -320,21 +321,22 @@ public class ServerChunkManager extends ChunkManager {
 
 	@Override
 	public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
-		this.world.getProfiler().push("purge");
+		Profiler profiler = Profilers.get();
+		profiler.push("purge");
 		if (this.world.getTickManager().shouldTick() || !tickChunks) {
 			this.ticketManager.purgeExpiredTickets();
 		}
 
 		this.updateChunks();
-		this.world.getProfiler().swap("chunks");
+		profiler.swap("chunks");
 		if (tickChunks) {
 			this.tickChunks();
 			this.chunkLoadingManager.tickEntityMovement();
 		}
 
-		this.world.getProfiler().swap("unload");
+		profiler.swap("unload");
 		this.chunkLoadingManager.tick(shouldKeepTicking);
-		this.world.getProfiler().pop();
+		profiler.pop();
 		this.initChunkCaches();
 	}
 
@@ -343,7 +345,7 @@ public class ServerChunkManager extends ChunkManager {
 		long m = l - this.lastTickTime;
 		this.lastTickTime = l;
 		if (!this.world.isDebugWorld()) {
-			Profiler profiler = this.world.getProfiler();
+			Profiler profiler = Profilers.get();
 			profiler.push("pollingChunks");
 			if (this.world.getTickManager().shouldTick()) {
 				List<WorldChunk> list = this.chunks;
@@ -602,7 +604,7 @@ public class ServerChunkManager extends ChunkManager {
 
 		@Override
 		protected void executeTask(Runnable task) {
-			ServerChunkManager.this.world.getProfiler().visit("runTask");
+			Profilers.get().visit("runTask");
 			super.executeTask(task);
 		}
 

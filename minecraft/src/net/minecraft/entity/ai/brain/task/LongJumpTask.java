@@ -31,8 +31,8 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 
 public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
-	protected static final int MAX_COOLDOWN = 20;
-	private static final int TARGET_RETAIN_TIME = 40;
+	protected static final int MAX_TARGET_SEARCH_TIME = 20;
+	private static final int JUMP_WINDUP_TIME = 40;
 	protected static final int PATHING_DISTANCE = 8;
 	private static final int RUN_TIME = 200;
 	private static final List<Integer> RAM_RANGES = Lists.<Integer>newArrayList(65, 70, 75, 80);
@@ -40,12 +40,12 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 	protected final int verticalRange;
 	protected final int horizontalRange;
 	protected final float maxRange;
-	protected List<LongJumpTask.Target> targets = Lists.<LongJumpTask.Target>newArrayList();
-	protected Optional<Vec3d> lastPos = Optional.empty();
+	protected List<LongJumpTask.Target> potentialTargets = Lists.<LongJumpTask.Target>newArrayList();
+	protected Optional<Vec3d> startPos = Optional.empty();
 	@Nullable
-	protected Vec3d lastTarget;
-	protected int cooldown;
-	protected long targetTime;
+	protected Vec3d currentTarget;
+	protected int targetSearchTime;
+	protected long targetPickedTime;
 	private final Function<E, SoundEvent> entityToSound;
 	private final BiPredicate<E, BlockPos> jumpToPredicate;
 
@@ -99,11 +99,11 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		boolean bl = this.lastPos.isPresent()
-			&& ((Vec3d)this.lastPos.get()).equals(mobEntity.getPos())
-			&& this.cooldown > 0
+		boolean bl = this.startPos.isPresent()
+			&& ((Vec3d)this.startPos.get()).equals(mobEntity.getPos())
+			&& this.targetSearchTime > 0
 			&& !mobEntity.isInsideWaterOrBubbleColumn()
-			&& (this.lastTarget != null || !this.targets.isEmpty());
+			&& (this.currentTarget != null || !this.potentialTargets.isEmpty());
 		if (!bl && mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LONG_JUMP_MID_JUMP).isEmpty()) {
 			mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, this.cooldownRange.get(serverWorld.random) / 2);
 			mobEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
@@ -113,41 +113,41 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-		this.lastTarget = null;
-		this.cooldown = 20;
-		this.lastPos = Optional.of(mobEntity.getPos());
+		this.currentTarget = null;
+		this.targetSearchTime = 20;
+		this.startPos = Optional.of(mobEntity.getPos());
 		BlockPos blockPos = mobEntity.getBlockPos();
 		int i = blockPos.getX();
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
-		this.targets = (List<LongJumpTask.Target>)BlockPos.stream(
+		this.potentialTargets = (List<LongJumpTask.Target>)BlockPos.stream(
 				i - this.horizontalRange, j - this.verticalRange, k - this.horizontalRange, i + this.horizontalRange, j + this.verticalRange, k + this.horizontalRange
 			)
-			.filter(blockPos2 -> !blockPos2.equals(blockPos))
-			.map(blockPos2 -> new LongJumpTask.Target(blockPos2.toImmutable(), MathHelper.ceil(blockPos.getSquaredDistance(blockPos2))))
+			.filter(pos -> !pos.equals(blockPos))
+			.map(pos -> new LongJumpTask.Target(pos.toImmutable(), MathHelper.ceil(blockPos.getSquaredDistance(pos))))
 			.collect(Collectors.toCollection(Lists::newArrayList));
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, E mobEntity, long l) {
-		if (this.lastTarget != null) {
-			if (l - this.targetTime >= 40L) {
+		if (this.currentTarget != null) {
+			if (l - this.targetPickedTime >= 40L) {
 				mobEntity.setYaw(mobEntity.bodyYaw);
 				mobEntity.setNoDrag(true);
-				double d = this.lastTarget.length();
+				double d = this.currentTarget.length();
 				double e = d + (double)mobEntity.getJumpBoostVelocityModifier();
-				mobEntity.setVelocity(this.lastTarget.multiply(e / d));
+				mobEntity.setVelocity(this.currentTarget.multiply(e / d));
 				mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);
 				serverWorld.playSoundFromEntity(null, mobEntity, (SoundEvent)this.entityToSound.apply(mobEntity), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			}
 		} else {
-			this.cooldown--;
-			this.findTarget(serverWorld, mobEntity, l);
+			this.targetSearchTime--;
+			this.pickTarget(serverWorld, mobEntity, l);
 		}
 	}
 
-	protected void findTarget(ServerWorld world, E entity, long time) {
-		while (!this.targets.isEmpty()) {
-			Optional<LongJumpTask.Target> optional = this.getTarget(world);
+	protected void pickTarget(ServerWorld world, E entity, long time) {
+		while (!this.potentialTargets.isEmpty()) {
+			Optional<LongJumpTask.Target> optional = this.removeRandomTarget(world);
 			if (!optional.isEmpty()) {
 				LongJumpTask.Target target = (LongJumpTask.Target)optional.get();
 				BlockPos blockPos = target.getPos();
@@ -159,8 +159,8 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 						EntityNavigation entityNavigation = entity.getNavigation();
 						Path path = entityNavigation.findPathTo(blockPos, 0, 8);
 						if (path == null || !path.reachesTarget()) {
-							this.lastTarget = vec3d2;
-							this.targetTime = time;
+							this.currentTarget = vec3d2;
+							this.targetPickedTime = time;
 							return;
 						}
 					}
@@ -169,9 +169,9 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 		}
 	}
 
-	protected Optional<LongJumpTask.Target> getTarget(ServerWorld world) {
-		Optional<LongJumpTask.Target> optional = Weighting.getRandom(world.random, this.targets);
-		optional.ifPresent(this.targets::remove);
+	protected Optional<LongJumpTask.Target> removeRandomTarget(ServerWorld world) {
+		Optional<LongJumpTask.Target> optional = Weighting.getRandom(world.random, this.potentialTargets);
+		optional.ifPresent(this.potentialTargets::remove);
 		return optional;
 	}
 

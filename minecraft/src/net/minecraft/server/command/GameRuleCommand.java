@@ -3,24 +3,20 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 
 public class GameRuleCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		final LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamerule")
 			.requires(source -> source.hasPermissionLevel(2));
-		new GameRules(FeatureFlags.FEATURE_MANAGER.getFeatureSet())
+		new GameRules(commandRegistryAccess.getEnabledFeatures())
 			.accept(
 				new GameRules.Visitor() {
 					@Override
 					public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
 						LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal(key.getName());
-						if (!type.getRequiredFeatures().isEmpty()) {
-							literalArgumentBuilder.requires(source -> type.getRequiredFeatures().isSubsetOf(source.getEnabledFeatures()));
-						}
-
 						literalArgumentBuilder.then(
 							literalArgumentBuilder.executes(context -> GameRuleCommand.executeQuery(context.getSource(), key))
 								.then(type.argument("value").executes(context -> GameRuleCommand.executeSet(context, key)))

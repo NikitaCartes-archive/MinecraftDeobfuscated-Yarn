@@ -64,6 +64,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.SignedArgumentList;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -425,7 +426,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			registryEntry,
 			this.chunkLoadDistance,
 			this.simulationDistance,
-			this.client::getProfiler,
 			this.client.worldRenderer,
 			bl,
 			commonPlayerSpawnInfo.seed(),
@@ -992,10 +992,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 	}
 
-	private static ItemStack getActiveTotemOfUndying(PlayerEntity player) {
+	private static ItemStack getActiveDeathProtector(PlayerEntity player) {
 		for (Hand hand : Hand.values()) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.isOf(Items.TOTEM_OF_UNDYING)) {
+			if (itemStack.contains(DataComponentTypes.DEATH_PROTECTION)) {
 				return itemStack;
 			}
 		}
@@ -1017,7 +1017,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 					this.client.particleManager.addEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
 					this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
 					if (entity == this.client.player) {
-						this.client.gameRenderer.showFloatingItem(getActiveTotemOfUndying(this.client.player));
+						this.client.gameRenderer.showFloatingItem(getActiveDeathProtector(this.client.player));
 					}
 					break;
 				case 63:
@@ -1078,7 +1078,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				registryEntry,
 				this.chunkLoadDistance,
 				this.simulationDistance,
-				this.client::getProfiler,
 				this.client.worldRenderer,
 				bl2,
 				commonPlayerSpawnInfo.seed(),

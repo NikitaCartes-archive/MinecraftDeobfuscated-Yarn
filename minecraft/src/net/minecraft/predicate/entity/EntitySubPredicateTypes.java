@@ -21,6 +21,7 @@ import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.RabbitEntity;
+import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.WolfVariant;
@@ -97,6 +98,12 @@ public class EntitySubPredicateTypes {
 		"parrot",
 		EntitySubPredicateTypes.VariantType.create(
 			ParrotEntity.Variant.CODEC, entity -> entity instanceof ParrotEntity parrotEntity ? Optional.of(parrotEntity.getVariant()) : Optional.empty()
+		)
+	);
+	public static final EntitySubPredicateTypes.VariantType<SalmonEntity.Variant> SALMON = register(
+		"salmon",
+		EntitySubPredicateTypes.VariantType.create(
+			SalmonEntity.Variant.CODEC, entity -> entity instanceof SalmonEntity salmonEntity ? Optional.of(salmonEntity.getVariant()) : Optional.empty()
 		)
 	);
 	public static final EntitySubPredicateTypes.VariantType<TropicalFishEntity.Variety> TROPICAL_FISH = register(

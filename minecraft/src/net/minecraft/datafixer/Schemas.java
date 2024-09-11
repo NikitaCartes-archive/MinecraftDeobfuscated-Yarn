@@ -107,6 +107,7 @@ import net.minecraft.datafixer.fix.EntityWolfColorFix;
 import net.minecraft.datafixer.fix.EntityZombieSplitFix;
 import net.minecraft.datafixer.fix.EntityZombieVillagerTypeFix;
 import net.minecraft.datafixer.fix.EntityZombifiedPiglinRenameFix;
+import net.minecraft.datafixer.fix.FireResistantToDamageResistantComponentFix;
 import net.minecraft.datafixer.fix.FoodToConsumableFix;
 import net.minecraft.datafixer.fix.FurnaceRecipesFix;
 import net.minecraft.datafixer.fix.GameEventRenamesFix;
@@ -1326,6 +1327,8 @@ public class Schemas {
 		builder.addFixer(new FoodToConsumableFix(schema230));
 		Schema schema231 = builder.addSchema(4061, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new TrialSpawnerConfigInRegistryFix(schema231));
+		Schema schema232 = builder.addSchema(4064, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new FireResistantToDamageResistantComponentFix(schema232));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

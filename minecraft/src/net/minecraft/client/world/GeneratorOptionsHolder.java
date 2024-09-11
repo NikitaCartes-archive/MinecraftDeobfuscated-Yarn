@@ -1,9 +1,12 @@
 package net.minecraft.client.world;
 
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.world.InitialWorldOptions;
+import net.minecraft.client.gui.screen.world.WorldCreator;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
@@ -23,7 +26,8 @@ public record GeneratorOptionsHolder(
 	DimensionOptionsRegistryHolder selectedDimensions,
 	CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries,
 	DataPackContents dataPackContents,
-	DataConfiguration dataConfiguration
+	DataConfiguration dataConfiguration,
+	InitialWorldOptions initialWorldCreationOptions
 ) {
 	public GeneratorOptionsHolder(
 		WorldGenSettings worldGenSettings,
@@ -31,7 +35,14 @@ public record GeneratorOptionsHolder(
 		DataPackContents dataPackContents,
 		DataConfiguration dataConfiguration
 	) {
-		this(worldGenSettings.generatorOptions(), worldGenSettings.dimensionOptionsRegistryHolder(), combinedDynamicRegistries, dataPackContents, dataConfiguration);
+		this(
+			worldGenSettings.generatorOptions(),
+			worldGenSettings.dimensionOptionsRegistryHolder(),
+			combinedDynamicRegistries,
+			dataPackContents,
+			dataConfiguration,
+			new InitialWorldOptions(WorldCreator.Mode.SURVIVAL, Set.of(), null)
+		);
 	}
 
 	public GeneratorOptionsHolder(
@@ -39,7 +50,8 @@ public record GeneratorOptionsHolder(
 		DimensionOptionsRegistryHolder selectedDimensions,
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries,
 		DataPackContents dataPackContents,
-		DataConfiguration dataConfiguration
+		DataConfiguration dataConfiguration,
+		InitialWorldOptions initialWorldOptions
 	) {
 		this(
 			generatorOptions,
@@ -47,13 +59,20 @@ public record GeneratorOptionsHolder(
 			selectedDimensions,
 			combinedDynamicRegistries.with(ServerDynamicRegistryType.DIMENSIONS),
 			dataPackContents,
-			dataConfiguration
+			dataConfiguration,
+			initialWorldOptions
 		);
 	}
 
 	public GeneratorOptionsHolder with(GeneratorOptions generatorOptions, DimensionOptionsRegistryHolder selectedDimensions) {
 		return new GeneratorOptionsHolder(
-			generatorOptions, this.dimensionOptionsRegistry, selectedDimensions, this.combinedDynamicRegistries, this.dataPackContents, this.dataConfiguration
+			generatorOptions,
+			this.dimensionOptionsRegistry,
+			selectedDimensions,
+			this.combinedDynamicRegistries,
+			this.dataPackContents,
+			this.dataConfiguration,
+			this.initialWorldCreationOptions
 		);
 	}
 
@@ -64,7 +83,8 @@ public record GeneratorOptionsHolder(
 			this.selectedDimensions,
 			this.combinedDynamicRegistries,
 			this.dataPackContents,
-			this.dataConfiguration
+			this.dataConfiguration,
+			this.initialWorldCreationOptions
 		);
 	}
 
@@ -75,7 +95,8 @@ public record GeneratorOptionsHolder(
 			(DimensionOptionsRegistryHolder)modifier.apply(this.getCombinedRegistryManager(), this.selectedDimensions),
 			this.combinedDynamicRegistries,
 			this.dataPackContents,
-			this.dataConfiguration
+			this.dataConfiguration,
+			this.initialWorldCreationOptions
 		);
 	}
 

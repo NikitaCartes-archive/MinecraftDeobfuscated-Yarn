@@ -9,6 +9,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profilers;
+import net.minecraft.util.profiler.ScopedProfiler;
 
 /**
  * Represents a player entity that is present on the client but is not the client's own player.
@@ -78,9 +80,10 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		this.strideDistance = this.strideDistance + (f - this.strideDistance) * 0.4F;
-		this.getWorld().getProfiler().push("push");
-		this.tickCramming();
-		this.getWorld().getProfiler().pop();
+
+		try (ScopedProfiler scopedProfiler = Profilers.get().scoped("push")) {
+			this.tickCramming();
+		}
 	}
 
 	@Override

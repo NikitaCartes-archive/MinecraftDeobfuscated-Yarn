@@ -42,7 +42,7 @@ public abstract class ConsecutiveExecutor<T extends Runnable> implements Samplea
 			if (runnable == null) {
 				return false;
 			} else {
-				Util.debugRunnable(this.name, runnable).run();
+				Util.runInNamedZone(runnable, this.name);
 				return true;
 			}
 		}

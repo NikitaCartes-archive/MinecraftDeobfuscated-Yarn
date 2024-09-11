@@ -1,14 +1,11 @@
 package net.minecraft.state;
 
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,7 +34,7 @@ public abstract class State<O, S> {
 	};
 	protected final O owner;
 	private final Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap;
-	private Table<Property<?>, Comparable<?>, S> withTable;
+	private Map<Property<?>, S[]> withMap;
 	protected final MapCodec<S> codec;
 
 	protected State(O owner, Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyMap, MapCodec<S> codec) {
@@ -50,20 +47,9 @@ public abstract class State<O, S> {
 		return this.with(property, getNext(property.getValues(), this.get(property)));
 	}
 
-	protected static <T> T getNext(Collection<T> values, T value) {
-		Iterator<T> iterator = values.iterator();
-
-		while (iterator.hasNext()) {
-			if (iterator.next().equals(value)) {
-				if (iterator.hasNext()) {
-					return (T)iterator.next();
-				}
-
-				return (T)values.iterator().next();
-			}
-		}
-
-		return (T)iterator.next();
+	protected static <T> T getNext(List<T> values, T value) {
+		int i = values.indexOf(value) + 1;
+		return (T)(i == values.size() ? values.getFirst() : values.get(i));
 	}
 
 	public String toString() {
@@ -113,49 +99,41 @@ public abstract class State<O, S> {
 		Comparable<?> comparable = this.propertyMap.get(property);
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.owner);
-		} else if (comparable.equals(value)) {
-			return (S)this;
 		} else {
-			S object = this.withTable.get(property, value);
-			if (object == null) {
-				throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on " + this.owner + ", it is not an allowed value");
-			} else {
-				return object;
-			}
+			return this.with(property, value, comparable);
 		}
 	}
 
 	public <T extends Comparable<T>, V extends T> S withIfExists(Property<T> property, V value) {
 		Comparable<?> comparable = this.propertyMap.get(property);
-		if (comparable != null && !comparable.equals(value)) {
-			S object = this.withTable.get(property, value);
-			if (object == null) {
-				throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on " + this.owner + ", it is not an allowed value");
-			} else {
-				return object;
-			}
-		} else {
+		return (S)(comparable == null ? this : this.with(property, value, comparable));
+	}
+
+	private <T extends Comparable<T>, V extends T> S with(Property<T> property, V newValue, Comparable<?> oldValue) {
+		if (oldValue.equals(newValue)) {
 			return (S)this;
+		} else {
+			int i = property.ordinal((T)newValue);
+			if (i < 0) {
+				throw new IllegalArgumentException("Cannot set property " + property + " to " + newValue + " on " + this.owner + ", it is not an allowed value");
+			} else {
+				return (S)this.withMap.get(property)[i];
+			}
 		}
 	}
 
-	public void createWithTable(Map<Map<Property<?>, Comparable<?>>, S> states) {
-		if (this.withTable != null) {
+	public void createWithMap(Map<Map<Property<?>, Comparable<?>>, S> states) {
+		if (this.withMap != null) {
 			throw new IllegalStateException();
 		} else {
-			Table<Property<?>, Comparable<?>, S> table = HashBasedTable.create();
+			Map<Property<?>, S[]> map = new Reference2ObjectArrayMap<>(this.propertyMap.size());
 
 			for (Entry<Property<?>, Comparable<?>> entry : this.propertyMap.entrySet()) {
 				Property<?> property = (Property<?>)entry.getKey();
-
-				for (Comparable<?> comparable : property.getValues()) {
-					if (!comparable.equals(entry.getValue())) {
-						table.put(property, comparable, (S)states.get(this.toMapWith(property, comparable)));
-					}
-				}
+				map.put(property, property.getValues().stream().map(value -> states.get(this.toMapWith(property, value))).toArray());
 			}
 
-			this.withTable = (Table<Property<?>, Comparable<?>, S>)(table.isEmpty() ? table : ArrayTable.create(table));
+			this.withMap = map;
 		}
 	}
 
@@ -177,7 +155,7 @@ public abstract class State<O, S> {
 				S state = (S)ownerToStateFunction.apply(owner);
 				return state.getEntries().isEmpty()
 					? MapCodec.unit(state)
-					: state.codec.codec().lenientOptionalFieldOf("Properties").xmap(optional -> (State)optional.orElse(state), Optional::of);
+					: state.codec.codec().lenientOptionalFieldOf("Properties").xmap(statex -> (State)statex.orElse(state), Optional::of);
 			}
 		);
 	}

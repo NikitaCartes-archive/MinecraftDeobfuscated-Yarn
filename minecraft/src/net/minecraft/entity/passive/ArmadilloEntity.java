@@ -22,6 +22,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -40,6 +41,8 @@ import net.minecraft.util.TimeHelper;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
@@ -127,16 +130,19 @@ public class ArmadilloEntity extends AnimalEntity {
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("armadilloBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("armadilloBrain");
 		((Brain<ArmadilloEntity>)this.brain).tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().pop();
-		this.getWorld().getProfiler().push("armadilloActivityUpdate");
+		profiler.pop();
+		profiler.push("armadilloActivityUpdate");
 		ArmadilloBrain.updateActivities(this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		if (this.isAlive() && !this.isBaby() && --this.nextScuteShedCooldown <= 0) {
-			this.playSound(SoundEvents.ENTITY_ARMADILLO_SCUTE_DROP, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			this.dropItem(Items.ARMADILLO_SCUTE);
-			this.emitGameEvent(GameEvent.ENTITY_PLACE);
+			if (this.forEachGiftedItem(LootTables.ARMADILLO_SHED_GAMEPLAY, this::dropStack)) {
+				this.playSound(SoundEvents.ENTITY_ARMADILLO_SCUTE_DROP, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+				this.emitGameEvent(GameEvent.ENTITY_PLACE);
+			}
+
 			this.nextScuteShedCooldown = this.getNextScuteShedCooldown();
 		}
 

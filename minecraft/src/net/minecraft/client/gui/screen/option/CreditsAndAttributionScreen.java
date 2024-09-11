@@ -42,7 +42,7 @@ public class CreditsAndAttributionScreen extends Screen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 	}
 

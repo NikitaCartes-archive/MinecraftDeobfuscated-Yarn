@@ -18,4 +18,9 @@ public class AirBlockItem extends Item {
 		super.appendTooltip(stack, context, tooltip, type);
 		this.block.appendTooltip(stack, context, tooltip, type);
 	}
+
+	@Override
+	public Text getName(ItemStack stack) {
+		return this.getName();
+	}
 }

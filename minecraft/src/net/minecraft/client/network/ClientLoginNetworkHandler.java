@@ -129,7 +129,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		}
 
 		if (packet.needsAuthentication()) {
-			Util.getIoWorkerExecutor().submit(() -> {
+			Util.getIoWorkerExecutor().execute(() -> {
 				Text text = this.joinServerSession(string);
 				if (text != null) {
 					if (this.serverInfo == null || !this.serverInfo.isLocal()) {

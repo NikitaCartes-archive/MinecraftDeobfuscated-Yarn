@@ -36,7 +36,7 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 	}
 
 	public static Vec2f getVec2(CommandContext<ServerCommandSource> context, String name) {
-		Vec3d vec3d = context.<PosArgument>getArgument(name, PosArgument.class).toAbsolutePos(context.getSource());
+		Vec3d vec3d = context.<PosArgument>getArgument(name, PosArgument.class).getPos(context.getSource());
 		return new Vec2f((float)vec3d.x, (float)vec3d.z);
 	}
 

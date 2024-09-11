@@ -33,6 +33,7 @@ import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.MultipliedFloatSupplier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.ScopedProfiler;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -64,15 +65,13 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 
 	protected SoundManager.SoundList prepare(ResourceManager resourceManager, Profiler profiler) {
 		SoundManager.SoundList soundList = new SoundManager.SoundList();
-		profiler.startTick();
-		profiler.push("list");
-		soundList.findSounds(resourceManager);
-		profiler.pop();
+
+		try (ScopedProfiler scopedProfiler = profiler.scoped("list")) {
+			soundList.findSounds(resourceManager);
+		}
 
 		for (String string : resourceManager.getAllNamespaces()) {
-			profiler.push(string);
-
-			try {
+			try (ScopedProfiler scopedProfiler2 = profiler.scoped(string)) {
 				for (Resource resource : resourceManager.getAllResources(Identifier.of(string, "sounds.json"))) {
 					profiler.push(resource.getPackId());
 
@@ -89,34 +88,31 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 							}
 
 							profiler.pop();
-						} catch (Throwable var14) {
+						} catch (Throwable var18) {
 							if (reader != null) {
 								try {
 									reader.close();
-								} catch (Throwable var13) {
-									var14.addSuppressed(var13);
+								} catch (Throwable var16) {
+									var18.addSuppressed(var16);
 								}
 							}
 
-							throw var14;
+							throw var18;
 						}
 
 						if (reader != null) {
 							reader.close();
 						}
-					} catch (RuntimeException var15) {
-						LOGGER.warn("Invalid {} in resourcepack: '{}'", "sounds.json", resource.getPackId(), var15);
+					} catch (RuntimeException var19) {
+						LOGGER.warn("Invalid {} in resourcepack: '{}'", "sounds.json", resource.getPackId(), var19);
 					}
 
 					profiler.pop();
 				}
-			} catch (IOException var16) {
+			} catch (IOException var21) {
 			}
-
-			profiler.pop();
 		}
 
-		profiler.endTick();
 		return soundList;
 	}
 

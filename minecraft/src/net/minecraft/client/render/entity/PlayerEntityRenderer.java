@@ -39,6 +39,7 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -77,7 +78,17 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		return playerEntityRenderState.isInSneakingPose ? vec3d.add(0.0, (double)(playerEntityRenderState.baseScale * -2.0F) / 16.0, 0.0) : vec3d;
 	}
 
-	public static BipedEntityModel.ArmPose getArmPose(PlayerEntityRenderState state, PlayerEntityRenderState.HandState handState, Hand hand) {
+	public static BipedEntityModel.ArmPose getArmPose(PlayerEntityRenderState state, Arm arm) {
+		BipedEntityModel.ArmPose armPose = getArmPose(state, state.mainHandState, Hand.MAIN_HAND);
+		BipedEntityModel.ArmPose armPose2 = getArmPose(state, state.offHandState, Hand.OFF_HAND);
+		if (armPose.isTwoHanded()) {
+			armPose2 = state.offHandState.empty ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
+		}
+
+		return state.mainArm == arm ? armPose : armPose2;
+	}
+
+	private static BipedEntityModel.ArmPose getArmPose(PlayerEntityRenderState state, PlayerEntityRenderState.HandState handState, Hand hand) {
 		if (handState.empty) {
 			return BipedEntityModel.ArmPose.EMPTY;
 		} else {
@@ -218,6 +229,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		state.field_53536 = (float)e * 10.0F;
 		state.field_53536 = MathHelper.clamp(state.field_53536, -6.0F, 32.0F);
 		state.field_53537 = (float)(d * h + f * i) * 100.0F;
+		state.field_53537 = state.field_53537 * (1.0F - state.getGlidingProgress());
 		state.field_53537 = MathHelper.clamp(state.field_53537, 0.0F, 150.0F);
 		state.field_53538 = (float)(d * i - f * h) * 100.0F;
 		state.field_53538 = MathHelper.clamp(state.field_53538, -20.0F, 20.0F);
@@ -258,7 +270,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		float i = playerEntityRenderState.pitch;
 		if (playerEntityRenderState.isGliding) {
 			super.setupTransforms(playerEntityRenderState, matrixStack, f, g);
-			float j = MathHelper.clamp(playerEntityRenderState.glidingTicks * playerEntityRenderState.glidingTicks / 100.0F, 0.0F, 1.0F);
+			float j = playerEntityRenderState.getGlidingProgress();
 			if (!playerEntityRenderState.usingRiptide) {
 				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(j * (-90.0F - i)));
 			}

@@ -55,12 +55,12 @@ public class SymlinkWarningScreen extends Screen {
 		adder2.add(ButtonWidget.builder(ScreenTexts.COPY_LINK_TO_CLIPBOARD, button -> this.client.keyboard.setClipboard(this.link.toString())).size(120, 20).build());
 		adder2.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).size(120, 20).build());
 		adder.add(gridWidget);
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 		this.grid.forEachChild(this::addDrawableChild);
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.grid.refreshPositions();
 		SimplePositioningWidget.setPos(this.grid, this.getNavigationFocus());
 	}

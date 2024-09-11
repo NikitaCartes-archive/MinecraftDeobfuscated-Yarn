@@ -29,7 +29,9 @@ public record EquippableComponent(
 	RegistryEntry<SoundEvent> equipSound,
 	Optional<Identifier> model,
 	Optional<RegistryEntryList<EntityType<?>>> allowedEntities,
-	boolean dispensable
+	boolean dispensable,
+	boolean swappable,
+	boolean damageOnHurt
 ) {
 	public static final Codec<EquippableComponent> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
@@ -37,7 +39,9 @@ public record EquippableComponent(
 					SoundEvent.ENTRY_CODEC.optionalFieldOf("equip_sound", SoundEvents.ITEM_ARMOR_EQUIP_GENERIC).forGetter(EquippableComponent::equipSound),
 					Identifier.CODEC.optionalFieldOf("model").forGetter(EquippableComponent::model),
 					RegistryCodecs.entryList(RegistryKeys.ENTITY_TYPE).optionalFieldOf("allowed_entities").forGetter(EquippableComponent::allowedEntities),
-					Codec.BOOL.optionalFieldOf("dispensable", Boolean.valueOf(true)).forGetter(EquippableComponent::dispensable)
+					Codec.BOOL.optionalFieldOf("dispensable", Boolean.valueOf(true)).forGetter(EquippableComponent::dispensable),
+					Codec.BOOL.optionalFieldOf("swappable", Boolean.valueOf(true)).forGetter(EquippableComponent::swappable),
+					Codec.BOOL.optionalFieldOf("damage_on_hurt", Boolean.valueOf(true)).forGetter(EquippableComponent::damageOnHurt)
 				)
 				.apply(instance, EquippableComponent::new)
 	);
@@ -52,17 +56,23 @@ public record EquippableComponent(
 		EquippableComponent::allowedEntities,
 		PacketCodecs.BOOL,
 		EquippableComponent::dispensable,
+		PacketCodecs.BOOL,
+		EquippableComponent::swappable,
+		PacketCodecs.BOOL,
+		EquippableComponent::damageOnHurt,
 		EquippableComponent::new
 	);
 
 	public static EquippableComponent ofCarpet(DyeColor color) {
-		return new EquippableComponent(
-			EquipmentSlot.BODY,
-			SoundEvents.ENTITY_LLAMA_SWAG,
-			Optional.of((Identifier)EquipmentModels.CARPET_FROM_COLOR.get(color)),
-			Optional.of(RegistryEntryList.of(EntityType::getRegistryEntry, EntityType.LLAMA, EntityType.TRADER_LLAMA)),
-			true
-		);
+		return builder(EquipmentSlot.BODY)
+			.equipSound(SoundEvents.ENTITY_LLAMA_SWAG)
+			.model((Identifier)EquipmentModels.CARPET_FROM_COLOR.get(color))
+			.allowedEntities(EntityType.LLAMA, EntityType.TRADER_LLAMA)
+			.build();
+	}
+
+	public static EquippableComponent.Builder builder(EquipmentSlot slot) {
+		return new EquippableComponent.Builder(slot);
 	}
 
 	public ActionResult equip(ItemStack stack, PlayerEntity player) {
@@ -99,5 +109,57 @@ public record EquippableComponent(
 
 	public boolean allows(EntityType<?> entityType) {
 		return this.allowedEntities.isEmpty() || ((RegistryEntryList)this.allowedEntities.get()).contains(entityType.getRegistryEntry());
+	}
+
+	public static class Builder {
+		private final EquipmentSlot slot;
+		private RegistryEntry<SoundEvent> equipSound = SoundEvents.ITEM_ARMOR_EQUIP_GENERIC;
+		private Optional<Identifier> model = Optional.empty();
+		private Optional<RegistryEntryList<EntityType<?>>> allowedEntities = Optional.empty();
+		private boolean dispensable = true;
+		private boolean swappable = true;
+		private boolean damageOnHurt = true;
+
+		Builder(EquipmentSlot slot) {
+			this.slot = slot;
+		}
+
+		public EquippableComponent.Builder equipSound(RegistryEntry<SoundEvent> equipSound) {
+			this.equipSound = equipSound;
+			return this;
+		}
+
+		public EquippableComponent.Builder model(Identifier model) {
+			this.model = Optional.of(model);
+			return this;
+		}
+
+		public EquippableComponent.Builder allowedEntities(EntityType<?>... allowedEntities) {
+			return this.allowedEntities(RegistryEntryList.of(EntityType::getRegistryEntry, allowedEntities));
+		}
+
+		public EquippableComponent.Builder allowedEntities(RegistryEntryList<EntityType<?>> allowedEntities) {
+			this.allowedEntities = Optional.of(allowedEntities);
+			return this;
+		}
+
+		public EquippableComponent.Builder dispensable(boolean dispensable) {
+			this.dispensable = dispensable;
+			return this;
+		}
+
+		public EquippableComponent.Builder swappable(boolean swappable) {
+			this.swappable = swappable;
+			return this;
+		}
+
+		public EquippableComponent.Builder damageOnHurt(boolean damageOnHurt) {
+			this.damageOnHurt = damageOnHurt;
+			return this;
+		}
+
+		public EquippableComponent build() {
+			return new EquippableComponent(this.slot, this.equipSound, this.model, this.allowedEntities, this.dispensable, this.swappable, this.damageOnHurt);
+		}
 	}
 }

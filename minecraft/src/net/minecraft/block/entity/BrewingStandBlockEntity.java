@@ -14,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.BrewingStandScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
@@ -93,7 +94,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	public static void tick(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity) {
 		ItemStack itemStack = blockEntity.inventory.get(4);
-		if (blockEntity.fuel <= 0 && itemStack.isOf(Items.BLAZE_POWDER)) {
+		if (blockEntity.fuel <= 0 && itemStack.isIn(ItemTags.BREWING_FUEL)) {
 			blockEntity.fuel = 20;
 			itemStack.decrement(1);
 			markDirty(world, pos, state);
@@ -215,7 +216,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			return brewingRecipeRegistry.isValidIngredient(stack);
 		} else {
 			return slot == 4
-				? stack.isOf(Items.BLAZE_POWDER)
+				? stack.isIn(ItemTags.BREWING_FUEL)
 				: (stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE))
 					&& this.getStack(slot).isEmpty();
 		}

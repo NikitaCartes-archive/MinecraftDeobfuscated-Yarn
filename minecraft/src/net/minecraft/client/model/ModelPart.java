@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -126,9 +127,9 @@ public final class ModelPart {
 	}
 
 	public void rotate(Quaternionf quaternion) {
-		Quaternionf quaternionf = new Quaternionf().rotationZYX(this.roll, this.yaw, this.pitch);
-		Quaternionf quaternionf2 = quaternionf.mul(quaternion);
-		Vector3f vector3f = quaternionf2.getEulerAnglesXYZ(new Vector3f());
+		Matrix3f matrix3f = new Matrix3f().rotationZYX(this.roll, this.yaw, this.pitch);
+		Matrix3f matrix3f2 = matrix3f.rotate(quaternion);
+		Vector3f vector3f = matrix3f2.getEulerAnglesZYX(new Vector3f());
 		this.setAngles(vector3f.x, vector3f.y, vector3f.z);
 	}
 

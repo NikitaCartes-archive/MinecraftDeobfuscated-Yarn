@@ -62,6 +62,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
+import net.minecraft.util.profiler.ScopedProfiler;
 import net.minecraft.world.GameMode;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
@@ -237,13 +240,13 @@ public class GameRenderer implements AutoCloseable {
 		Entity entity = this.client.getCameraEntity();
 		if (entity != null) {
 			if (this.client.world != null && this.client.player != null) {
-				this.client.getProfiler().push("pick");
+				Profilers.get().push("pick");
 				double d = this.client.player.getBlockInteractionRange();
 				double e = this.client.player.getEntityInteractionRange();
 				HitResult hitResult = this.findCrosshairTarget(entity, d, e, tickDelta);
 				this.client.crosshairTarget = hitResult;
 				this.client.targetedEntity = hitResult instanceof EntityHitResult entityHitResult ? entityHitResult.getEntity() : null;
-				this.client.getProfiler().pop();
+				Profilers.get().pop();
 			}
 		}
 	}
@@ -441,12 +444,13 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		if (!this.client.skipGameRender) {
+			Profiler profiler = Profilers.get();
 			boolean bl = this.client.isFinishedLoading();
 			int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
 			int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			if (bl && tick && this.client.world != null) {
-				this.client.getProfiler().push("level");
+				profiler.push("level");
 				this.renderWorld(tickCounter);
 				this.updateWorldIcon();
 				this.client.worldRenderer.drawEntityOutlinesFramebuffer();
@@ -481,7 +485,7 @@ public class GameRenderer implements AutoCloseable {
 			DiffuseLighting.enableGuiDepthLighting();
 			DrawContext drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
 			if (bl && tick && this.client.world != null) {
-				this.client.getProfiler().swap("gui");
+				profiler.swap("gui");
 				if (!this.client.options.hudHidden) {
 					this.renderFloatingItem(drawContext, tickCounter.getTickDelta(false));
 				}
@@ -489,14 +493,14 @@ public class GameRenderer implements AutoCloseable {
 				this.client.inGameHud.render(drawContext, tickCounter);
 				drawContext.draw();
 				RenderSystem.clear(256);
-				this.client.getProfiler().pop();
+				profiler.pop();
 			}
 
 			if (this.client.getOverlay() != null) {
 				try {
 					this.client.getOverlay().render(drawContext, i, j, tickCounter.getLastFrameDuration());
-				} catch (Throwable var15) {
-					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
+				} catch (Throwable var17) {
+					CrashReport crashReport = CrashReport.create(var17, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -504,8 +508,8 @@ public class GameRenderer implements AutoCloseable {
 			} else if (bl && this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.renderWithTooltip(drawContext, i, j, tickCounter.getLastFrameDuration());
-				} catch (Throwable var14) {
-					CrashReport crashReport = CrashReport.create(var14, "Rendering screen");
+				} catch (Throwable var16) {
+					CrashReport crashReport = CrashReport.create(var16, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -531,8 +535,8 @@ public class GameRenderer implements AutoCloseable {
 					if (this.client.currentScreen != null) {
 						this.client.currentScreen.updateNarrator();
 					}
-				} catch (Throwable var13) {
-					CrashReport crashReport = CrashReport.create(var13, "Narrating screen");
+				} catch (Throwable var15) {
+					CrashReport crashReport = CrashReport.create(var15, "Narrating screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -544,9 +548,9 @@ public class GameRenderer implements AutoCloseable {
 			}
 
 			if (bl) {
-				this.client.getProfiler().push("toasts");
-				this.client.getToastManager().draw(drawContext);
-				this.client.getProfiler().pop();
+				try (ScopedProfiler scopedProfiler = profiler.scoped("toasts")) {
+					this.client.getToastManager().draw(drawContext);
+				}
 			}
 
 			drawContext.draw();
@@ -636,9 +640,10 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		this.updateCrosshairTarget(f);
-		this.client.getProfiler().push("center");
+		Profiler profiler = Profilers.get();
+		profiler.push("center");
 		boolean bl = this.shouldRenderBlockOutline();
-		this.client.getProfiler().swap("camera");
+		profiler.swap("camera");
 		Camera camera = this.camera;
 		Entity entity = (Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity());
 		float g = this.client.world.getTickManager().shouldSkipTick(entity) ? 1.0F : f;
@@ -674,13 +679,13 @@ public class GameRenderer implements AutoCloseable {
 		this.client.worldRenderer.setupFrustum(camera.getPos(), matrix4f3, matrix4f2);
 		this.client.getFramebuffer().beginWrite(true);
 		this.client.worldRenderer.render(this.pool, renderTickCounter, bl, camera, this, this.lightmapTextureManager, matrix4f3, matrix4f);
-		this.client.getProfiler().swap("hand");
+		profiler.swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(256);
 			this.renderHand(camera, f, matrix4f3);
 		}
 
-		this.client.getProfiler().pop();
+		profiler.pop();
 	}
 
 	public void reset() {

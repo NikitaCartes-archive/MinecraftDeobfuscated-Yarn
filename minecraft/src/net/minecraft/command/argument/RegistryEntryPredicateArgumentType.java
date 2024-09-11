@@ -61,7 +61,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 				return RegistryEntryReferenceArgumentType.INVALID_TYPE_EXCEPTION.create(registryKey2.getValue(), registryKey2.getRegistry(), registryRef.getValue());
 			}, entryList -> {
 				TagKey<?> tagKey = entryList.getTag();
-				return WRONG_TYPE_EXCEPTION.create(tagKey.id(), tagKey.registry(), registryRef.getValue());
+				return WRONG_TYPE_EXCEPTION.create(tagKey.id(), tagKey.registryRef(), registryRef.getValue());
 			}));
 	}
 

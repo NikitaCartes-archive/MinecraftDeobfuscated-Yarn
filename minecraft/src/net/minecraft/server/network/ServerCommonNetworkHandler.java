@@ -25,6 +25,7 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.profiler.Profilers;
 import org.slf4j.Logger;
 
 public abstract class ServerCommonNetworkHandler implements ServerCommonPacketListener {
@@ -107,7 +108,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	}
 
 	protected void baseTick() {
-		this.server.getProfiler().push("keepAlive");
+		Profilers.get().push("keepAlive");
 		long l = Util.getMeasuringTimeMs();
 		if (!this.isHost() && l - this.lastKeepAliveTime >= 15000L) {
 			if (this.waitingForKeepAlive) {
@@ -120,7 +121,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 			}
 		}
 
-		this.server.getProfiler().pop();
+		Profilers.get().pop();
 	}
 
 	private boolean checkTransitionTimeout(long time) {

@@ -101,11 +101,11 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.templateList.setDimensions(this.width, this.height - this.layout.getFooterHeight() - this.getTemplateListTop());
 		this.layout.refreshPositions();
 	}

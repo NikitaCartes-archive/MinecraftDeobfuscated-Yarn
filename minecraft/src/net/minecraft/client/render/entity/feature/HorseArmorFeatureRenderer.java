@@ -42,7 +42,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntityRender
 			horseEntityModel.setAngles(horseEntityRenderState);
 			this.equipmentRenderer
 				.render(
-					EquipmentModel.LayerType.HORSE_BODY, identifier, horseEntityModel, itemStack, RenderLayer::getArmorCutoutNoCull, matrixStack, vertexConsumerProvider, i
+					EquipmentModel.LayerType.HORSE_BODY, identifier, horseEntityModel, itemStack, RenderLayer::getEntityCutoutNoCull, matrixStack, vertexConsumerProvider, i
 				);
 		}
 	}

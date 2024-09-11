@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -19,6 +20,8 @@ public class BundleTooltipComponent implements TooltipComponent {
 	private static final Identifier BUNDLE_PROGRESS_BAR_BORDER_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_border");
 	private static final Identifier BUNDLE_PROGRESS_BAR_FILL_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_fill");
 	private static final Identifier BUNDLE_PROGRESS_BAR_FULL_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_full");
+	private static final Identifier BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE = Identifier.ofVanilla("container/bundle/slot_highlight_back");
+	private static final Identifier BUNDLE_SLOT_HIGHLIGHT_FRONT_TEXTURE = Identifier.ofVanilla("container/bundle/slot_highlight_front");
 	private static final int SLOTS_PER_ROW = 4;
 	private static final int SLOT_DIMENSION = 24;
 	private static final int ROW_WIDTH = 96;
@@ -130,22 +133,23 @@ public class BundleTooltipComponent implements TooltipComponent {
 		return this.bundleContents.stream().skip((long)items.size()).mapToInt(ItemStack::getCount).sum();
 	}
 
-	private void drawItem(int index, int x, int y, List<ItemStack> items, int seed, TextRenderer textRenderer, DrawContext drawContext) {
-		int i = items.size() - index;
-		ItemStack itemStack = (ItemStack)items.get(i);
-		this.drawBackground(i, drawContext, x, y);
+	private void drawItem(int index, int x, int y, List<ItemStack> stacks, int seed, TextRenderer textRenderer, DrawContext drawContext) {
+		int i = stacks.size() - index;
+		boolean bl = i == this.bundleContents.getSelectedStackIndex();
+		ItemStack itemStack = (ItemStack)stacks.get(i);
+		if (bl) {
+			drawContext.drawGuiTexture(RenderLayer::getGuiTextured, BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE, x, y, 24, 24);
+		}
+
 		drawContext.drawItem(itemStack, x + 4, y + 4, seed);
 		drawContext.drawItemInSlot(textRenderer, itemStack, x + 4, y + 4);
+		if (bl) {
+			drawContext.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, BUNDLE_SLOT_HIGHLIGHT_FRONT_TEXTURE, x, y, 24, 24);
+		}
 	}
 
 	private static void drawExtraItemsCount(int x, int y, int numExtra, TextRenderer textRenderer, DrawContext drawContext) {
 		drawContext.drawCenteredTextWithShadow(textRenderer, "+" + numExtra, x + 12, y + 10, 16777215);
-	}
-
-	private void drawBackground(int index, DrawContext drawContext, int x, int y) {
-		if (index != -1 && index == this.bundleContents.getSelectedStackIndex()) {
-			drawContext.fillGradient(RenderLayer.getGui(), x, y, x + 24, y + 24, -2130706433, -2130706433, 0);
-		}
 	}
 
 	private void drawSelectedItemTooltip(TextRenderer textRenderer, DrawContext drawContext, int x, int y, int width) {
@@ -154,7 +158,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 			Text text = itemStack.getFormattedName();
 			int i = textRenderer.getWidth(text.asOrderedText());
 			int j = x + width / 2 - 12;
-			drawContext.drawTooltip(textRenderer, text, j - i / 2, y - 15);
+			drawContext.drawTooltip(textRenderer, text, j - i / 2, y - 15, itemStack.get(DataComponentTypes.TOOLTIP_STYLE));
 		}
 	}
 

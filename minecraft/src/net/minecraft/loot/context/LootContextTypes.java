@@ -44,14 +44,14 @@ public class LootContextTypes {
 		"equipment", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY)
 	);
 	public static final LootContextType ARCHAEOLOGY = register(
-		"archaeology", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
+		"archaeology", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.TOOL)
 	);
 	public static final LootContextType GIFT = register(
 		"gift", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY)
 	);
 	public static final LootContextType BARTER = register("barter", builder -> builder.require(LootContextParameters.THIS_ENTITY));
 	public static final LootContextType VAULT = register(
-		"vault", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
+		"vault", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY).allow(LootContextParameters.TOOL)
 	);
 	public static final LootContextType ADVANCEMENT_REWARD = register(
 		"advancement_reward", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
@@ -92,7 +92,7 @@ public class LootContextTypes {
 				.allow(LootContextParameters.EXPLOSION_RADIUS)
 	);
 	public static final LootContextType SHEARING = register(
-		"shearing", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
+		"shearing", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.TOOL)
 	);
 	public static final LootContextType ENCHANTED_DAMAGE = register(
 		"enchanted_damage",

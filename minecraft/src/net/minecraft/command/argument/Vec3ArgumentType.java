@@ -36,7 +36,7 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 	}
 
 	public static Vec3d getVec3(CommandContext<ServerCommandSource> context, String name) {
-		return context.<PosArgument>getArgument(name, PosArgument.class).toAbsolutePos(context.getSource());
+		return context.<PosArgument>getArgument(name, PosArgument.class).getPos(context.getSource());
 	}
 
 	public static PosArgument getPosArgument(CommandContext<ServerCommandSource> context, String name) {

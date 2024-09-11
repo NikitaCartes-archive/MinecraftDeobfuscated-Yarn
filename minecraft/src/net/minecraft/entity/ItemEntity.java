@@ -3,7 +3,6 @@ package net.minecraft.entity;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -13,10 +12,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -269,7 +266,7 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Override
 	public boolean isFireImmune() {
-		return this.getStack().contains(DataComponentTypes.FIRE_RESISTANT) || super.isFireImmune();
+		return !this.getStack().takesDamageFrom(this.getDamageSources().inFire()) || super.isFireImmune();
 	}
 
 	@Override
@@ -277,8 +274,6 @@ public class ItemEntity extends Entity implements Ownable {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
-			return false;
-		} else if (!this.getStack().isEmpty() && this.getStack().isOf(Items.NETHER_STAR) && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 			return false;
 		} else if (!this.getStack().takesDamageFrom(source)) {
 			return false;

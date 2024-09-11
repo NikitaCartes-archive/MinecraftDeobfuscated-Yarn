@@ -1,9 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.entity.LivingEntity;
@@ -12,16 +9,10 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 
@@ -30,23 +21,21 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 	private static final int DEFAULT_DURATION = 600;
 	private static final int MAX_NEXT_GIFT_DELAY = 6600;
 	private static final int RUN_TIME = 20;
-	private static final Map<VillagerProfession, RegistryKey<LootTable>> GIFTS = Util.make(
-		Maps.<VillagerProfession, RegistryKey<LootTable>>newHashMap(), gifts -> {
-			gifts.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.CLERIC, LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.FARMER, LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.FISHERMAN, LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.FLETCHER, LootTables.HERO_OF_THE_VILLAGE_FLETCHER_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.LEATHERWORKER, LootTables.HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.LIBRARIAN, LootTables.HERO_OF_THE_VILLAGE_LIBRARIAN_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.MASON, LootTables.HERO_OF_THE_VILLAGE_MASON_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.SHEPHERD, LootTables.HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.TOOLSMITH, LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY);
-			gifts.put(VillagerProfession.WEAPONSMITH, LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY);
-		}
-	);
+	private static final Map<VillagerProfession, RegistryKey<LootTable>> GIFTS = ImmutableMap.<VillagerProfession, RegistryKey<LootTable>>builder()
+		.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY)
+		.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY)
+		.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY)
+		.put(VillagerProfession.CLERIC, LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY)
+		.put(VillagerProfession.FARMER, LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY)
+		.put(VillagerProfession.FISHERMAN, LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY)
+		.put(VillagerProfession.FLETCHER, LootTables.HERO_OF_THE_VILLAGE_FLETCHER_GIFT_GAMEPLAY)
+		.put(VillagerProfession.LEATHERWORKER, LootTables.HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT_GAMEPLAY)
+		.put(VillagerProfession.LIBRARIAN, LootTables.HERO_OF_THE_VILLAGE_LIBRARIAN_GIFT_GAMEPLAY)
+		.put(VillagerProfession.MASON, LootTables.HERO_OF_THE_VILLAGE_MASON_GIFT_GAMEPLAY)
+		.put(VillagerProfession.SHEPHERD, LootTables.HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY)
+		.put(VillagerProfession.TOOLSMITH, LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY)
+		.put(VillagerProfession.WEAPONSMITH, LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY)
+		.build();
 	private static final float WALK_SPEED = 0.5F;
 	private int ticksLeft = 600;
 	private boolean done;
@@ -112,26 +101,15 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 	}
 
 	private void giveGifts(VillagerEntity villager, LivingEntity recipient) {
-		for (ItemStack itemStack : this.getGifts(villager)) {
-			LookTargetUtil.give(villager, itemStack, recipient.getPos());
-		}
+		villager.forEachGiftedItem(getGiftLootTable(villager), stack -> LookTargetUtil.give(villager, stack, recipient.getPos()));
 	}
 
-	private List<ItemStack> getGifts(VillagerEntity villager) {
+	private static RegistryKey<LootTable> getGiftLootTable(VillagerEntity villager) {
 		if (villager.isBaby()) {
-			return ImmutableList.of(new ItemStack(Items.POPPY));
+			return LootTables.HERO_OF_THE_VILLAGE_BABY_GIFT_GAMEPLAY;
 		} else {
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
-			if (GIFTS.containsKey(villagerProfession)) {
-				LootTable lootTable = villager.getWorld().getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)GIFTS.get(villagerProfession));
-				LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)villager.getWorld())
-					.add(LootContextParameters.ORIGIN, villager.getPos())
-					.add(LootContextParameters.THIS_ENTITY, villager)
-					.build(LootContextTypes.GIFT);
-				return lootTable.generateLoot(lootContextParameterSet);
-			} else {
-				return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
-			}
+			return (RegistryKey<LootTable>)GIFTS.getOrDefault(villagerProfession, LootTables.HERO_OF_THE_VILLAGE_UNEMPLOYED_GIFT_GAMEPLAY);
 		}
 	}
 

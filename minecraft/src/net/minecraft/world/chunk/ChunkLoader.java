@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.server.world.OptionalChunk;
 import net.minecraft.util.collection.BoundedRegionArray;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.profiler.Profilers;
+import net.minecraft.util.profiler.ScopedProfiler;
 import net.minecraft.world.ChunkLoadingManager;
 
 public class ChunkLoader {
@@ -109,13 +111,16 @@ public class ChunkLoader {
 	}
 
 	private void loadAll(ChunkStatus targetStatus, boolean allowGeneration) {
-		int i = this.getAdditionalLevel(targetStatus, allowGeneration);
+		try (ScopedProfiler scopedProfiler = Profilers.get().scoped("scheduleLayer")) {
+			scopedProfiler.addLabel(targetStatus::getId);
+			int i = this.getAdditionalLevel(targetStatus, allowGeneration);
 
-		for (int j = this.pos.x - i; j <= this.pos.x + i; j++) {
-			for (int k = this.pos.z - i; k <= this.pos.z + i; k++) {
-				AbstractChunkHolder abstractChunkHolder = this.chunks.get(j, k);
-				if (this.pendingDisposal || !this.load(targetStatus, allowGeneration, abstractChunkHolder)) {
-					return;
+			for (int j = this.pos.x - i; j <= this.pos.x + i; j++) {
+				for (int k = this.pos.z - i; k <= this.pos.z + i; k++) {
+					AbstractChunkHolder abstractChunkHolder = this.chunks.get(j, k);
+					if (this.pendingDisposal || !this.load(targetStatus, allowGeneration, abstractChunkHolder)) {
+						return;
+					}
 				}
 			}
 		}

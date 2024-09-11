@@ -65,11 +65,11 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		if (this.selectionList != null) {
 			this.selectionList.position(this.width, this.layout);

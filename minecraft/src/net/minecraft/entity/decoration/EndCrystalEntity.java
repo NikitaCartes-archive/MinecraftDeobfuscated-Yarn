@@ -53,7 +53,7 @@ public class EndCrystalEntity extends Entity {
 	@Override
 	public void tick() {
 		this.endCrystalAge++;
-		this.checkBlockCollision();
+		this.tickBlockCollision();
 		this.tickPortalTeleportation();
 		if (this.getWorld() instanceof ServerWorld) {
 			BlockPos blockPos = this.getBlockPos();

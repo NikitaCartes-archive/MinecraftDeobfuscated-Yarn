@@ -79,7 +79,7 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	protected void addTitle() {
@@ -106,7 +106,7 @@ public abstract class ReportScreen<B extends AbuseReport.Builder<?>> extends Scr
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		SimplePositioningWidget.setPos(this.layout, this.getNavigationFocus());
 	}

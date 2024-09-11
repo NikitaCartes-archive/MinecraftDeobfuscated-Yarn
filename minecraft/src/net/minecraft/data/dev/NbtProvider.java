@@ -76,7 +76,7 @@ public class NbtProvider implements DataProvider {
 								return CompletableFuture.completedFuture(null);
 							}
 						},
-						Util.getMainWorkerExecutor()
+						Util.getMainWorkerExecutor().named("NbtToSnbt")
 					)
 					.thenCompose(future -> future)
 			);

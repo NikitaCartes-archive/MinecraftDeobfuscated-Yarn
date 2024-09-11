@@ -115,11 +115,11 @@ public class PackScreen extends Screen {
 		this.layout.forEachChild(element -> {
 			ClickableWidget var10000 = this.addDrawableChild(element);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		this.availablePackList.position(200, this.layout);
 		this.availablePackList.setX(this.width / 2 - 15 - 200);

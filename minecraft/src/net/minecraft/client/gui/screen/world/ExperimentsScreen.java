@@ -66,7 +66,7 @@ public class ExperimentsScreen extends Screen {
 		this.experimentToggleList.forEachChild(widget -> {
 			ClickableWidget var10000 = this.addDrawableChild(widget);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	private static Text getDataPackName(ResourcePackProfile packProfile) {
@@ -75,7 +75,7 @@ public class ExperimentsScreen extends Screen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.experimentToggleList.refreshPositions();
 	}
 

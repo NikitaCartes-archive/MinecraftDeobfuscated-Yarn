@@ -13,6 +13,8 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 @Environment(EnvType.CLIENT)
 public class BossBarHud {
@@ -57,7 +59,8 @@ public class BossBarHud {
 
 	public void render(DrawContext context) {
 		if (!this.bossBars.isEmpty()) {
-			this.client.getProfiler().push("bossHealth");
+			Profiler profiler = Profilers.get();
+			profiler.push("bossHealth");
 			int i = context.getScaledWindowWidth();
 			int j = 12;
 
@@ -75,7 +78,7 @@ public class BossBarHud {
 				}
 			}
 
-			this.client.getProfiler().pop();
+			profiler.pop();
 		}
 	}
 

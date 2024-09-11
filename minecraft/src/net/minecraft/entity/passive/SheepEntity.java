@@ -163,7 +163,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS)) {
 			if (!this.getWorld().isClient && this.isShearable()) {
-				this.sheared(SoundCategory.PLAYERS);
+				this.sheared(SoundCategory.PLAYERS, itemStack);
 				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, getSlotForHand(hand));
 				return ActionResult.SUCCESS_SERVER;
@@ -176,10 +176,11 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	public void sheared(SoundCategory shearedSoundCategory) {
+	public void sheared(SoundCategory shearedSoundCategory, ItemStack shears) {
 		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		this.forEachShearedItem(
 			LootTables.SHEEP_SHEARING,
+			shears,
 			stack -> {
 				for (int i = 0; i < stack.getCount(); i++) {
 					ItemEntity itemEntity = this.dropStack(stack.copyWithCount(1), 1.0F);

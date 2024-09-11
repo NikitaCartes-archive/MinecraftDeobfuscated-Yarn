@@ -1,7 +1,7 @@
 package net.minecraft.state.property;
 
-import com.google.common.collect.ImmutableSet;
-import java.util.Collection;
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,14 +11,14 @@ import java.util.Optional;
  * usages.
  */
 public class BooleanProperty extends Property<Boolean> {
-	private final ImmutableSet<Boolean> values = ImmutableSet.of(true, false);
+	private final ImmutableList<Boolean> values = ImmutableList.of(true, false);
 
 	protected BooleanProperty(String name) {
 		super(name, Boolean.class);
 	}
 
 	@Override
-	public Collection<Boolean> getValues() {
+	public List<Boolean> getValues() {
 		return this.values;
 	}
 
@@ -39,6 +39,10 @@ public class BooleanProperty extends Property<Boolean> {
 
 	public String name(Boolean boolean_) {
 		return boolean_.toString();
+	}
+
+	public int ordinal(Boolean boolean_) {
+		return boolean_ ? 0 : 1;
 	}
 
 	@Override

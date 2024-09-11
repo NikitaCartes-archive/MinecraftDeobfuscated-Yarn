@@ -98,8 +98,12 @@ public class LootTables {
 	public static final RegistryKey<LootTable> HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/shepherd_gift");
 	public static final RegistryKey<LootTable> HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/toolsmith_gift");
 	public static final RegistryKey<LootTable> HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/weaponsmith_gift");
+	public static final RegistryKey<LootTable> HERO_OF_THE_VILLAGE_UNEMPLOYED_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/unemployed_gift");
+	public static final RegistryKey<LootTable> HERO_OF_THE_VILLAGE_BABY_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/baby_gift");
 	public static final RegistryKey<LootTable> SNIFFER_DIGGING_GAMEPLAY = register("gameplay/sniffer_digging");
 	public static final RegistryKey<LootTable> PANDA_SNEEZE_GAMEPLAY = register("gameplay/panda_sneeze");
+	public static final RegistryKey<LootTable> CHICKEN_LAY_GAMEPLAY = register("gameplay/chicken_lay");
+	public static final RegistryKey<LootTable> ARMADILLO_SHED_GAMEPLAY = register("gameplay/armadillo_shed");
 	public static final RegistryKey<LootTable> PIGLIN_BARTERING_GAMEPLAY = register("gameplay/piglin_bartering");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_KEY_SPAWNER = register("spawners/trial_chamber/key");
 	public static final RegistryKey<LootTable> TRIAL_CHAMBER_CONSUMABLES_SPAWNER = register("spawners/trial_chamber/consumables");

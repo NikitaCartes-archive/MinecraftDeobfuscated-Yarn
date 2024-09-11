@@ -231,11 +231,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean isHardcore() {
-		return this.getProperties().hardcore;
-	}
-
-	@Override
 	public SystemDetails addExtraSystemDetails(SystemDetails details) {
 		details.addSection("Is Modded", (Supplier<String>)(() -> this.getModStatus().getMessage()));
 		details.addSection("Type", (Supplier<String>)(() -> "Dedicated Server (map_server.txt)"));

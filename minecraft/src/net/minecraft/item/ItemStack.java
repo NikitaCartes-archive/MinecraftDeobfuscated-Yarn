@@ -25,13 +25,14 @@ import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.MergedComponentMap;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.component.type.DamageResistantComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.component.type.RepairableComponent;
@@ -67,7 +68,6 @@ import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenTexts;
@@ -227,7 +227,7 @@ public final class ItemStack implements ComponentHolder {
 	@Deprecated
 	@Nullable
 	private final Item item;
-	final ComponentMapImpl components;
+	final MergedComponentMap components;
 	@Nullable
 	private Entity holder;
 
@@ -297,7 +297,7 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public ItemStack(RegistryEntry<Item> item, int count, ComponentChanges changes) {
-		this(item.value(), count, ComponentMapImpl.create(item.value().getComponents(), changes));
+		this(item.value(), count, MergedComponentMap.create(item.value().getComponents(), changes));
 	}
 
 	public ItemStack(RegistryEntry<Item> itemEntry, int count) {
@@ -305,10 +305,10 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public ItemStack(ItemConvertible item, int count) {
-		this(item, count, new ComponentMapImpl(item.asItem().getComponents()));
+		this(item, count, new MergedComponentMap(item.asItem().getComponents()));
 	}
 
-	private ItemStack(ItemConvertible item, int count, ComponentMapImpl components) {
+	private ItemStack(ItemConvertible item, int count, MergedComponentMap components) {
 		this.item = item.asItem();
 		this.count = count;
 		this.components = components;
@@ -317,7 +317,7 @@ public final class ItemStack implements ComponentHolder {
 
 	private ItemStack(@Nullable Void v) {
 		this.item = null;
-		this.components = new ComponentMapImpl(ComponentMap.EMPTY);
+		this.components = new MergedComponentMap(ComponentMap.EMPTY);
 	}
 
 	public static DataResult<Unit> validateComponents(ComponentMap components) {
@@ -1103,7 +1103,7 @@ public final class ItemStack implements ComponentHolder {
 		} else {
 			List<Text> list = Lists.<Text>newArrayList();
 			list.add(this.getFormattedName());
-			if (!type.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME) && this.isOf(Items.FILLED_MAP)) {
+			if (!type.isAdvanced() && !this.contains(DataComponentTypes.CUSTOM_NAME)) {
 				MapIdComponent mapIdComponent = this.get(DataComponentTypes.MAP_ID);
 				if (mapIdComponent != null) {
 					list.add(FilledMapItem.getIdText(mapIdComponent));
@@ -1474,7 +1474,8 @@ public final class ItemStack implements ComponentHolder {
 	}
 
 	public boolean takesDamageFrom(DamageSource source) {
-		return !this.contains(DataComponentTypes.FIRE_RESISTANT) || !source.isIn(DamageTypeTags.IS_FIRE);
+		DamageResistantComponent damageResistantComponent = this.get(DataComponentTypes.DAMAGE_RESISTANT);
+		return damageResistantComponent == null || !damageResistantComponent.resists(source);
 	}
 
 	public boolean canRepairWith(ItemStack ingredient) {

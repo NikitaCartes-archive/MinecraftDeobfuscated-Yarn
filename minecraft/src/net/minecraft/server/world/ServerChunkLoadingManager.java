@@ -72,6 +72,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.thread.SimpleConsecutiveExecutor;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.ChunkLoadingManager;
@@ -443,7 +444,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 	}
 
 	protected void tick(BooleanSupplier shouldKeepTicking) {
-		Profiler profiler = this.world.getProfiler();
+		Profiler profiler = Profilers.get();
 		profiler.push("poi");
 		this.pointOfInterestStorage.tick(shouldKeepTicking);
 		profiler.swap("chunk_unload");
@@ -551,10 +552,10 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 				}
 
 				return serializedChunk;
-			}), Util.getMainWorkerExecutor());
+			}), Util.getMainWorkerExecutor().named("parseChunk"));
 		CompletableFuture<?> completableFuture2 = this.pointOfInterestStorage.load(pos);
 		return completableFuture.thenCombine(completableFuture2, (optional, object) -> optional).thenApplyAsync(nbt -> {
-			this.world.getProfiler().visit("chunkLoad");
+			Profilers.get().visit("chunkLoad");
 			if (nbt.isPresent()) {
 				Chunk chunk = ((SerializedChunk)nbt.get()).convert(this.world, this.pointOfInterestStorage, this.getStorageKey(), pos);
 				this.mark(pos, chunk.getStatus().getChunkType());
@@ -750,7 +751,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 					}
 				}
 
-				this.world.getProfiler().visit("chunkSave");
+				Profilers.get().visit("chunkSave");
 				SerializedChunk serializedChunk = SerializedChunk.fromChunk(this.world, chunk);
 				CompletableFuture<NbtCompound> completableFuture = CompletableFuture.supplyAsync(serializedChunk::serialize, Util.getMainWorkerExecutor());
 				this.setNbt(chunkPos, completableFuture::join).exceptionally(throwable -> {
@@ -902,7 +903,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 	}
 
 	private CompletableFuture<Optional<NbtCompound>> getUpdatedChunkNbt(ChunkPos chunkPos) {
-		return this.getNbt(chunkPos).thenApplyAsync(nbt -> nbt.map(this::updateChunkNbt), Util.getMainWorkerExecutor());
+		return this.getNbt(chunkPos).thenApplyAsync(nbt -> nbt.map(this::updateChunkNbt), Util.getMainWorkerExecutor().named("upgradeChunk"));
 	}
 
 	private NbtCompound updateChunkNbt(NbtCompound nbt) {

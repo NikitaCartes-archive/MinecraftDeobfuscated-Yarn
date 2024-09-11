@@ -13,6 +13,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.dimension.DimensionType;
 import org.joml.Vector3f;
 
@@ -86,7 +88,8 @@ public class LightmapTextureManager implements AutoCloseable {
 	public void update(float delta) {
 		if (this.dirty) {
 			this.dirty = false;
-			this.client.getProfiler().push("lightTex");
+			Profiler profiler = Profilers.get();
+			profiler.push("lightTex");
 			ClientWorld clientWorld = this.client.world;
 			if (clientWorld != null) {
 				float f = clientWorld.getSkyBrightness(1.0F);
@@ -133,7 +136,7 @@ public class LightmapTextureManager implements AutoCloseable {
 				bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
 				BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 				this.lightmapFramebuffer.endWrite();
-				this.client.getProfiler().pop();
+				profiler.pop();
 			}
 		}
 	}

@@ -65,7 +65,7 @@ public class ChaseServer {
 
 					for (Socket socket : this.clientSockets) {
 						if (!socket.isClosed()) {
-							Util.getIoWorkerExecutor().submit(() -> {
+							Util.getIoWorkerExecutor().execute(() -> {
 								try {
 									OutputStream outputStream = socket.getOutputStream();
 									outputStream.write(bs);

@@ -115,8 +115,8 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.create(PaintingVariant.ENTRY_PACKET_CODEC);
 	public static final TrackedDataHandler<ArmadilloEntity.State> ARMADILLO_STATE = TrackedDataHandler.create(ArmadilloEntity.State.PACKET_CODEC);
 	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.create(SnifferEntity.State.PACKET_CODEC);
-	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.create(PacketCodecs.VECTOR3F);
-	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.create(PacketCodecs.QUATERNIONF);
+	public static final TrackedDataHandler<Vector3f> VECTOR_3F = TrackedDataHandler.create(PacketCodecs.VECTOR_3F);
+	public static final TrackedDataHandler<Quaternionf> QUATERNION_F = TrackedDataHandler.create(PacketCodecs.QUATERNION_F);
 
 	public static void register(TrackedDataHandler<?> handler) {
 		DATA_HANDLERS.add(handler);
@@ -164,7 +164,7 @@ public class TrackedDataHandlerRegistry {
 		register(PAINTING_VARIANT);
 		register(SNIFFER_STATE);
 		register(ARMADILLO_STATE);
-		register(VECTOR3F);
-		register(QUATERNIONF);
+		register(VECTOR_3F);
+		register(QUATERNION_F);
 	}
 }

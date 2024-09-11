@@ -12,6 +12,7 @@ import net.minecraft.item.consume.UseAction;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -76,11 +77,11 @@ public class BrushItem extends Item {
 					}
 
 					world.playSound(playerEntity, blockPos, soundEvent, SoundCategory.BLOCKS);
-					if (!world.isClient() && world.getBlockEntity(blockPos) instanceof BrushableBlockEntity brushableBlockEntity) {
-						boolean bl2 = brushableBlockEntity.brush(world.getTime(), playerEntity, blockHitResult.getSide());
+					if (world instanceof ServerWorld serverWorld && world.getBlockEntity(blockPos) instanceof BrushableBlockEntity brushableBlockEntity) {
+						boolean bl2 = brushableBlockEntity.brush(world.getTime(), serverWorld, playerEntity, blockHitResult.getSide(), stack);
 						if (bl2) {
 							EquipmentSlot equipmentSlot = stack.equals(playerEntity.getEquippedStack(EquipmentSlot.OFFHAND)) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
-							stack.damage(1, user, equipmentSlot);
+							stack.damage(1, playerEntity, equipmentSlot);
 						}
 					}
 				}

@@ -21,7 +21,6 @@ import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -128,7 +127,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	}
 
 	private ModelIdentifier getModelId(boolean glow, ItemStack stack) {
-		if (stack.isOf(Items.FILLED_MAP)) {
+		if (stack.contains(DataComponentTypes.MAP_ID)) {
 			return glow ? BlockStatesLoader.MAP_GLOW_ITEM_FRAME_MODEL_ID : BlockStatesLoader.MAP_ITEM_FRAME_MODEL_ID;
 		} else {
 			return glow ? BlockStatesLoader.GLOW_ITEM_FRAME_MODEL_ID : BlockStatesLoader.ITEM_FRAME_MODEL_ID;

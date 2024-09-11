@@ -408,7 +408,7 @@ public class HeldItemRenderer {
 				if (bl && !player.isInvisible()) {
 					this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
 				}
-			} else if (item.isOf(Items.FILLED_MAP)) {
+			} else if (item.contains(DataComponentTypes.MAP_ID)) {
 				if (bl && this.offHand.isEmpty()) {
 					this.renderMapInBothHands(matrices, vertexConsumers, light, pitch, equipProgress, swingProgress);
 				} else {

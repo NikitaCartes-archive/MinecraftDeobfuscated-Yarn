@@ -10,13 +10,13 @@ public interface ContainerComponentModifier<T> {
 
 	T getDefault();
 
-	T create(T component, Stream<ItemStack> contents);
+	T apply(T component, Stream<ItemStack> contents);
 
 	Stream<ItemStack> stream(T component);
 
 	default void apply(ItemStack stack, T component, Stream<ItemStack> contents) {
 		T object = stack.getOrDefault(this.getComponentType(), component);
-		T object2 = this.create(object, contents);
+		T object2 = this.apply(object, contents);
 		stack.set(this.getComponentType(), object2);
 	}
 

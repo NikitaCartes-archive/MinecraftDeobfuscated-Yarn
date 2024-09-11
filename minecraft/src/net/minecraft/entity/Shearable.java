@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 
 /**
@@ -7,7 +8,7 @@ import net.minecraft.sound.SoundCategory;
  * dispenser.
  */
 public interface Shearable {
-	void sheared(SoundCategory shearedSoundCategory);
+	void sheared(SoundCategory shearedSoundCategory, ItemStack shears);
 
 	boolean isShearable();
 }

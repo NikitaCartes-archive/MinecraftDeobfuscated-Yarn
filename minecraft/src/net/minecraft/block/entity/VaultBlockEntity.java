@@ -272,7 +272,7 @@ public class VaultBlockEntity extends BlockEntity {
 				} else if (serverData.hasRewardedPlayer(player)) {
 					playFailedUnlockSound(world, serverData, pos, SoundEvents.BLOCK_VAULT_REJECT_REWARDED_PLAYER);
 				} else {
-					List<ItemStack> list = generateLoot(world, config, pos, player);
+					List<ItemStack> list = generateLoot(world, config, pos, player, stack);
 					if (!list.isEmpty()) {
 						player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 						stack.decrementUnlessCreative(config.keyItem().getCount(), player);
@@ -318,12 +318,13 @@ public class VaultBlockEntity extends BlockEntity {
 			changeVaultState(world, pos, state, state.with(VaultBlock.VAULT_STATE, VaultState.UNLOCKING), config, sharedData);
 		}
 
-		private static List<ItemStack> generateLoot(ServerWorld world, VaultConfig config, BlockPos pos, PlayerEntity player) {
+		private static List<ItemStack> generateLoot(ServerWorld world, VaultConfig config, BlockPos pos, PlayerEntity player, ItemStack key) {
 			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(config.lootTable());
 			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 				.luck(player.getLuck())
 				.add(LootContextParameters.THIS_ENTITY, player)
+				.add(LootContextParameters.TOOL, key)
 				.build(LootContextTypes.VAULT);
 			return lootTable.generateLoot(lootContextParameterSet);
 		}

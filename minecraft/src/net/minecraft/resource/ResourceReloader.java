@@ -2,7 +2,6 @@ package net.minecraft.resource;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import net.minecraft.util.profiler.Profiler;
 
 /**
  * A resource reloader performs actual reloading in its {@linkplain #reload
@@ -36,21 +35,10 @@ public interface ResourceReloader {
 	 * @see net.minecraft.resource.ReloadableResourceManagerImpl#reload(Executor, Executor,
 	 * CompletableFuture, List)
 	 * 
-	 * @param prepareProfiler the profiler for prepare stage
-	 * @param applyProfiler the profiler for apply stage
-	 * @param prepareExecutor the executor for prepare stage
-	 * @param applyExecutor the executor for apply stage
-	 * @param synchronizer the synchronizer
 	 * @param manager the resource manager
+	 * @param synchronizer the synchronizer
 	 */
-	CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
-	);
+	CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor);
 
 	/**
 	 * Returns a user-friendly name for logging.

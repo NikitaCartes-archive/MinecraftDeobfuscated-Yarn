@@ -29,6 +29,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.profiler.MultiValueDebugSampleLogImpl;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.StorageKey;
@@ -90,7 +91,7 @@ public class IntegratedServer extends MinecraftServer {
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		boolean bl = this.paused;
 		this.paused = MinecraftClient.getInstance().isPaused();
-		Profiler profiler = this.getProfiler();
+		Profiler profiler = Profilers.get();
 		if (!bl && this.paused) {
 			profiler.push("autoSave");
 			LOGGER.info("Saving and pausing game...");
@@ -288,7 +289,7 @@ public class IntegratedServer extends MinecraftServer {
 	@Nullable
 	@Override
 	public GameMode getForcedGameMode() {
-		return this.isRemote() ? MoreObjects.firstNonNull(this.forcedGameMode, this.saveProperties.getGameMode()) : null;
+		return this.isRemote() && !this.isHardcore() ? MoreObjects.firstNonNull(this.forcedGameMode, this.saveProperties.getGameMode()) : null;
 	}
 
 	@Override

@@ -53,8 +53,8 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
-		super.initTabNavigation();
+	protected void refreshWidgetPositions() {
+		super.refreshWidgetPositions();
 		this.languageSelectionList.position(this.width, this.layout);
 	}
 

@@ -63,11 +63,11 @@ public class ExperimentalWarningScreen extends Screen {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 		this.grid.refreshPositions();
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		SimplePositioningWidget.setPos(this.grid, 0, 0, this.width, this.height, 0.5F, 0.5F);
 	}
 
@@ -96,11 +96,11 @@ public class ExperimentalWarningScreen extends Screen {
 			this.layout.forEachChild(child -> {
 				ClickableWidget var10000 = this.addDrawableChild(child);
 			});
-			this.initTabNavigation();
+			this.refreshWidgetPositions();
 		}
 
 		@Override
-		protected void initTabNavigation() {
+		protected void refreshWidgetPositions() {
 			if (this.packListWidget != null) {
 				this.packListWidget.position(this.width, this.layout);
 			}

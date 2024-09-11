@@ -33,25 +33,21 @@ public class PlayerCapeModel<T extends PlayerEntityRenderState> extends BipedEnt
 		modelPartData.addChild("right_leg");
 		modelPartData3.addChild(
 			"cape",
-			ModelPartBuilder.create().uv(0, 0).cuboid(-5.0F, 0.0F, 0.0F, 10.0F, 16.0F, 1.0F, Dilation.NONE, 1.0F, 0.5F),
-			ModelTransform.of(0.0F, 0.0F, 3.0F, 0.0F, (float) Math.PI, 0.0F)
+			ModelPartBuilder.create().uv(0, 0).cuboid(-5.0F, 0.0F, -1.0F, 10.0F, 16.0F, 1.0F, Dilation.NONE, 1.0F, 0.5F),
+			ModelTransform.of(0.0F, 0.0F, 2.0F, 0.0F, (float) Math.PI, 0.0F)
 		);
 		return TexturedModelData.of(modelData, 64, 64);
 	}
 
 	public void setAngles(T playerEntityRenderState) {
 		super.setAngles(playerEntityRenderState);
-		if (!playerEntityRenderState.equippedChestStack.isEmpty()) {
-			this.cape.pivotZ++;
-			this.cape.pivotY -= 0.85F;
-		}
-
 		this.cape
 			.rotate(
 				new Quaternionf()
-					.rotationX((6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536) * (float) (Math.PI / 180.0))
+					.rotateY((float) -Math.PI)
+					.rotateX((6.0F + playerEntityRenderState.field_53537 / 2.0F + playerEntityRenderState.field_53536) * (float) (Math.PI / 180.0))
 					.rotateZ(playerEntityRenderState.field_53538 / 2.0F * (float) (Math.PI / 180.0))
-					.rotateY(-playerEntityRenderState.field_53538 / 2.0F * (float) (Math.PI / 180.0))
+					.rotateY((180.0F - playerEntityRenderState.field_53538 / 2.0F) * (float) (Math.PI / 180.0))
 			);
 	}
 }

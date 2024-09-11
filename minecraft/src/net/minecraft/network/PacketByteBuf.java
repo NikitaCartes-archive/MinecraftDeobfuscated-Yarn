@@ -860,6 +860,14 @@ public class PacketByteBuf extends ByteBuf {
 		return this;
 	}
 
+	public static ChunkPos readChunkPos(ByteBuf buf) {
+		return new ChunkPos(buf.readLong());
+	}
+
+	public static void writeChunkPos(ByteBuf buf, ChunkPos pos) {
+		buf.writeLong(pos.toLong());
+	}
+
 	/**
 	 * Reads a chunk section position from this buf. A chunk section position is
 	 * represented by a regular long.

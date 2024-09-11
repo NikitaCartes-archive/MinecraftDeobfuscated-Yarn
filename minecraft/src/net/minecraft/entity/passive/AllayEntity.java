@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,7 +42,6 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -51,6 +49,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.GameEventTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -64,6 +63,8 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
@@ -80,7 +81,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private static final int field_39461 = 5;
 	private static final float field_39462 = 55.0F;
 	private static final float field_39463 = 15.0F;
-	private static final Predicate<ItemStack> DUPLICATION_INGREDIENT = stack -> stack.isOf(Items.AMETHYST_SHARD);
 	private static final int DUPLICATION_COOLDOWN = 6000;
 	private static final int field_39679 = 3;
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -232,12 +232,13 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("allayBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("allayBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().pop();
-		this.getWorld().getProfiler().push("allayActivityUpdate");
+		profiler.pop();
+		profiler.push("allayActivityUpdate");
 		AllayBrain.updateActivities(this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		super.mobTick();
 	}
 
@@ -312,7 +313,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		ItemStack itemStack2 = this.getStackInHand(Hand.MAIN_HAND);
-		if (this.isDancing() && this.matchesDuplicationIngredient(itemStack) && this.canDuplicate()) {
+		if (this.isDancing() && itemStack.isIn(ItemTags.DUPLICATES_ALLAYS) && this.canDuplicate()) {
 			this.duplicate();
 			this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
 			this.getWorld().playSoundFromEntity(player, this, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.NEUTRAL, 2.0F, 1.0F);
@@ -499,10 +500,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		if (!this.getWorld().isClient() && this.duplicationCooldown == 0L && !this.canDuplicate()) {
 			this.dataTracker.set(CAN_DUPLICATE, true);
 		}
-	}
-
-	private boolean matchesDuplicationIngredient(ItemStack stack) {
-		return DUPLICATION_INGREDIENT.test(stack);
 	}
 
 	private void duplicate() {

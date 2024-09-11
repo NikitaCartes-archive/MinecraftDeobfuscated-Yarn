@@ -23,6 +23,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -110,9 +112,10 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("piglinBruteBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("piglinBruteBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		PiglinBruteBrain.tick(this);
 		PiglinBruteBrain.playSoundRandomly(this);
 		super.mobTick();

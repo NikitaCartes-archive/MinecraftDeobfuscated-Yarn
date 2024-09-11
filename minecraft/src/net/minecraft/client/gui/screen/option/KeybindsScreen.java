@@ -52,7 +52,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		this.controlsList.position(this.width, this.layout);
 	}

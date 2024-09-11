@@ -145,7 +145,7 @@ public class StructurePlacementCalculator {
 								return new ChunkPos(o, p);
 							}
 						},
-						Util.getMainWorkerExecutor()
+						Util.getMainWorkerExecutor().named("structureRings")
 					)
 				);
 				d += (Math.PI * 2) / (double)k;

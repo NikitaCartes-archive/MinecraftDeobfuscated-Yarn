@@ -118,6 +118,7 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.village.raid.Raid;
@@ -193,8 +194,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final SleepManager sleepManager;
 	private int idleTimeout;
 	private final PortalForcer portalForcer;
-	private final WorldTickScheduler<Block> blockTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
-	private final WorldTickScheduler<Fluid> fluidTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
+	private final WorldTickScheduler<Block> blockTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady);
+	private final WorldTickScheduler<Fluid> fluidTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady);
 	private final PathNodeTypeCache pathNodeTypeCache = new PathNodeTypeCache();
 	final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
 	volatile boolean duringListenerUpdate;
@@ -226,15 +227,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		@Nullable RandomSequencesState randomSequencesState
 	) {
 		super(
-			properties,
-			worldKey,
-			server.getRegistryManager(),
-			dimensionOptions.dimensionTypeEntry(),
-			server::getProfiler,
-			false,
-			debugWorld,
-			seed,
-			server.getMaxChainedNeighborUpdates()
+			properties, worldKey, server.getRegistryManager(), dimensionOptions.dimensionTypeEntry(), false, debugWorld, seed, server.getMaxChainedNeighborUpdates()
 		);
 		this.shouldTickTime = shouldTickTime;
 		this.server = server;
@@ -347,7 +340,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void tick(BooleanSupplier shouldKeepTicking) {
-		Profiler profiler = this.getProfiler();
+		Profiler profiler = Profilers.get();
 		this.inBlockTick = true;
 		TickManager tickManager = this.getTickManager();
 		boolean bl = tickManager.shouldTick();
@@ -455,9 +448,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (this.shouldTickTime) {
 			long l = this.properties.getTime() + 1L;
 			this.worldProperties.setTime(l);
-			this.getProfiler().push("scheduledFunctions");
+			Profilers.get().push("scheduledFunctions");
 			this.worldProperties.getScheduledEvents().processEvents(this.server, l);
-			this.getProfiler().pop();
+			Profilers.get().pop();
 			if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
 				this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
 			}
@@ -495,7 +488,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		boolean bl = this.isRaining();
 		int i = chunkPos.getStartX();
 		int j = chunkPos.getStartZ();
-		Profiler profiler = this.getProfiler();
+		Profiler profiler = Profilers.get();
 		profiler.push("thunder");
 		if (bl && this.isThundering() && this.random.nextInt(100000) == 0) {
 			BlockPos blockPos = this.getLightningPos(this.getRandomPosInChunk(i, 0, j, 15));
@@ -787,12 +780,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public void tickEntity(Entity entity) {
 		entity.resetPosition();
-		Profiler profiler = this.getProfiler();
+		Profiler profiler = Profilers.get();
 		entity.age++;
-		this.getProfiler().push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
+		profiler.push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
 		profiler.visit("tickNonPassenger");
 		entity.tick();
-		this.getProfiler().pop();
+		profiler.pop();
 
 		for (Entity entity2 : entity.getPassengerList()) {
 			this.tickPassenger(entity, entity2);
@@ -805,7 +798,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		} else if (passenger instanceof PlayerEntity || this.entityList.has(passenger)) {
 			passenger.resetPosition();
 			passenger.age++;
-			Profiler profiler = this.getProfiler();
+			Profiler profiler = Profilers.get();
 			profiler.push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(passenger.getType()).toString()));
 			profiler.visit("tickPassenger");
 			passenger.tickRiding();

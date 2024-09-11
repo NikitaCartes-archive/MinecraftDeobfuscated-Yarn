@@ -27,7 +27,7 @@ public interface ArmorMaterials {
 		map.put(EquipmentType.HELMET, 2);
 		map.put(EquipmentType.BODY, 5);
 	}), 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F, 0.0F, ItemTags.REPAIRS_IRON_ARMOR, EquipmentModels.IRON);
-	ArmorMaterial GOLD = new ArmorMaterial(15, Util.make(new EnumMap(EquipmentType.class), map -> {
+	ArmorMaterial GOLD = new ArmorMaterial(7, Util.make(new EnumMap(EquipmentType.class), map -> {
 		map.put(EquipmentType.BOOTS, 1);
 		map.put(EquipmentType.LEGGINGS, 3);
 		map.put(EquipmentType.CHESTPLATE, 5);

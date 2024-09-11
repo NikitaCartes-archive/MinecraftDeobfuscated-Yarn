@@ -93,7 +93,7 @@ public class BlockItem extends Item {
 					);
 					world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(playerEntity, blockState2));
 					itemStack.decrementUnlessCreative(1, playerEntity);
-					return ActionResult.SUCCESS_SERVER;
+					return ActionResult.SUCCESS;
 				}
 			}
 		}

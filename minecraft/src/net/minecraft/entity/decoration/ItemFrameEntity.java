@@ -347,17 +347,15 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		} else if (!player.getWorld().isClient) {
 			if (!bl) {
 				if (bl2 && !this.isRemoved()) {
-					if (itemStack.isOf(Items.FILLED_MAP)) {
-						MapState mapState = FilledMapItem.getMapState(itemStack, this.getWorld());
-						if (mapState != null && mapState.decorationCountNotLessThan(256)) {
-							return ActionResult.FAIL;
-						}
+					MapState mapState = FilledMapItem.getMapState(itemStack, this.getWorld());
+					if (mapState != null && mapState.decorationCountNotLessThan(256)) {
+						return ActionResult.FAIL;
+					} else {
+						this.setHeldItemStack(itemStack);
+						this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
+						itemStack.decrementUnlessCreative(1, player);
+						return ActionResult.SUCCESS;
 					}
-
-					this.setHeldItemStack(itemStack);
-					this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
-					itemStack.decrementUnlessCreative(1, player);
-					return ActionResult.SUCCESS;
 				} else {
 					return ActionResult.PASS;
 				}

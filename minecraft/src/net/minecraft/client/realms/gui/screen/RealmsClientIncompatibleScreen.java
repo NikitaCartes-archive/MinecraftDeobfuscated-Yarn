@@ -34,11 +34,11 @@ public class RealmsClientIncompatibleScreen extends RealmsScreen {
 		this.layout.forEachChild(element -> {
 			ClickableWidget var10000 = this.addDrawableChild(element);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 	}
 

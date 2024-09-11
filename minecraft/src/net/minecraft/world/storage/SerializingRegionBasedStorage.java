@@ -202,7 +202,7 @@ public class SerializingRegionBasedStorage<R, P> implements AutoCloseable {
 			.read(chunkPos)
 			.thenApplyAsync(
 				chunkNbt -> chunkNbt.map(nbt -> SerializingRegionBasedStorage.LoadResult.fromNbt(this.codec, registryOps, nbt, this.storageAccess, this.world)),
-				Util.getMainWorkerExecutor()
+				Util.getMainWorkerExecutor().named("parseSection")
 			)
 			.exceptionally(throwable -> {
 				if (throwable instanceof IOException iOException) {

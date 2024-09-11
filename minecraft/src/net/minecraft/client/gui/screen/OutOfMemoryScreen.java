@@ -28,11 +28,11 @@ public class OutOfMemoryScreen extends Screen {
 		directionalLayoutWidget.add(ButtonWidget.builder(ScreenTexts.TO_TITLE, button -> this.client.setScreen(new TitleScreen())).build());
 		directionalLayoutWidget.add(ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).build());
 		this.layout.forEachChild(this::addDrawableChild);
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 	}
 

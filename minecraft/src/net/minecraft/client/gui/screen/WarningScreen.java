@@ -58,11 +58,11 @@ public abstract class WarningScreen extends Screen {
 		this.positioningWidget.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		if (this.textWidget != null) {
 			this.textWidget.setMaxWidth(this.width - 100);
 		}

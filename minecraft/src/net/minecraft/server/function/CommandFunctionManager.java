@@ -14,6 +14,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import org.slf4j.Logger;
 
 /**
@@ -64,13 +65,13 @@ public class CommandFunctionManager {
 	}
 
 	private void executeAll(Collection<CommandFunction<ServerCommandSource>> functions, Identifier label) {
-		this.server.getProfiler().push(label::toString);
+		Profilers.get().push(label::toString);
 
 		for (CommandFunction<ServerCommandSource> commandFunction : functions) {
 			this.execute(commandFunction, this.getScheduledCommandSource());
 		}
 
-		this.server.getProfiler().pop();
+		Profilers.get().pop();
 	}
 
 	/**
@@ -79,7 +80,7 @@ public class CommandFunctionManager {
 	 * @param function the function
 	 */
 	public void execute(CommandFunction<ServerCommandSource> function, ServerCommandSource source) {
-		Profiler profiler = this.server.getProfiler();
+		Profiler profiler = Profilers.get();
 		profiler.push((Supplier<String>)(() -> "function " + function.id()));
 
 		try {

@@ -37,14 +37,14 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		this.layout.addHeader(TITLE, this.textRenderer);
 		this.backupInfoList = this.layout.addBody(new RealmsBackupInfoScreen.BackupInfoList(this.client));
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.backupInfoList.setDimensions(this.width, this.layout.getContentHeight());
 		this.layout.refreshPositions();
 	}

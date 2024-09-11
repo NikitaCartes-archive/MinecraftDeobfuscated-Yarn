@@ -163,9 +163,8 @@ public abstract class FoliagePlacer {
 	}
 
 	protected static boolean placeFoliageBlock(TestableWorld world, FoliagePlacer.BlockPlacer placer, Random random, TreeFeatureConfig config, BlockPos pos) {
-		if (!TreeFeature.canReplace(world, pos)) {
-			return false;
-		} else {
+		boolean bl = world.testBlockState(pos, state -> (Boolean)state.get(Properties.PERSISTENT, Boolean.valueOf(false)));
+		if (!bl && TreeFeature.canReplace(world, pos)) {
 			BlockState blockState = config.foliageProvider.get(random, pos);
 			if (blockState.contains(Properties.WATERLOGGED)) {
 				blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(world.testFluidState(pos, fluidState -> fluidState.isEqualAndStill(Fluids.WATER))));
@@ -173,6 +172,8 @@ public abstract class FoliagePlacer {
 
 			placer.placeBlock(pos, blockState);
 			return true;
+		} else {
+			return false;
 		}
 	}
 

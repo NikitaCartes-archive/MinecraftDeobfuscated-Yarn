@@ -14,6 +14,8 @@ import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ChargedProjectilesComponent;
 import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.component.type.DamageResistantComponent;
+import net.minecraft.component.type.DeathProtectionComponent;
 import net.minecraft.component.type.DebugStickStateComponent;
 import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.FireworksComponent;
@@ -39,6 +41,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BannerPatternTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -382,7 +385,9 @@ public class Items {
 	public static final Item CRIMSON_FENCE = register(Blocks.CRIMSON_FENCE);
 	public static final Item WARPED_FENCE = register(Blocks.WARPED_FENCE);
 	public static final Item PUMPKIN = register(Blocks.PUMPKIN);
-	public static final Item CARVED_PUMPKIN = register(Blocks.CARVED_PUMPKIN, (UnaryOperator<Item.Settings>)(settings -> settings.equippable(EquipmentSlot.HEAD)));
+	public static final Item CARVED_PUMPKIN = register(
+		Blocks.CARVED_PUMPKIN, (UnaryOperator<Item.Settings>)(settings -> settings.equippableUnswappable(EquipmentSlot.HEAD))
+	);
 	public static final Item JACK_O_LANTERN = register(Blocks.JACK_O_LANTERN);
 	public static final Item NETHERRACK = register(Blocks.NETHERRACK);
 	public static final Item SOUL_SAND = register(Blocks.SOUL_SAND);
@@ -990,7 +995,10 @@ public class Items {
 			.maxDamage(432)
 			.rarity(Rarity.EPIC)
 			.component(DataComponentTypes.GLIDER, Unit.INSTANCE)
-			.equippable(EquipmentSlot.CHEST, SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA, EquipmentModels.ELYTRA)
+			.component(
+				DataComponentTypes.EQUIPPABLE,
+				EquippableComponent.builder(EquipmentSlot.CHEST).equipSound(SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA).model(EquipmentModels.ELYTRA).damageOnHurt(false).build()
+			)
 			.repairable(PHANTOM_MEMBRANE)
 	);
 	public static final Item OAK_BOAT = register("oak_boat", settings -> new BoatItem(false, BoatEntity.Type.OAK, settings), new Item.Settings().maxCount(1));
@@ -1561,40 +1569,44 @@ public class Items {
 	public static final Item SKELETON_SKULL = register(
 		Blocks.SKELETON_SKULL,
 		(block, settings) -> new VerticallyAttachableBlockItem(block, Blocks.SKELETON_WALL_SKULL, Direction.DOWN, settings),
-		new Item.Settings().rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD)
+		new Item.Settings().rarity(Rarity.UNCOMMON).equippableUnswappable(EquipmentSlot.HEAD)
 	);
 	public static final Item WITHER_SKELETON_SKULL = register(
 		Blocks.WITHER_SKELETON_SKULL,
 		(block, settings) -> new VerticallyAttachableBlockItem(block, Blocks.WITHER_SKELETON_WALL_SKULL, Direction.DOWN, settings),
-		new Item.Settings().rarity(Rarity.RARE).equippable(EquipmentSlot.HEAD)
+		new Item.Settings().rarity(Rarity.RARE).equippableUnswappable(EquipmentSlot.HEAD)
 	);
 	public static final Item PLAYER_HEAD = register(
 		Blocks.PLAYER_HEAD,
 		(block, settings) -> new PlayerHeadItem(block, Blocks.PLAYER_WALL_HEAD, settings),
-		new Item.Settings().rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD)
+		new Item.Settings().rarity(Rarity.UNCOMMON).equippableUnswappable(EquipmentSlot.HEAD)
 	);
 	public static final Item ZOMBIE_HEAD = register(
 		Blocks.ZOMBIE_HEAD,
 		(block, settings) -> new VerticallyAttachableBlockItem(block, Blocks.ZOMBIE_WALL_HEAD, Direction.DOWN, settings),
-		new Item.Settings().rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD)
+		new Item.Settings().rarity(Rarity.UNCOMMON).equippableUnswappable(EquipmentSlot.HEAD)
 	);
 	public static final Item CREEPER_HEAD = register(
 		Blocks.CREEPER_HEAD,
 		(block, settings) -> new VerticallyAttachableBlockItem(block, Blocks.CREEPER_WALL_HEAD, Direction.DOWN, settings),
-		new Item.Settings().rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD)
+		new Item.Settings().rarity(Rarity.UNCOMMON).equippableUnswappable(EquipmentSlot.HEAD)
 	);
 	public static final Item DRAGON_HEAD = register(
 		Blocks.DRAGON_HEAD,
 		(block, settings) -> new VerticallyAttachableBlockItem(block, Blocks.DRAGON_WALL_HEAD, Direction.DOWN, settings),
-		new Item.Settings().rarity(Rarity.EPIC).equippable(EquipmentSlot.HEAD)
+		new Item.Settings().rarity(Rarity.EPIC).equippableUnswappable(EquipmentSlot.HEAD)
 	);
 	public static final Item PIGLIN_HEAD = register(
 		Blocks.PIGLIN_HEAD,
 		(block, settings) -> new VerticallyAttachableBlockItem(block, Blocks.PIGLIN_WALL_HEAD, Direction.DOWN, settings),
-		new Item.Settings().rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD)
+		new Item.Settings().rarity(Rarity.UNCOMMON).equippableUnswappable(EquipmentSlot.HEAD)
 	);
 	public static final Item NETHER_STAR = register(
-		"nether_star", new Item.Settings().rarity(Rarity.RARE).component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+		"nether_star",
+		new Item.Settings()
+			.rarity(Rarity.RARE)
+			.component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+			.component(DataComponentTypes.DAMAGE_RESISTANT, new DamageResistantComponent(DamageTypeTags.IS_EXPLOSION))
 	);
 	public static final Item PUMPKIN_PIE = register("pumpkin_pie", new Item.Settings().food(FoodComponents.PUMPKIN_PIE));
 	public static final Item FIREWORK_ROCKET = register(
@@ -1749,9 +1761,12 @@ public class Items {
 			.maxDamage(336)
 			.component(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT)
 			.repairable(ItemTags.WOODEN_TOOL_MATERIALS)
-			.equippable(EquipmentSlot.OFFHAND)
+			.equippableUnswappable(EquipmentSlot.OFFHAND)
 	);
-	public static final Item TOTEM_OF_UNDYING = register("totem_of_undying", new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON));
+	public static final Item TOTEM_OF_UNDYING = register(
+		"totem_of_undying",
+		new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).component(DataComponentTypes.DEATH_PROTECTION, DeathProtectionComponent.TOTEM_OF_UNDYING)
+	);
 	public static final Item SHULKER_SHELL = register("shulker_shell");
 	public static final Item IRON_NUGGET = register("iron_nugget");
 	public static final Item KNOWLEDGE_BOOK = register(

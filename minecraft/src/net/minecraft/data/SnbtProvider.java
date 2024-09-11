@@ -64,7 +64,7 @@ public class SnbtProvider implements DataProvider {
 										(CompletableFuture[])stream.filter(pathxx -> pathxx.toString().endsWith(".snbt")).map(pathxx -> CompletableFuture.runAsync(() -> {
 												SnbtProvider.CompressedData compressedData = this.toCompressedNbt(pathxx, this.getFileName(path2, pathxx));
 												this.write(writer, compressedData, path);
-											}, Util.getMainWorkerExecutor())).toArray(CompletableFuture[]::new)
+											}, Util.getMainWorkerExecutor().named("SnbtToNbt"))).toArray(CompletableFuture[]::new)
 									);
 								} catch (Throwable var8) {
 									if (stream != null) {
@@ -87,7 +87,7 @@ public class SnbtProvider implements DataProvider {
 								throw new RuntimeException("Failed to read structure input directory, aborting", var9);
 							}
 						},
-						Util.getMainWorkerExecutor()
+						Util.getMainWorkerExecutor().named("SnbtToNbt")
 					)
 					.thenCompose(future -> future)
 			);

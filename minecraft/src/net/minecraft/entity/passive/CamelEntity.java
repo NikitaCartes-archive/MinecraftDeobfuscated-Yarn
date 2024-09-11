@@ -40,6 +40,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -138,13 +140,14 @@ public class CamelEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("camelBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("camelBrain");
 		Brain<?> brain = this.getBrain();
 		((Brain<CamelEntity>)brain).tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().pop();
-		this.getWorld().getProfiler().push("camelActivityUpdate");
+		profiler.pop();
+		profiler.push("camelActivityUpdate");
 		CamelBrain.updateActivities(this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		super.mobTick();
 	}
 

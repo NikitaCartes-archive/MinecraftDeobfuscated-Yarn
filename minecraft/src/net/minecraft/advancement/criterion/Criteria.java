@@ -38,7 +38,7 @@ public class Criteria {
 	public static final FishingRodHookedCriterion FISHING_ROD_HOOKED = register("fishing_rod_hooked", new FishingRodHookedCriterion());
 	public static final ChanneledLightningCriterion CHANNELED_LIGHTNING = register("channeled_lightning", new ChanneledLightningCriterion());
 	public static final ShotCrossbowCriterion SHOT_CROSSBOW = register("shot_crossbow", new ShotCrossbowCriterion());
-	public static final KilledByCrossbowCriterion KILLED_BY_CROSSBOW = register("killed_by_crossbow", new KilledByCrossbowCriterion());
+	public static final KilledByArrowCriterion KILLED_BY_ARROW = register("killed_by_arrow", new KilledByArrowCriterion());
 	public static final TickCriterion HERO_OF_THE_VILLAGE = register("hero_of_the_village", new TickCriterion());
 	public static final TickCriterion VOLUNTARY_EXILE = register("voluntary_exile", new TickCriterion());
 	public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = register("slide_down_block", new SlideDownBlockCriterion());

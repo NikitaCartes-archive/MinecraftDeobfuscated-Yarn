@@ -119,10 +119,10 @@ public abstract class ChunkGenerator {
 	}
 
 	public CompletableFuture<Chunk> populateBiomes(NoiseConfig noiseConfig, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
-		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
+		return CompletableFuture.supplyAsync(() -> {
 			chunk.populateBiomes(this.biomeSource, noiseConfig.getMultiNoiseSampler());
 			return chunk;
-		}), Util.getMainWorkerExecutor());
+		}, Util.getMainWorkerExecutor().named("init_biomes"));
 	}
 
 	/**

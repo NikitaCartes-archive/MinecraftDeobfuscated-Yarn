@@ -14,28 +14,31 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-public final class ComponentMapImpl implements ComponentMap {
+/**
+ * A {@link Component Map} that has a base map and changes to be applied on top of it.
+ */
+public final class MergedComponentMap implements ComponentMap {
 	private final ComponentMap baseComponents;
 	private Reference2ObjectMap<ComponentType<?>, Optional<?>> changedComponents;
 	private boolean copyOnWrite;
 
-	public ComponentMapImpl(ComponentMap baseComponents) {
+	public MergedComponentMap(ComponentMap baseComponents) {
 		this(baseComponents, Reference2ObjectMaps.emptyMap(), true);
 	}
 
-	private ComponentMapImpl(ComponentMap baseComponents, Reference2ObjectMap<ComponentType<?>, Optional<?>> changedComponents, boolean copyOnWrite) {
+	private MergedComponentMap(ComponentMap baseComponents, Reference2ObjectMap<ComponentType<?>, Optional<?>> changedComponents, boolean copyOnWrite) {
 		this.baseComponents = baseComponents;
 		this.changedComponents = changedComponents;
 		this.copyOnWrite = copyOnWrite;
 	}
 
-	public static ComponentMapImpl create(ComponentMap baseComponents, ComponentChanges changes) {
+	public static MergedComponentMap create(ComponentMap baseComponents, ComponentChanges changes) {
 		if (shouldReuseChangesMap(baseComponents, changes.changedComponents)) {
-			return new ComponentMapImpl(baseComponents, changes.changedComponents, true);
+			return new MergedComponentMap(baseComponents, changes.changedComponents, true);
 		} else {
-			ComponentMapImpl componentMapImpl = new ComponentMapImpl(baseComponents);
-			componentMapImpl.applyChanges(changes);
-			return componentMapImpl;
+			MergedComponentMap mergedComponentMap = new MergedComponentMap(baseComponents);
+			mergedComponentMap.applyChanges(changes);
+			return mergedComponentMap;
 		}
 	}
 
@@ -204,18 +207,18 @@ public final class ComponentMapImpl implements ComponentMap {
 		}
 	}
 
-	public ComponentMapImpl copy() {
+	public MergedComponentMap copy() {
 		this.copyOnWrite = true;
-		return new ComponentMapImpl(this.baseComponents, this.changedComponents, true);
+		return new MergedComponentMap(this.baseComponents, this.changedComponents, true);
 	}
 
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
 		} else {
-			if (o instanceof ComponentMapImpl componentMapImpl
-				&& this.baseComponents.equals(componentMapImpl.baseComponents)
-				&& this.changedComponents.equals(componentMapImpl.changedComponents)) {
+			if (o instanceof MergedComponentMap mergedComponentMap
+				&& this.baseComponents.equals(mergedComponentMap.baseComponents)
+				&& this.changedComponents.equals(mergedComponentMap.changedComponents)) {
 				return true;
 			}
 

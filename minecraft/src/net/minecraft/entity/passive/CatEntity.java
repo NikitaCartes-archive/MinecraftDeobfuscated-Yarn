@@ -38,11 +38,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -576,25 +572,21 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 					false
 				);
 			mutable.set(this.cat.getBlockPos());
-			LootTable lootTable = this.cat.getWorld().getServer().getReloadableRegistries().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
-			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)this.cat.getWorld())
-				.add(LootContextParameters.ORIGIN, this.cat.getPos())
-				.add(LootContextParameters.THIS_ENTITY, this.cat)
-				.build(LootContextTypes.GIFT);
-
-			for (ItemStack itemStack : lootTable.generateLoot(lootContextParameterSet)) {
-				this.cat
-					.getWorld()
-					.spawnEntity(
-						new ItemEntity(
-							this.cat.getWorld(),
-							(double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
-							(double)mutable.getY(),
-							(double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
-							itemStack
-						)
-					);
-			}
+			this.cat
+				.forEachGiftedItem(
+					LootTables.CAT_MORNING_GIFT_GAMEPLAY,
+					stack -> this.cat
+							.getWorld()
+							.spawnEntity(
+								new ItemEntity(
+									this.cat.getWorld(),
+									(double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
+									(double)mutable.getY(),
+									(double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
+									stack
+								)
+							)
+				);
 		}
 
 		@Override

@@ -91,6 +91,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -182,8 +183,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 	protected MobEntity(EntityType<? extends MobEntity> entityType, World world) {
 		super(entityType, world);
-		this.goalSelector = new GoalSelector(world.getProfilerSupplier());
-		this.targetSelector = new GoalSelector(world.getProfilerSupplier());
+		this.goalSelector = new GoalSelector();
+		this.targetSelector = new GoalSelector();
 		this.lookControl = new LookControl(this);
 		this.moveControl = new MoveControl(this);
 		this.jumpControl = new JumpControl(this);
@@ -321,13 +322,14 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	public void baseTick() {
 		super.baseTick();
-		this.getWorld().getProfiler().push("mobBaseTick");
+		Profiler profiler = Profilers.get();
+		profiler.push("mobBaseTick");
 		if (this.isAlive() && this.random.nextInt(1000) < this.ambientSoundChance++) {
 			this.resetSoundDelay();
 			this.playAmbientSound();
 		}
 
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 	}
 
 	@Override
@@ -580,7 +582,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		this.getWorld().getProfiler().push("looting");
+		Profiler profiler = Profilers.get();
+		profiler.push("looting");
 		if (!this.getWorld().isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 			)
 		 {
@@ -594,7 +597,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 			}
 		}
 
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 	}
 
 	protected Vec3i getItemPickUpRangeExpander() {
@@ -710,8 +713,9 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	private double getAttributeValueWithStack(ItemStack stack, RegistryEntry<EntityAttribute> attribute, EquipmentSlot slot) {
+		double d = this.getAttributes().hasAttribute(attribute) ? this.getAttributeBaseValue(attribute) : 0.0;
 		AttributeModifiersComponent attributeModifiersComponent = stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
-		return attributeModifiersComponent.applyOperations(this.getAttributeBaseValue(attribute), slot);
+		return attributeModifiersComponent.applyOperations(d, slot);
 	}
 
 	public boolean prefersNewDamageableItem(ItemStack newStack, ItemStack oldStack) {
@@ -774,7 +778,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@Override
 	protected final void tickNewAi() {
 		this.despawnCounter++;
-		Profiler profiler = this.getWorld().getProfiler();
+		Profiler profiler = Profilers.get();
 		profiler.push("sensing");
 		this.visibilityCache.clear();
 		profiler.pop();
@@ -1350,7 +1354,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 				context.type().setUpNewEntity(this, mobEntity, context);
 				finalizer.finalizeConversion(mobEntity);
 				if (this.getWorld() instanceof ServerWorld serverWorld) {
-					serverWorld.spawnEntityAndPassengers(mobEntity);
+					serverWorld.spawnEntity(mobEntity);
 				}
 
 				if (context.type().shouldDiscardOldEntity()) {
@@ -1484,11 +1488,12 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	public boolean tryAttack(Entity target) {
 		float f = (float)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
 		ItemStack itemStack = this.getWeaponStack();
-		DamageSource damageSource = this.getDamageSources().mobAttack(this);
+		DamageSource damageSource = (DamageSource)Optional.ofNullable(itemStack.getItem().getDamageSource(this)).orElse(this.getDamageSources().mobAttack(this));
 		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			f = EnchantmentHelper.getDamage(serverWorld, itemStack, target, damageSource, f);
 		}
 
+		f += itemStack.getItem().getBonusAttackDamage(target, f, damageSource);
 		boolean bl = target.damage(damageSource, f);
 		if (bl) {
 			float g = this.getKnockbackAgainst(target, damageSource);
@@ -1584,13 +1589,5 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	@VisibleForTesting
 	public float[] getArmorDropChances() {
 		return this.armorDropChances;
-	}
-
-	public void setLootTable(Optional<RegistryKey<LootTable>> lootTable) {
-		this.lootTable = lootTable;
-	}
-
-	public void setLootTableSeed(long lootTableSeed) {
-		this.lootTableSeed = lootTableSeed;
 	}
 }

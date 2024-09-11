@@ -71,7 +71,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		this.layout.forEachChild(element -> {
 			ClickableWidget var10000 = this.addDrawableChild(element);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 		this.startBackupFetcher();
 	}
 
@@ -91,7 +91,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		if (this.selectionList != null) {
 			this.selectionList.position(this.width, this.layout);

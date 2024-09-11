@@ -777,7 +777,7 @@ public class ServerPlayNetworkHandler
 
 	private void updateBookContent(List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
-		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
+		if (itemStack.contains(DataComponentTypes.WRITABLE_BOOK_CONTENT)) {
 			List<RawFilteredPair<String>> list = pages.stream().map(this::toRawFilteredPair).toList();
 			itemStack.set(DataComponentTypes.WRITABLE_BOOK_CONTENT, new WritableBookContentComponent(list));
 		}
@@ -785,7 +785,7 @@ public class ServerPlayNetworkHandler
 
 	private void addBook(FilteredMessage title, List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
-		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
+		if (itemStack.contains(DataComponentTypes.WRITABLE_BOOK_CONTENT)) {
 			ItemStack itemStack2 = itemStack.withItem(Items.WRITTEN_BOOK);
 			itemStack2.remove(DataComponentTypes.WRITABLE_BOOK_CONTENT);
 			List<RawFilteredPair<Text>> list = pages.stream().map(page -> this.toRawFilteredPair(page).map(Text::literal)).toList();
@@ -934,6 +934,7 @@ public class ServerPlayNetworkHandler
 								Vec3d vec3d = new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
 								this.player.setMovement(packet.isOnGround(), packet.horizontalCollision(), vec3d);
 								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
+								this.player.checkBlockCollision(new Vec3d(i, j, k), this.player.getPos());
 								this.handleMovement(vec3d);
 								if (bl2) {
 									this.player.onLanding();

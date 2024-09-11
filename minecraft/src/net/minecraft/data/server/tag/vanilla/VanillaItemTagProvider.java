@@ -174,6 +174,8 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.PIGLIN_FOOD).add(Items.PORKCHOP, Items.COOKED_PORKCHOP);
 		this.getOrCreateTagBuilder(ItemTags.PIGLIN_SAFE_ARMOR).add(Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS);
 		this.getOrCreateTagBuilder(ItemTags.FOX_FOOD).add(Items.SWEET_BERRIES, Items.GLOW_BERRIES);
+		this.getOrCreateTagBuilder(ItemTags.DUPLICATES_ALLAYS).add(Items.AMETHYST_SHARD);
+		this.getOrCreateTagBuilder(ItemTags.BREWING_FUEL).add(Items.BLAZE_POWDER);
 		this.getOrCreateTagBuilder(ItemTags.NON_FLAMMABLE_WOOD)
 			.add(
 				Items.WARPED_STEM,
@@ -447,6 +449,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.LLAMA_FOOD).add(Items.WHEAT, Items.HAY_BLOCK);
 		this.getOrCreateTagBuilder(ItemTags.LLAMA_TEMPT_ITEMS).add(Items.HAY_BLOCK);
 		this.getOrCreateTagBuilder(ItemTags.PANDA_FOOD).add(Items.BAMBOO);
+		this.getOrCreateTagBuilder(ItemTags.PANDA_EATS_FROM_GROUND).addTag(ItemTags.PANDA_FOOD).add(Items.CAKE);
 		this.getOrCreateTagBuilder(ItemTags.PIG_FOOD).add(Items.CARROT, Items.POTATO, Items.BEETROOT);
 		this.getOrCreateTagBuilder(ItemTags.RABBIT_FOOD).add(Items.CARROT, Items.GOLDEN_CARROT, Items.DANDELION);
 		this.getOrCreateTagBuilder(ItemTags.STRIDER_FOOD).add(Items.WARPED_FUNGUS);

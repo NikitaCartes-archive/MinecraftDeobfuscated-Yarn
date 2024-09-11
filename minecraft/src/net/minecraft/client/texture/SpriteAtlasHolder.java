@@ -9,7 +9,8 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
+import net.minecraft.util.profiler.ScopedProfiler;
 
 @Environment(EnvType.CLIENT)
 public abstract class SpriteAtlasHolder implements ResourceReloader, AutoCloseable {
@@ -34,26 +35,19 @@ public abstract class SpriteAtlasHolder implements ResourceReloader, AutoCloseab
 
 	@Override
 	public final CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
+		ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor
 	) {
 		return SpriteLoader.fromAtlas(this.atlas)
 			.load(manager, this.sourcePath, 0, prepareExecutor, this.metadataReaders)
 			.thenCompose(SpriteLoader.StitchResult::whenComplete)
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(stitchResult -> this.afterReload(stitchResult, applyProfiler), applyExecutor);
+			.thenAcceptAsync(this::afterReload, applyExecutor);
 	}
 
-	private void afterReload(SpriteLoader.StitchResult stitchResult, Profiler profiler) {
-		profiler.startTick();
-		profiler.push("upload");
-		this.atlas.upload(stitchResult);
-		profiler.pop();
-		profiler.endTick();
+	private void afterReload(SpriteLoader.StitchResult stitchResult) {
+		try (ScopedProfiler scopedProfiler = Profilers.get().scoped("upload")) {
+			this.atlas.upload(stitchResult);
+		}
 	}
 
 	public void close() {

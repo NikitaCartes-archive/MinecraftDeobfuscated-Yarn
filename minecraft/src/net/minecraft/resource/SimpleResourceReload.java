@@ -9,7 +9,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
-import net.minecraft.util.profiler.DummyProfiler;
 
 /**
  * A simple implementation of resource reload.
@@ -51,9 +50,7 @@ public class SimpleResourceReload<S> implements ResourceReload {
 			applyExecutor,
 			manager,
 			reloaders,
-			(synchronizer, resourceManager, reloader, prepare, apply) -> reloader.reload(
-					synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, prepareExecutor, apply
-				),
+			(synchronizer, resourceManager, reloader, prepare, apply) -> reloader.reload(synchronizer, resourceManager, prepareExecutor, apply),
 			initialStage
 		);
 	}

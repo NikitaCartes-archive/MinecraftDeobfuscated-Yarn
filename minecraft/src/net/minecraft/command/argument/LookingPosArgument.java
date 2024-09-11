@@ -21,7 +21,7 @@ public class LookingPosArgument implements PosArgument {
 	}
 
 	@Override
-	public Vec3d getPos(ServerCommandSource source, boolean relativeIfPossible) {
+	public Vec3d getPos(ServerCommandSource source) {
 		Vec2f vec2f = source.getRotation();
 		Vec3d vec3d = source.getEntityAnchor().positionAt(source);
 		float f = MathHelper.cos((vec2f.y + 90.0F) * (float) (Math.PI / 180.0));
@@ -36,15 +36,12 @@ public class LookingPosArgument implements PosArgument {
 		double d = vec3d2.x * this.z + vec3d3.x * this.y + vec3d4.x * this.x;
 		double e = vec3d2.y * this.z + vec3d3.y * this.y + vec3d4.y * this.x;
 		double l = vec3d2.z * this.z + vec3d3.z * this.y + vec3d4.z * this.x;
-		double m = relativeIfPossible ? 0.0 : vec3d.x;
-		double n = relativeIfPossible ? 0.0 : vec3d.y;
-		double o = relativeIfPossible ? 0.0 : vec3d.z;
-		return new Vec3d(m + d, n + e, o + l);
+		return new Vec3d(vec3d.x + d, vec3d.y + e, vec3d.z + l);
 	}
 
 	@Override
-	public Vec2f getRotation(ServerCommandSource source, boolean relativeIfPossible) {
-		return !relativeIfPossible ? Vec2f.ZERO : new Vec2f(this.isXRelative() ? -source.getRotation().x : 0.0F, this.isYRelative() ? -source.getRotation().y : 0.0F);
+	public Vec2f getRotation(ServerCommandSource source) {
+		return Vec2f.ZERO;
 	}
 
 	@Override

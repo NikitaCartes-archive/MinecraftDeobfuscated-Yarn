@@ -10,6 +10,8 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.types.Type;
+import com.mojang.jtracy.TracyClient;
+import com.mojang.jtracy.Zone;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -86,6 +88,7 @@ import net.minecraft.util.function.CharPredicate;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.thread.NameableExecutor;
 import org.slf4j.Logger;
 
 /**
@@ -96,9 +99,9 @@ public class Util {
 	private static final int MAX_PARALLELISM = 255;
 	private static final int BACKUP_ATTEMPTS = 10;
 	private static final String MAX_BG_THREADS_PROPERTY = "max.bg.threads";
-	private static final ExecutorService MAIN_WORKER_EXECUTOR = createWorker("Main");
-	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker("IO-Worker-", false);
-	private static final ExecutorService DOWNLOAD_WORKER_EXECUTOR = createIoWorker("Download-", true);
+	private static final NameableExecutor MAIN_WORKER_EXECUTOR = createWorker("Main");
+	private static final NameableExecutor IO_WORKER_EXECUTOR = createIoWorker("IO-Worker-", false);
+	private static final NameableExecutor DOWNLOAD_WORKER_EXECUTOR = createIoWorker("Download-", true);
 	/**
 	 * A locale-independent datetime formatter that uses {@code yyyy-MM-dd_HH.mm.ss}
 	 * as the format string. Example: {@code 2022-01-01_00.00.00}
@@ -198,7 +201,7 @@ public class Util {
 		return DATE_TIME_FORMATTER.format(ZonedDateTime.now());
 	}
 
-	private static ExecutorService createWorker(String name) {
+	private static NameableExecutor createWorker(String name) {
 		int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, getMaxBackgroundThreads());
 		ExecutorService executorService;
 		if (i <= 0) {
@@ -206,7 +209,13 @@ public class Util {
 		} else {
 			AtomicInteger atomicInteger = new AtomicInteger(1);
 			executorService = new ForkJoinPool(i, pool -> {
+				final String string2 = "Worker-" + name + "-" + atomicInteger.getAndIncrement();
 				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(pool) {
+					protected void onStart() {
+						TracyClient.setThreadName(string2, name.hashCode());
+						super.onStart();
+					}
+
 					protected void onTermination(Throwable throwable) {
 						if (throwable != null) {
 							Util.LOGGER.warn("{} died", this.getName(), throwable);
@@ -217,12 +226,12 @@ public class Util {
 						super.onTermination(throwable);
 					}
 				};
-				forkJoinWorkerThread.setName("Worker-" + name + "-" + atomicInteger.getAndIncrement());
+				forkJoinWorkerThread.setName(string2);
 				return forkJoinWorkerThread;
 			}, Util::uncaughtExceptionHandler, true);
 		}
 
-		return executorService;
+		return new NameableExecutor(executorService);
 	}
 
 	private static int getMaxBackgroundThreads() {
@@ -246,53 +255,40 @@ public class Util {
 	/**
 	 * {@return the main worker executor for miscellaneous asynchronous tasks}
 	 */
-	public static ExecutorService getMainWorkerExecutor() {
+	public static NameableExecutor getMainWorkerExecutor() {
 		return MAIN_WORKER_EXECUTOR;
 	}
 
 	/**
 	 * {@return the executor for disk or network IO tasks}
 	 */
-	public static ExecutorService getIoWorkerExecutor() {
+	public static NameableExecutor getIoWorkerExecutor() {
 		return IO_WORKER_EXECUTOR;
 	}
 
 	/**
 	 * {@return the executor for download tasks}
 	 */
-	public static ExecutorService getDownloadWorkerExecutor() {
+	public static NameableExecutor getDownloadWorkerExecutor() {
 		return DOWNLOAD_WORKER_EXECUTOR;
 	}
 
 	public static void shutdownExecutors() {
-		attemptShutdown(MAIN_WORKER_EXECUTOR);
-		attemptShutdown(IO_WORKER_EXECUTOR);
+		MAIN_WORKER_EXECUTOR.shutdown(3L, TimeUnit.SECONDS);
+		IO_WORKER_EXECUTOR.shutdown(3L, TimeUnit.SECONDS);
 	}
 
-	private static void attemptShutdown(ExecutorService service) {
-		service.shutdown();
-
-		boolean bl;
-		try {
-			bl = service.awaitTermination(3L, TimeUnit.SECONDS);
-		} catch (InterruptedException var3) {
-			bl = false;
-		}
-
-		if (!bl) {
-			service.shutdownNow();
-		}
-	}
-
-	private static ExecutorService createIoWorker(String namePrefix, boolean daemon) {
+	private static NameableExecutor createIoWorker(String namePrefix, boolean daemon) {
 		AtomicInteger atomicInteger = new AtomicInteger(1);
-		return Executors.newCachedThreadPool(runnable -> {
+		return new NameableExecutor(Executors.newCachedThreadPool(runnable -> {
 			Thread thread = new Thread(runnable);
-			thread.setName(namePrefix + atomicInteger.getAndIncrement());
+			String string2 = namePrefix + atomicInteger.getAndIncrement();
+			TracyClient.setThreadName(string2, namePrefix.hashCode());
+			thread.setName(string2);
 			thread.setDaemon(daemon);
 			thread.setUncaughtExceptionHandler(Util::uncaughtExceptionHandler);
 			return thread;
-		});
+		}));
 	}
 
 	/**
@@ -340,35 +336,22 @@ public class Util {
 		return type;
 	}
 
-	public static Runnable debugRunnable(String activeThreadName, Runnable task) {
-		return SharedConstants.isDevelopment ? () -> {
+	public static void runInNamedZone(Runnable runnable, String name) {
+		if (SharedConstants.isDevelopment) {
 			Thread thread = Thread.currentThread();
-			String string2 = thread.getName();
-			thread.setName(activeThreadName);
+			String string = thread.getName();
+			thread.setName(name);
 
-			try {
-				task.run();
+			try (Zone zone = TracyClient.beginZone(name, SharedConstants.isDevelopment)) {
+				runnable.run();
 			} finally {
-				thread.setName(string2);
+				thread.setName(string);
 			}
-		} : task;
-	}
-
-	public static <V> Supplier<V> debugSupplier(String activeThreadName, Supplier<V> supplier) {
-		return SharedConstants.isDevelopment ? () -> {
-			Thread thread = Thread.currentThread();
-			String string2 = thread.getName();
-			thread.setName(activeThreadName);
-
-			Object var4;
-			try {
-				var4 = supplier.get();
-			} finally {
-				thread.setName(string2);
+		} else {
+			try (Zone zone2 = TracyClient.beginZone(name, SharedConstants.isDevelopment)) {
+				runnable.run();
 			}
-
-			return var4;
-		} : supplier;
+		}
 	}
 
 	public static <T> String registryValueToString(Registry<T> registry, T value) {

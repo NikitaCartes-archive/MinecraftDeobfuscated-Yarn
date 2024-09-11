@@ -169,7 +169,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	/**
-	 * This should be overriden with a call to {@link #setInitialFocus(Element)} to set the element that is initially focused.
+	 * This should be overridden with a call to {@link #setInitialFocus(Element)} to set the element that is initially focused.
 	 */
 	protected void setInitialFocus() {
 		if (this.client.getNavigationType().isKeyboard()) {
@@ -328,7 +328,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			this.init();
 			this.setInitialFocus();
 		} else {
-			this.initTabNavigation();
+			this.refreshWidgetPositions();
 		}
 
 		this.screenInitialized = true;
@@ -452,14 +452,14 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return code == 65 && hasControlDown() && !hasShiftDown() && !hasAltDown();
 	}
 
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.clearAndInit();
 	}
 
 	public void resize(MinecraftClient client, int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	public static void wrapScreenError(Runnable task, String errorTitle, String screenName) {

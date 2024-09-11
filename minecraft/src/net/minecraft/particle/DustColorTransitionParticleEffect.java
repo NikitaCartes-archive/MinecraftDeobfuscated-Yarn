@@ -21,9 +21,9 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 				.apply(instance, DustColorTransitionParticleEffect::new)
 	);
 	public static final PacketCodec<RegistryByteBuf, DustColorTransitionParticleEffect> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.VECTOR3F,
+		PacketCodecs.VECTOR_3F,
 		effect -> effect.fromColor,
-		PacketCodecs.VECTOR3F,
+		PacketCodecs.VECTOR_3F,
 		effect -> effect.toColor,
 		PacketCodecs.FLOAT,
 		AbstractDustParticleEffect::getScale,

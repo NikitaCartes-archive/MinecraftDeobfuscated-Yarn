@@ -21,13 +21,13 @@ public class TooltipBackgroundRenderer {
 	public static final int field_41690 = 3;
 	public static final int field_41691 = 3;
 	public static final int field_41692 = 3;
-	private static final int field_54153 = 8;
+	private static final int field_54153 = 9;
 
 	public static void render(DrawContext context, int x, int y, int width, int height, int z, @Nullable Identifier texture) {
-		int i = x - 3 - 8;
-		int j = y - 3 - 8;
-		int k = width + 3 + 3 + 16;
-		int l = height + 3 + 3 + 16;
+		int i = x - 3 - 9;
+		int j = y - 3 - 9;
+		int k = width + 3 + 3 + 18;
+		int l = height + 3 + 3 + 18;
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, (float)z);
 		context.drawGuiTexture(RenderLayer::getGuiTextured, getBackgroundTexture(texture), i, j, k, l);

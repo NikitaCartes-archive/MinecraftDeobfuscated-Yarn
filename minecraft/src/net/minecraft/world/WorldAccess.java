@@ -83,8 +83,10 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	default void updateNeighbors(BlockPos pos, Block block) {
 	}
 
-	default void replaceWithStateForNeighborUpdate(Direction direction, BlockPos blockPos, BlockPos pos, BlockState blockState, int flags, int maxUpdateDepth) {
-		NeighborUpdater.replaceWithStateForNeighborUpdate(this, direction, blockPos, pos, blockState, flags, maxUpdateDepth - 1);
+	default void replaceWithStateForNeighborUpdate(
+		Direction direction, BlockPos pos, BlockPos neighborPos, BlockState neighborState, int flags, int maxUpdateDepth
+	) {
+		NeighborUpdater.replaceWithStateForNeighborUpdate(this, direction, pos, neighborPos, neighborState, flags, maxUpdateDepth - 1);
 	}
 
 	default void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category) {

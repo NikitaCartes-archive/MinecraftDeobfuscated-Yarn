@@ -21,6 +21,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.ScopedProfiler;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -93,17 +94,15 @@ public class VideoWarningManager extends SinglePreparationResourceReloader<Video
 		List<Pattern> list = Lists.<Pattern>newArrayList();
 		List<Pattern> list2 = Lists.<Pattern>newArrayList();
 		List<Pattern> list3 = Lists.<Pattern>newArrayList();
-		profiler.startTick();
 		JsonObject jsonObject = loadWarnlist(resourceManager, profiler);
 		if (jsonObject != null) {
-			profiler.push("compile_regex");
-			compilePatterns(jsonObject.getAsJsonArray("renderer"), list);
-			compilePatterns(jsonObject.getAsJsonArray("version"), list2);
-			compilePatterns(jsonObject.getAsJsonArray("vendor"), list3);
-			profiler.pop();
+			try (ScopedProfiler scopedProfiler = profiler.scoped("compile_regex")) {
+				compilePatterns(jsonObject.getAsJsonArray("renderer"), list);
+				compilePatterns(jsonObject.getAsJsonArray("version"), list2);
+				compilePatterns(jsonObject.getAsJsonArray("vendor"), list3);
+			}
 		}
 
-		profiler.endTick();
 		return new VideoWarningManager.WarningPatternLoader(list, list2, list3);
 	}
 
@@ -117,35 +116,35 @@ public class VideoWarningManager extends SinglePreparationResourceReloader<Video
 
 	@Nullable
 	private static JsonObject loadWarnlist(ResourceManager resourceManager, Profiler profiler) {
-		profiler.push("parse_json");
-		JsonObject jsonObject = null;
-
 		try {
-			Reader reader = resourceManager.openAsReader(GPU_WARNLIST_ID);
+			JsonObject var4;
+			try (ScopedProfiler scopedProfiler = profiler.scoped("parse_json")) {
+				Reader reader = resourceManager.openAsReader(GPU_WARNLIST_ID);
 
-			try {
-				jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
-			} catch (Throwable var7) {
-				if (reader != null) {
-					try {
-						reader.close();
-					} catch (Throwable var6) {
-						var7.addSuppressed(var6);
+				try {
+					var4 = JsonParser.parseReader(reader).getAsJsonObject();
+				} catch (Throwable var8) {
+					if (reader != null) {
+						try {
+							reader.close();
+						} catch (Throwable var7) {
+							var8.addSuppressed(var7);
+						}
 					}
+
+					throw var8;
 				}
 
-				throw var7;
+				if (reader != null) {
+					reader.close();
+				}
 			}
 
-			if (reader != null) {
-				reader.close();
-			}
-		} catch (JsonSyntaxException | IOException var8) {
+			return var4;
+		} catch (JsonSyntaxException | IOException var10) {
 			LOGGER.warn("Failed to load GPU warnlist");
+			return null;
 		}
-
-		profiler.pop();
-		return jsonObject;
 	}
 
 	@Environment(EnvType.CLIENT)

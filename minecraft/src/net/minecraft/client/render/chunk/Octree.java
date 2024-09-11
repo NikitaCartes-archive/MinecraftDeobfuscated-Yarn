@@ -34,20 +34,20 @@ public class Octree {
 		return this.root.add(chunk);
 	}
 
-	public void visit(Octree.Visitor visitor, Frustum frustum, int i) {
-		this.root.visit(visitor, false, frustum, 0, i, true);
+	public void visit(Octree.Visitor visitor, Frustum frustum, int margin) {
+		this.root.visit(visitor, false, frustum, 0, margin, true);
 	}
 
-	boolean method_64061(double d, double e, double f, double g, double h, double i, int j) {
-		int k = this.centerPos.getX();
-		int l = this.centerPos.getY();
-		int m = this.centerPos.getZ();
-		return (double)k > d - (double)j
-			&& (double)k < g + (double)j
-			&& (double)l > e - (double)j
-			&& (double)l < h + (double)j
-			&& (double)m > f - (double)j
-			&& (double)m < i + (double)j;
+	boolean isCenterWithin(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int margin) {
+		int i = this.centerPos.getX();
+		int j = this.centerPos.getY();
+		int k = this.centerPos.getZ();
+		return (double)i > minX - (double)margin
+			&& (double)i < maxX + (double)margin
+			&& (double)j > minY - (double)margin
+			&& (double)j < maxY + (double)margin
+			&& (double)k > minZ - (double)margin
+			&& (double)k < maxZ + (double)margin;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -193,30 +193,30 @@ public class Octree {
 		}
 
 		@Override
-		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int i, boolean bl) {
-			boolean bl2 = skipVisibilityCheck;
+		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int margin, boolean nearCenter) {
+			boolean bl = skipVisibilityCheck;
 			if (!skipVisibilityCheck) {
-				int j = frustum.intersectAab(this.box);
-				skipVisibilityCheck = j == -2;
-				bl2 = j == -2 || j == -1;
+				int i = frustum.intersectAab(this.box);
+				skipVisibilityCheck = i == -2;
+				bl = i == -2 || i == -1;
 			}
 
-			if (bl2) {
-				bl = bl
-					&& Octree.this.method_64061(
+			if (bl) {
+				nearCenter = nearCenter
+					&& Octree.this.isCenterWithin(
 						(double)this.box.getMinX(),
 						(double)this.box.getMinY(),
 						(double)this.box.getMinZ(),
 						(double)this.box.getMaxX(),
 						(double)this.box.getMaxY(),
 						(double)this.box.getMaxZ(),
-						i
+						margin
 					);
-				visitor.visit(this, skipVisibilityCheck, depth, bl);
+				visitor.visit(this, skipVisibilityCheck, depth, nearCenter);
 
 				for (Octree.Node node : this.children) {
 					if (node != null) {
-						node.visit(visitor, skipVisibilityCheck, frustum, depth + 1, i, bl);
+						node.visit(visitor, skipVisibilityCheck, frustum, depth + 1, margin, nearCenter);
 					}
 				}
 			}
@@ -243,35 +243,35 @@ public class Octree {
 
 	@Environment(EnvType.CLIENT)
 	final class Leaf implements Octree.Node {
-		private final ChunkBuilder.BuiltChunk field_54166;
+		private final ChunkBuilder.BuiltChunk chunk;
 
-		Leaf(final ChunkBuilder.BuiltChunk builtChunk) {
-			this.field_54166 = builtChunk;
+		Leaf(final ChunkBuilder.BuiltChunk chunk) {
+			this.chunk = chunk;
 		}
 
 		@Override
-		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int i, boolean bl) {
-			Box box = this.field_54166.getBoundingBox();
+		public void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int margin, boolean nearCenter) {
+			Box box = this.chunk.getBoundingBox();
 			if (skipVisibilityCheck || frustum.isVisible(this.getBuiltChunk().getBoundingBox())) {
-				bl = bl && Octree.this.method_64061(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, i);
-				visitor.visit(this, skipVisibilityCheck, depth, bl);
+				nearCenter = nearCenter && Octree.this.isCenterWithin(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, margin);
+				visitor.visit(this, skipVisibilityCheck, depth, nearCenter);
 			}
 		}
 
 		@Override
 		public ChunkBuilder.BuiltChunk getBuiltChunk() {
-			return this.field_54166;
+			return this.chunk;
 		}
 
 		@Override
 		public Box getBoundingBox() {
-			return this.field_54166.getBoundingBox();
+			return this.chunk.getBoundingBox();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public interface Node {
-		void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int i, boolean bl);
+		void visit(Octree.Visitor visitor, boolean skipVisibilityCheck, Frustum frustum, int depth, int margin, boolean nearCenter);
 
 		@Nullable
 		ChunkBuilder.BuiltChunk getBuiltChunk();
@@ -282,6 +282,9 @@ public class Octree {
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
 	public interface Visitor {
-		void visit(Octree.Node node, boolean skipVisibilityCheck, int depth, boolean bl);
+		/**
+		 * @param nearCenter whether the node is near octree's {@linkplain Octree#centerPos center}, that is, camera pos
+		 */
+		void visit(Octree.Node node, boolean skipVisibilityCheck, int depth, boolean nearCenter);
 	}
 }

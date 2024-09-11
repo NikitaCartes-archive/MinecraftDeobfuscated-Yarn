@@ -35,6 +35,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.OrderedText;
@@ -684,9 +685,18 @@ public class DrawContext {
 					DiffuseLighting.disableGuiDepthLighting();
 				}
 
-				this.client
-					.getItemRenderer()
-					.renderItem(stack, ModelTransformationMode.GUI, false, this.matrices, this.vertexConsumers, 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
+				if (stack.isOf(Items.BUNDLE)) {
+					this.client
+						.getItemRenderer()
+						.renderBundle(
+							stack, ModelTransformationMode.GUI, false, this.matrices, this.vertexConsumers, 15728880, OverlayTexture.DEFAULT_UV, bakedModel, world, entity, seed
+						);
+				} else {
+					this.client
+						.getItemRenderer()
+						.renderItem(stack, ModelTransformationMode.GUI, false, this.matrices, this.vertexConsumers, 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
+				}
+
 				this.draw();
 				if (bl) {
 					DiffuseLighting.enableGuiDepthLighting();
@@ -755,7 +765,11 @@ public class DrawContext {
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, Text text, int x, int y) {
-		this.drawOrderedTooltip(textRenderer, List.of(text.asOrderedText()), x, y);
+		this.drawTooltip(textRenderer, text, x, y, null);
+	}
+
+	public void drawTooltip(TextRenderer textRenderer, Text text, int x, int y, @Nullable Identifier texture) {
+		this.drawOrderedTooltip(textRenderer, List.of(text.asOrderedText()), x, y, texture);
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, List<Text> text, int x, int y) {
@@ -767,8 +781,12 @@ public class DrawContext {
 	}
 
 	public void drawOrderedTooltip(TextRenderer textRenderer, List<? extends OrderedText> text, int x, int y) {
+		this.drawOrderedTooltip(textRenderer, text, x, y, null);
+	}
+
+	public void drawOrderedTooltip(TextRenderer textRenderer, List<? extends OrderedText> text, int x, int y, @Nullable Identifier texture) {
 		this.drawTooltip(
-			textRenderer, (List<TooltipComponent>)text.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, HoveredTooltipPositioner.INSTANCE, null
+			textRenderer, (List<TooltipComponent>)text.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, HoveredTooltipPositioner.INSTANCE, texture
 		);
 	}
 

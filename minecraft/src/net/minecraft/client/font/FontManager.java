@@ -43,6 +43,7 @@ import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -69,19 +70,10 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 	}
 
 	@Override
-	public CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
-	) {
-		prepareProfiler.startTick();
-		prepareProfiler.endTick();
+	public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
 		return this.loadIndex(manager, prepareExecutor)
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(index -> this.reload(index, applyProfiler), applyExecutor);
+			.thenAcceptAsync(index -> this.reload(index, Profilers.get()), applyExecutor);
 	}
 
 	private CompletableFuture<FontManager.ProviderIndex> loadIndex(ResourceManager resourceManager, Executor executor) {
@@ -184,7 +176,6 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 	}
 
 	private void reload(FontManager.ProviderIndex index, Profiler profiler) {
-		profiler.startTick();
 		profiler.push("closing");
 		this.currentStorage = null;
 		this.fontStorages.values().forEach(FontStorage::close);
@@ -200,7 +191,6 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 		});
 		this.fonts.addAll(index.allProviders);
 		profiler.pop();
-		profiler.endTick();
 		if (!this.fontStorages.containsKey(MinecraftClient.DEFAULT_FONT_ID)) {
 			throw new IllegalStateException("Default font failed to load");
 		}

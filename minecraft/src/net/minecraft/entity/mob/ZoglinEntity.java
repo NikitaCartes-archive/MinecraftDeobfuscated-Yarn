@@ -45,6 +45,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -243,9 +245,10 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 
 	@Override
 	protected void mobTick() {
-		this.getWorld().getProfiler().push("zoglinBrain");
+		Profiler profiler = Profilers.get();
+		profiler.push("zoglinBrain");
 		this.getBrain().tick((ServerWorld)this.getWorld(), this);
-		this.getWorld().getProfiler().pop();
+		profiler.pop();
 		this.tickBrain();
 	}
 

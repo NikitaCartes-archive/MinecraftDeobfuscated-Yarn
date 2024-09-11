@@ -63,11 +63,11 @@ public class AccessibilityOnboardingScreen extends Screen {
 		);
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.close()).build());
 		this.layout.forEachChild(this::addDrawableChild);
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		if (this.textWidget != null) {
 			this.textWidget.initMaxWidth(this.width);
 		}

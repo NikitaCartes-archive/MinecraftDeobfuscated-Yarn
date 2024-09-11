@@ -24,6 +24,7 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.gen.FlatLevelGeneratorPreset;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
@@ -57,7 +58,17 @@ public class WorldCreator {
 		this.generateStructures = generatorOptionsHolder.generatorOptions().shouldGenerateStructures();
 		this.bonusChestEnabled = generatorOptionsHolder.generatorOptions().hasBonusChest();
 		this.worldDirectoryName = this.toDirectoryName(this.worldName);
+		this.gameMode = generatorOptionsHolder.initialWorldCreationOptions().selectedGameMode();
 		this.gameRules = new GameRules(generatorOptionsHolder.dataConfiguration().enabledFeatures());
+		generatorOptionsHolder.initialWorldCreationOptions().disabledGameRules().forEach(rule -> this.gameRules.<GameRules.BooleanRule>get(rule).set(false, null));
+		Optional.ofNullable(generatorOptionsHolder.initialWorldCreationOptions().flatLevelPreset())
+			.flatMap(
+				presetKey -> generatorOptionsHolder.getCombinedRegistryManager()
+						.getOptional(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET)
+						.flatMap(registry -> registry.getOptional(presetKey))
+			)
+			.map(preset -> ((FlatLevelGeneratorPreset)preset.value()).settings())
+			.ifPresent(config -> this.applyModifier(LevelScreenProvider.createModifier(config)));
 	}
 
 	public void addListener(Consumer<WorldCreator> listener) {
@@ -198,7 +209,8 @@ public class WorldCreator {
 				this.generatorOptionsHolder.selectedDimensions(),
 				this.generatorOptionsHolder.combinedDynamicRegistries(),
 				this.generatorOptionsHolder.dataPackContents(),
-				dataConfiguration
+				dataConfiguration,
+				this.generatorOptionsHolder.initialWorldCreationOptions()
 			);
 			return true;
 		} else {

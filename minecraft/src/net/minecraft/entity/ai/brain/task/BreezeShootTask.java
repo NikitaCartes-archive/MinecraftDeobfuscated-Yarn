@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Unit;
-import net.minecraft.util.math.Vec3d;
 
 public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 	private static final int MAX_SQUARED_RANGE = 256;
@@ -92,24 +91,15 @@ public class BreezeShootTask extends MultiTickTask<BreezeEntity> {
 			if (!brain.getOptionalRegisteredMemory(MemoryModuleType.BREEZE_SHOOT_CHARGING).isPresent()
 				&& !brain.getOptionalRegisteredMemory(MemoryModuleType.BREEZE_SHOOT_RECOVER).isPresent()) {
 				brain.remember(MemoryModuleType.BREEZE_SHOOT_RECOVER, Unit.INSTANCE, (long)RECOVER_EXPIRY);
-				if (isFacingTarget(breezeEntity, livingEntity)) {
-					double d = livingEntity.getX() - breezeEntity.getX();
-					double e = livingEntity.getBodyY(livingEntity.hasVehicle() ? 0.8 : 0.3) - breezeEntity.getChargeY();
-					double f = livingEntity.getZ() - breezeEntity.getZ();
-					ProjectileEntity.spawnWithVelocity(
-						new BreezeWindChargeEntity(breezeEntity, serverWorld), serverWorld, ItemStack.EMPTY, d, e, f, 0.7F, (float)(5 - serverWorld.getDifficulty().getId() * 4)
-					);
-					breezeEntity.playSound(SoundEvents.ENTITY_BREEZE_SHOOT, 1.5F, 1.0F);
-				}
+				double d = livingEntity.getX() - breezeEntity.getX();
+				double e = livingEntity.getBodyY(livingEntity.hasVehicle() ? 0.8 : 0.3) - breezeEntity.getChargeY();
+				double f = livingEntity.getZ() - breezeEntity.getZ();
+				ProjectileEntity.spawnWithVelocity(
+					new BreezeWindChargeEntity(breezeEntity, serverWorld), serverWorld, ItemStack.EMPTY, d, e, f, 0.7F, (float)(5 - serverWorld.getDifficulty().getId() * 4)
+				);
+				breezeEntity.playSound(SoundEvents.ENTITY_BREEZE_SHOOT, 1.5F, 1.0F);
 			}
 		}
-	}
-
-	@VisibleForTesting
-	public static boolean isFacingTarget(BreezeEntity breeze, LivingEntity target) {
-		Vec3d vec3d = breeze.getRotationVec(1.0F);
-		Vec3d vec3d2 = target.getPos().subtract(breeze.getPos()).normalize();
-		return vec3d.dotProduct(vec3d2) > 0.5;
 	}
 
 	private static boolean isTargetWithinRange(BreezeEntity breeze, LivingEntity target) {

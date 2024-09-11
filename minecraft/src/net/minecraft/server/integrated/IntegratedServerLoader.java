@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -25,8 +26,10 @@ import net.minecraft.client.gui.screen.world.BackupPromptScreen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.DataPackFailureScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
+import net.minecraft.client.gui.screen.world.InitialWorldOptions;
 import net.minecraft.client.gui.screen.world.RecoverWorldScreen;
 import net.minecraft.client.gui.screen.world.SymlinkWarningScreen;
+import net.minecraft.client.gui.screen.world.WorldCreator;
 import net.minecraft.client.resource.server.ServerResourcePackLoader;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
@@ -191,6 +194,7 @@ public class IntegratedServerLoader {
 			},
 			(resourceManager, dataPackContents, combinedRegistryManager, currentSettings) -> {
 				resourceManager.close();
+				InitialWorldOptions initialWorldOptions = new InitialWorldOptions(WorldCreator.Mode.SURVIVAL, Set.of(), null);
 				return Pair.of(
 					currentSettings.levelInfo,
 					new GeneratorOptionsHolder(
@@ -198,7 +202,8 @@ public class IntegratedServerLoader {
 						new DimensionOptionsRegistryHolder(currentSettings.existingDimensionRegistry),
 						combinedRegistryManager,
 						dataPackContents,
-						currentSettings.levelInfo.getDataConfiguration()
+						currentSettings.levelInfo.getDataConfiguration(),
+						initialWorldOptions
 					)
 				);
 			}

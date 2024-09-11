@@ -24,21 +24,21 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class CapeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
 	private final BipedEntityModel<PlayerEntityRenderState> model;
-	private final EquipmentModelLoader field_54177;
+	private final EquipmentModelLoader equipmentModelLoader;
 
 	public CapeFeatureRenderer(
 		FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context, EntityModelLoader modelLoader, EquipmentModelLoader equipmentModelLoader
 	) {
 		super(context);
 		this.model = new PlayerCapeModel<>(modelLoader.getModelPart(EntityModelLayers.PLAYER_CAPE));
-		this.field_54177 = equipmentModelLoader;
+		this.equipmentModelLoader = equipmentModelLoader;
 	}
 
-	private boolean method_64075(ItemStack itemStack) {
-		EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
+	private boolean hasCustomModelForLayer(ItemStack stack, EquipmentModel.LayerType layerType) {
+		EquippableComponent equippableComponent = stack.get(DataComponentTypes.EQUIPPABLE);
 		if (equippableComponent != null && !equippableComponent.model().isEmpty()) {
-			EquipmentModel equipmentModel = this.field_54177.get((Identifier)equippableComponent.model().get());
-			return !equipmentModel.getLayers(EquipmentModel.LayerType.WINGS).isEmpty();
+			EquipmentModel equipmentModel = this.equipmentModelLoader.get((Identifier)equippableComponent.model().get());
+			return !equipmentModel.getLayers(layerType).isEmpty();
 		} else {
 			return false;
 		}
@@ -50,10 +50,17 @@ public class CapeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 		if (!playerEntityRenderState.invisible && playerEntityRenderState.capeVisible) {
 			SkinTextures skinTextures = playerEntityRenderState.skinTextures;
 			if (skinTextures.capeTexture() != null) {
-				if (!this.method_64075(playerEntityRenderState.equippedChestStack)) {
+				if (!this.hasCustomModelForLayer(playerEntityRenderState.equippedChestStack, EquipmentModel.LayerType.WINGS)) {
+					matrixStack.push();
+					if (this.hasCustomModelForLayer(playerEntityRenderState.equippedChestStack, EquipmentModel.LayerType.HUMANOID)) {
+						matrixStack.translate(0.0F, -0.053125F, 0.06875F);
+					}
+
 					VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(skinTextures.capeTexture()));
+					this.getContextModel().copyTransforms(this.model);
 					this.model.setAngles(playerEntityRenderState);
 					this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
+					matrixStack.pop();
 				}
 			}
 		}

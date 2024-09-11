@@ -326,7 +326,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		super.tick();
 		this.updateFloating();
-		this.checkBlockCollision();
 	}
 
 	private boolean isBeingTempted() {

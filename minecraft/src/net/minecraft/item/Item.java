@@ -17,6 +17,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.ConsumableComponents;
+import net.minecraft.component.type.DamageResistantComponent;
 import net.minecraft.component.type.EnchantableComponent;
 import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.FoodComponent;
@@ -45,6 +46,7 @@ import net.minecraft.registry.RegistryPair;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -60,7 +62,6 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -257,7 +258,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			return consumableComponent.consume(user, itemStack, hand);
 		} else {
 			EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
-			return (ActionResult)(equippableComponent != null ? equippableComponent.equip(itemStack, user) : ActionResult.PASS);
+			return (ActionResult)(equippableComponent != null && equippableComponent.swappable() ? equippableComponent.equip(itemStack, user) : ActionResult.PASS);
 		}
 	}
 
@@ -359,6 +360,11 @@ public class Item implements ToggleableFeature, ItemConvertible {
 
 	public float getBonusAttackDamage(Entity target, float baseAttackDamage, DamageSource damageSource) {
 		return 0.0F;
+	}
+
+	@Nullable
+	public DamageSource getDamageSource(LivingEntity user) {
+		return null;
 	}
 
 	/**
@@ -465,20 +471,6 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * Called when the item is made by crafting, smelting, smithing, etc.
 	 */
 	public void onCraft(ItemStack stack, World world) {
-	}
-
-	/**
-	 * {@return whether the item needs to sync additional data to clients}
-	 * 
-	 * <p>Items should ideally store all necessary information in the stack's components.
-	 * However, this is not always possible for things like maps. In those cases,
-	 * items can send a packet to the player holding it that syncs additional data.
-	 * Such items must subclass {@link NetworkSyncedItem}.
-	 * 
-	 * @see NetworkSyncedItem
-	 */
-	public boolean isNetworkSynced() {
-		return false;
 	}
 
 	/**
@@ -689,7 +681,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 		 * @return this instance
 		 */
 		public Item.Settings fireproof() {
-			return this.component(DataComponentTypes.FIRE_RESISTANT, Unit.INSTANCE);
+			return this.component(DataComponentTypes.DAMAGE_RESISTANT, new DamageResistantComponent(DamageTypeTags.IS_FIRE));
 		}
 
 		public Item.Settings jukeboxPlayable(RegistryKey<JukeboxSong> songKey) {
@@ -709,14 +701,12 @@ public class Item implements ToggleableFeature, ItemConvertible {
 			return this.component(DataComponentTypes.REPAIRABLE, new RepairableComponent(registryEntryLookup.getOrThrow(repairIngredientsTag)));
 		}
 
-		public Item.Settings equippable(EquipmentSlot slot, RegistryEntry<SoundEvent> equipSound, Identifier model) {
-			return this.component(DataComponentTypes.EQUIPPABLE, new EquippableComponent(slot, equipSound, Optional.of(model), Optional.empty(), true));
+		public Item.Settings equippable(EquipmentSlot slot) {
+			return this.component(DataComponentTypes.EQUIPPABLE, EquippableComponent.builder(slot).build());
 		}
 
-		public Item.Settings equippable(EquipmentSlot slot) {
-			return this.component(
-				DataComponentTypes.EQUIPPABLE, new EquippableComponent(slot, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, Optional.empty(), Optional.empty(), true)
-			);
+		public Item.Settings equippableUnswappable(EquipmentSlot slot) {
+			return this.component(DataComponentTypes.EQUIPPABLE, EquippableComponent.builder(slot).swappable(false).build());
 		}
 
 		public Item.Settings requires(FeatureFlag... features) {

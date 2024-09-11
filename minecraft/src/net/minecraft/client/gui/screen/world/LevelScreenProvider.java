@@ -51,7 +51,7 @@ public interface LevelScreenProvider {
 
 	Screen createEditScreen(CreateWorldScreen parent, GeneratorOptionsHolder generatorOptionsHolder);
 
-	private static GeneratorOptionsHolder.RegistryAwareModifier createModifier(FlatChunkGeneratorConfig config) {
+	static GeneratorOptionsHolder.RegistryAwareModifier createModifier(FlatChunkGeneratorConfig config) {
 		return (dynamicRegistryManager, dimensionsRegistryHolder) -> {
 			ChunkGenerator chunkGenerator = new FlatChunkGenerator(config);
 			return dimensionsRegistryHolder.with(dynamicRegistryManager, chunkGenerator);

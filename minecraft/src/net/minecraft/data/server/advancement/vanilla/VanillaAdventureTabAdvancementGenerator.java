@@ -16,7 +16,7 @@ import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
 import net.minecraft.advancement.criterion.FallAfterExplosionCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemCriterion;
-import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
+import net.minecraft.advancement.criterion.KilledByArrowCriterion;
 import net.minecraft.advancement.criterion.LightningStrikeCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
@@ -355,7 +355,10 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				true,
 				false
 			)
-			.criterion("kill_pillager", KilledByCrossbowCriterion.Conditions.create(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.PILLAGER)))
+			.criterion(
+				"kill_pillager",
+				KilledByArrowCriterion.Conditions.createCrossbow(registryEntryLookup2, EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.PILLAGER))
+			)
 			.build(exporter, "adventure/whos_the_pillager_now");
 		Advancement.Builder.create()
 			.parent(advancementEntry7)
@@ -372,7 +375,8 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.rewards(AdvancementRewards.Builder.experience(65))
 			.criterion(
 				"two_birds",
-				KilledByCrossbowCriterion.Conditions.create(
+				KilledByArrowCriterion.Conditions.createCrossbow(
+					registryEntryLookup2,
 					EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.PHANTOM),
 					EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.PHANTOM)
 				)
@@ -391,7 +395,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				true
 			)
 			.rewards(AdvancementRewards.Builder.experience(85))
-			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.create(NumberRange.IntRange.exactly(5)))
+			.criterion("arbalistic", KilledByArrowCriterion.Conditions.createCrossbow(registryEntryLookup2, NumberRange.IntRange.exactly(5)))
 			.build(exporter, "adventure/arbalistic");
 		RegistryWrapper.Impl<BannerPattern> impl = registries.getOrThrow(RegistryKeys.BANNER_PATTERN);
 		AdvancementEntry advancementEntry8 = Advancement.Builder.create()

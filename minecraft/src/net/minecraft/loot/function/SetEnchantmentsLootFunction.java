@@ -8,7 +8,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -61,7 +60,6 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isOf(Items.BOOK)) {
 			stack = stack.withItem(Items.ENCHANTED_BOOK);
-			stack.set(DataComponentTypes.STORED_ENCHANTMENTS, stack.remove(DataComponentTypes.ENCHANTMENTS));
 		}
 
 		EnchantmentHelper.apply(

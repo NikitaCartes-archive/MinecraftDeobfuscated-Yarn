@@ -139,11 +139,11 @@ public class SocialInteractionsScreen extends Screen {
 		this.layout.forEachChild(element -> {
 			ClickableWidget var10000 = this.addDrawableChild(element);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		this.playerList.position(this.width, this.getPlayerListBottom() - 88, 88);
 		this.searchBox.setPosition(this.getSearchBoxX() + 28, 74);

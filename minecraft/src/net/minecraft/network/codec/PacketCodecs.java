@@ -262,7 +262,7 @@ public interface PacketCodecs {
 	 * @see net.minecraft.network.PacketByteBuf#readVector3f()
 	 * @see net.minecraft.network.PacketByteBuf#writeVector3f(Vector3f)
 	 */
-	PacketCodec<ByteBuf, Vector3f> VECTOR3F = new PacketCodec<ByteBuf, Vector3f>() {
+	PacketCodec<ByteBuf, Vector3f> VECTOR_3F = new PacketCodec<ByteBuf, Vector3f>() {
 		public Vector3f decode(ByteBuf byteBuf) {
 			return PacketByteBuf.readVector3f(byteBuf);
 		}
@@ -277,7 +277,7 @@ public interface PacketCodecs {
 	 * @see net.minecraft.network.PacketByteBuf#readQuaternionf()
 	 * @see net.minecraft.network.PacketByteBuf#writeQuaternionf(Quaternionf)
 	 */
-	PacketCodec<ByteBuf, Quaternionf> QUATERNIONF = new PacketCodec<ByteBuf, Quaternionf>() {
+	PacketCodec<ByteBuf, Quaternionf> QUATERNION_F = new PacketCodec<ByteBuf, Quaternionf>() {
 		public Quaternionf decode(ByteBuf byteBuf) {
 			return PacketByteBuf.readQuaternionf(byteBuf);
 		}

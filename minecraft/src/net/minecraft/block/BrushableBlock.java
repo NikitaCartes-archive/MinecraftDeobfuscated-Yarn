@@ -78,7 +78,7 @@ public class BrushableBlock extends BlockWithEntity implements LandingBlock {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getBlockEntity(pos) instanceof BrushableBlockEntity brushableBlockEntity) {
-			brushableBlockEntity.scheduledTick();
+			brushableBlockEntity.scheduledTick(world);
 		}
 
 		if (FallingBlock.canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= world.getBottomY()) {

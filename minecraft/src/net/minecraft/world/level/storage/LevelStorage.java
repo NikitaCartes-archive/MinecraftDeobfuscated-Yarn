@@ -248,7 +248,7 @@ public class LevelStorage {
 
 					throw new CrashException(crashReport);
 				}
-			}, Util.getMainWorkerExecutor()));
+			}, Util.getMainWorkerExecutor().named("loadLevelSummaries")));
 		}
 
 		return Util.combineCancellable(list).thenApply(summaries -> summaries.stream().filter(Objects::nonNull).sorted().toList());

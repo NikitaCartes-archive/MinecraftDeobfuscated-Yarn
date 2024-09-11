@@ -3,6 +3,8 @@ package net.minecraft.entity.mob;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 public class MobVisibilityCache {
 	private final MobEntity owner;
@@ -25,9 +27,10 @@ public class MobVisibilityCache {
 		} else if (this.invisibleEntities.contains(i)) {
 			return false;
 		} else {
-			this.owner.getWorld().getProfiler().push("hasLineOfSight");
+			Profiler profiler = Profilers.get();
+			profiler.push("hasLineOfSight");
 			boolean bl = this.owner.canSee(entity);
-			this.owner.getWorld().getProfiler().pop();
+			profiler.pop();
 			if (bl) {
 				this.visibleEntities.add(i);
 			} else {

@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -27,11 +26,11 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 public class WorldTickScheduler<T> implements QueryableTickScheduler<T> {
 	private static final Comparator<ChunkTickScheduler<?>> COMPARATOR = (a, b) -> OrderedTick.BASIC_COMPARATOR.compare(a.peekNextTick(), b.peekNextTick());
 	private final LongPredicate tickingFutureReadyPredicate;
-	private final Supplier<Profiler> profilerGetter;
 	private final Long2ObjectMap<ChunkTickScheduler<T>> chunkTickSchedulers = new Long2ObjectOpenHashMap<>();
 	private final Long2LongMap nextTriggerTickByChunkPos = Util.make(new Long2LongOpenHashMap(), map -> map.defaultReturnValue(Long.MAX_VALUE));
 	private final Queue<ChunkTickScheduler<T>> tickableChunkTickSchedulers = new PriorityQueue(COMPARATOR);
@@ -44,9 +43,8 @@ public class WorldTickScheduler<T> implements QueryableTickScheduler<T> {
 		}
 	};
 
-	public WorldTickScheduler(LongPredicate tickingFutureReadyPredicate, Supplier<Profiler> profilerGetter) {
+	public WorldTickScheduler(LongPredicate tickingFutureReadyPredicate) {
 		this.tickingFutureReadyPredicate = tickingFutureReadyPredicate;
-		this.profilerGetter = profilerGetter;
 	}
 
 	public void addChunkTickScheduler(ChunkPos pos, ChunkTickScheduler<T> scheduler) {
@@ -81,7 +79,7 @@ public class WorldTickScheduler<T> implements QueryableTickScheduler<T> {
 	}
 
 	public void tick(long time, int maxTicks, BiConsumer<BlockPos, T> ticker) {
-		Profiler profiler = (Profiler)this.profilerGetter.get();
+		Profiler profiler = Profilers.get();
 		profiler.push("collect");
 		this.collectTickableTicks(time, maxTicks, profiler);
 		profiler.swap("run");

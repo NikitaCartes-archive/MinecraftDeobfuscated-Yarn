@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.IntFunction;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -41,11 +40,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -99,10 +94,6 @@ public class PandaEntity extends AnimalEntity {
 	private float rollOverAnimationProgress;
 	private float lastRollOverAnimationProgress;
 	PandaEntity.LookAtEntityGoal lookAtPlayerGoal;
-	static final Predicate<ItemEntity> IS_FOOD = item -> {
-		ItemStack itemStack = item.getStack();
-		return (itemStack.isOf(Blocks.BAMBOO.asItem()) || itemStack.isOf(Blocks.CAKE.asItem())) && item.isAlive() && !item.cannotPickup();
-	};
 
 	public PandaEntity(EntityType<? extends PandaEntity> entityType, World world) {
 		super(entityType, world);
@@ -408,7 +399,7 @@ public class PandaEntity extends AnimalEntity {
 		if (this.isEating()) {
 			this.playEatingAnimation();
 			if (!this.getWorld().isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
-				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.MAINHAND))) {
+				if (this.getEatingTicks() > 100 && this.getEquippedStack(EquipmentSlot.MAINHAND).isIn(ItemTags.PANDA_EATS_FROM_GROUND)) {
 					if (!this.getWorld().isClient) {
 						this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 						this.emitGameEvent(GameEvent.EAT);
@@ -532,22 +523,13 @@ public class PandaEntity extends AnimalEntity {
 		}
 
 		if (!world.isClient() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			ServerWorld serverWorld = (ServerWorld)world;
-			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.PANDA_SNEEZE_GAMEPLAY);
-			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
-				.add(LootContextParameters.ORIGIN, this.getPos())
-				.add(LootContextParameters.THIS_ENTITY, this)
-				.build(LootContextTypes.GIFT);
-
-			for (ItemStack itemStack : lootTable.generateLoot(lootContextParameterSet)) {
-				this.dropStack(itemStack);
-			}
+			this.forEachGiftedItem(LootTables.PANDA_SNEEZE_GAMEPLAY, this::dropStack);
 		}
 	}
 
 	@Override
 	protected void loot(ItemEntity item) {
-		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && IS_FOOD.test(item)) {
+		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && canEatFromGround(item)) {
 			this.triggerItemPickedUpByEntityCriteria(item);
 			ItemStack itemStack = item.getStack();
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
@@ -689,10 +671,6 @@ public class PandaEntity extends AnimalEntity {
 		return stack.isIn(ItemTags.PANDA_FOOD);
 	}
 
-	private boolean canEat(ItemStack stack) {
-		return this.isBreedingItem(stack) || stack.isOf(Blocks.CAKE.asItem());
-	}
-
 	@Nullable
 	@Override
 	protected SoundEvent getDeathSound() {
@@ -712,6 +690,10 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	public EntityDimensions getBaseDimensions(EntityPose pose) {
 		return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getBaseDimensions(pose);
+	}
+
+	private static boolean canEatFromGround(ItemEntity itemEntity) {
+		return itemEntity.getStack().isIn(ItemTags.PANDA_EATS_FROM_GROUND) && itemEntity.isAlive() && !itemEntity.cannotPickup();
 	}
 
 	static class AttackGoal extends MeleeAttackGoal {
@@ -1019,16 +1001,18 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if (this.startAge <= PandaEntity.this.age
-				&& !PandaEntity.this.isBaby()
-				&& !PandaEntity.this.isTouchingWater()
-				&& PandaEntity.this.isIdle()
-				&& PandaEntity.this.getAskForBambooTicks() <= 0) {
-				List<ItemEntity> list = PandaEntity.this.getWorld()
-					.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), PandaEntity.IS_FOOD);
-				return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty();
-			} else {
+			if (this.startAge > PandaEntity.this.age
+				|| PandaEntity.this.isBaby()
+				|| PandaEntity.this.isTouchingWater()
+				|| !PandaEntity.this.isIdle()
+				|| PandaEntity.this.getAskForBambooTicks() > 0) {
 				return false;
+			} else {
+				return !PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()
+					? true
+					: !PandaEntity.this.getWorld()
+						.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), PandaEntity::canEatFromGround)
+						.isEmpty();
 			}
 		}
 
@@ -1048,11 +1032,13 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public void start() {
-			List<ItemEntity> list = PandaEntity.this.getWorld()
-				.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PandaEntity.IS_FOOD);
-			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
-				PandaEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
-			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
+			if (PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
+				List<ItemEntity> list = PandaEntity.this.getWorld()
+					.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PandaEntity::canEatFromGround);
+				if (!list.isEmpty()) {
+					PandaEntity.this.getNavigation().startMovingTo((Entity)list.getFirst(), 1.2F);
+				}
+			} else {
 				PandaEntity.this.stop();
 			}
 

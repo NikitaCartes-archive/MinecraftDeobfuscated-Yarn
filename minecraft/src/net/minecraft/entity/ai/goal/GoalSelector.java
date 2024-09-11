@@ -7,8 +7,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 /**
  * Manages a set of goals, which are competing for certain controls on the mob.
@@ -37,12 +37,7 @@ public class GoalSelector {
 	};
 	private final Map<Goal.Control, PrioritizedGoal> goalsByControl = new EnumMap(Goal.Control.class);
 	private final Set<PrioritizedGoal> goals = new ObjectLinkedOpenHashSet<>();
-	private final Supplier<Profiler> profiler;
 	private final EnumSet<Goal.Control> disabledControls = EnumSet.noneOf(Goal.Control.class);
-
-	public GoalSelector(Supplier<Profiler> profiler) {
-		this.profiler = profiler;
-	}
 
 	/**
 	 * Adds a goal with a certain priority. Goals with <i>lower</i> priorities will replace running goals
@@ -88,7 +83,7 @@ public class GoalSelector {
 	}
 
 	public void tick() {
-		Profiler profiler = (Profiler)this.profiler.get();
+		Profiler profiler = Profilers.get();
 		profiler.push("goalCleanup");
 
 		for (PrioritizedGoal prioritizedGoal : this.goals) {
@@ -121,7 +116,7 @@ public class GoalSelector {
 	}
 
 	public void tickGoals(boolean tickAll) {
-		Profiler profiler = (Profiler)this.profiler.get();
+		Profiler profiler = Profilers.get();
 		profiler.push("goalTick");
 
 		for (PrioritizedGoal prioritizedGoal : this.goals) {

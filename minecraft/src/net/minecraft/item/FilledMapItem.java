@@ -17,7 +17,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.map.MapState;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
@@ -35,7 +34,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
 
-public class FilledMapItem extends NetworkSyncedItem {
+public class FilledMapItem extends Item {
 	public static final int field_30907 = 128;
 	public static final int field_30908 = 128;
 
@@ -281,14 +280,6 @@ public class FilledMapItem extends NetworkSyncedItem {
 				}
 			}
 		}
-	}
-
-	@Nullable
-	@Override
-	public Packet<?> createSyncPacket(ItemStack stack, World world, PlayerEntity player) {
-		MapIdComponent mapIdComponent = stack.get(DataComponentTypes.MAP_ID);
-		MapState mapState = getMapState(mapIdComponent, world);
-		return mapState != null ? mapState.getPlayerMarkerPacket(mapIdComponent, player) : null;
 	}
 
 	@Override

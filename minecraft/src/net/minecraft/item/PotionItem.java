@@ -8,7 +8,6 @@ import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
@@ -75,10 +74,8 @@ public class PotionItem extends Item {
 
 	@Override
 	public Text getName(ItemStack stack) {
-		return (Text)stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT)
-			.potion()
-			.map(potion -> Text.translatable(this.translationKey + ".effect." + ((Potion)potion.value()).getBaseName()))
-			.orElseGet(() -> Text.translatable(this.translationKey + ".effect.empty"));
+		PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
+		return potionContentsComponent != null ? potionContentsComponent.getName(this.translationKey + ".effect.") : super.getName(stack);
 	}
 
 	@Override

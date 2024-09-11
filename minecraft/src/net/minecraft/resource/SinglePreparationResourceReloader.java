@@ -3,6 +3,7 @@ package net.minecraft.resource;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 /**
  * A base resource reloader implementation that prepares an object in a
@@ -14,16 +15,11 @@ import net.minecraft.util.profiler.Profiler;
 public abstract class SinglePreparationResourceReloader<T> implements ResourceReloader {
 	@Override
 	public final CompletableFuture<Void> reload(
-		ResourceReloader.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
+		ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor
 	) {
-		return CompletableFuture.supplyAsync(() -> this.prepare(manager, prepareProfiler), prepareExecutor)
+		return CompletableFuture.supplyAsync(() -> this.prepare(manager, Profilers.get()), prepareExecutor)
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(prepared -> this.apply((T)prepared, manager, applyProfiler), applyExecutor);
+			.thenAcceptAsync(prepared -> this.apply((T)prepared, manager, Profilers.get()), applyExecutor);
 	}
 
 	/**

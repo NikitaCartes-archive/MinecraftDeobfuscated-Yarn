@@ -35,7 +35,7 @@ public abstract class GameOptionsScreen extends Screen {
 		this.layout.forEachChild(child -> {
 			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
-		this.initTabNavigation();
+		this.refreshWidgetPositions();
 	}
 
 	protected void initHeader() {
@@ -58,7 +58,7 @@ public abstract class GameOptionsScreen extends Screen {
 	}
 
 	@Override
-	protected void initTabNavigation() {
+	protected void refreshWidgetPositions() {
 		this.layout.refreshPositions();
 		if (this.body != null) {
 			this.body.position(this.width, this.layout);

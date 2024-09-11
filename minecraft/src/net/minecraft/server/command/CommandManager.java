@@ -39,6 +39,8 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.command.BanCommand;
@@ -64,6 +66,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
@@ -100,7 +103,7 @@ public class CommandManager {
 		ForceLoadCommand.register(this.dispatcher);
 		FunctionCommand.register(this.dispatcher);
 		GameModeCommand.register(this.dispatcher);
-		GameRuleCommand.register(this.dispatcher);
+		GameRuleCommand.register(this.dispatcher, commandRegistryAccess);
 		GiveCommand.register(this.dispatcher, commandRegistryAccess);
 		HelpCommand.register(this.dispatcher);
 		ItemCommand.register(this.dispatcher, commandRegistryAccess);
@@ -208,7 +211,7 @@ public class CommandManager {
 	 */
 	public void execute(ParseResults<ServerCommandSource> parseResults, String command) {
 		ServerCommandSource serverCommandSource = parseResults.getContext().getSource();
-		serverCommandSource.getServer().getProfiler().push((Supplier<String>)(() -> "/" + command));
+		Profilers.get().push((Supplier<String>)(() -> "/" + command));
 		ContextChain<ServerCommandSource> contextChain = checkCommand(parseResults, command, serverCommandSource);
 
 		try {
@@ -241,7 +244,7 @@ public class CommandManager {
 				LOGGER.error("'/{}' threw an exception", command, var12);
 			}
 		} finally {
-			serverCommandSource.getServer().getProfiler().pop();
+			Profilers.get().pop();
 		}
 	}
 
@@ -284,7 +287,7 @@ public class CommandManager {
 			int i = Math.max(1, minecraftServer.getGameRules().getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH));
 			int j = minecraftServer.getGameRules().getInt(GameRules.MAX_COMMAND_FORK_COUNT);
 
-			try (CommandExecutionContext<ServerCommandSource> commandExecutionContext2 = new CommandExecutionContext<>(i, j, minecraftServer.getProfiler())) {
+			try (CommandExecutionContext<ServerCommandSource> commandExecutionContext2 = new CommandExecutionContext<>(i, j, Profilers.get())) {
 				CURRENT_CONTEXT.set(commandExecutionContext2);
 				callback.accept(commandExecutionContext2);
 				commandExecutionContext2.run();
@@ -384,6 +387,11 @@ public class CommandManager {
 
 	public static CommandRegistryAccess createRegistryAccess(RegistryWrapper.WrapperLookup registries) {
 		return new CommandRegistryAccess() {
+			@Override
+			public FeatureSet getEnabledFeatures() {
+				return FeatureFlags.FEATURE_MANAGER.getFeatureSet();
+			}
+
 			@Override
 			public Stream<RegistryKey<? extends Registry<?>>> streamAllRegistryKeys() {
 				return registries.streamAllRegistryKeys();

@@ -87,7 +87,7 @@ public interface DataProvider {
 			} catch (IOException var10) {
 				LOGGER.error("Failed to save file to {}", path, var10);
 			}
-		}, Util.getMainWorkerExecutor());
+		}, Util.getMainWorkerExecutor().named("saveStable"));
 	}
 
 	@FunctionalInterface
