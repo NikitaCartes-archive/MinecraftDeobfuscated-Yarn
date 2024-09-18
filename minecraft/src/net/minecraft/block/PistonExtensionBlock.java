@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -32,7 +31,7 @@ import net.minecraft.world.WorldView;
 
 public class PistonExtensionBlock extends BlockWithEntity {
 	public static final MapCodec<PistonExtensionBlock> CODEC = createCodec(PistonExtensionBlock::new);
-	public static final DirectionProperty FACING = PistonHeadBlock.FACING;
+	public static final EnumProperty<Direction> FACING = PistonHeadBlock.FACING;
 	public static final EnumProperty<PistonType> TYPE = PistonHeadBlock.TYPE;
 
 	@Override

@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 public class VaultBlock extends BlockWithEntity {
 	public static final MapCodec<VaultBlock> CODEC = createCodec(VaultBlock::new);
 	public static final Property<VaultState> VAULT_STATE = Properties.VAULT_STATE;
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final EnumProperty<Direction> FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty OMINOUS = Properties.OMINOUS;
 
 	@Override

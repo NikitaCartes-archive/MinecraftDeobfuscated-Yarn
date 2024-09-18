@@ -11,8 +11,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock implements Fertilizable {
 	public static final IntProperty AGE = Properties.AGE_25;
@@ -29,8 +29,8 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	protected abstract MapCodec<? extends AbstractPlantStemBlock> getCodec();
 
 	@Override
-	public BlockState getRandomGrowthState(WorldAccess world) {
-		return this.getDefaultState().with(AGE, Integer.valueOf(world.getRandom().nextInt(25)));
+	public BlockState getRandomGrowthState(Random random) {
+		return this.getDefaultState().with(AGE, Integer.valueOf(random.nextInt(25)));
 	}
 
 	@Override
@@ -66,18 +66,25 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
-			world.scheduleBlockTick(pos, this, 1);
+			tickView.scheduleBlockTick(pos, this, 1);
 		}
 
 		if (direction != this.growthDirection || !neighborState.isOf(this) && !neighborState.isOf(this.getPlant())) {
 			if (this.tickWater) {
-				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 		} else {
 			return this.copyState(state, this.getPlant().getDefaultState());
 		}

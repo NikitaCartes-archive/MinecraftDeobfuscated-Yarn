@@ -37,6 +37,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class BigDripleafBlock extends HorizontalFacingBlock implements Fertilizable, Waterloggable {
 	public static final MapCodec<BigDripleafBlock> CODEC = createCodec(BigDripleafBlock::new);
@@ -147,18 +148,25 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			return direction == Direction.UP && neighborState.isOf(this)
 				? Blocks.BIG_DRIPLEAF_STEM.getStateWithProperties(state)
-				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+				: super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 		}
 	}
 

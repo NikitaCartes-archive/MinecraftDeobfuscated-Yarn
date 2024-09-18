@@ -270,11 +270,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestMinecartEntity> CHEST_MINECART = register(
 		"chest_minecart",
-		EntityType.Builder.<ChestMinecartEntity>create(ChestMinecartEntity::new, SpawnGroup.MISC)
-			.dropsNothing()
-			.dimensions(0.98F, 0.7F)
-			.passengerAttachments(0.1875F)
-			.maxTrackingRange(8)
+		EntityType.Builder.create(ChestMinecartEntity::new, SpawnGroup.MISC).dropsNothing().dimensions(0.98F, 0.7F).passengerAttachments(0.1875F).maxTrackingRange(8)
 	);
 	public static final EntityType<ChickenEntity> CHICKEN = register(
 		"chicken",
@@ -289,7 +285,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<CommandBlockMinecartEntity> COMMAND_BLOCK_MINECART = register(
 		"command_block_minecart",
-		EntityType.Builder.<CommandBlockMinecartEntity>create(CommandBlockMinecartEntity::new, SpawnGroup.MISC)
+		EntityType.Builder.create(CommandBlockMinecartEntity::new, SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(0.98F, 0.7F)
 			.passengerAttachments(0.1875F)
@@ -449,7 +445,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<FurnaceMinecartEntity> FURNACE_MINECART = register(
 		"furnace_minecart",
-		EntityType.Builder.<FurnaceMinecartEntity>create(FurnaceMinecartEntity::new, SpawnGroup.MISC)
+		EntityType.Builder.create(FurnaceMinecartEntity::new, SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(0.98F, 0.7F)
 			.passengerAttachments(0.1875F)
@@ -498,7 +494,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<HopperMinecartEntity> HOPPER_MINECART = register(
 		"hopper_minecart",
-		EntityType.Builder.<HopperMinecartEntity>create(HopperMinecartEntity::new, SpawnGroup.MISC)
+		EntityType.Builder.create(HopperMinecartEntity::new, SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(0.98F, 0.7F)
 			.passengerAttachments(0.1875F)
@@ -621,11 +617,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<MinecartEntity> MINECART = register(
 		"minecart",
-		EntityType.Builder.<MinecartEntity>create(MinecartEntity::new, SpawnGroup.MISC)
-			.dropsNothing()
-			.dimensions(0.98F, 0.7F)
-			.passengerAttachments(0.1875F)
-			.maxTrackingRange(8)
+		EntityType.Builder.create(MinecartEntity::new, SpawnGroup.MISC).dropsNothing().dimensions(0.98F, 0.7F).passengerAttachments(0.1875F).maxTrackingRange(8)
 	);
 	public static final EntityType<MooshroomEntity> MOOSHROOM = register(
 		"mooshroom",
@@ -803,7 +795,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<SpawnerMinecartEntity> SPAWNER_MINECART = register(
 		"spawner_minecart",
-		EntityType.Builder.<SpawnerMinecartEntity>create(SpawnerMinecartEntity::new, SpawnGroup.MISC)
+		EntityType.Builder.create(SpawnerMinecartEntity::new, SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(0.98F, 0.7F)
 			.passengerAttachments(0.1875F)
@@ -860,11 +852,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<TntMinecartEntity> TNT_MINECART = register(
 		"tnt_minecart",
-		EntityType.Builder.<TntMinecartEntity>create(TntMinecartEntity::new, SpawnGroup.MISC)
-			.dropsNothing()
-			.dimensions(0.98F, 0.7F)
-			.passengerAttachments(0.1875F)
-			.maxTrackingRange(8)
+		EntityType.Builder.create(TntMinecartEntity::new, SpawnGroup.MISC).dropsNothing().dimensions(0.98F, 0.7F).passengerAttachments(0.1875F).maxTrackingRange(8)
 	);
 	public static final EntityType<TraderLlamaEntity> TRADER_LLAMA = register(
 		"trader_llama",

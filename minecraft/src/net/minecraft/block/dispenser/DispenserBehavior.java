@@ -471,5 +471,11 @@ public interface DispenserBehavior {
 				}
 			}
 		);
+		DispenserBlock.registerBehavior(Items.MINECART, new MinecartDispenserBehavior(EntityType.MINECART));
+		DispenserBlock.registerBehavior(Items.CHEST_MINECART, new MinecartDispenserBehavior(EntityType.CHEST_MINECART));
+		DispenserBlock.registerBehavior(Items.FURNACE_MINECART, new MinecartDispenserBehavior(EntityType.FURNACE_MINECART));
+		DispenserBlock.registerBehavior(Items.TNT_MINECART, new MinecartDispenserBehavior(EntityType.TNT_MINECART));
+		DispenserBlock.registerBehavior(Items.HOPPER_MINECART, new MinecartDispenserBehavior(EntityType.HOPPER_MINECART));
+		DispenserBlock.registerBehavior(Items.COMMAND_BLOCK_MINECART, new MinecartDispenserBehavior(EntityType.COMMAND_BLOCK_MINECART));
 	}
 }

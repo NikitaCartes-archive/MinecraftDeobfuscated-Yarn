@@ -440,6 +440,22 @@ public class ItemModelGenerator {
 		this.register(Items.OMINOUS_TRIAL_KEY, Models.GENERATED);
 		this.register(Items.OMINOUS_BOTTLE, Models.GENERATED);
 		this.register(Items.BUNDLE, Models.GENERATED);
+		this.register(Items.BLACK_BUNDLE, Models.GENERATED);
+		this.register(Items.WHITE_BUNDLE, Models.GENERATED);
+		this.register(Items.GRAY_BUNDLE, Models.GENERATED);
+		this.register(Items.LIGHT_GRAY_BUNDLE, Models.GENERATED);
+		this.register(Items.LIGHT_BLUE_BUNDLE, Models.GENERATED);
+		this.register(Items.BLUE_BUNDLE, Models.GENERATED);
+		this.register(Items.CYAN_BUNDLE, Models.GENERATED);
+		this.register(Items.YELLOW_BUNDLE, Models.GENERATED);
+		this.register(Items.RED_BUNDLE, Models.GENERATED);
+		this.register(Items.PURPLE_BUNDLE, Models.GENERATED);
+		this.register(Items.MAGENTA_BUNDLE, Models.GENERATED);
+		this.register(Items.PINK_BUNDLE, Models.GENERATED);
+		this.register(Items.GREEN_BUNDLE, Models.GENERATED);
+		this.register(Items.LIME_BUNDLE, Models.GENERATED);
+		this.register(Items.BROWN_BUNDLE, Models.GENERATED);
+		this.register(Items.ORANGE_BUNDLE, Models.GENERATED);
 	}
 
 	static record TrimMaterial(String name, float itemModelIndex, Map<Identifier, String> overrideArmorMaterials) {

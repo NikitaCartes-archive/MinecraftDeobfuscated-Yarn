@@ -23,7 +23,6 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -40,10 +39,11 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class PointedDripstoneBlock extends Block implements LandingBlock, Waterloggable {
 	public static final MapCodec<PointedDripstoneBlock> CODEC = createCodec(PointedDripstoneBlock::new);
-	public static final DirectionProperty VERTICAL_DIRECTION = Properties.VERTICAL_DIRECTION;
+	public static final EnumProperty<Direction> VERTICAL_DIRECTION = Properties.VERTICAL_DIRECTION;
 	public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final int field_31205 = 11;
@@ -97,23 +97,30 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		if (direction != Direction.UP && direction != Direction.DOWN) {
 			return state;
 		} else {
 			Direction direction2 = state.get(VERTICAL_DIRECTION);
-			if (direction2 == Direction.DOWN && world.getBlockTickScheduler().isQueued(pos, this)) {
+			if (direction2 == Direction.DOWN && tickView.getBlockTickScheduler().isQueued(pos, this)) {
 				return state;
 			} else if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
 				if (direction2 == Direction.DOWN) {
-					world.scheduleBlockTick(pos, this, 2);
+					tickView.scheduleBlockTick(pos, this, 2);
 				} else {
-					world.scheduleBlockTick(pos, this, 1);
+					tickView.scheduleBlockTick(pos, this, 1);
 				}
 
 				return state;

@@ -387,12 +387,12 @@ public class StructureTemplate {
 			mutable2.set(mutable, direction);
 			BlockState blockState = world.getBlockState(mutable);
 			BlockState blockState2 = world.getBlockState(mutable2);
-			BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2, world, mutable, mutable2);
+			BlockState blockState3 = blockState.getStateForNeighborUpdate(world, world, mutable, direction, mutable2, blockState2, world.getRandom());
 			if (blockState != blockState3) {
 				world.setBlockState(mutable, blockState3, flags & ~Block.NOTIFY_NEIGHBORS);
 			}
 
-			BlockState blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, world, mutable2, mutable);
+			BlockState blockState4 = blockState2.getStateForNeighborUpdate(world, world, mutable2, direction.getOpposite(), mutable, blockState3, world.getRandom());
 			if (blockState2 != blockState4) {
 				world.setBlockState(mutable2, blockState4, flags & ~Block.NOTIFY_NEIGHBORS);
 			}

@@ -11,12 +11,12 @@ import java.util.stream.IntStream;
  * <p>See {@link net.minecraft.state.property.Properties} for example
  * usages.
  */
-public class IntProperty extends Property<Integer> {
+public final class IntProperty extends Property<Integer> {
 	private final IntImmutableList values;
 	private final int min;
 	private final int max;
 
-	protected IntProperty(String name, int min, int max) {
+	private IntProperty(String name, int min, int max) {
 		super(name, Integer.class);
 		if (min < 0) {
 			throw new IllegalArgumentException("Min value of " + name + " must be 0 or greater");
@@ -72,8 +72,8 @@ public class IntProperty extends Property<Integer> {
 	@Override
 	public Optional<Integer> parse(String name) {
 		try {
-			Integer integer = Integer.valueOf(name);
-			return integer >= this.min && integer <= this.max ? Optional.of(integer) : Optional.empty();
+			int i = Integer.parseInt(name);
+			return i >= this.min && i <= this.max ? Optional.of(i) : Optional.empty();
 		} catch (NumberFormatException var3) {
 			return Optional.empty();
 		}

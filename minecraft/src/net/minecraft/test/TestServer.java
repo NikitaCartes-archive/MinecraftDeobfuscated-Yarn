@@ -56,7 +56,9 @@ public class TestServer extends MinecraftServer {
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
 	private static final int TEST_POS_XZ_RANGE = 14999992;
 	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, ServicesKeySet.EMPTY, null, null);
-	private static final FeatureSet ENABLED_FEATURES = FeatureFlags.FEATURE_MANAGER.getFeatureSet().subtract(FeatureSet.of(FeatureFlags.REDSTONE_EXPERIMENTS));
+	private static final FeatureSet ENABLED_FEATURES = FeatureFlags.FEATURE_MANAGER
+		.getFeatureSet()
+		.subtract(FeatureSet.of(FeatureFlags.REDSTONE_EXPERIMENTS, FeatureFlags.MINECART_IMPROVEMENTS));
 	private final MultiValueDebugSampleLogImpl debugSampleLog = new MultiValueDebugSampleLogImpl(4);
 	private List<GameTestBatch> batches = new ArrayList();
 	private final List<TestFunction> testFunctions;

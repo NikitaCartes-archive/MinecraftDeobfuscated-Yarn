@@ -34,7 +34,7 @@ public class LoginStates {
 		NetworkPhase.LOGIN,
 		builder -> builder.add(LoginPackets.LOGIN_DISCONNECT, LoginDisconnectS2CPacket.CODEC)
 				.add(LoginPackets.HELLO_S2C, LoginHelloS2CPacket.CODEC)
-				.add(LoginPackets.GAME_PROFILE, LoginSuccessS2CPacket.CODEC)
+				.add(LoginPackets.LOGIN_FINISHED, LoginSuccessS2CPacket.CODEC)
 				.add(LoginPackets.LOGIN_COMPRESSION, LoginCompressionS2CPacket.CODEC)
 				.add(LoginPackets.CUSTOM_QUERY, LoginQueryRequestS2CPacket.CODEC)
 				.add(CookiePackets.COOKIE_REQUEST, CookieRequestS2CPacket.CODEC)

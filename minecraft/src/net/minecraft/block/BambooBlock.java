@@ -21,8 +21,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class BambooBlock extends Block implements Fertilizable {
 	public static final MapCodec<BambooBlock> CODEC = createCodec(BambooBlock::new);
@@ -139,17 +139,22 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (!state.canPlaceAt(world, pos)) {
-			world.scheduleBlockTick(pos, this, 1);
+			tickView.scheduleBlockTick(pos, this, 1);
 		}
 
-		if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO) && (Integer)neighborState.get(AGE) > (Integer)state.get(AGE)) {
-			world.setBlockState(pos, state.cycle(AGE), Block.NOTIFY_LISTENERS);
-		}
-
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO) && neighborState.get(AGE) > state.get(AGE)
+			? state.cycle(AGE)
+			: super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override

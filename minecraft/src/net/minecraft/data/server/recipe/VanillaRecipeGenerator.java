@@ -9,8 +9,10 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.data.DataOutput;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
@@ -29,7 +31,6 @@ import net.minecraft.recipe.MapExtendingRecipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RepairItemRecipe;
 import net.minecraft.recipe.ShieldDecorationRecipe;
-import net.minecraft.recipe.ShulkerBoxColoringRecipe;
 import net.minecraft.recipe.SmokingRecipe;
 import net.minecraft.recipe.TippedArrowRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
@@ -38,6 +39,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 public class VanillaRecipeGenerator extends RecipeGenerator {
@@ -1439,6 +1441,7 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 			.pattern("-")
 			.criterion("has_shulker_shell", this.conditionsFromItem(Items.SHULKER_SHELL))
 			.offerTo(this.exporter);
+		this.generateDyedShulkerBoxes();
 		this.createShaped(RecipeCategory.BUILDING_BLOCKS, Blocks.PURPUR_BLOCK, 4)
 			.input('F', Items.POPPED_CHORUS_FRUIT)
 			.pattern("FF")
@@ -2032,7 +2035,6 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 		ComplexRecipeJsonBuilder.create(MapExtendingRecipe::new).offerTo(this.exporter, "map_extending");
 		ComplexRecipeJsonBuilder.create(RepairItemRecipe::new).offerTo(this.exporter, "repair_item");
 		ComplexRecipeJsonBuilder.create(ShieldDecorationRecipe::new).offerTo(this.exporter, "shield_decoration");
-		ComplexRecipeJsonBuilder.create(ShulkerBoxColoringRecipe::new).offerTo(this.exporter, "shulker_box_coloring");
 		ComplexRecipeJsonBuilder.create(TippedArrowRecipe::new).offerTo(this.exporter, "tipped_arrow");
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItem(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, 200)
 			.criterion("has_potato", this.conditionsFromItem(Items.POTATO))
@@ -2785,6 +2787,19 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 				Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE
 			)
 			.map(template -> new VanillaRecipeGenerator.SmithingTemplate(template, Identifier.ofVanilla(getItemPath(template) + "_smithing_trim")));
+	}
+
+	private void generateDyedShulkerBoxes() {
+		Ingredient ingredient = this.ingredientFromTag(ItemTags.SHULKER_BOXES);
+
+		for (DyeColor dyeColor : DyeColor.values()) {
+			TransmuteRecipeJsonBuilder.create(
+					RecipeCategory.DECORATIONS, ingredient, Ingredient.ofItem(DyeItem.byColor(dyeColor)), ShulkerBoxBlock.get(dyeColor).asItem()
+				)
+				.group("shulker_box_dye")
+				.criterion("has_shulker_box", this.conditionsFromTag(ItemTags.SHULKER_BOXES))
+				.offerTo(this.exporter);
+		}
 	}
 
 	public static class Provider extends RecipeGenerator.RecipeProvider {

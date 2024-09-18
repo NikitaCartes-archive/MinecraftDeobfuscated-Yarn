@@ -2,6 +2,7 @@ package net.minecraft.client.realms.util;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -17,7 +18,7 @@ public class UploadTokenCache {
 		TOKEN_CACHE.remove(world);
 	}
 
-	public static void put(long wid, String token) {
+	public static void put(long wid, @Nullable String token) {
 		TOKEN_CACHE.put(wid, token);
 	}
 }

@@ -1,6 +1,5 @@
 package net.minecraft.state.property;
 
-import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,16 +9,18 @@ import java.util.Optional;
  * <p>See {@link net.minecraft.state.property.Properties} for example
  * usages.
  */
-public class BooleanProperty extends Property<Boolean> {
-	private final ImmutableList<Boolean> values = ImmutableList.of(true, false);
+public final class BooleanProperty extends Property<Boolean> {
+	private static final List<Boolean> values = List.of(true, false);
+	private static final int TRUE_ORDINAL = 0;
+	private static final int FALSE_ORDINAL = 1;
 
-	protected BooleanProperty(String name) {
+	private BooleanProperty(String name) {
 		super(name, Boolean.class);
 	}
 
 	@Override
 	public List<Boolean> getValues() {
-		return this.values;
+		return values;
 	}
 
 	/**
@@ -34,7 +35,11 @@ public class BooleanProperty extends Property<Boolean> {
 
 	@Override
 	public Optional<Boolean> parse(String name) {
-		return !"true".equals(name) && !"false".equals(name) ? Optional.empty() : Optional.of(Boolean.valueOf(name));
+		return switch (name) {
+			case "true" -> Optional.of(true);
+			case "false" -> Optional.of(false);
+			default -> Optional.empty();
+		};
 	}
 
 	public String name(Boolean boolean_) {
@@ -43,23 +48,5 @@ public class BooleanProperty extends Property<Boolean> {
 
 	public int ordinal(Boolean boolean_) {
 		return boolean_ ? 0 : 1;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		} else {
-			if (object instanceof BooleanProperty booleanProperty && super.equals(object)) {
-				return this.values.equals(booleanProperty.values);
-			}
-
-			return false;
-		}
-	}
-
-	@Override
-	public int computeHashCode() {
-		return 31 * super.computeHashCode() + this.values.hashCode();
 	}
 }

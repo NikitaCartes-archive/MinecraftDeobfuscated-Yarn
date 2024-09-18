@@ -3301,11 +3301,11 @@ public class BlockStateModelGenerator {
 		TextureMap textureMap = TextureMap.torch(Blocks.REDSTONE_TORCH);
 		TextureMap textureMap2 = TextureMap.torch(TextureMap.getSubId(Blocks.REDSTONE_TORCH, "_off"));
 		Identifier identifier = Models.TEMPLATE_REDSTONE_TORCH.upload(Blocks.REDSTONE_TORCH, textureMap, this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_REDSTONE_TORCH.upload(Blocks.REDSTONE_TORCH, "_off", textureMap2, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_TORCH_UNLIT.upload(Blocks.REDSTONE_TORCH, "_off", textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.REDSTONE_TORCH).coordinate(createBooleanModelMap(Properties.LIT, identifier, identifier2)));
 		Identifier identifier3 = Models.TEMPLATE_REDSTONE_TORCH_WALL.upload(Blocks.REDSTONE_WALL_TORCH, textureMap, this.modelCollector);
-		Identifier identifier4 = Models.TEMPLATE_REDSTONE_TORCH_WALL.upload(Blocks.REDSTONE_WALL_TORCH, "_off", textureMap2, this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_TORCH_WALL_UNLIT.upload(Blocks.REDSTONE_WALL_TORCH, "_off", textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.REDSTONE_WALL_TORCH)

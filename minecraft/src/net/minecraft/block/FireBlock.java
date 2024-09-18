@@ -23,8 +23,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class FireBlock extends AbstractFireBlock {
 	public static final MapCodec<FireBlock> CODEC = createCodec(FireBlock::new);
@@ -110,7 +110,14 @@ public class FireBlock extends AbstractFireBlock {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		return this.canPlaceAt(state, world, pos) ? this.getStateWithAge(world, pos, (Integer)state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
@@ -256,7 +263,7 @@ public class FireBlock extends AbstractFireBlock {
 		}
 	}
 
-	private BlockState getStateWithAge(WorldAccess world, BlockPos pos, int age) {
+	private BlockState getStateWithAge(WorldView world, BlockPos pos, int age) {
 		BlockState blockState = getState(world, pos);
 		return blockState.isOf(Blocks.FIRE) ? blockState.with(AGE, Integer.valueOf(age)) : blockState;
 	}

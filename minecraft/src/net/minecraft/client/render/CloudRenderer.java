@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.option.CloudRenderMode;
@@ -43,7 +44,7 @@ public class CloudRenderer extends SinglePreparationResourceReloader<Optional<Cl
 	private CloudRenderMode renderMode;
 	@Nullable
 	private CloudRenderer.CloudCells cells;
-	private final VertexBuffer buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+	private final VertexBuffer buffer = new VertexBuffer(GlUsage.STATIC_WRITE);
 	private boolean renderClouds;
 
 	protected Optional<CloudRenderer.CloudCells> prepare(ResourceManager resourceManager, Profiler profiler) {

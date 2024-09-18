@@ -210,21 +210,21 @@ public class Properties {
 	/**
 	 * A property that specifies the direction a block is facing.
 	 */
-	public static final DirectionProperty FACING = DirectionProperty.of(
-		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
+	public static final EnumProperty<Direction> FACING = EnumProperty.of(
+		"facing", Direction.class, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
 	);
 	/**
 	 * A property that specifies the direction a hopper's output faces.
 	 * 
 	 * <p>This property does not allow the hopper's output to face upwards.
 	 */
-	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(facing -> facing != Direction.UP));
+	public static final EnumProperty<Direction> HOPPER_FACING = EnumProperty.of("facing", Direction.class, (Predicate)(facing -> facing != Direction.UP));
 	/**
 	 * A property that specifies the direction a block is facing.
 	 * 
 	 * <p>This property only allows a block to face in one of the cardinal directions (north, south, east and west).
 	 */
-	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
+	public static final EnumProperty<Direction> HORIZONTAL_FACING = EnumProperty.of("facing", Direction.class, Direction.Type.HORIZONTAL);
 	/**
 	 * A property that specifies the amount of flowers in a pink petals block.
 	 */
@@ -475,7 +475,7 @@ public class Properties {
 	 * 
 	 * <p>This property allows a block to face either down or up.
 	 */
-	public static final DirectionProperty VERTICAL_DIRECTION = DirectionProperty.of("vertical_direction", Direction.UP, Direction.DOWN);
+	public static final EnumProperty<Direction> VERTICAL_DIRECTION = EnumProperty.of("vertical_direction", Direction.class, Direction.UP, Direction.DOWN);
 	/**
 	 * A property that specifies the thickness of a pointed dripstone.
 	 */

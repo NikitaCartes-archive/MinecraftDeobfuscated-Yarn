@@ -14,13 +14,15 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.dto.UploadInfo;
-import net.minecraft.client.realms.gui.screen.UploadResult;
+import net.minecraft.client.realms.exception.upload.CancelledRealmsUploadException;
+import net.minecraft.client.realms.util.UploadProgress;
+import net.minecraft.client.realms.util.UploadResult;
 import net.minecraft.client.session.Session;
+import net.minecraft.util.Util;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -45,8 +47,8 @@ public class FileUpload {
 	private final String username;
 	private final String clientVersion;
 	private final String worldVersion;
-	private final UploadStatus uploadStatus;
-	private final AtomicBoolean cancelled = new AtomicBoolean(false);
+	private final UploadProgress uploadStatus;
+	final AtomicBoolean cancelled = new AtomicBoolean(false);
 	@Nullable
 	private CompletableFuture<UploadResult> uploadTask;
 	private final RequestConfig requestConfig = RequestConfig.custom()
@@ -55,7 +57,7 @@ public class FileUpload {
 		.build();
 
 	public FileUpload(
-		File file, long worldId, int slotId, UploadInfo uploadInfo, Session session, String clientVersion, String worldVersion, UploadStatus uploadStatus
+		File file, long worldId, int slotId, UploadInfo uploadInfo, Session session, String clientVersion, String worldVersion, UploadProgress uploadStatus
 	) {
 		this.file = file;
 		this.worldId = worldId;
@@ -68,19 +70,22 @@ public class FileUpload {
 		this.uploadStatus = uploadStatus;
 	}
 
-	public void upload(Consumer<UploadResult> callback) {
-		if (this.uploadTask == null) {
-			this.uploadTask = CompletableFuture.supplyAsync(() -> this.requestUpload(0));
-			this.uploadTask.thenAccept(callback);
+	public UploadResult upload() {
+		if (this.uploadTask != null) {
+			return new UploadResult.Builder().build();
+		} else {
+			this.uploadTask = CompletableFuture.supplyAsync(() -> this.requestUpload(0), Util.getMainWorkerExecutor());
+			if (this.cancelled.get()) {
+				this.cancel();
+				return new UploadResult.Builder().build();
+			} else {
+				return (UploadResult)this.uploadTask.join();
+			}
 		}
 	}
 
 	public void cancel() {
 		this.cancelled.set(true);
-		if (this.uploadTask != null) {
-			this.uploadTask.cancel(false);
-			this.uploadTask = null;
-		}
 	}
 
 	private UploadResult requestUpload(int currentAttempt) {
@@ -88,7 +93,7 @@ public class FileUpload {
 		if (this.cancelled.get()) {
 			return builder.build();
 		} else {
-			this.uploadStatus.totalBytes = this.file.length();
+			this.uploadStatus.setTotalBytes(this.file.length());
 			HttpPost httpPost = new HttpPost(this.uploadInfo.getUploadEndpoint().resolve("/upload/" + this.worldId + "/" + this.slotId));
 			CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().setDefaultRequestConfig(this.requestConfig).build();
 
@@ -106,9 +111,10 @@ public class FileUpload {
 			} catch (Exception var12) {
 				if (!this.cancelled.get()) {
 					LOGGER.error("Caught exception while uploading: ", (Throwable)var12);
+					return builder.build();
 				}
 
-				return builder.build();
+				throw new CancelledRealmsUploadException();
 			} finally {
 				this.cleanup(httpPost, closeableHttpClient);
 			}
@@ -188,12 +194,12 @@ public class FileUpload {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class CustomInputStreamEntity extends InputStreamEntity {
+	class CustomInputStreamEntity extends InputStreamEntity {
 		private final long length;
 		private final InputStream content;
-		private final UploadStatus uploadStatus;
+		private final UploadProgress uploadStatus;
 
-		public CustomInputStreamEntity(InputStream content, long length, UploadStatus uploadStatus) {
+		public CustomInputStreamEntity(final InputStream content, final long length, final UploadProgress uploadStatus) {
 			super(content);
 			this.content = content;
 			this.length = length;
@@ -201,8 +207,8 @@ public class FileUpload {
 		}
 
 		@Override
-		public void writeTo(OutputStream outstream) throws IOException {
-			Args.notNull(outstream, "Output stream");
+		public void writeTo(OutputStream stream) throws IOException {
+			Args.notNull(stream, "Output stream");
 			InputStream inputStream = this.content;
 
 			try {
@@ -210,8 +216,12 @@ public class FileUpload {
 				int i;
 				if (this.length < 0L) {
 					while ((i = inputStream.read(bs)) != -1) {
-						outstream.write(bs, 0, i);
-						this.uploadStatus.bytesWritten += (long)i;
+						if (FileUpload.this.cancelled.get()) {
+							throw new CancelledRealmsUploadException();
+						}
+
+						stream.write(bs, 0, i);
+						this.uploadStatus.addBytesWritten((long)i);
 					}
 				} else {
 					long l = this.length;
@@ -222,13 +232,29 @@ public class FileUpload {
 							break;
 						}
 
-						outstream.write(bs, 0, i);
-						this.uploadStatus.bytesWritten += (long)i;
+						if (FileUpload.this.cancelled.get()) {
+							throw new CancelledRealmsUploadException();
+						}
+
+						stream.write(bs, 0, i);
+						this.uploadStatus.addBytesWritten((long)i);
 						l -= (long)i;
-						outstream.flush();
+						stream.flush();
 					}
 				}
-			} finally {
+			} catch (Throwable var8) {
+				if (inputStream != null) {
+					try {
+						inputStream.close();
+					} catch (Throwable var7) {
+						var8.addSuppressed(var7);
+					}
+				}
+
+				throw var8;
+			}
+
+			if (inputStream != null) {
 				inputStream.close();
 			}
 		}

@@ -786,10 +786,14 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	public void setOnFireFromLava() {
 		if (!this.isFireImmune()) {
 			this.setOnFireFor(15.0F);
-			if (this.damage(this.getDamageSources().lava(), 4.0F)) {
+			if (this.damage(this.getDamageSources().lava(), 4.0F) && this.shouldPlayBurnSoundInLava()) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 			}
 		}
+	}
+
+	protected boolean shouldPlayBurnSoundInLava() {
+		return true;
 	}
 
 	/**
@@ -2139,19 +2143,19 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	public float getPitch(float tickDelta) {
-		return tickDelta == 1.0F ? this.getPitch() : MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
+		return this.getLerpedPitch(tickDelta);
 	}
 
 	public float getYaw(float tickDelta) {
-		return tickDelta == 1.0F ? this.getYaw() : MathHelper.lerp(tickDelta, this.prevYaw, this.getYaw());
+		return this.getLerpedYaw(tickDelta);
 	}
 
 	public float getLerpedPitch(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
+		return tickDelta == 1.0F ? this.getPitch() : MathHelper.lerp(tickDelta, this.prevPitch, this.getPitch());
 	}
 
 	public float getLerpedYaw(float tickDelta) {
-		return MathHelper.lerpAngleDegrees(tickDelta, this.prevYaw, this.getYaw());
+		return tickDelta == 1.0F ? this.getYaw() : MathHelper.lerpAngleDegrees(tickDelta, this.prevYaw, this.getYaw());
 	}
 
 	public final Vec3d getRotationVector(float pitch, float yaw) {

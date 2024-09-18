@@ -270,6 +270,11 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	@Override
+	protected boolean shouldPlayBurnSoundInLava() {
+		return this.health <= 0 ? true : this.age % 10 == 0;
+	}
+
+	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;

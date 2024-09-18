@@ -12,6 +12,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.VertexBuffer;
 
 /**
@@ -146,7 +147,7 @@ public class VertexFormat {
 	public VertexBuffer getBuffer() {
 		VertexBuffer vertexBuffer = this.buffer;
 		if (vertexBuffer == null) {
-			this.buffer = vertexBuffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
+			this.buffer = vertexBuffer = new VertexBuffer(GlUsage.DYNAMIC_WRITE);
 		}
 
 		return vertexBuffer;

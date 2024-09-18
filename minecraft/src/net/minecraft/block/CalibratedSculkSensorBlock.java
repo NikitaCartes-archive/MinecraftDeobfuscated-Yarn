@@ -8,7 +8,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -20,7 +20,7 @@ import net.minecraft.world.event.Vibrations;
 
 public class CalibratedSculkSensorBlock extends SculkSensorBlock {
 	public static final MapCodec<CalibratedSculkSensorBlock> CODEC = createCodec(CalibratedSculkSensorBlock::new);
-	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+	public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 
 	@Override
 	public MapCodec<CalibratedSculkSensorBlock> getCodec() {

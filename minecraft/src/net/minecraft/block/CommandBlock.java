@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -36,7 +36,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 		instance -> instance.group(Codec.BOOL.fieldOf("automatic").forGetter(block -> block.auto), createSettingsCodec()).apply(instance, CommandBlock::new)
 	);
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final DirectionProperty FACING = FacingBlock.FACING;
+	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
 	public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
 	private final boolean auto;
 

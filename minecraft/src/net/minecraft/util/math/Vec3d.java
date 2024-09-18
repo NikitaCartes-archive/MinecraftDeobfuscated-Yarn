@@ -529,4 +529,8 @@ public class Vec3d implements Position {
 	public Vector3f toVector3f() {
 		return new Vector3f((float)this.x, (float)this.y, (float)this.z);
 	}
+
+	public Vec3d projectOnto(Vec3d vec) {
+		return vec.lengthSquared() == 0.0 ? vec : vec.multiply(this.dotProduct(vec)).multiply(1.0 / vec.lengthSquared());
+	}
 }

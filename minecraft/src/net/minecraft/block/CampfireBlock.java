@@ -28,7 +28,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -45,7 +45,9 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public static final MapCodec<CampfireBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -60,7 +62,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty LIT = Properties.LIT;
 	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+	public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 	/**
 	 * The shape used to test whether a given block is considered 'smokey'.
 	 */
@@ -142,15 +144,22 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return direction == Direction.DOWN
 			? state.with(SIGNAL_FIRE, Boolean.valueOf(this.isSignalFireBaseBlock(neighborState)))
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 	}
 
 	private boolean isSignalFireBaseBlock(BlockState state) {

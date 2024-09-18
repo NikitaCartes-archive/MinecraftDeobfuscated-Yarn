@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -17,10 +18,6 @@ public class MinecartEntity extends AbstractMinecartEntity {
 
 	public MinecartEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
-	}
-
-	public MinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.MINECART, world, x, y, z);
 	}
 
 	@Override
@@ -43,6 +40,11 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.MINECART);
+	}
+
+	@Override
 	public void onActivatorRail(int x, int y, int z, boolean powered) {
 		if (powered) {
 			if (this.hasPassengers()) {
@@ -59,8 +61,8 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.RIDEABLE;
+	public boolean isRideable() {
+		return true;
 	}
 
 	@Override

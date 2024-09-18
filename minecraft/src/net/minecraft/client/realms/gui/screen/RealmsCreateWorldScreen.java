@@ -23,7 +23,6 @@ import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.task.LongRunningTask;
-import net.minecraft.client.realms.task.ResettingNormalWorldTask;
 import net.minecraft.client.realms.task.ResettingWorldTemplateTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.realms.task.WorldCreationTask;
@@ -42,6 +41,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 	private static final Text CREATE_REALM_SUBTITLE = Text.translatable("mco.selectServer.create.subtitle");
 	private static final Text CREATE_WORLD_TITLE = Text.translatable("mco.configure.world.switch.slot");
 	private static final Text CREATE_WORLD_SUBTITLE = Text.translatable("mco.configure.world.switch.slot.subtitle");
+	private static final Text NEW_WORLD_BUTTON_TEXT = Text.translatable("mco.reset.world.generate");
 	private static final Text RESET_WORLD_TITLE = Text.translatable("mco.reset.world.title");
 	private static final Text RESET_WORLD_SUBTITLE = Text.translatable("mco.reset.world.warning");
 	public static final Text CREATING_TEXT = Text.translatable("mco.create.world.reset.title");
@@ -145,9 +145,9 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		adder.add(
 			new RealmsCreateWorldScreen.FrameButton(
 				this.client.textRenderer,
-				RealmsResetNormalWorldScreen.TITLE,
+				NEW_WORLD_BUTTON_TEXT,
 				NEW_WORLD_TEXTURE,
-				button -> this.client.setScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
+				button -> RealmsWorldCreating.showCreateWorldScreen(this.client, this.parent, this, this.serverData, this.creationTask)
 			)
 		);
 		adder.add(
@@ -227,13 +227,6 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		this.client.setScreen(this);
 		if (template != null) {
 			this.runTasks(new ResettingWorldTemplateTask(template, this.serverData.id, this.taskTitle, this.callback));
-		}
-	}
-
-	private void onResetNormalWorld(@Nullable ResetWorldInfo info) {
-		this.client.setScreen(this);
-		if (info != null) {
-			this.runTasks(new ResettingNormalWorldTask(info, this.serverData.id, this.taskTitle, this.callback));
 		}
 	}
 

@@ -30,11 +30,11 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.NetherPortal;
+import net.minecraft.world.tick.ScheduledTickView;
 import org.slf4j.Logger;
 
 public class NetherPortalBlock extends Block implements Portal {
@@ -88,14 +88,21 @@ public class NetherPortalBlock extends Block implements Portal {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		Direction.Axis axis = direction.getAxis();
 		Direction.Axis axis2 = state.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
-		return !bl && !neighborState.isOf(this) && !new NetherPortal(world, pos, axis2).wasAlreadyValid()
+		return !bl && !neighborState.isOf(this) && !NetherPortal.getOnAxis(world, pos, axis2).wasAlreadyValid()
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override

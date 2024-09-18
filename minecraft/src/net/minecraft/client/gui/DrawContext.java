@@ -35,8 +35,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -685,7 +685,7 @@ public class DrawContext {
 					DiffuseLighting.disableGuiDepthLighting();
 				}
 
-				if (stack.isOf(Items.BUNDLE)) {
+				if (stack.isIn(ItemTags.BUNDLES)) {
 					this.client
 						.getItemRenderer()
 						.renderBundle(

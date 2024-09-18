@@ -10,9 +10,10 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
-public class CoralBlock extends CoralParentBlock {
+public class CoralBlock extends AbstractCoralBlock {
 	public static final MapCodec<CoralBlock> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(CoralBlockBlock.DEAD_FIELD.forGetter(block -> block.deadCoralBlock), createSettingsCodec()).apply(instance, CoralBlock::new)
 	);
@@ -32,7 +33,7 @@ public class CoralBlock extends CoralParentBlock {
 
 	@Override
 	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		this.checkLivingConditions(state, world, pos);
+		this.checkLivingConditions(state, world, world, world.random, pos);
 	}
 
 	@Override
@@ -44,17 +45,24 @@ public class CoralBlock extends CoralParentBlock {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			this.checkLivingConditions(state, world, pos);
+			this.checkLivingConditions(state, world, tickView, random, pos);
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 		}
 	}
 

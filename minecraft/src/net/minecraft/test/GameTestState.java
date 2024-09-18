@@ -178,6 +178,10 @@ public class GameTestState {
 		return this.pos;
 	}
 
+	public BlockPos getOrigin() {
+		return StructureTestUtil.getOrigin(this.structureBlockEntity);
+	}
+
 	public Box getBoundingBox() {
 		StructureBlockBlockEntity structureBlockBlockEntity = this.getStructureBlockBlockEntity();
 		return StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);

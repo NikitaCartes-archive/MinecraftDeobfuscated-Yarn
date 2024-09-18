@@ -25,10 +25,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class NoteBlock extends Block {
 	public static final MapCodec<NoteBlock> CODEC = createCodec(NoteBlock::new);
@@ -49,7 +51,7 @@ public class NoteBlock extends Block {
 		);
 	}
 
-	private BlockState getStateWithInstrument(WorldAccess world, BlockPos pos, BlockState state) {
+	private BlockState getStateWithInstrument(WorldView world, BlockPos pos, BlockState state) {
 		NoteBlockInstrument noteBlockInstrument = world.getBlockState(pos.up()).getInstrument();
 		if (noteBlockInstrument.isNotBaseBlock()) {
 			return state.with(INSTRUMENT, noteBlockInstrument);
@@ -67,10 +69,19 @@ public class NoteBlock extends Block {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		boolean bl = direction.getAxis() == Direction.Axis.Y;
-		return bl ? this.getStateWithInstrument(world, pos, state) : super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return bl
+			? this.getStateWithInstrument(world, pos, state)
+			: super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override

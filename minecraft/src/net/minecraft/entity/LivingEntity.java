@@ -3143,7 +3143,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public float getYaw(float tickDelta) {
-		return tickDelta == 1.0F ? this.headYaw : MathHelper.lerp(tickDelta, this.prevHeadYaw, this.headYaw);
+		return tickDelta == 1.0F ? this.headYaw : MathHelper.lerpAngleDegrees(tickDelta, this.prevHeadYaw, this.headYaw);
 	}
 
 	public float getHandSwingProgress(float tickDelta) {

@@ -1425,6 +1425,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.currentScreenHandler != this.playerScreenHandler;
 	}
 
+	public boolean canDropItems() {
+		return true;
+	}
+
 	/**
 	 * Tries to start sleeping on a block.
 	 * 

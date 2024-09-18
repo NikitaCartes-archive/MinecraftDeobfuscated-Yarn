@@ -84,7 +84,7 @@ import org.slf4j.Logger;
 public class LevelStorage {
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatters.create();
-	private static final String DATA_KEY = "Data";
+	public static final String DATA_KEY = "Data";
 	private static final PathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = path -> false;
 	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";
 	private static final int MAX_LEVEL_DATA_SIZE = 104857600;

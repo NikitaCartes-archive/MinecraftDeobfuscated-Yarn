@@ -79,6 +79,7 @@ import net.minecraft.stat.StatHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Cooldown;
 import net.minecraft.util.Hand;
 import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.BlockPos;
@@ -107,6 +108,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public final ClientPlayNetworkHandler networkHandler;
 	private final StatHandler statHandler;
 	private final ClientRecipeBook recipeBook;
+	private final Cooldown itemDropCooldown = new Cooldown(20, 1280);
 	private final List<ClientPlayerTickable> tickables = Lists.<ClientPlayerTickable>newArrayList();
 	private int clientPermissionLevel = 0;
 	private double lastX;
@@ -138,7 +140,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private Hand activeHand;
 	private boolean riding;
 	private boolean autoJumpEnabled = true;
-	private int ticksToNextAutojump;
+	private int ticksToNextAutoJump;
 	private boolean falling;
 	private int underwaterVisibilityTicks;
 	private boolean showsDeathScreen = true;
@@ -206,6 +208,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void tick() {
+		this.itemDropCooldown.tick();
 		if (this.getWorld().isPosLoaded(this.getBlockX(), this.getBlockZ())) {
 			super.tick();
 			this.sendSneakingPacket();
@@ -697,8 +700,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl4 = false;
-		if (this.ticksToNextAutojump > 0) {
-			this.ticksToNextAutojump--;
+		if (this.ticksToNextAutoJump > 0) {
+			this.ticksToNextAutoJump--;
 			bl4 = true;
 			this.input.jump();
 		}
@@ -1008,7 +1011,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						if (r != Float.MIN_VALUE) {
 							float t = (float)((double)r - this.getY());
 							if (!(t <= 0.5F) && !(t > n)) {
-								this.ticksToNextAutojump = 1;
+								this.ticksToNextAutoJump = 1;
 							}
 						}
 					}
@@ -1037,7 +1040,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private boolean shouldAutoJump() {
 		return this.isAutoJumpEnabled()
-			&& this.ticksToNextAutojump <= 0
+			&& this.ticksToNextAutoJump <= 0
 			&& this.isOnGround()
 			&& !this.clipAtLedge()
 			&& !this.hasVehicle()
@@ -1153,5 +1156,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void dropCreativeStack(ItemStack stack) {
 		this.client.interactionManager.dropCreativeStack(stack);
+	}
+
+	@Override
+	public boolean canDropItems() {
+		return this.itemDropCooldown.canUse();
+	}
+
+	public Cooldown getItemDropCooldown() {
+		return this.itemDropCooldown;
 	}
 }

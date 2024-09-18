@@ -4,7 +4,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
@@ -14,7 +14,7 @@ public class DoubleBlockProperties {
 		BlockEntityType<S> blockEntityType,
 		Function<BlockState, DoubleBlockProperties.Type> typeMapper,
 		Function<BlockState, Direction> directionMapper,
-		DirectionProperty directionProperty,
+		Property<Direction> property,
 		BlockState state,
 		WorldAccess world,
 		BlockPos pos,
@@ -36,7 +36,7 @@ public class DoubleBlockProperties {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(state.getBlock())) {
 					DoubleBlockProperties.Type type2 = (DoubleBlockProperties.Type)typeMapper.apply(blockState);
-					if (type2 != DoubleBlockProperties.Type.SINGLE && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
+					if (type2 != DoubleBlockProperties.Type.SINGLE && type != type2 && blockState.get(property) == state.get(property)) {
 						if (fallbackTester.test(world, blockPos)) {
 							return DoubleBlockProperties.PropertyRetriever::getFallback;
 						}

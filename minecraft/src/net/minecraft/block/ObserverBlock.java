@@ -13,9 +13,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.block.OrientationHelper;
 import net.minecraft.world.block.WireOrientation;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class ObserverBlock extends FacingBlock {
 	public static final MapCodec<ObserverBlock> CODEC = createCodec(ObserverBlock::new);
@@ -60,18 +61,25 @@ public class ObserverBlock extends FacingBlock {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (state.get(FACING) == direction && !(Boolean)state.get(POWERED)) {
-			this.scheduleTick(world, pos);
+			this.scheduleTick(world, tickView, pos);
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 	}
 
-	private void scheduleTick(WorldAccess world, BlockPos pos) {
-		if (!world.isClient() && !world.getBlockTickScheduler().isQueued(pos, this)) {
-			world.scheduleBlockTick(pos, this, 2);
+	private void scheduleTick(WorldView world, ScheduledTickView tickView, BlockPos pos) {
+		if (!world.isClient() && !tickView.getBlockTickScheduler().isQueued(pos, this)) {
+			tickView.scheduleBlockTick(pos, this, 2);
 		}
 	}
 

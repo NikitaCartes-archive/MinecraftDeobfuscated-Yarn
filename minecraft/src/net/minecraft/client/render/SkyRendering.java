@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,7 +28,7 @@ public class SkyRendering implements AutoCloseable {
 	private final VertexBuffer darkSkyBuffer = this.createDarkSkyBuffer();
 
 	private VertexBuffer createStarBuffer() {
-		VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+		VertexBuffer vertexBuffer = new VertexBuffer(GlUsage.STATIC_WRITE);
 		vertexBuffer.bind();
 		vertexBuffer.upload(this.tessellateStars(Tessellator.getInstance()));
 		VertexBuffer.unbind();
@@ -35,7 +36,7 @@ public class SkyRendering implements AutoCloseable {
 	}
 
 	private VertexBuffer createSkyBuffer() {
-		VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+		VertexBuffer vertexBuffer = new VertexBuffer(GlUsage.STATIC_WRITE);
 		vertexBuffer.bind();
 		vertexBuffer.upload(this.tessellateSky(Tessellator.getInstance(), 16.0F));
 		VertexBuffer.unbind();
@@ -43,7 +44,7 @@ public class SkyRendering implements AutoCloseable {
 	}
 
 	private VertexBuffer createDarkSkyBuffer() {
-		VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+		VertexBuffer vertexBuffer = new VertexBuffer(GlUsage.STATIC_WRITE);
 		vertexBuffer.bind();
 		vertexBuffer.upload(this.tessellateSky(Tessellator.getInstance(), -16.0F));
 		VertexBuffer.unbind();

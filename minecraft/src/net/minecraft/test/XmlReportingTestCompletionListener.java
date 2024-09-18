@@ -46,7 +46,7 @@ public class XmlReportingTestCompletionListener implements TestCompletionListene
 		String string = test.getTemplatePath();
 		String string2 = test.getThrowable().getMessage();
 		Element element = this.document.createElement(test.isRequired() ? "failure" : "skipped");
-		element.setAttribute("message", "(" + test.getPos().toShortString() + ") " + string2);
+		element.setAttribute("message", "(" + test.getOrigin().toShortString() + ") " + string2);
 		Element element2 = this.addTestCase(test, string);
 		element2.appendChild(element);
 	}

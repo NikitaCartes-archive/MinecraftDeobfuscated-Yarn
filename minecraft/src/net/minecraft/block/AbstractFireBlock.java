@@ -140,7 +140,7 @@ public abstract class AbstractFireBlock extends Block {
 			if (isOverworldOrNether(world)) {
 				Optional<NetherPortal> optional = NetherPortal.getNewPortal(world, pos, Direction.Axis.X);
 				if (optional.isPresent()) {
-					((NetherPortal)optional.get()).createPortal();
+					((NetherPortal)optional.get()).createPortal(world);
 					return;
 				}
 			}

@@ -12,15 +12,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class AttachedStemBlock extends PlantBlock {
 	public static final MapCodec<AttachedStemBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -32,7 +33,7 @@ public class AttachedStemBlock extends PlantBlock {
 				)
 				.apply(instance, AttachedStemBlock::new)
 	);
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final EnumProperty<Direction> FACING = HorizontalFacingBlock.FACING;
 	protected static final float field_30995 = 2.0F;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
@@ -70,7 +71,14 @@ public class AttachedStemBlock extends PlantBlock {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (!neighborState.matchesKey(this.gourdBlock) && direction == state.get(FACING)) {
 			Optional<Block> optional = world.getRegistryManager().getOrThrow(RegistryKeys.BLOCK).getOptionalValue(this.stemBlock);
@@ -79,7 +87,7 @@ public class AttachedStemBlock extends PlantBlock {
 			}
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override

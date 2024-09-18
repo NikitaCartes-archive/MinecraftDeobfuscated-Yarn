@@ -449,6 +449,7 @@ public class ClientPlayerInteractionManager {
 		boolean bl = this.client.currentScreen instanceof HandledScreen && !(this.client.currentScreen instanceof CreativeInventoryScreen);
 		if (this.gameMode.isCreative() && !bl && !stack.isEmpty() && this.networkHandler.hasFeature(stack.getItem().getRequiredFeatures())) {
 			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(-1, stack));
+			this.client.player.getItemDropCooldown().increment();
 		}
 	}
 

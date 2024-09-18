@@ -14,7 +14,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -32,7 +32,7 @@ import net.minecraft.world.block.WireOrientation;
 
 public class HopperBlock extends BlockWithEntity {
 	public static final MapCodec<HopperBlock> CODEC = createCodec(HopperBlock::new);
-	public static final DirectionProperty FACING = Properties.HOPPER_FACING;
+	public static final EnumProperty<Direction> FACING = Properties.HOPPER_FACING;
 	public static final BooleanProperty ENABLED = Properties.ENABLED;
 	private static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 10.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(4.0, 4.0, 4.0, 12.0, 10.0, 12.0);

@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 public class LoginPackets {
 	public static final PacketType<LoginQueryRequestS2CPacket> CUSTOM_QUERY = s2c("custom_query");
-	public static final PacketType<LoginSuccessS2CPacket> GAME_PROFILE = s2c("game_profile");
+	public static final PacketType<LoginSuccessS2CPacket> LOGIN_FINISHED = s2c("login_finished");
 	public static final PacketType<LoginHelloS2CPacket> HELLO_S2C = s2c("hello");
 	public static final PacketType<LoginCompressionS2CPacket> LOGIN_COMPRESSION = s2c("login_compression");
 	public static final PacketType<LoginDisconnectS2CPacket> LOGIN_DISCONNECT = s2c("login_disconnect");

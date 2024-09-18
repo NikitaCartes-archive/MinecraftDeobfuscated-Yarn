@@ -29,10 +29,6 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		super(entityType, world);
 	}
 
-	protected StorageMinecartEntity(EntityType<?> type, double x, double y, double z, World world) {
-		super(type, world, x, y, z);
-	}
-
 	@Override
 	public void killAndDropSelf(DamageSource source) {
 		super.killAndDropSelf(source);

@@ -8,6 +8,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenTexts;
@@ -31,13 +32,14 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		super(entityType, world);
 	}
 
-	public CommandBlockMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.COMMAND_BLOCK_MINECART, world, x, y, z);
-	}
-
 	@Override
 	protected Item asItem() {
 		return Items.MINECART;
+	}
+
+	@Override
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.COMMAND_BLOCK_MINECART);
 	}
 
 	@Override
@@ -59,11 +61,6 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		this.commandExecutor.writeNbt(nbt, this.getRegistryManager());
-	}
-
-	@Override
-	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.COMMAND_BLOCK;
 	}
 
 	@Override

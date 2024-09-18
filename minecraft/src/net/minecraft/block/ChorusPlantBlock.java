@@ -10,8 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class ChorusPlantBlock extends ConnectingBlock {
 	public static final MapCodec<ChorusPlantBlock> CODEC = createCodec(ChorusPlantBlock::new);
@@ -58,11 +58,18 @@ public class ChorusPlantBlock extends ConnectingBlock {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (!state.canPlaceAt(world, pos)) {
-			world.scheduleBlockTick(pos, this, 1);
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			tickView.scheduleBlockTick(pos, this, 1);
+			return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 		} else {
 			boolean bl = neighborState.isOf(this) || neighborState.isOf(Blocks.CHORUS_FLOWER) || direction == Direction.DOWN && neighborState.isOf(Blocks.END_STONE);
 			return state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(bl));

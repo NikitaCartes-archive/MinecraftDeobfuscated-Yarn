@@ -2,83 +2,25 @@ package net.minecraft.item;
 
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.dispenser.DispenserBehavior;
-import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class MinecartItem extends Item {
-	private static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior() {
-		private final ItemDispenserBehavior defaultBehavior = new ItemDispenserBehavior();
+	private final EntityType<? extends AbstractMinecartEntity> type;
 
-		@Override
-		public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-			Direction direction = pointer.state().get(DispenserBlock.FACING);
-			ServerWorld serverWorld = pointer.world();
-			Vec3d vec3d = pointer.centerPos();
-			double d = vec3d.getX() + (double)direction.getOffsetX() * 1.125;
-			double e = Math.floor(vec3d.getY()) + (double)direction.getOffsetY();
-			double f = vec3d.getZ() + (double)direction.getOffsetZ() * 1.125;
-			BlockPos blockPos = pointer.pos().offset(direction);
-			BlockState blockState = serverWorld.getBlockState(blockPos);
-			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
-				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
-				: RailShape.NORTH_SOUTH;
-			double g;
-			if (blockState.isIn(BlockTags.RAILS)) {
-				if (railShape.isAscending()) {
-					g = 0.6;
-				} else {
-					g = 0.1;
-				}
-			} else {
-				if (!blockState.isAir() || !serverWorld.getBlockState(blockPos.down()).isIn(BlockTags.RAILS)) {
-					return this.defaultBehavior.dispense(pointer, stack);
-				}
-
-				BlockState blockState2 = serverWorld.getBlockState(blockPos.down());
-				RailShape railShape2 = blockState2.getBlock() instanceof AbstractRailBlock
-					? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty())
-					: RailShape.NORTH_SOUTH;
-				if (direction != Direction.DOWN && railShape2.isAscending()) {
-					g = -0.4;
-				} else {
-					g = -0.9;
-				}
-			}
-
-			Vec3d vec3d2 = new Vec3d(d, e + g, f);
-			AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(
-				serverWorld, vec3d2.x, vec3d2.y, vec3d2.z, ((MinecartItem)stack.getItem()).type, stack, null
-			);
-			serverWorld.spawnEntity(abstractMinecartEntity);
-			stack.decrement(1);
-			return stack;
-		}
-
-		@Override
-		protected void playSound(BlockPointer pointer) {
-			pointer.world().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.pos(), 0);
-		}
-	};
-	final AbstractMinecartEntity.Type type;
-
-	public MinecartItem(AbstractMinecartEntity.Type type, Item.Settings settings) {
+	public MinecartItem(EntityType<? extends AbstractMinecartEntity> type, Item.Settings settings) {
 		super(settings);
 		this.type = type;
-		DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
 	}
 
 	@Override
@@ -99,22 +41,28 @@ public class MinecartItem extends Item {
 			}
 
 			Vec3d vec3d = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.0625 + d, (double)blockPos.getZ() + 0.5);
-			AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, vec3d.x, vec3d.y, vec3d.z, this.type, itemStack, context.getPlayer());
-			if (AbstractMinecartEntity.areMinecartImprovementsEnabled(world)) {
-				for (Entity entity : world.getOtherEntities(null, abstractMinecartEntity.getBoundingBox())) {
-					if (entity instanceof AbstractMinecartEntity) {
-						return ActionResult.FAIL;
+			AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(
+				world, vec3d.x, vec3d.y, vec3d.z, this.type, SpawnReason.DISPENSER, itemStack, context.getPlayer()
+			);
+			if (abstractMinecartEntity == null) {
+				return ActionResult.FAIL;
+			} else {
+				if (AbstractMinecartEntity.areMinecartImprovementsEnabled(world)) {
+					for (Entity entity : world.getOtherEntities(null, abstractMinecartEntity.getBoundingBox())) {
+						if (entity instanceof AbstractMinecartEntity) {
+							return ActionResult.FAIL;
+						}
 					}
 				}
-			}
 
-			if (world instanceof ServerWorld serverWorld) {
-				serverWorld.spawnEntity(abstractMinecartEntity);
-				serverWorld.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(context.getPlayer(), serverWorld.getBlockState(blockPos.down())));
-			}
+				if (world instanceof ServerWorld serverWorld) {
+					serverWorld.spawnEntity(abstractMinecartEntity);
+					serverWorld.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(context.getPlayer(), serverWorld.getBlockState(blockPos.down())));
+				}
 
-			itemStack.decrement(1);
-			return ActionResult.SUCCESS;
+				itemStack.decrement(1);
+				return ActionResult.SUCCESS;
+			}
 		}
 	}
 }

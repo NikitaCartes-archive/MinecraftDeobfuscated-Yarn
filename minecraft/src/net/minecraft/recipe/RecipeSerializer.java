@@ -38,9 +38,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	RecipeSerializer<ShieldDecorationRecipe> SHIELD_DECORATION = register(
 		"crafting_special_shielddecoration", new SpecialRecipeSerializer<>(ShieldDecorationRecipe::new)
 	);
-	RecipeSerializer<ShulkerBoxColoringRecipe> SHULKER_BOX = register(
-		"crafting_special_shulkerboxcoloring", new SpecialRecipeSerializer<>(ShulkerBoxColoringRecipe::new)
-	);
+	RecipeSerializer<TransmuteRecipe> CRAFTING_TRANSMUTE = register("crafting_transmute", new TransmuteRecipe.Serializer());
 	RecipeSerializer<RepairItemRecipe> REPAIR_ITEM = register("crafting_special_repairitem", new SpecialRecipeSerializer<>(RepairItemRecipe::new));
 	RecipeSerializer<SmeltingRecipe> SMELTING = register("smelting", new CookingRecipeSerializer<>(SmeltingRecipe::new, 200));
 	RecipeSerializer<BlastingRecipe> BLASTING = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));

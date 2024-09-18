@@ -102,7 +102,7 @@ public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<St
 		BlockView blockView = entity.getWorld();
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 		BlockPos blockPos = entity.getPos();
-		BlockPos blockPos2 = StructureTestUtil.getStructureBlockPos(entity);
+		BlockPos blockPos2 = StructureTestUtil.getOrigin(entity);
 
 		for (BlockPos blockPos3 : BlockPos.iterate(blockPos2, blockPos2.add(entity.getSize()).add(-1, -1, -1))) {
 			BlockState blockState = blockView.getBlockState(blockPos3);
@@ -136,7 +136,7 @@ public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<St
 		BlockView blockView = entity.getWorld();
 		if (blockView != null) {
 			BlockPos blockPos = entity.getPos();
-			BlockPos blockPos2 = StructureTestUtil.getStructureBlockPos(entity);
+			BlockPos blockPos2 = StructureTestUtil.getOrigin(entity);
 			Vec3i vec3i = entity.getSize();
 			VoxelSet voxelSet = new BitSetVoxelSet(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 

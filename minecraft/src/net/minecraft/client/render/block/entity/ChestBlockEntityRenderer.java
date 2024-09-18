@@ -47,12 +47,12 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & LidOpenable> imple
 	public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
 		World world = entity.getWorld();
 		boolean bl = world != null;
-		BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+		BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with((Property<T>)ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
 		if (blockState.getBlock() instanceof AbstractChestBlock<?> abstractChestBlock) {
 			boolean bl2 = chestType != ChestType.SINGLE;
 			matrices.push();
-			float f = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
+			float f = ((Direction)blockState.get((Property<T>)ChestBlock.FACING)).asRotation();
 			matrices.translate(0.5F, 0.5F, 0.5F);
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-f));
 			matrices.translate(-0.5F, -0.5F, -0.5F);

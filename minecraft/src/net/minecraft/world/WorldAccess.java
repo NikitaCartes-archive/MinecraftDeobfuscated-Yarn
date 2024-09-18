@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -21,10 +20,10 @@ import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.tick.OrderedTick;
-import net.minecraft.world.tick.QueryableTickScheduler;
+import net.minecraft.world.tick.ScheduledTickView;
 import net.minecraft.world.tick.TickPriority;
 
-public interface WorldAccess extends RegistryWorldView, LunarWorldView {
+public interface WorldAccess extends RegistryWorldView, LunarWorldView, ScheduledTickView {
 	@Override
 	default long getLunarTime() {
 		return this.getLevelProperties().getTimeOfDay();
@@ -32,32 +31,14 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 
 	long getTickOrder();
 
-	QueryableTickScheduler<Block> getBlockTickScheduler();
-
-	private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay, TickPriority priority) {
+	@Override
+	default <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay, TickPriority priority) {
 		return new OrderedTick<>(type, pos, this.getLevelProperties().getTime() + (long)delay, priority, this.getTickOrder());
 	}
 
-	private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay) {
+	@Override
+	default <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay) {
 		return new OrderedTick<>(type, pos, this.getLevelProperties().getTime() + (long)delay, this.getTickOrder());
-	}
-
-	default void scheduleBlockTick(BlockPos pos, Block block, int delay, TickPriority priority) {
-		this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay, priority));
-	}
-
-	default void scheduleBlockTick(BlockPos pos, Block block, int delay) {
-		this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay));
-	}
-
-	QueryableTickScheduler<Fluid> getFluidTickScheduler();
-
-	default void scheduleFluidTick(BlockPos pos, Fluid fluid, int delay, TickPriority priority) {
-		this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay, priority));
-	}
-
-	default void scheduleFluidTick(BlockPos pos, Fluid fluid, int delay) {
-		this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay));
 	}
 
 	WorldProperties getLevelProperties();

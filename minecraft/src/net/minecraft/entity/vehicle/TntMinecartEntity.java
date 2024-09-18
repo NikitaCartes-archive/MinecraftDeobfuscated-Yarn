@@ -9,6 +9,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -32,15 +33,6 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	public TntMinecartEntity(EntityType<? extends TntMinecartEntity> entityType, World world) {
 		super(entityType, world);
-	}
-
-	public TntMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.TNT_MINECART, world, x, y, z);
-	}
-
-	@Override
-	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.TNT;
 	}
 
 	@Override
@@ -92,6 +84,11 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected Item asItem() {
 		return Items.TNT_MINECART;
+	}
+
+	@Override
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.TNT_MINECART);
 	}
 
 	protected void explode(double power) {

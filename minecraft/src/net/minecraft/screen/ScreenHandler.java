@@ -770,20 +770,28 @@ public abstract class ScreenHandler {
 		} else if (actionType == SlotActionType.THROW && this.getCursorStack().isEmpty() && slotIndex >= 0) {
 			Slot slot3 = this.slots.get(slotIndex);
 			int j = button == 0 ? 1 : slot3.getStack().getCount();
-			ItemStack itemStack = slot3.takeStackRange(j, Integer.MAX_VALUE, player);
-			player.dropItem(itemStack, true);
-			if (button == 1) {
-				while (!itemStack.isEmpty() && ItemStack.areItemsEqual(slot3.getStack(), itemStack)) {
-					itemStack = slot3.takeStackRange(j, Integer.MAX_VALUE, player);
-					player.dropItem(itemStack, true);
-				}
+			if (!player.canDropItems()) {
+				return;
 			}
 
+			ItemStack itemStack = slot3.takeStackRange(j, Integer.MAX_VALUE, player);
+			player.dropItem(itemStack, true);
 			player.dropCreativeStack(itemStack);
+			if (button == 1) {
+				while (!itemStack.isEmpty() && ItemStack.areItemsEqual(slot3.getStack(), itemStack)) {
+					if (!player.canDropItems()) {
+						return;
+					}
+
+					itemStack = slot3.takeStackRange(j, Integer.MAX_VALUE, player);
+					player.dropItem(itemStack, true);
+					player.dropCreativeStack(itemStack);
+				}
+			}
 		} else if (actionType == SlotActionType.PICKUP_ALL && slotIndex >= 0) {
-			Slot slot3 = this.slots.get(slotIndex);
+			Slot slot3x = this.slots.get(slotIndex);
 			ItemStack itemStack2 = this.getCursorStack();
-			if (!itemStack2.isEmpty() && (!slot3.hasStack() || !slot3.canTakeItems(player))) {
+			if (!itemStack2.isEmpty() && (!slot3x.hasStack() || !slot3x.canTakeItems(player))) {
 				int k = button == 0 ? 0 : this.slots.size() - 1;
 				int p = button == 0 ? 1 : -1;
 

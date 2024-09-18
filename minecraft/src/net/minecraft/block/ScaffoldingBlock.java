@@ -17,8 +17,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
 	public static final MapCodec<ScaffoldingBlock> CODEC = createCodec(ScaffoldingBlock::new);
@@ -88,14 +88,21 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		if (!world.isClient()) {
-			world.scheduleBlockTick(pos, this, 1);
+			tickView.scheduleBlockTick(pos, this, 1);
 		}
 
 		return state;

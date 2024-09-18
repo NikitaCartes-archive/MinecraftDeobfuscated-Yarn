@@ -14,6 +14,7 @@ import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
@@ -299,11 +300,13 @@ public class MineshaftGenerator {
 			if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos.down()).isAir()) {
 				BlockState blockState = Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
 				this.addBlock(world, blockState, x, y, z, boundingBox);
-				ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
-					world.toServerWorld(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5
-				);
-				chestMinecartEntity.setLootTable(lootTable, random.nextLong());
-				world.spawnEntity(chestMinecartEntity);
+				ChestMinecartEntity chestMinecartEntity = EntityType.CHEST_MINECART.create(world.toServerWorld(), SpawnReason.CHUNK_GENERATION);
+				if (chestMinecartEntity != null) {
+					chestMinecartEntity.initPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+					chestMinecartEntity.setLootTable(lootTable, random.nextLong());
+					world.spawnEntity(chestMinecartEntity);
+				}
+
 				return true;
 			} else {
 				return false;

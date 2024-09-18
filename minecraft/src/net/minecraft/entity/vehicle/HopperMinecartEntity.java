@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -23,15 +24,6 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 
 	public HopperMinecartEntity(EntityType<? extends HopperMinecartEntity> entityType, World world) {
 		super(entityType, world);
-	}
-
-	public HopperMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.HOPPER_MINECART, x, y, z, world);
-	}
-
-	@Override
-	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.HOPPER;
 	}
 
 	@Override
@@ -124,6 +116,11 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	protected Item asItem() {
 		return Items.HOPPER_MINECART;
+	}
+
+	@Override
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.HOPPER_MINECART);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.spawner.MobSpawnerLogic;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -25,25 +26,20 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 		this.ticker = this.getTicker(world);
 	}
 
-	public SpawnerMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.SPAWNER_MINECART, world, x, y, z);
-		this.ticker = this.getTicker(world);
-	}
-
 	@Override
 	protected Item asItem() {
 		return Items.MINECART;
+	}
+
+	@Override
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.MINECART);
 	}
 
 	private Runnable getTicker(World world) {
 		return world instanceof ServerWorld
 			? () -> this.logic.serverTick((ServerWorld)world, this.getBlockPos())
 			: () -> this.logic.clientTick(world, this.getBlockPos());
-	}
-
-	@Override
-	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.SPAWNER;
 	}
 
 	@Override

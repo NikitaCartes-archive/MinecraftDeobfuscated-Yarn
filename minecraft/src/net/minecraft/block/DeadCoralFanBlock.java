@@ -5,7 +5,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
-public class DeadCoralFanBlock extends CoralParentBlock {
+public class DeadCoralFanBlock extends AbstractCoralBlock {
 	public static final MapCodec<DeadCoralFanBlock> CODEC = createCodec(DeadCoralFanBlock::new);
 	private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 

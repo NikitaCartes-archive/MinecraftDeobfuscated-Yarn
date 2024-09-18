@@ -1,6 +1,5 @@
 package net.minecraft.client.gl;
 
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.ByteBuffer;
@@ -27,9 +26,10 @@ import org.joml.Matrix4f;
  */
 @Environment(EnvType.CLIENT)
 public class VertexBuffer implements AutoCloseable {
-	private final VertexBuffer.Usage usage;
-	private int vertexBufferId;
-	private int indexBufferId;
+	private final GlUsage usage;
+	private final GpuBuffer vertexBuffer;
+	@Nullable
+	private GpuBuffer indexBuffer = null;
 	private int vertexArrayId;
 	@Nullable
 	private VertexFormat vertexFormat;
@@ -39,11 +39,10 @@ public class VertexBuffer implements AutoCloseable {
 	private int indexCount;
 	private VertexFormat.DrawMode drawMode;
 
-	public VertexBuffer(VertexBuffer.Usage usage) {
+	public VertexBuffer(GlUsage usage) {
 		this.usage = usage;
 		RenderSystem.assertOnRenderThread();
-		this.vertexBufferId = GlStateManager._glGenBuffers();
-		this.indexBufferId = GlStateManager._glGenBuffers();
+		this.vertexBuffer = new GpuBuffer(GlBufferTarget.VERTICES, usage, 0);
 		this.vertexArrayId = GlStateManager._glGenVertexArrays();
 	}
 
@@ -94,21 +93,24 @@ public class VertexBuffer implements AutoCloseable {
 		}
 	}
 
-	public void uploadIndexBuffer(BufferAllocator.CloseableBuffer indexBuffer) {
-		BufferAllocator.CloseableBuffer var2 = indexBuffer;
+	public void uploadIndexBuffer(BufferAllocator.CloseableBuffer buf) {
+		BufferAllocator.CloseableBuffer var2 = buf;
 
-		label40: {
+		label46: {
 			try {
 				if (this.isClosed()) {
-					break label40;
+					break label46;
 				}
 
 				RenderSystem.assertOnRenderThread();
-				GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
-				RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer.getBuffer(), this.usage.id);
+				if (this.indexBuffer != null) {
+					this.indexBuffer.close();
+				}
+
+				this.indexBuffer = new GpuBuffer(GlBufferTarget.INDICES, this.usage, buf.getBuffer());
 				this.sharedSequentialIndexBuffer = null;
 			} catch (Throwable var6) {
-				if (indexBuffer != null) {
+				if (buf != null) {
 					try {
 						var2.close();
 					} catch (Throwable var5) {
@@ -119,15 +121,15 @@ public class VertexBuffer implements AutoCloseable {
 				throw var6;
 			}
 
-			if (indexBuffer != null) {
-				indexBuffer.close();
+			if (buf != null) {
+				buf.close();
 			}
 
 			return;
 		}
 
-		if (indexBuffer != null) {
-			indexBuffer.close();
+		if (buf != null) {
+			buf.close();
 		}
 	}
 
@@ -138,27 +140,31 @@ public class VertexBuffer implements AutoCloseable {
 				this.vertexFormat.clearState();
 			}
 
-			GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, this.vertexBufferId);
+			this.vertexBuffer.bind();
 			parameters.format().setupState();
 			bl = true;
 		}
 
 		if (vertexBuffer != null) {
 			if (!bl) {
-				GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, this.vertexBufferId);
+				this.vertexBuffer.bind();
 			}
 
-			RenderSystem.glBufferData(GlConst.GL_ARRAY_BUFFER, vertexBuffer, this.usage.id);
+			this.vertexBuffer.resize(vertexBuffer.remaining());
+			this.vertexBuffer.copyFrom(vertexBuffer, 0);
 		}
 
 		return parameters.format();
 	}
 
 	@Nullable
-	private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(BuiltBuffer.DrawParameters parameters, @Nullable ByteBuffer indexBuffer) {
-		if (indexBuffer != null) {
-			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
-			RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, this.usage.id);
+	private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(BuiltBuffer.DrawParameters parameters, @Nullable ByteBuffer buf) {
+		if (buf != null) {
+			if (this.indexBuffer != null) {
+				this.indexBuffer.close();
+			}
+
+			this.indexBuffer = new GpuBuffer(GlBufferTarget.INDICES, this.usage, buf);
 			return null;
 		} else {
 			RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(parameters.mode());
@@ -210,25 +216,21 @@ public class VertexBuffer implements AutoCloseable {
 	 * <p>The caller of this method must {@linkplain #bind bind} this vertex
 	 * buffer before calling this method.
 	 */
-	public void draw(Matrix4f matrix4f, Matrix4f matrix4f2, @Nullable ShaderProgram shaderProgram) {
-		if (shaderProgram != null) {
+	public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix, @Nullable ShaderProgram program) {
+		if (program != null) {
 			RenderSystem.assertOnRenderThread();
-			shaderProgram.initializeUniforms(this.drawMode, matrix4f, matrix4f2, MinecraftClient.getInstance().getWindow());
-			shaderProgram.bind();
+			program.initializeUniforms(this.drawMode, viewMatrix, projectionMatrix, MinecraftClient.getInstance().getWindow());
+			program.bind();
 			this.draw();
-			shaderProgram.unbind();
+			program.unbind();
 		}
 	}
 
 	public void close() {
-		if (this.vertexBufferId >= 0) {
-			RenderSystem.glDeleteBuffers(this.vertexBufferId);
-			this.vertexBufferId = -1;
-		}
-
-		if (this.indexBufferId >= 0) {
-			RenderSystem.glDeleteBuffers(this.indexBufferId);
-			this.indexBufferId = -1;
+		this.vertexBuffer.close();
+		if (this.indexBuffer != null) {
+			this.indexBuffer.close();
+			this.indexBuffer = null;
 		}
 
 		if (this.vertexArrayId >= 0) {
@@ -243,17 +245,5 @@ public class VertexBuffer implements AutoCloseable {
 
 	public boolean isClosed() {
 		return this.vertexArrayId == -1;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum Usage {
-		STATIC(35044),
-		DYNAMIC(35048);
-
-		final int id;
-
-		private Usage(final int id) {
-			this.id = id;
-		}
 	}
 }

@@ -245,11 +245,14 @@ public abstract class RenderPhase {
 		"main_target", () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false), () -> {
 		}
 	);
-	protected static final RenderPhase.Target OUTLINE_TARGET = new RenderPhase.Target(
-		"outline_target",
-		() -> MinecraftClient.getInstance().worldRenderer.getEntityOutlinesFramebuffer().beginWrite(false),
-		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
-	);
+	protected static final RenderPhase.Target OUTLINE_TARGET = new RenderPhase.Target("outline_target", () -> {
+		Framebuffer framebuffer = MinecraftClient.getInstance().worldRenderer.getEntityOutlinesFramebuffer();
+		if (framebuffer != null) {
+			framebuffer.beginWrite(false);
+		} else {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+	}, () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false));
 	protected static final RenderPhase.Target TRANSLUCENT_TARGET = new RenderPhase.Target("translucent_target", () -> {
 		Framebuffer framebuffer = MinecraftClient.getInstance().worldRenderer.getTranslucentFramebuffer();
 		if (framebuffer != null) {

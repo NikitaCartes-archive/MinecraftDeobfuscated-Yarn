@@ -104,10 +104,6 @@ public class DefaultPosArgument implements PosArgument {
 		return new DefaultPosArgument(new CoordinateArgument(false, (double)vec.x), new CoordinateArgument(false, (double)vec.y), new CoordinateArgument(true, 0.0));
 	}
 
-	public static DefaultPosArgument zero() {
-		return new DefaultPosArgument(new CoordinateArgument(true, 0.0), new CoordinateArgument(true, 0.0), new CoordinateArgument(true, 0.0));
-	}
-
 	public int hashCode() {
 		int i = this.x.hashCode();
 		i = 31 * i + this.y.hashCode();

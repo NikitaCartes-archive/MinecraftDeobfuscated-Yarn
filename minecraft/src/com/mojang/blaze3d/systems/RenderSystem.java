@@ -18,6 +18,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.GlBufferTarget;
+import net.minecraft.client.gl.GlUsage;
+import net.minecraft.client.gl.GpuBuffer;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.ShaderProgramKey;
 import net.minecraft.client.render.Fog;
@@ -37,6 +40,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -756,7 +760,8 @@ public class RenderSystem {
 		private final int vertexCountInShape;
 		private final int vertexCountInTriangulated;
 		private final RenderSystem.ShapeIndexBuffer.Triangulator triangulator;
-		private int id;
+		@Nullable
+		private GpuBuffer buffer;
 		private VertexFormat.IndexType indexType = VertexFormat.IndexType.SHORT;
 		private int size;
 
@@ -780,11 +785,11 @@ public class RenderSystem {
 		 * buffer in size and uploads indices to the corresponding buffer in GPU.
 		 */
 		public void bindAndGrow(int requiredSize) {
-			if (this.id == 0) {
-				this.id = GlStateManager._glGenBuffers();
+			if (this.buffer == null) {
+				this.buffer = new GpuBuffer(GlBufferTarget.INDICES, GlUsage.DYNAMIC_WRITE, 0);
 			}
 
-			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.id);
+			this.buffer.bind();
 			this.grow(requiredSize);
 		}
 
@@ -796,11 +801,9 @@ public class RenderSystem {
 				int j = i * this.vertexCountInShape;
 				VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(j);
 				int k = MathHelper.roundUpToMultiple(requiredSize * indexType.size, 4);
-				GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, (long)k, GlConst.GL_DYNAMIC_DRAW);
-				ByteBuffer byteBuffer = GlStateManager.mapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, GlConst.GL_WRITE_ONLY);
-				if (byteBuffer == null) {
-					throw new RuntimeException("Failed to map GL buffer");
-				} else {
+				ByteBuffer byteBuffer = MemoryUtil.memAlloc(k);
+
+				try {
 					this.indexType = indexType;
 					it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
 
@@ -808,9 +811,14 @@ public class RenderSystem {
 						this.triangulator.accept(intConsumer, l * this.vertexCountInShape / this.vertexCountInTriangulated);
 					}
 
-					GlStateManager._glUnmapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER);
-					this.size = requiredSize;
+					byteBuffer.flip();
+					this.buffer.resize(k);
+					this.buffer.copyFrom(byteBuffer, 0);
+				} finally {
+					MemoryUtil.memFree(byteBuffer);
 				}
+
+				this.size = requiredSize;
 			}
 		}
 

@@ -170,6 +170,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Cooldown;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -207,8 +208,8 @@ public class ServerPlayNetworkHandler
 	public final ChunkDataSender chunkDataSender;
 	private int ticks;
 	private int sequence = -1;
-	private int messageCooldown;
-	private int creativeItemDropThreshold;
+	private final Cooldown messageCooldown = new Cooldown(20, 200);
+	private final Cooldown creativeItemDropCooldown = new Cooldown(20, 1480);
 	private double lastTickX;
 	private double lastTickY;
 	private double lastTickZ;
@@ -303,14 +304,8 @@ public class ServerPlayNetworkHandler
 		}
 
 		this.baseTick();
-		if (this.messageCooldown > 0) {
-			this.messageCooldown--;
-		}
-
-		if (this.creativeItemDropThreshold > 0) {
-			this.creativeItemDropThreshold--;
-		}
-
+		this.messageCooldown.tick();
+		this.creativeItemDropCooldown.tick();
 		if (this.player.getLastActionTime() > 0L
 			&& this.server.getPlayerIdleTimeout() > 0
 			&& Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)this.server.getPlayerIdleTimeout() * 1000L * 60L) {
@@ -1388,8 +1383,8 @@ public class ServerPlayNetworkHandler
 	}
 
 	private void checkForSpam() {
-		this.messageCooldown += 20;
-		if (this.messageCooldown > 200
+		this.messageCooldown.increment();
+		if (!this.messageCooldown.canUse()
 			&& !this.server.getPlayerManager().isOperator(this.player.getGameProfile())
 			&& !this.server.isHost(this.player.getGameProfile())) {
 			this.disconnect(Text.translatable("disconnect.spam"));
@@ -1721,9 +1716,13 @@ public class ServerPlayNetworkHandler
 				this.player.playerScreenHandler.getSlot(packet.slot()).setStack(itemStack);
 				this.player.playerScreenHandler.setPreviousTrackedSlot(packet.slot(), itemStack);
 				this.player.playerScreenHandler.sendContentUpdates();
-			} else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
-				this.creativeItemDropThreshold += 20;
-				this.player.dropItem(itemStack, true);
+			} else if (bl && bl3) {
+				if (this.creativeItemDropCooldown.canUse()) {
+					this.creativeItemDropCooldown.increment();
+					this.player.dropItem(itemStack, true);
+				} else {
+					LOGGER.warn("Player {} was dropping items too fast in creative mode, ignoring.", this.player.getName().getString());
+				}
 			}
 		}
 	}

@@ -23,6 +23,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.BuiltBuffer;
@@ -220,7 +221,7 @@ public class ChunkBuilder {
 		private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
 		private final Map<RenderLayer, VertexBuffer> buffers = (Map<RenderLayer, VertexBuffer>)RenderLayer.getBlockLayers()
 			.stream()
-			.collect(Collectors.toMap(layer -> layer, layer -> new VertexBuffer(VertexBuffer.Usage.STATIC)));
+			.collect(Collectors.toMap(layer -> layer, layer -> new VertexBuffer(GlUsage.STATIC_WRITE)));
 		private Box boundingBox;
 		private boolean needsRebuild = true;
 		long sectionPos = ChunkSectionPos.asLong(-1, -1, -1);

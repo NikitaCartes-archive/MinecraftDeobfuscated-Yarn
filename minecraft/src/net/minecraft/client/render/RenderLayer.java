@@ -437,7 +437,7 @@ public abstract class RenderLayer extends RenderPhase {
 				VertexFormat.DrawMode.QUADS,
 				786432,
 				false,
-				true,
+				false,
 				RenderLayer.MultiPhaseParameters.builder()
 					.program(TEXT_INTENSITY_PROGRAM)
 					.texture(new RenderPhase.Texture(texture, TriState.FALSE, false))
@@ -487,7 +487,7 @@ public abstract class RenderLayer extends RenderPhase {
 				VertexFormat.DrawMode.QUADS,
 				1536,
 				false,
-				true,
+				false,
 				RenderLayer.MultiPhaseParameters.builder()
 					.program(TRANSPARENT_TEXT_PROGRAM)
 					.texture(new RenderPhase.Texture(texture, TriState.FALSE, false))

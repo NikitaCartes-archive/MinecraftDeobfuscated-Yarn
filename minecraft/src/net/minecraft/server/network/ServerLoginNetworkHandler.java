@@ -175,7 +175,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener, Tic
 
 	private void sendSuccessPacket(GameProfile profile) {
 		this.state = ServerLoginNetworkHandler.State.PROTOCOL_SWITCHING;
-		this.connection.send(new LoginSuccessS2CPacket(profile, true));
+		this.connection.send(new LoginSuccessS2CPacket(profile));
 	}
 
 	@Override

@@ -26,7 +26,7 @@ public class FoodComponents {
 	public static final FoodComponent ENCHANTED_GOLDEN_APPLE = new FoodComponent.Builder().nutrition(4).saturationModifier(1.2F).alwaysEdible().build();
 	public static final FoodComponent GOLDEN_APPLE = new FoodComponent.Builder().nutrition(4).saturationModifier(1.2F).alwaysEdible().build();
 	public static final FoodComponent GOLDEN_CARROT = new FoodComponent.Builder().nutrition(6).saturationModifier(1.2F).build();
-	public static final FoodComponent HONEY_BOTTLE = new FoodComponent.Builder().nutrition(6).saturationModifier(0.1F).build();
+	public static final FoodComponent HONEY_BOTTLE = new FoodComponent.Builder().nutrition(6).saturationModifier(0.1F).alwaysEdible().build();
 	public static final FoodComponent MELON_SLICE = new FoodComponent.Builder().nutrition(2).saturationModifier(0.3F).build();
 	public static final FoodComponent MUSHROOM_STEW = createStew(6).build();
 	public static final FoodComponent MUTTON = new FoodComponent.Builder().nutrition(2).saturationModifier(0.3F).build();

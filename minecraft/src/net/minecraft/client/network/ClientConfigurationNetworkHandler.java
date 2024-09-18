@@ -136,7 +136,6 @@ public class ClientConfigurationNetworkHandler extends ClientCommonNetworkHandle
 						this.postDisconnectScreen,
 						this.serverCookies,
 						this.chatState,
-						this.strictErrorHandling,
 						this.customReportDetails,
 						this.serverLinks
 					)

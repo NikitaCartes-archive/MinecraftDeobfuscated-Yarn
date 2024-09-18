@@ -1291,6 +1291,22 @@ public class ItemGroups {
 						entries.add(Items.LEAD);
 						if (displayContext.enabledFeatures().contains(FeatureFlags.BUNDLE)) {
 							entries.add(Items.BUNDLE);
+							entries.add(Items.WHITE_BUNDLE);
+							entries.add(Items.LIGHT_GRAY_BUNDLE);
+							entries.add(Items.GRAY_BUNDLE);
+							entries.add(Items.BLACK_BUNDLE);
+							entries.add(Items.BROWN_BUNDLE);
+							entries.add(Items.RED_BUNDLE);
+							entries.add(Items.ORANGE_BUNDLE);
+							entries.add(Items.YELLOW_BUNDLE);
+							entries.add(Items.LIME_BUNDLE);
+							entries.add(Items.GREEN_BUNDLE);
+							entries.add(Items.CYAN_BUNDLE);
+							entries.add(Items.LIGHT_BLUE_BUNDLE);
+							entries.add(Items.BLUE_BUNDLE);
+							entries.add(Items.PURPLE_BUNDLE);
+							entries.add(Items.MAGENTA_BUNDLE);
+							entries.add(Items.PINK_BUNDLE);
 						}
 
 						entries.add(Items.COMPASS);

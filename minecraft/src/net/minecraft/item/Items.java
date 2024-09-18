@@ -30,7 +30,6 @@ import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.equipment.ArmorMaterials;
@@ -967,20 +966,18 @@ public class Items {
 	public static final Item RAIL = register(Blocks.RAIL);
 	public static final Item ACTIVATOR_RAIL = register(Blocks.ACTIVATOR_RAIL);
 	public static final Item SADDLE = register("saddle", SaddleItem::new, new Item.Settings().maxCount(1));
-	public static final Item MINECART = register(
-		"minecart", settings -> new MinecartItem(AbstractMinecartEntity.Type.RIDEABLE, settings), new Item.Settings().maxCount(1)
-	);
+	public static final Item MINECART = register("minecart", settings -> new MinecartItem(EntityType.MINECART, settings), new Item.Settings().maxCount(1));
 	public static final Item CHEST_MINECART = register(
-		"chest_minecart", settings -> new MinecartItem(AbstractMinecartEntity.Type.CHEST, settings), new Item.Settings().maxCount(1)
+		"chest_minecart", settings -> new MinecartItem(EntityType.CHEST_MINECART, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item FURNACE_MINECART = register(
-		"furnace_minecart", settings -> new MinecartItem(AbstractMinecartEntity.Type.FURNACE, settings), new Item.Settings().maxCount(1)
+		"furnace_minecart", settings -> new MinecartItem(EntityType.FURNACE_MINECART, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item TNT_MINECART = register(
-		"tnt_minecart", settings -> new MinecartItem(AbstractMinecartEntity.Type.TNT, settings), new Item.Settings().maxCount(1)
+		"tnt_minecart", settings -> new MinecartItem(EntityType.TNT_MINECART, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item HOPPER_MINECART = register(
-		"hopper_minecart", settings -> new MinecartItem(AbstractMinecartEntity.Type.HOPPER, settings), new Item.Settings().maxCount(1)
+		"hopper_minecart", settings -> new MinecartItem(EntityType.HOPPER_MINECART, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item CARROT_ON_A_STICK = register(
 		"carrot_on_a_stick", settings -> new OnAStickItem<>(EntityType.PIG, 7, settings), new Item.Settings().maxDamage(25)
@@ -1309,6 +1306,86 @@ public class Items {
 	public static final Item BUNDLE = register(
 		"bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("bundle_open_front"), Identifier.ofVanilla("bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item WHITE_BUNDLE = register(
+		"white_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("white_bundle_open_front"), Identifier.ofVanilla("white_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item ORANGE_BUNDLE = register(
+		"orange_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("orange_bundle_open_front"), Identifier.ofVanilla("orange_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item MAGENTA_BUNDLE = register(
+		"magenta_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("magenta_bundle_open_front"), Identifier.ofVanilla("magenta_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item LIGHT_BLUE_BUNDLE = register(
+		"light_blue_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("light_blue_bundle_open_front"), Identifier.ofVanilla("light_blue_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item YELLOW_BUNDLE = register(
+		"yellow_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("yellow_bundle_open_front"), Identifier.ofVanilla("yellow_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item LIME_BUNDLE = register(
+		"lime_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("lime_bundle_open_front"), Identifier.ofVanilla("lime_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item PINK_BUNDLE = register(
+		"pink_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("pink_bundle_open_front"), Identifier.ofVanilla("pink_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item GRAY_BUNDLE = register(
+		"gray_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("gray_bundle_open_front"), Identifier.ofVanilla("gray_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item LIGHT_GRAY_BUNDLE = register(
+		"light_gray_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("light_gray_bundle_open_front"), Identifier.ofVanilla("light_gray_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item CYAN_BUNDLE = register(
+		"cyan_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("cyan_bundle_open_front"), Identifier.ofVanilla("cyan_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item PURPLE_BUNDLE = register(
+		"purple_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("purple_bundle_open_front"), Identifier.ofVanilla("purple_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item BLUE_BUNDLE = register(
+		"blue_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("blue_bundle_open_front"), Identifier.ofVanilla("blue_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item BROWN_BUNDLE = register(
+		"brown_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("brown_bundle_open_front"), Identifier.ofVanilla("brown_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item GREEN_BUNDLE = register(
+		"green_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("green_bundle_open_front"), Identifier.ofVanilla("green_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item RED_BUNDLE = register(
+		"red_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("red_bundle_open_front"), Identifier.ofVanilla("red_bundle_open_back"), settings),
+		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+	);
+	public static final Item BLACK_BUNDLE = register(
+		"black_bundle",
+		settings -> new BundleItem(Identifier.ofVanilla("black_bundle_open_front"), Identifier.ofVanilla("black_bundle_open_back"), settings),
 		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item FISHING_ROD = register("fishing_rod", FishingRodItem::new, new Item.Settings().maxDamage(64).enchantable(1));
@@ -1645,9 +1722,7 @@ public class Items {
 	public static final Item LEAD = register("lead", LeadItem::new);
 	public static final Item NAME_TAG = register("name_tag", NameTagItem::new);
 	public static final Item COMMAND_BLOCK_MINECART = register(
-		"command_block_minecart",
-		settings -> new MinecartItem(AbstractMinecartEntity.Type.COMMAND_BLOCK, settings),
-		new Item.Settings().maxCount(1).rarity(Rarity.EPIC)
+		"command_block_minecart", settings -> new MinecartItem(EntityType.COMMAND_BLOCK_MINECART, settings), new Item.Settings().maxCount(1).rarity(Rarity.EPIC)
 	);
 	public static final Item MUTTON = register("mutton", new Item.Settings().food(FoodComponents.MUTTON));
 	public static final Item COOKED_MUTTON = register("cooked_mutton", new Item.Settings().food(FoodComponents.COOKED_MUTTON));

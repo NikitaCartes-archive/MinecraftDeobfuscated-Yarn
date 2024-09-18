@@ -16,7 +16,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -25,7 +25,7 @@ import net.minecraft.world.WorldView;
 
 public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	public static final MapCodec<CarvedPumpkinBlock> CODEC = createCodec(CarvedPumpkinBlock::new);
-	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+	public static final EnumProperty<Direction> FACING = HorizontalFacingBlock.FACING;
 	@Nullable
 	private BlockPattern snowGolemDispenserPattern;
 	@Nullable

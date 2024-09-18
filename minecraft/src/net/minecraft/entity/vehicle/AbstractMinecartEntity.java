@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -26,7 +27,6 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.RegistryKeys;
@@ -87,29 +87,29 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 
 	protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {
 		this(type, world);
+		this.initPosition(x, y, z);
+	}
+
+	public void initPosition(double x, double y, double z) {
 		this.setPosition(x, y, z);
 		this.prevX = x;
 		this.prevY = y;
 		this.prevZ = z;
 	}
 
-	public static AbstractMinecartEntity create(
-		World world, double x, double y, double z, AbstractMinecartEntity.Type type, ItemStack stack, @Nullable PlayerEntity player
+	@Nullable
+	public static <T extends AbstractMinecartEntity> T create(
+		World world, double x, double y, double z, EntityType<T> type, SpawnReason reason, ItemStack stack, @Nullable PlayerEntity player
 	) {
-		AbstractMinecartEntity abstractMinecartEntity = (AbstractMinecartEntity)(switch (type) {
-			case CHEST -> new ChestMinecartEntity(world, x, y, z);
-			case FURNACE -> new FurnaceMinecartEntity(world, x, y, z);
-			case TNT -> new TntMinecartEntity(world, x, y, z);
-			case SPAWNER -> new SpawnerMinecartEntity(world, x, y, z);
-			case HOPPER -> new HopperMinecartEntity(world, x, y, z);
-			case COMMAND_BLOCK -> new CommandBlockMinecartEntity(world, x, y, z);
-			default -> new MinecartEntity(world, x, y, z);
-		});
-		EntityType.copier(world, stack, player).accept(abstractMinecartEntity);
-		if (abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController) {
-			BlockPos blockPos = abstractMinecartEntity.getRailOrMinecartPos();
-			BlockState blockState = world.getBlockState(blockPos);
-			experimentalMinecartController.adjustToRail(blockPos, blockState, true);
+		T abstractMinecartEntity = (T)type.create(world, reason);
+		if (abstractMinecartEntity != null) {
+			abstractMinecartEntity.initPosition(x, y, z);
+			EntityType.copier(world, stack, player).accept(abstractMinecartEntity);
+			if (abstractMinecartEntity.getController() instanceof ExperimentalMinecartController experimentalMinecartController) {
+				BlockPos blockPos = abstractMinecartEntity.getRailOrMinecartPos();
+				BlockState blockState = world.getBlockState(blockPos);
+				experimentalMinecartController.adjustToRail(blockPos, blockState, true);
+			}
 		}
 
 		return abstractMinecartEntity;
@@ -488,47 +488,8 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 						e *= 0.1F;
 						d *= 0.5;
 						e *= 0.5;
-						if (entity instanceof AbstractMinecartEntity) {
-							double h;
-							double i;
-							if (areMinecartImprovementsEnabled(this.getWorld())) {
-								h = this.getVelocity().x;
-								i = this.getVelocity().z;
-							} else {
-								h = entity.getX() - this.getX();
-								i = entity.getZ() - this.getZ();
-							}
-
-							Vec3d vec3d = new Vec3d(h, 0.0, i).normalize();
-							Vec3d vec3d2 = new Vec3d(
-									(double)MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)), 0.0, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0))
-								)
-								.normalize();
-							double j = Math.abs(vec3d.dotProduct(vec3d2));
-							if (j < 0.8F && !areMinecartImprovementsEnabled(this.getWorld())) {
-								return;
-							}
-
-							Vec3d vec3d3 = this.getVelocity();
-							Vec3d vec3d4 = entity.getVelocity();
-							if (((AbstractMinecartEntity)entity).getMinecartType() == AbstractMinecartEntity.Type.FURNACE
-								&& this.getMinecartType() != AbstractMinecartEntity.Type.FURNACE) {
-								this.setVelocity(vec3d3.multiply(0.2, 1.0, 0.2));
-								this.addVelocity(vec3d4.x - d, 0.0, vec3d4.z - e);
-								entity.setVelocity(vec3d4.multiply(0.95, 1.0, 0.95));
-							} else if (((AbstractMinecartEntity)entity).getMinecartType() != AbstractMinecartEntity.Type.FURNACE
-								&& this.getMinecartType() == AbstractMinecartEntity.Type.FURNACE) {
-								entity.setVelocity(vec3d4.multiply(0.2, 1.0, 0.2));
-								entity.addVelocity(vec3d3.x + d, 0.0, vec3d3.z + e);
-								this.setVelocity(vec3d3.multiply(0.95, 1.0, 0.95));
-							} else {
-								double k = (vec3d4.x + vec3d3.x) / 2.0;
-								double l = (vec3d4.z + vec3d3.z) / 2.0;
-								this.setVelocity(vec3d3.multiply(0.2, 1.0, 0.2));
-								this.addVelocity(k - d, 0.0, l - e);
-								entity.setVelocity(vec3d4.multiply(0.2, 1.0, 0.2));
-								entity.addVelocity(k + d, 0.0, l + e);
-							}
+						if (entity instanceof AbstractMinecartEntity abstractMinecartEntity) {
+							this.pushAwayFromMinecart(abstractMinecartEntity, d, e);
 						} else {
 							this.addVelocity(-d, 0.0, -e);
 							entity.addVelocity(d / 4.0, 0.0, e / 4.0);
@@ -539,7 +500,44 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		}
 	}
 
-	public abstract AbstractMinecartEntity.Type getMinecartType();
+	private void pushAwayFromMinecart(AbstractMinecartEntity entity, double xDiff, double zDiff) {
+		double d;
+		double e;
+		if (areMinecartImprovementsEnabled(this.getWorld())) {
+			d = this.getVelocity().x;
+			e = this.getVelocity().z;
+		} else {
+			d = entity.getX() - this.getX();
+			e = entity.getZ() - this.getZ();
+		}
+
+		Vec3d vec3d = new Vec3d(d, 0.0, e).normalize();
+		Vec3d vec3d2 = new Vec3d(
+				(double)MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)), 0.0, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0))
+			)
+			.normalize();
+		double f = Math.abs(vec3d.dotProduct(vec3d2));
+		if (!(f < 0.8F) || areMinecartImprovementsEnabled(this.getWorld())) {
+			Vec3d vec3d3 = this.getVelocity();
+			Vec3d vec3d4 = entity.getVelocity();
+			if (entity.isSelfPropelling() && !this.isSelfPropelling()) {
+				this.setVelocity(vec3d3.multiply(0.2, 1.0, 0.2));
+				this.addVelocity(vec3d4.x - xDiff, 0.0, vec3d4.z - zDiff);
+				entity.setVelocity(vec3d4.multiply(0.95, 1.0, 0.95));
+			} else if (!entity.isSelfPropelling() && this.isSelfPropelling()) {
+				entity.setVelocity(vec3d4.multiply(0.2, 1.0, 0.2));
+				entity.addVelocity(vec3d3.x + xDiff, 0.0, vec3d3.z + zDiff);
+				this.setVelocity(vec3d3.multiply(0.95, 1.0, 0.95));
+			} else {
+				double g = (vec3d4.x + vec3d3.x) / 2.0;
+				double h = (vec3d4.z + vec3d3.z) / 2.0;
+				this.setVelocity(vec3d3.multiply(0.2, 1.0, 0.2));
+				this.addVelocity(g - xDiff, 0.0, h - zDiff);
+				entity.setVelocity(vec3d4.multiply(0.2, 1.0, 0.2));
+				entity.addVelocity(g + xDiff, 0.0, h + zDiff);
+			}
+		}
+	}
 
 	public BlockState getContainedBlock() {
 		return !this.hasCustomBlock() ? this.getDefaultContainedBlock() : Block.getStateFromRawId(this.getDataTracker().get(CUSTOM_BLOCK_ID));
@@ -575,29 +573,18 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		this.getDataTracker().set(CUSTOM_BLOCK_PRESENT, present);
 	}
 
-	@Override
-	public ItemStack getPickBlockStack() {
-		return new ItemStack(switch (this.getMinecartType()) {
-			case CHEST -> Items.CHEST_MINECART;
-			case FURNACE -> Items.FURNACE_MINECART;
-			case TNT -> Items.TNT_MINECART;
-			default -> Items.MINECART;
-			case HOPPER -> Items.HOPPER_MINECART;
-			case COMMAND_BLOCK -> Items.COMMAND_BLOCK_MINECART;
-		});
-	}
-
 	public static boolean areMinecartImprovementsEnabled(World world) {
 		return world.getEnabledFeatures().contains(FeatureFlags.MINECART_IMPROVEMENTS);
 	}
 
-	public static enum Type {
-		RIDEABLE,
-		CHEST,
-		FURNACE,
-		TNT,
-		SPAWNER,
-		HOPPER,
-		COMMAND_BLOCK;
+	@Override
+	public abstract ItemStack getPickBlockStack();
+
+	public boolean isRideable() {
+		return false;
+	}
+
+	public boolean isSelfPropelling() {
+		return false;
 	}
 }

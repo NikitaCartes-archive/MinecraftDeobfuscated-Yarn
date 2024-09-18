@@ -7,8 +7,8 @@ import net.minecraft.client.input.Scroller;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.BundleItemSelectedC2SPacket;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import org.joml.Vector2i;
@@ -25,7 +25,7 @@ public class BundleTooltipSubmenuHandler implements TooltipSubmenuHandler {
 
 	@Override
 	public boolean isApplicableTo(Slot slot) {
-		return slot.getStack().isOf(Items.BUNDLE);
+		return slot.getStack().isIn(ItemTags.BUNDLES);
 	}
 
 	@Override

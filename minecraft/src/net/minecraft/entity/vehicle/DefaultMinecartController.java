@@ -396,7 +396,7 @@ public class DefaultMinecartController extends MinecartController {
 	@Override
 	public boolean handleCollision() {
 		Box box = this.minecart.getBoundingBox().expand(0.2F, 0.0, 0.2F);
-		if (this.minecart.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() >= 0.01) {
+		if (this.minecart.isRideable() && this.getVelocity().horizontalLengthSquared() >= 0.01) {
 			List<Entity> list = this.getWorld().getOtherEntities(this.minecart, box, EntityPredicates.canBePushedBy(this.minecart));
 			if (!list.isEmpty()) {
 				for (Entity entity : list) {

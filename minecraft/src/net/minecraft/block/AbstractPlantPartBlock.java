@@ -9,7 +9,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class AbstractPlantPartBlock extends Block {
@@ -31,10 +30,12 @@ public abstract class AbstractPlantPartBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(this.growthDirection));
-		return !blockState.isOf(this.getStem()) && !blockState.isOf(this.getPlant()) ? this.getRandomGrowthState(ctx.getWorld()) : this.getPlant().getDefaultState();
+		return !blockState.isOf(this.getStem()) && !blockState.isOf(this.getPlant())
+			? this.getRandomGrowthState(ctx.getWorld().random)
+			: this.getPlant().getDefaultState();
 	}
 
-	public BlockState getRandomGrowthState(WorldAccess world) {
+	public BlockState getRandomGrowthState(Random random) {
 		return this.getDefaultState();
 	}
 

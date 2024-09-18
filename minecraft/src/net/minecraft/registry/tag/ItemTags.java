@@ -56,6 +56,7 @@ public final class ItemTags {
 	public static final TagKey<Item> PIGLIN_SAFE_ARMOR = of("piglin_safe_armor");
 	public static final TagKey<Item> DUPLICATES_ALLAYS = of("duplicates_allays");
 	public static final TagKey<Item> BREWING_FUEL = of("brewing_fuel");
+	public static final TagKey<Item> SHULKER_BOXES = of("shulker_boxes");
 	public static final TagKey<Item> MEAT = of("meat");
 	public static final TagKey<Item> SNIFFER_FOOD = of("sniffer_food");
 	public static final TagKey<Item> PIGLIN_FOOD = of("piglin_food");
@@ -152,6 +153,7 @@ public final class ItemTags {
 	public static final TagKey<Item> VILLAGER_PICKS_UP = of("villager_picks_up");
 	public static final TagKey<Item> DYEABLE = of("dyeable");
 	public static final TagKey<Item> FURNACE_MINECART_FUEL = of("furnace_minecart_fuel");
+	public static final TagKey<Item> BUNDLES = of("bundles");
 	public static final TagKey<Item> FOOT_ARMOR_ENCHANTABLE = of("enchantable/foot_armor");
 	public static final TagKey<Item> LEG_ARMOR_ENCHANTABLE = of("enchantable/leg_armor");
 	public static final TagKey<Item> CHEST_ARMOR_ENCHANTABLE = of("enchantable/chest_armor");

@@ -1,4 +1,4 @@
-package net.minecraft.client.realms.gui.screen;
+package net.minecraft.client.realms.util;
 
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -13,6 +13,15 @@ public class UploadResult {
 	UploadResult(int statusCode, String errorMessage) {
 		this.statusCode = statusCode;
 		this.errorMessage = errorMessage;
+	}
+
+	@Nullable
+	public String getErrorMessage() {
+		if (this.statusCode >= 200 && this.statusCode < 300) {
+			return null;
+		} else {
+			return this.statusCode == 400 && this.errorMessage != null ? this.errorMessage : String.valueOf(this.statusCode);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

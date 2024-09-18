@@ -24,7 +24,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 public class DispenserBlock extends BlockWithEntity {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final MapCodec<DispenserBlock> CODEC = createCodec(DispenserBlock::new);
-	public static final DirectionProperty FACING = FacingBlock.FACING;
+	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	private static final ItemDispenserBehavior DEFAULT_BEHAVIOR = new ItemDispenserBehavior();
 	public static final Map<Item, DispenserBehavior> BEHAVIORS = new IdentityHashMap();

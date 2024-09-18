@@ -81,10 +81,6 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 	@Nullable
 	protected final Screen postDisconnectScreen;
 	protected boolean transferring;
-	@Deprecated(
-		forRemoval = true
-	)
-	protected final boolean strictErrorHandling;
 	private final List<ClientCommonNetworkHandler.QueuedPacket> queuedPackets = new ArrayList();
 	protected final Map<Identifier, byte[]> serverCookies;
 	protected Map<String, String> customReportDetails;
@@ -98,20 +94,17 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 		this.worldSession = connectionState.worldSession();
 		this.postDisconnectScreen = connectionState.postDisconnectScreen();
 		this.serverCookies = connectionState.serverCookies();
-		this.strictErrorHandling = connectionState.strictErrorHandling();
 		this.customReportDetails = connectionState.customReportDetails();
 		this.serverLinks = connectionState.serverLinks();
 	}
 
 	@Override
 	public void onPacketException(Packet packet, Exception exception) {
-		LOGGER.error("Failed to handle packet {}", packet, exception);
+		LOGGER.error("Failed to handle packet {}, disconnecting", packet, exception);
 		ClientCommonPacketListener.super.onPacketException(packet, exception);
 		Optional<Path> optional = this.savePacketErrorReport(packet, exception);
 		Optional<URI> optional2 = this.serverLinks.getEntryFor(ServerLinks.Known.BUG_REPORT).map(ServerLinks.Entry::link);
-		if (this.strictErrorHandling) {
-			this.connection.disconnect(new DisconnectionInfo(Text.translatable("disconnect.packetError"), optional, optional2));
-		}
+		this.connection.disconnect(new DisconnectionInfo(Text.translatable("disconnect.packetError"), optional, optional2));
 	}
 
 	@Override

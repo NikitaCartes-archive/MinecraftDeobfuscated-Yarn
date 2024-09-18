@@ -14,8 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public static final MapCodec<RepeaterBlock> CODEC = createCodec(RepeaterBlock::new);
@@ -62,14 +62,21 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (direction == Direction.DOWN && !this.canPlaceAbove(world, neighborPos, neighborState)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			return !world.isClient() && direction.getAxis() != ((Direction)state.get(FACING)).getAxis()
 				? state.with(LOCKED, Boolean.valueOf(this.isLocked(world, pos, state)))
-				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+				: super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 		}
 	}
 

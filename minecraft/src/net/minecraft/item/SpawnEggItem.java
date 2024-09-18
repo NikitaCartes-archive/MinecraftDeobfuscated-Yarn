@@ -80,7 +80,7 @@ public class SpawnEggItem extends Item {
 						itemStack,
 						context.getPlayer(),
 						blockPos2,
-						SpawnReason.SPAWN_EGG,
+						SpawnReason.SPAWN_ITEM_USE,
 						true,
 						!Objects.equals(blockPos, blockPos2) && direction == Direction.UP
 					)
@@ -108,7 +108,7 @@ public class SpawnEggItem extends Item {
 				return ActionResult.PASS;
 			} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				EntityType<?> entityType = this.getEntityType(itemStack);
-				Entity entity = entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false);
+				Entity entity = entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_ITEM_USE, false, false);
 				if (entity == null) {
 					return ActionResult.PASS;
 				} else {
@@ -167,7 +167,7 @@ public class SpawnEggItem extends Item {
 			if (entity instanceof PassiveEntity) {
 				mobEntity = ((PassiveEntity)entity).createChild(world, (PassiveEntity)entity);
 			} else {
-				mobEntity = entityType.create(world, SpawnReason.SPAWN_EGG);
+				mobEntity = entityType.create(world, SpawnReason.SPAWN_ITEM_USE);
 			}
 
 			if (mobEntity == null) {

@@ -68,6 +68,7 @@ public final class BlockTags {
 	public static final TagKey<Block> BADLANDS_TERRACOTTA = of("badlands_terracotta");
 	public static final TagKey<Block> CONCRETE_POWDER = of("concrete_powder");
 	public static final TagKey<Block> COMPLETES_FIND_TREE_TUTORIAL = of("completes_find_tree_tutorial");
+	public static final TagKey<Block> SHULKER_BOXES = of("shulker_boxes");
 	public static final TagKey<Block> FLOWER_POTS = of("flower_pots");
 	public static final TagKey<Block> ENDERMAN_HOLDABLE = of("enderman_holdable");
 	public static final TagKey<Block> ICE = of("ice");
@@ -101,7 +102,6 @@ public final class BlockTags {
 	public static final TagKey<Block> WALL_POST_OVERRIDE = of("wall_post_override");
 	public static final TagKey<Block> CLIMBABLE = of("climbable");
 	public static final TagKey<Block> FALL_DAMAGE_RESETTING = of("fall_damage_resetting");
-	public static final TagKey<Block> SHULKER_BOXES = of("shulker_boxes");
 	public static final TagKey<Block> HOGLIN_REPELLENTS = of("hoglin_repellents");
 	public static final TagKey<Block> SOUL_FIRE_BASE_BLOCKS = of("soul_fire_base_blocks");
 	public static final TagKey<Block> STRIDER_WARM_BLOCKS = of("strider_warm_blocks");

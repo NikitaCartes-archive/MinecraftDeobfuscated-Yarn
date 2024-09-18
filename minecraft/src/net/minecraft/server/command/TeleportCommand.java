@@ -10,7 +10,6 @@ import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.command.argument.DefaultPosArgument;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.PosArgument;
@@ -46,7 +45,7 @@ public class TeleportCommand {
 									Collections.singleton(context.getSource().getEntityOrThrow()),
 									context.getSource().getWorld(),
 									Vec3ArgumentType.getPosArgument(context, "location"),
-									DefaultPosArgument.zero(),
+									null,
 									null
 								)
 						)
@@ -183,31 +182,7 @@ public class TeleportCommand {
 	) throws CommandSyntaxException {
 		Vec3d vec3d = location.getPos(source);
 		Vec2f vec2f = rotation == null ? null : rotation.getRotation(source);
-		Set<PositionFlag> set = EnumSet.noneOf(PositionFlag.class);
-		if (location.isXRelative()) {
-			set.add(PositionFlag.DELTA_X);
-		}
-
-		if (location.isYRelative()) {
-			set.add(PositionFlag.DELTA_Y);
-		}
-
-		if (location.isZRelative()) {
-			set.add(PositionFlag.DELTA_Z);
-		}
-
-		if (rotation == null) {
-			set.add(PositionFlag.X_ROT);
-			set.add(PositionFlag.Y_ROT);
-		} else {
-			if (rotation.isXRelative()) {
-				set.add(PositionFlag.X_ROT);
-			}
-
-			if (rotation.isYRelative()) {
-				set.add(PositionFlag.Y_ROT);
-			}
-		}
+		Set<PositionFlag> set = getFlags(location, rotation);
 
 		for (Entity entity : targets) {
 			if (rotation == null) {
@@ -238,6 +213,39 @@ public class TeleportCommand {
 		return targets.size();
 	}
 
+	private static Set<PositionFlag> getFlags(PosArgument pos, @Nullable PosArgument rotation) {
+		Set<PositionFlag> set = EnumSet.noneOf(PositionFlag.class);
+		if (pos.isXRelative()) {
+			set.add(PositionFlag.DELTA_X);
+			set.add(PositionFlag.X);
+		}
+
+		if (pos.isYRelative()) {
+			set.add(PositionFlag.DELTA_Y);
+			set.add(PositionFlag.Y);
+		}
+
+		if (pos.isZRelative()) {
+			set.add(PositionFlag.DELTA_Z);
+			set.add(PositionFlag.Z);
+		}
+
+		if (rotation == null) {
+			set.add(PositionFlag.X_ROT);
+			set.add(PositionFlag.Y_ROT);
+		} else {
+			if (rotation.isXRelative()) {
+				set.add(PositionFlag.X_ROT);
+			}
+
+			if (rotation.isYRelative()) {
+				set.add(PositionFlag.Y_ROT);
+			}
+		}
+
+		return set;
+	}
+
 	private static String formatFloat(double d) {
 		return String.format(Locale.ROOT, "%f", d);
 	}
@@ -258,11 +266,14 @@ public class TeleportCommand {
 		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
-			float f = movementFlags.contains(PositionFlag.Y_ROT) ? yaw - target.getYaw() : yaw;
-			float g = movementFlags.contains(PositionFlag.X_ROT) ? pitch - target.getPitch() : pitch;
-			float h = MathHelper.wrapDegrees(f);
+			double d = movementFlags.contains(PositionFlag.X) ? x - target.getX() : x;
+			double e = movementFlags.contains(PositionFlag.Y) ? y - target.getY() : y;
+			double f = movementFlags.contains(PositionFlag.Z) ? z - target.getZ() : z;
+			float g = movementFlags.contains(PositionFlag.Y_ROT) ? yaw - target.getYaw() : yaw;
+			float h = movementFlags.contains(PositionFlag.X_ROT) ? pitch - target.getPitch() : pitch;
 			float i = MathHelper.wrapDegrees(g);
-			if (target.teleport(world, x, y, z, movementFlags, h, i, true)) {
+			float j = MathHelper.wrapDegrees(h);
+			if (target.teleport(world, d, e, f, movementFlags, i, j, true)) {
 				if (facingLocation != null) {
 					facingLocation.look(source, target);
 				}

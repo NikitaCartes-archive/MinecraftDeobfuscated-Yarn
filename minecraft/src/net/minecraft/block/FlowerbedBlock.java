@@ -6,7 +6,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
@@ -25,7 +25,7 @@ public class FlowerbedBlock extends PlantBlock implements Fertilizable {
 	public static final MapCodec<FlowerbedBlock> CODEC = createCodec(FlowerbedBlock::new);
 	public static final int field_42762 = 1;
 	public static final int field_42763 = 4;
-	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
+	public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 	public static final IntProperty FLOWER_AMOUNT = Properties.FLOWER_AMOUNT;
 	private static final BiFunction<Direction, Integer, VoxelShape> FACING_AND_AMOUNT_TO_SHAPE = Util.memoize(
 		(BiFunction<Direction, Integer, VoxelShape>)((facing, flowerAmount) -> {

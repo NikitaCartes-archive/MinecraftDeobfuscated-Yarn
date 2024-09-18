@@ -8,6 +8,7 @@ import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -22,23 +23,19 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 		super(entityType, world);
 	}
 
-	public ChestMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.CHEST_MINECART, x, y, z, world);
-	}
-
 	@Override
 	protected Item asItem() {
 		return Items.CHEST_MINECART;
 	}
 
 	@Override
-	public int size() {
-		return 27;
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.CHEST_MINECART);
 	}
 
 	@Override
-	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.CHEST;
+	public int size() {
+		return 27;
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldEvents;
 
 public class BoatDispenserBehavior extends ItemDispenserBehavior {
-	private final ItemDispenserBehavior itemDispenser = new ItemDispenserBehavior();
+	private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
 	private final BoatEntity.Type boatType;
 	private final boolean chest;
 
@@ -42,7 +42,7 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 			h = 1.0;
 		} else {
 			if (!serverWorld.getBlockState(blockPos).isAir() || !serverWorld.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
-				return this.itemDispenser.dispense(pointer, stack);
+				return this.fallbackBehavior.dispense(pointer, stack);
 			}
 
 			h = 0.0;

@@ -25,20 +25,15 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	private static final int FUEL_PER_ITEM = 3600;
 	private static final int MAX_FUEL = 32000;
 	private int fuel;
-	public double pushX;
-	public double pushZ;
+	public Vec3d pushVec = Vec3d.ZERO;
 
 	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public FurnaceMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.FURNACE_MINECART, world, x, y, z);
-	}
-
 	@Override
-	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.FURNACE;
+	public boolean isSelfPropelling() {
+		return true;
 	}
 
 	@Override
@@ -56,8 +51,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 			}
 
 			if (this.fuel <= 0) {
-				this.pushX = 0.0;
-				this.pushZ = 0.0;
+				this.pushVec = Vec3d.ZERO;
 			}
 
 			this.setLit(this.fuel > 0);
@@ -79,30 +73,16 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void moveOnRail() {
-		double d = 1.0E-4;
-		double e = 0.001;
-		super.moveOnRail();
-		Vec3d vec3d = this.getVelocity();
-		double f = vec3d.horizontalLengthSquared();
-		double g = this.pushX * this.pushX + this.pushZ * this.pushZ;
-		if (g > 1.0E-4 && f > 0.001) {
-			double h = Math.sqrt(f);
-			double i = Math.sqrt(g);
-			this.pushX = vec3d.x / h * i;
-			this.pushZ = vec3d.z / h * i;
-		}
+	public ItemStack getPickBlockStack() {
+		return new ItemStack(Items.FURNACE_MINECART);
 	}
 
 	@Override
 	protected Vec3d applySlowdown(Vec3d velocity) {
-		double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
 		Vec3d vec3d;
-		if (d > 1.0E-7) {
-			d = Math.sqrt(d);
-			this.pushX /= d;
-			this.pushZ /= d;
-			vec3d = velocity.multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ);
+		if (this.pushVec.lengthSquared() > 1.0E-7) {
+			this.pushVec = this.method_64276(velocity);
+			vec3d = velocity.multiply(0.8, 0.0, 0.8).add(this.pushVec);
 			if (this.isTouchingWater()) {
 				vec3d = vec3d.multiply(0.1);
 			}
@@ -111,6 +91,14 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 		}
 
 		return super.applySlowdown(vec3d);
+	}
+
+	private Vec3d method_64276(Vec3d velocity) {
+		double d = 1.0E-4;
+		double e = 0.001;
+		return this.pushVec.horizontalLengthSquared() > 1.0E-4 && velocity.horizontalLengthSquared() > 0.001
+			? this.pushVec.projectOnto(velocity).normalize().multiply(this.pushVec.length())
+			: this.pushVec;
 	}
 
 	@Override
@@ -122,8 +110,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 		}
 
 		if (this.fuel > 0) {
-			this.pushX = this.getX() - player.getX();
-			this.pushZ = this.getZ() - player.getZ();
+			this.pushVec = this.getPos().subtract(player.getPos()).getHorizontal();
 		}
 
 		return ActionResult.SUCCESS;
@@ -132,16 +119,17 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putDouble("PushX", this.pushX);
-		nbt.putDouble("PushZ", this.pushZ);
+		nbt.putDouble("PushX", this.pushVec.x);
+		nbt.putDouble("PushZ", this.pushVec.z);
 		nbt.putShort("Fuel", (short)this.fuel);
 	}
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.pushX = nbt.getDouble("PushX");
-		this.pushZ = nbt.getDouble("PushZ");
+		double d = nbt.getDouble("PushX");
+		double e = nbt.getDouble("PushZ");
+		this.pushVec = new Vec3d(d, 0.0, e);
 		this.fuel = nbt.getShort("Fuel");
 	}
 

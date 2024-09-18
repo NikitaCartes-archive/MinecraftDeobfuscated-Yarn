@@ -12,7 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithEntity {
 	public static final MapCodec<BarrelBlock> CODEC = createCodec(BarrelBlock::new);
-	public static final DirectionProperty FACING = Properties.FACING;
+	public static final EnumProperty<Direction> FACING = Properties.FACING;
 	public static final BooleanProperty OPEN = Properties.OPEN;
 
 	@Override

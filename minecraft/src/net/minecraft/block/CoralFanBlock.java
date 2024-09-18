@@ -8,7 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class CoralFanBlock extends DeadCoralFanBlock {
 	public static final MapCodec<CoralFanBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -28,7 +29,7 @@ public class CoralFanBlock extends DeadCoralFanBlock {
 
 	@Override
 	protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		this.checkLivingConditions(state, world, pos);
+		this.checkLivingConditions(state, world, world, world.random, pos);
 	}
 
 	@Override
@@ -40,17 +41,24 @@ public class CoralFanBlock extends DeadCoralFanBlock {
 
 	@Override
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			this.checkLivingConditions(state, world, pos);
+			this.checkLivingConditions(state, world, tickView, random, pos);
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 		}
 	}
 }

@@ -77,6 +77,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.tick.ScheduledTickView;
 
 /**
  * An abstract class that defines some logic for {@link Block blocks}.
@@ -479,15 +480,22 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see #canPlaceAt
 	 * @see Block#FORCE_STATE
 	 * 
-	 * @param neighborState the state of the updated neighbor block
-	 * @param direction the direction from this block to the neighbor
-	 * @param state the state of this block
-	 * @param neighborPos the position of the neighbor block
-	 * @param pos the position of this block
 	 * @param world the world
+	 * @param direction the direction from this block to the neighbor
+	 * @param pos the position of this block
+	 * @param neighborState the state of the updated neighbor block
+	 * @param neighborPos the position of the neighbor block
+	 * @param state the state of this block
 	 */
 	protected BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
 		return state;
 	}
@@ -1529,12 +1537,14 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		 * 
 		 * @param neighborPos the position of the neighbor block
 		 * @param neighborState the state of the updated neighbor block
-		 * @param direction the direction from this block to the neighbor
 		 * @param pos the position of this block
+		 * @param direction the direction from this block to the neighbor
 		 * @param world the world
 		 */
-		public BlockState getStateForNeighborUpdate(Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-			return this.getBlock().getStateForNeighborUpdate(this.asBlockState(), direction, neighborState, world, pos, neighborPos);
+		public BlockState getStateForNeighborUpdate(
+			WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random
+		) {
+			return this.getBlock().getStateForNeighborUpdate(this.asBlockState(), world, tickView, pos, direction, neighborPos, neighborState, random);
 		}
 
 		public boolean canPathfindThrough(NavigationType type) {

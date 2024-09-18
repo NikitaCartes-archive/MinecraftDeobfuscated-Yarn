@@ -222,7 +222,9 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
 				text, g, (float)i, -2130706433, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
 			);
 			if (bl) {
-				textRenderer.draw(text, g, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+				textRenderer.draw(
+					text, g, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.applyEmission(light, 2)
+				);
 			}
 
 			matrices.pop();

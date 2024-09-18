@@ -72,12 +72,12 @@ public class StructureTestUtil {
 	}
 
 	public static BlockBox getStructureBlockBox(StructureBlockBlockEntity structureBlockEntity) {
-		BlockPos blockPos = getStructureBlockPos(structureBlockEntity);
+		BlockPos blockPos = getOrigin(structureBlockEntity);
 		BlockPos blockPos2 = getStructureBlockBoxCornerPos(blockPos, structureBlockEntity.getSize(), structureBlockEntity.getRotation());
 		return BlockBox.create(blockPos, blockPos2);
 	}
 
-	public static BlockPos getStructureBlockPos(StructureBlockBlockEntity structureBlockEntity) {
+	public static BlockPos getOrigin(StructureBlockBlockEntity structureBlockEntity) {
 		return structureBlockEntity.getPos().add(structureBlockEntity.getOffset());
 	}
 

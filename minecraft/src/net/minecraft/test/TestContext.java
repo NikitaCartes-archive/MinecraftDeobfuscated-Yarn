@@ -855,13 +855,13 @@ public class TestContext {
 	}
 
 	public BlockPos getAbsolutePos(BlockPos pos) {
-		BlockPos blockPos = this.test.getPos();
+		BlockPos blockPos = this.test.getOrigin();
 		BlockPos blockPos2 = blockPos.add(pos);
 		return StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, this.test.getRotation(), blockPos);
 	}
 
 	public BlockPos getRelativePos(BlockPos pos) {
-		BlockPos blockPos = this.test.getPos();
+		BlockPos blockPos = this.test.getOrigin();
 		BlockRotation blockRotation = this.test.getRotation().rotate(BlockRotation.CLOCKWISE_180);
 		BlockPos blockPos2 = StructureTemplate.transformAround(pos, BlockMirror.NONE, blockRotation, blockPos);
 		return blockPos2.subtract(blockPos);
@@ -880,13 +880,13 @@ public class TestContext {
 	}
 
 	public Vec3d getAbsolute(Vec3d pos) {
-		Vec3d vec3d = Vec3d.of(this.test.getPos());
-		return StructureTemplate.transformAround(vec3d.add(pos), BlockMirror.NONE, this.test.getRotation(), this.test.getPos());
+		Vec3d vec3d = Vec3d.of(this.test.getOrigin());
+		return StructureTemplate.transformAround(vec3d.add(pos), BlockMirror.NONE, this.test.getRotation(), this.test.getOrigin());
 	}
 
 	public Vec3d getRelative(Vec3d pos) {
-		Vec3d vec3d = Vec3d.of(this.test.getPos());
-		return StructureTemplate.transformAround(pos.subtract(vec3d), BlockMirror.NONE, this.test.getRotation(), this.test.getPos());
+		Vec3d vec3d = Vec3d.of(this.test.getOrigin());
+		return StructureTemplate.transformAround(pos.subtract(vec3d), BlockMirror.NONE, this.test.getRotation(), this.test.getOrigin());
 	}
 
 	public BlockRotation getRotation() {
@@ -932,7 +932,7 @@ public class TestContext {
 	}
 
 	public void forEachRelativePos(Consumer<BlockPos> posConsumer) {
-		Box box = this.getRelativeTestBox().shrink(1.0, -1.0, 1.0);
+		Box box = this.getRelativeTestBox().shrink(1.0, 1.0, 1.0);
 		BlockPos.Mutable.stream(box).forEach(posConsumer);
 	}
 

@@ -37,7 +37,7 @@ public interface NeighborUpdater {
 	) {
 		BlockState blockState = world.getBlockState(pos);
 		if ((flags & Block.SKIP_REDSTONE_WIRE_STATE_REPLACEMENT) == 0 || !blockState.isOf(Blocks.REDSTONE_WIRE)) {
-			BlockState blockState2 = blockState.getStateForNeighborUpdate(direction, neighborState, world, pos, neighborPos);
+			BlockState blockState2 = blockState.getStateForNeighborUpdate(world, world, pos, direction, neighborPos, neighborState, world.getRandom());
 			Block.replace(blockState, blockState2, world, pos, flags, maxUpdateDepth);
 		}
 	}

@@ -228,7 +228,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				itemStack2.remove(DataComponentTypes.CUSTOM_NAME);
 			}
 
-			int t = (int)MathHelper.clamp(l + (long)i, 0L, 2147483647L);
+			int t = i <= 0 ? 0 : (int)MathHelper.clamp(l + (long)i, 0L, 2147483647L);
 			this.levelCost.set(t);
 			if (i <= 0) {
 				itemStack2 = ItemStack.EMPTY;

@@ -496,7 +496,7 @@ public class ExperimentalMinecartController extends MinecartController {
 	}
 
 	public boolean pickUpEntities(Box box) {
-		if (this.minecart.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && !this.minecart.hasPassengers()) {
+		if (this.minecart.isRideable() && !this.minecart.hasPassengers()) {
 			List<Entity> list = this.getWorld().getOtherEntities(this.minecart, box, EntityPredicates.canBePushedBy(this.minecart));
 			if (!list.isEmpty()) {
 				for (Entity entity : list) {
@@ -519,7 +519,7 @@ public class ExperimentalMinecartController extends MinecartController {
 
 	public boolean pushAwayFromEntities(Box box) {
 		boolean bl = false;
-		if (this.minecart.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE) {
+		if (this.minecart.isRideable()) {
 			List<Entity> list = this.getWorld().getOtherEntities(this.minecart, box, EntityPredicates.canBePushedBy(this.minecart));
 			if (!list.isEmpty()) {
 				for (Entity entity : list) {

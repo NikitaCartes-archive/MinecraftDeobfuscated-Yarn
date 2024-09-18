@@ -1,20 +1,24 @@
 package net.minecraft.client.realms.gui.screen;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.LayoutWidgets;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
-import net.minecraft.client.realms.task.CreatingSnapshotWorldTask;
+import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RealmsCreateRealmScreen extends RealmsScreen {
@@ -29,16 +33,10 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	private TextFieldWidget descriptionBox;
 	private final Runnable worldCreator;
 
-	public RealmsCreateRealmScreen(RealmsMainScreen parent, RealmsServer realmsServer) {
+	public RealmsCreateRealmScreen(RealmsMainScreen parent, RealmsServer server, boolean prerelease) {
 		super(TITLE_TEXT);
 		this.parent = parent;
-		this.worldCreator = () -> this.createWorld(realmsServer);
-	}
-
-	public RealmsCreateRealmScreen(RealmsMainScreen parent, long parentId) {
-		super(TITLE_TEXT);
-		this.parent = parent;
-		this.worldCreator = () -> this.createSnapshotWorld(parentId);
+		this.worldCreator = () -> this.createWorld(server, prerelease);
 	}
 
 	@Override
@@ -71,32 +69,52 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 		this.layout.refreshPositions();
 	}
 
-	private void createWorld(RealmsServer realmsServer) {
-		WorldCreationTask worldCreationTask = new WorldCreationTask(realmsServer.id, this.nameBox.getText(), this.descriptionBox.getText());
-		RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newRealm(this, realmsServer, worldCreationTask, () -> this.client.execute(() -> {
+	private void createWorld(RealmsServer realmsServer, boolean prerelease) {
+		if (!realmsServer.isPrerelease() && prerelease) {
+			AtomicBoolean atomicBoolean = new AtomicBoolean();
+			this.client.setScreen(new NoticeScreen(() -> {
+				atomicBoolean.set(true);
+				this.parent.removeSelection();
+				this.client.setScreen(this.parent);
+			}, Text.translatable("mco.upload.preparing"), Text.empty()));
+			CompletableFuture.supplyAsync(() -> createPrereleaseServer(realmsServer), Util.getMainWorkerExecutor()).thenAcceptAsync(prereleaseServer -> {
+				if (!atomicBoolean.get()) {
+					this.createWorld(prereleaseServer);
+				}
+			}, this.client).exceptionallyAsync(throwable -> {
+				this.parent.removeSelection();
+				Text text;
+				if (throwable.getCause() instanceof RealmsServiceException realmsServiceException) {
+					text = realmsServiceException.error.getText();
+				} else {
+					text = Text.translatable("mco.errorMessage.initialize.failed");
+				}
+
+				this.client.setScreen(new RealmsGenericErrorScreen(text, this.parent));
+				return null;
+			}, this.client);
+		} else {
+			this.createWorld(realmsServer);
+		}
+	}
+
+	private static RealmsServer createPrereleaseServer(RealmsServer parent) {
+		RealmsClient realmsClient = RealmsClient.create();
+
+		try {
+			return realmsClient.createPrereleaseServer(parent.id);
+		} catch (RealmsServiceException var3) {
+			throw new RuntimeException(var3);
+		}
+	}
+
+	private void createWorld(RealmsServer server) {
+		WorldCreationTask worldCreationTask = new WorldCreationTask(server.id, this.nameBox.getText(), this.descriptionBox.getText());
+		RealmsCreateWorldScreen realmsCreateWorldScreen = RealmsCreateWorldScreen.newRealm(this, server, worldCreationTask, () -> this.client.execute(() -> {
 				RealmsMainScreen.resetServerList();
 				this.client.setScreen(this.parent);
 			}));
 		this.client.setScreen(realmsCreateWorldScreen);
-	}
-
-	private void createSnapshotWorld(long parentId) {
-		Screen screen = new RealmsResetNormalWorldScreen(
-			info -> {
-				if (info == null) {
-					this.client.setScreen(this);
-				} else {
-					this.client
-						.setScreen(
-							new RealmsLongRunningMcoTaskScreen(
-								this, new CreatingSnapshotWorldTask(this.parent, parentId, info, this.nameBox.getText(), this.descriptionBox.getText())
-							)
-						);
-				}
-			},
-			TITLE_TEXT
-		);
-		this.client.setScreen(screen);
 	}
 
 	@Override

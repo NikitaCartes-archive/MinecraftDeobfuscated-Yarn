@@ -211,7 +211,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 		for (Direction direction : DIRECTIONS) {
 			mutable.set(pos, direction);
-			blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
+			blockState = blockState.getStateForNeighborUpdate(world, world, pos, direction, mutable, world.getBlockState(mutable), world.getRandom());
 		}
 
 		return blockState;

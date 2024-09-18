@@ -290,7 +290,7 @@ public class RealmsServer extends ValueObject {
 		return map;
 	}
 
-	public boolean hasParentWorld() {
+	public boolean isPrerelease() {
 		return this.parentWorldId != -1L;
 	}
 
@@ -338,7 +338,7 @@ public class RealmsServer extends ValueObject {
 
 		public int compare(RealmsServer realmsServer, RealmsServer realmsServer2) {
 			return ComparisonChain.start()
-				.compareTrueFirst(realmsServer.hasParentWorld(), realmsServer2.hasParentWorld())
+				.compareTrueFirst(realmsServer.isPrerelease(), realmsServer2.isPrerelease())
 				.compareTrueFirst(realmsServer.state == RealmsServer.State.UNINITIALIZED, realmsServer2.state == RealmsServer.State.UNINITIALIZED)
 				.compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial)
 				.compareTrueFirst(realmsServer.owner.equals(this.refOwner), realmsServer2.owner.equals(this.refOwner))

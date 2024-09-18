@@ -201,121 +201,123 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		boolean bl = actionType == SlotActionType.QUICK_MOVE;
 		actionType = slotId == -999 && actionType == SlotActionType.PICKUP ? SlotActionType.THROW : actionType;
-		this.onMouseClick(slot, actionType);
-		if (slot == null && selectedTab.getType() != ItemGroup.Type.INVENTORY && actionType != SlotActionType.QUICK_CRAFT) {
-			if (!this.handler.getCursorStack().isEmpty() && this.lastClickOutsideBounds) {
-				if (button == 0) {
-					this.client.player.dropItem(this.handler.getCursorStack(), true);
-					this.client.interactionManager.dropCreativeStack(this.handler.getCursorStack());
-					this.handler.setCursorStack(ItemStack.EMPTY);
+		if (actionType != SlotActionType.THROW || this.client.player.canDropItems()) {
+			this.onMouseClick(slot, actionType);
+			if (slot == null && selectedTab.getType() != ItemGroup.Type.INVENTORY && actionType != SlotActionType.QUICK_CRAFT) {
+				if (!this.handler.getCursorStack().isEmpty() && this.lastClickOutsideBounds) {
+					if (!this.client.player.canDropItems()) {
+						return;
+					}
+
+					if (button == 0) {
+						this.client.player.dropItem(this.handler.getCursorStack(), true);
+						this.client.interactionManager.dropCreativeStack(this.handler.getCursorStack());
+						this.handler.setCursorStack(ItemStack.EMPTY);
+					}
+
+					if (button == 1) {
+						ItemStack itemStack = this.handler.getCursorStack().split(1);
+						this.client.player.dropItem(itemStack, true);
+						this.client.interactionManager.dropCreativeStack(itemStack);
+					}
+				}
+			} else {
+				if (slot != null && !slot.canTakeItems(this.client.player)) {
+					return;
 				}
 
-				if (button == 1) {
-					ItemStack itemStack = this.handler.getCursorStack().split(1);
-					this.client.player.dropItem(itemStack, true);
-					this.client.interactionManager.dropCreativeStack(itemStack);
-				}
-			}
-		} else {
-			if (slot != null && !slot.canTakeItems(this.client.player)) {
-				return;
-			}
-
-			if (slot == this.deleteItemSlot && bl) {
-				for (int i = 0; i < this.client.player.playerScreenHandler.getStacks().size(); i++) {
-					this.client.interactionManager.clickCreativeStack(ItemStack.EMPTY, i);
-				}
-			} else if (selectedTab.getType() == ItemGroup.Type.INVENTORY) {
-				if (slot == this.deleteItemSlot) {
-					this.handler.setCursorStack(ItemStack.EMPTY);
-				} else if (actionType == SlotActionType.THROW && slot != null && slot.hasStack()) {
-					ItemStack itemStack = slot.takeStack(button == 0 ? 1 : slot.getStack().getMaxCount());
-					ItemStack itemStack2 = slot.getStack();
-					this.client.player.dropItem(itemStack, true);
-					this.client.interactionManager.dropCreativeStack(itemStack);
-					this.client.interactionManager.clickCreativeStack(itemStack2, ((CreativeInventoryScreen.CreativeSlot)slot).slot.id);
-				} else if (actionType == SlotActionType.THROW && !this.handler.getCursorStack().isEmpty()) {
-					this.client.player.dropItem(this.handler.getCursorStack(), true);
-					this.client.interactionManager.dropCreativeStack(this.handler.getCursorStack());
-					this.handler.setCursorStack(ItemStack.EMPTY);
-				} else {
-					this.client
-						.player
-						.playerScreenHandler
-						.onSlotClick(slot == null ? slotId : ((CreativeInventoryScreen.CreativeSlot)slot).slot.id, button, actionType, this.client.player);
-					this.client.player.playerScreenHandler.sendContentUpdates();
-				}
-			} else if (actionType != SlotActionType.QUICK_CRAFT && slot.inventory == INVENTORY) {
-				ItemStack itemStack = this.handler.getCursorStack();
-				ItemStack itemStack2 = slot.getStack();
-				if (actionType == SlotActionType.SWAP) {
-					if (!itemStack2.isEmpty()) {
-						this.client.player.getInventory().setStack(button, itemStack2.copyWithCount(itemStack2.getMaxCount()));
+				if (slot == this.deleteItemSlot && bl) {
+					for (int i = 0; i < this.client.player.playerScreenHandler.getStacks().size(); i++) {
+						this.client.player.playerScreenHandler.getSlot(i).setStackNoCallbacks(ItemStack.EMPTY);
+						this.client.interactionManager.clickCreativeStack(ItemStack.EMPTY, i);
+					}
+				} else if (selectedTab.getType() == ItemGroup.Type.INVENTORY) {
+					if (slot == this.deleteItemSlot) {
+						this.handler.setCursorStack(ItemStack.EMPTY);
+					} else if (actionType == SlotActionType.THROW && slot != null && slot.hasStack()) {
+						ItemStack itemStack = slot.takeStack(button == 0 ? 1 : slot.getStack().getMaxCount());
+						ItemStack itemStack2 = slot.getStack();
+						this.client.player.dropItem(itemStack, true);
+						this.client.interactionManager.dropCreativeStack(itemStack);
+						this.client.interactionManager.clickCreativeStack(itemStack2, ((CreativeInventoryScreen.CreativeSlot)slot).slot.id);
+					} else if (actionType == SlotActionType.THROW && slotId == -999 && !this.handler.getCursorStack().isEmpty()) {
+						this.client.player.dropItem(this.handler.getCursorStack(), true);
+						this.client.interactionManager.dropCreativeStack(this.handler.getCursorStack());
+						this.handler.setCursorStack(ItemStack.EMPTY);
+					} else {
+						this.client
+							.player
+							.playerScreenHandler
+							.onSlotClick(slot == null ? slotId : ((CreativeInventoryScreen.CreativeSlot)slot).slot.id, button, actionType, this.client.player);
 						this.client.player.playerScreenHandler.sendContentUpdates();
 					}
-
-					return;
-				}
-
-				if (actionType == SlotActionType.CLONE) {
-					if (this.handler.getCursorStack().isEmpty() && slot.hasStack()) {
-						ItemStack itemStack3 = slot.getStack();
-						this.handler.setCursorStack(itemStack3.copyWithCount(itemStack3.getMaxCount()));
-					}
-
-					return;
-				}
-
-				if (actionType == SlotActionType.THROW) {
-					if (!itemStack2.isEmpty()) {
-						ItemStack itemStack3 = itemStack2.copyWithCount(button == 0 ? 1 : itemStack2.getMaxCount());
-						this.client.player.dropItem(itemStack3, true);
-						this.client.interactionManager.dropCreativeStack(itemStack3);
-					}
-
-					return;
-				}
-
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
-					if (button == 0) {
-						if (bl) {
-							itemStack.setCount(itemStack.getMaxCount());
-						} else if (itemStack.getCount() < itemStack.getMaxCount()) {
-							itemStack.increment(1);
-						}
-					} else {
-						itemStack.decrement(1);
-					}
-				} else if (!itemStack2.isEmpty() && itemStack.isEmpty()) {
-					int j = bl ? itemStack2.getMaxCount() : itemStack2.getCount();
-					this.handler.setCursorStack(itemStack2.copyWithCount(j));
-				} else if (button == 0) {
-					this.handler.setCursorStack(ItemStack.EMPTY);
-				} else if (!this.handler.getCursorStack().isEmpty()) {
-					this.handler.getCursorStack().decrement(1);
-				}
-			} else if (this.handler != null) {
-				ItemStack itemStackx = slot == null ? ItemStack.EMPTY : this.handler.getSlot(slot.id).getStack();
-				this.handler.onSlotClick(slot == null ? slotId : slot.id, button, actionType, this.client.player);
-				if (ScreenHandler.unpackQuickCraftStage(button) == 2) {
-					for (int k = 0; k < 9; k++) {
-						this.client.interactionManager.clickCreativeStack(this.handler.getSlot(45 + k).getStack(), 36 + k);
-					}
-				} else if (slot != null) {
-					ItemStack itemStack2x = this.handler.getSlot(slot.id).getStack();
-					int j = 45 + button;
+				} else if (actionType != SlotActionType.QUICK_CRAFT && slot.inventory == INVENTORY) {
+					ItemStack itemStack = this.handler.getCursorStack();
+					ItemStack itemStack2 = slot.getStack();
 					if (actionType == SlotActionType.SWAP) {
-						this.client.interactionManager.clickCreativeStack(itemStackx, j - this.handler.slots.size() + 9 + 36);
-					} else if (actionType == SlotActionType.THROW && !itemStackx.isEmpty()) {
-						int l = button == 0 ? 1 : itemStackx.getCount();
-						ItemStack itemStack4 = itemStackx.copyWithCount(l);
-						itemStack2x.decrement(l);
-						this.client.player.dropItem(itemStack4, true);
-						this.client.interactionManager.dropCreativeStack(itemStack4);
+						if (!itemStack2.isEmpty()) {
+							this.client.player.getInventory().setStack(button, itemStack2.copyWithCount(itemStack2.getMaxCount()));
+							this.client.player.playerScreenHandler.sendContentUpdates();
+						}
+
+						return;
 					}
 
-					this.client.interactionManager.clickCreativeStack(itemStack2x, slot.id - this.handler.slots.size() + 9 + 36);
-					this.client.player.playerScreenHandler.sendContentUpdates();
+					if (actionType == SlotActionType.CLONE) {
+						if (this.handler.getCursorStack().isEmpty() && slot.hasStack()) {
+							ItemStack itemStack3 = slot.getStack();
+							this.handler.setCursorStack(itemStack3.copyWithCount(itemStack3.getMaxCount()));
+						}
+
+						return;
+					}
+
+					if (actionType == SlotActionType.THROW) {
+						if (!itemStack2.isEmpty()) {
+							ItemStack itemStack3 = itemStack2.copyWithCount(button == 0 ? 1 : itemStack2.getMaxCount());
+							this.client.player.dropItem(itemStack3, true);
+							this.client.interactionManager.dropCreativeStack(itemStack3);
+						}
+
+						return;
+					}
+
+					if (!itemStack.isEmpty() && !itemStack2.isEmpty() && ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
+						if (button == 0) {
+							if (bl) {
+								itemStack.setCount(itemStack.getMaxCount());
+							} else if (itemStack.getCount() < itemStack.getMaxCount()) {
+								itemStack.increment(1);
+							}
+						} else {
+							itemStack.decrement(1);
+						}
+					} else if (!itemStack2.isEmpty() && itemStack.isEmpty()) {
+						int j = bl ? itemStack2.getMaxCount() : itemStack2.getCount();
+						this.handler.setCursorStack(itemStack2.copyWithCount(j));
+					} else if (button == 0) {
+						this.handler.setCursorStack(ItemStack.EMPTY);
+					} else if (!this.handler.getCursorStack().isEmpty()) {
+						this.handler.getCursorStack().decrement(1);
+					}
+				} else if (this.handler != null) {
+					ItemStack itemStackx = slot == null ? ItemStack.EMPTY : this.handler.getSlot(slot.id).getStack();
+					this.handler.onSlotClick(slot == null ? slotId : slot.id, button, actionType, this.client.player);
+					if (ScreenHandler.unpackQuickCraftStage(button) == 2) {
+						for (int k = 0; k < 9; k++) {
+							this.client.interactionManager.clickCreativeStack(this.handler.getSlot(45 + k).getStack(), 36 + k);
+						}
+					} else if (slot != null && PlayerInventory.isValidHotbarIndex(slot.getIndex()) && selectedTab.getType() != ItemGroup.Type.INVENTORY) {
+						if (actionType == SlotActionType.THROW && !itemStackx.isEmpty() && !this.handler.getCursorStack().isEmpty()) {
+							int k = button == 0 ? 1 : itemStackx.getCount();
+							ItemStack itemStack3 = itemStackx.copyWithCount(k);
+							itemStackx.decrement(k);
+							this.client.player.dropItem(itemStack3, true);
+							this.client.interactionManager.dropCreativeStack(itemStack3);
+						}
+
+						this.client.player.playerScreenHandler.sendContentUpdates();
+					}
 				}
 			}
 		}

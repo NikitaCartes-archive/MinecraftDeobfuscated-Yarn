@@ -321,7 +321,7 @@ public class UpgradeData {
 		DEFAULT {
 			@Override
 			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
-				return oldState.getStateForNeighborUpdate(direction, world.getBlockState(otherPos), world, currentPos, otherPos);
+				return oldState.getStateForNeighborUpdate(world, world, currentPos, direction, otherPos, world.getBlockState(otherPos), world.getRandom());
 			}
 		},
 		CHEST(Blocks.CHEST, Blocks.TRAPPED_CHEST) {
@@ -357,7 +357,7 @@ public class UpgradeData {
 
 			@Override
 			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
-				BlockState blockState = oldState.getStateForNeighborUpdate(direction, world.getBlockState(otherPos), world, currentPos, otherPos);
+				BlockState blockState = oldState.getStateForNeighborUpdate(world, world, currentPos, direction, otherPos, world.getBlockState(otherPos), world.getRandom());
 				if (oldState != blockState) {
 					int i = (Integer)blockState.get(Properties.DISTANCE_1_7);
 					List<ObjectSet<BlockPos>> list = (List<ObjectSet<BlockPos>>)this.distanceToPositions.get();

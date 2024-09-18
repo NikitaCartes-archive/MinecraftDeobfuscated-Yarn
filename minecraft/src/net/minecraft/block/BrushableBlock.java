@@ -19,9 +19,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class BrushableBlock extends BlockWithEntity implements LandingBlock {
 	public static final MapCodec<BrushableBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -69,10 +70,17 @@ public class BrushableBlock extends BlockWithEntity implements LandingBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
-		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+		BlockState state,
+		WorldView world,
+		ScheduledTickView tickView,
+		BlockPos pos,
+		Direction direction,
+		BlockPos neighborPos,
+		BlockState neighborState,
+		Random random
 	) {
-		world.scheduleBlockTick(pos, this, 2);
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		tickView.scheduleBlockTick(pos, this, 2);
+		return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override

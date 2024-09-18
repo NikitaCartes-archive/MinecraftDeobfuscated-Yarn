@@ -53,9 +53,7 @@ public class SquidEntity extends WaterAnimalEntity {
 	private float swimVelocityScale;
 	private float thrustTimerSpeed;
 	private float turningSpeed;
-	private float swimX;
-	private float swimY;
-	private float swimZ;
+	Vec3d swimVec = Vec3d.ZERO;
 
 	public SquidEntity(EntityType<? extends SquidEntity> entityType, World world) {
 		super(entityType, world);
@@ -144,21 +142,21 @@ public class SquidEntity extends WaterAnimalEntity {
 				float f = this.thrustTimer / (float) Math.PI;
 				this.tentacleAngle = MathHelper.sin(f * f * (float) Math.PI) * (float) Math.PI * 0.25F;
 				if ((double)f > 0.75) {
-					this.swimVelocityScale = 1.0F;
+					if (this.isLogicalSideForUpdatingMovement()) {
+						this.setVelocity(this.swimVec);
+					}
+
 					this.turningSpeed = 1.0F;
 				} else {
 					this.turningSpeed *= 0.8F;
 				}
 			} else {
 				this.tentacleAngle = 0.0F;
-				this.swimVelocityScale *= 0.9F;
-				this.turningSpeed *= 0.99F;
-			}
+				if (this.isLogicalSideForUpdatingMovement()) {
+					this.setVelocity(this.getVelocity().multiply(0.9));
+				}
 
-			if (!this.getWorld().isClient) {
-				this.setVelocity(
-					(double)(this.swimX * this.swimVelocityScale), (double)(this.swimY * this.swimVelocityScale), (double)(this.swimZ * this.swimVelocityScale)
-				);
+				this.turningSpeed *= 0.99F;
 			}
 
 			Vec3d vec3d = this.getVelocity();
@@ -234,17 +232,8 @@ public class SquidEntity extends WaterAnimalEntity {
 		}
 	}
 
-	/**
-	 * Sets the direction and velocity the squid must go when fleeing an enemy. Only has an effect when in the water.
-	 */
-	public void setSwimmingVector(float x, float y, float z) {
-		this.swimX = x;
-		this.swimY = y;
-		this.swimZ = z;
-	}
-
 	public boolean hasSwimmingVector() {
-		return this.swimX != 0.0F || this.swimY != 0.0F || this.swimZ != 0.0F;
+		return this.swimVec.lengthSquared() > 1.0E-5F;
 	}
 
 	@Nullable
@@ -306,7 +295,7 @@ public class SquidEntity extends WaterAnimalEntity {
 						vec3d = vec3d.subtract(0.0, vec3d.y, 0.0);
 					}
 
-					SquidEntity.this.setSwimmingVector((float)vec3d.x / 20.0F, (float)vec3d.y / 20.0F, (float)vec3d.z / 20.0F);
+					SquidEntity.this.swimVec = new Vec3d(vec3d.x / 20.0, vec3d.y / 20.0, vec3d.z / 20.0);
 				}
 
 				if (this.timer % 10 == 5) {
@@ -332,13 +321,12 @@ public class SquidEntity extends WaterAnimalEntity {
 		public void tick() {
 			int i = this.squid.getDespawnCounter();
 			if (i > 100) {
-				this.squid.setSwimmingVector(0.0F, 0.0F, 0.0F);
+				this.squid.swimVec = Vec3d.ZERO;
 			} else if (this.squid.getRandom().nextInt(toGoalTicks(50)) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
 				float f = this.squid.getRandom().nextFloat() * (float) (Math.PI * 2);
-				float g = MathHelper.cos(f) * 0.2F;
-				float h = -0.1F + this.squid.getRandom().nextFloat() * 0.2F;
-				float j = MathHelper.sin(f) * 0.2F;
-				this.squid.setSwimmingVector(g, h, j);
+				this.squid.swimVec = new Vec3d(
+					(double)(MathHelper.cos(f) * 0.2F), (double)(-0.1F + this.squid.getRandom().nextFloat() * 0.2F), (double)(MathHelper.sin(f) * 0.2F)
+				);
 			}
 		}
 	}

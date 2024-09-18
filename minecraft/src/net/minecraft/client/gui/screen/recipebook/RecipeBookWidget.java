@@ -12,7 +12,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.navigation.NavigationAxis;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -53,6 +55,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	public static final int field_32408 = 147;
 	public static final int field_32409 = 166;
 	private static final int field_32410 = 86;
+	private static final int field_54389 = 8;
 	private static final Text TOGGLE_ALL_RECIPES_TEXT = Text.translatable("gui.recipebook.toggleRecipes.all");
 	private static final int field_52841 = 30;
 	private int leftOffset;
@@ -82,6 +85,8 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	private boolean searching;
 	private boolean open;
 	private boolean narrow;
+	@Nullable
+	private ScreenRect searchFieldRect;
 
 	public RecipeBookWidget(T craftingScreenHandler) {
 		this.craftingScreenHandler = craftingScreenHandler;
@@ -106,8 +111,8 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	private void reset() {
 		boolean bl = this.isFilteringCraftable();
 		this.leftOffset = this.narrow ? 0 : 86;
-		int i = (this.parentWidth - 147) / 2 - this.leftOffset;
-		int j = (this.parentHeight - 166) / 2;
+		int i = this.getLeft();
+		int j = this.getTop();
 		this.recipeFinder.clear();
 		this.client.player.getInventory().populateRecipeFinder(this.recipeFinder);
 		this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
@@ -118,6 +123,9 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 		this.searchField.setEditableColor(16777215);
 		this.searchField.setText(string);
 		this.searchField.setPlaceholder(SEARCH_HINT_TEXT);
+		this.searchFieldRect = ScreenRect.of(
+			NavigationAxis.HORIZONTAL, i + 8, this.searchField.getY(), this.searchField.getX() - this.getLeft(), this.searchField.getHeight()
+		);
 		this.recipesArea.initialize(this.client, i, j);
 		this.recipesArea.setGui(this);
 		this.toggleCraftableButton = new ToggleButtonWidget(i + 110, j + 12, 26, 16, bl);
@@ -144,6 +152,14 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 		this.currentTab.setToggled(true);
 		this.refreshResults(false, bl);
 		this.refreshTabButtons(bl);
+	}
+
+	private int getTop() {
+		return (this.parentHeight - 166) / 2;
+	}
+
+	private int getLeft() {
+		return (this.parentWidth - 147) / 2 - this.leftOffset;
 	}
 
 	private void updateTooltip() {
@@ -279,8 +295,8 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 100.0F);
-			int i = (this.parentWidth - 147) / 2 - this.leftOffset;
-			int j = (this.parentHeight - 166) / 2;
+			int i = this.getLeft();
+			int j = this.getTop();
 			context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, i, j, 1.0F, 1.0F, 147, 166, 256, 256);
 			this.searchField.render(context, mouseX, mouseY, delta);
 
@@ -310,7 +326,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.isOpen() && !this.client.player.isSpectator()) {
-			if (this.recipesArea.mouseClicked(mouseX, mouseY, button, (this.parentWidth - 147) / 2 - this.leftOffset, (this.parentHeight - 166) / 2, 147, 166)) {
+			if (this.recipesArea.mouseClicked(mouseX, mouseY, button, this.getLeft(), this.getTop(), 147, 166)) {
 				RecipeEntry<?> recipeEntry = this.recipesArea.getLastClickedRecipe();
 				RecipeResultCollection recipeResultCollection = this.recipesArea.getLastClickedResults();
 				if (recipeEntry != null && recipeResultCollection != null) {
@@ -326,11 +342,17 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 				}
 
 				return true;
-			} else if (this.searchField.mouseClicked(mouseX, mouseY, button)) {
-				this.searchField.setFocused(true);
-				return true;
 			} else {
-				this.searchField.setFocused(false);
+				if (this.searchField != null) {
+					boolean bl = this.searchFieldRect != null && this.searchFieldRect.contains(MathHelper.floor(mouseX), MathHelper.floor(mouseY));
+					if (bl || this.searchField.mouseClicked(mouseX, mouseY, button)) {
+						this.searchField.setFocused(true);
+						return true;
+					}
+
+					this.searchField.setFocused(false);
+				}
+
 				if (this.toggleCraftableButton.mouseClicked(mouseX, mouseY, button)) {
 					boolean bl = this.toggleFilteringCraftable();
 					this.toggleCraftableButton.setToggled(bl);

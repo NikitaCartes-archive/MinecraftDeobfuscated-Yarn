@@ -31,6 +31,7 @@ import net.minecraft.data.server.loottable.vanilla.VanillaLootTableProviders;
 import net.minecraft.data.server.recipe.BundleRecipeGenerator;
 import net.minecraft.data.server.recipe.VanillaRecipeGenerator;
 import net.minecraft.data.server.tag.TagProvider;
+import net.minecraft.data.server.tag.bundle.BundleItemTagProvider;
 import net.minecraft.data.server.tag.rebalance.TradeRebalanceEnchantmentTagProvider;
 import net.minecraft.data.server.tag.rebalance.TradeRebalanceStructureTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBannerPatternTagProvider;
@@ -163,6 +164,7 @@ public class Main {
 		pack3.addProvider(DataPackStructureProvider::new);
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
 		pack3.addProvider(toFactory(BundleRecipeGenerator.Provider::new, completableFuture));
+		pack3.addProvider(outputx -> new BundleItemTagProvider(outputx, completableFuture, tagProvider2.getTagLookupFuture(), tagProvider.getTagLookupFuture()));
 		pack3.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
 		CompletableFuture<RegistryBuilder.FullPatchesRegistriesPair> completableFuture2 = TradeRebalanceBuiltinRegistries.validate(completableFuture);
 		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture3 = completableFuture2.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches);
@@ -176,14 +178,12 @@ public class Main {
 		pack4.addProvider(toFactory(TradeRebalanceEnchantmentTagProvider::new, completableFuture));
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "redstone_experiments");
 		pack3.addProvider(
-			dataOutput -> MetadataProvider.create(
-					dataOutput, Text.translatable("dataPack.redstone_experiments.description"), FeatureSet.of(FeatureFlags.REDSTONE_EXPERIMENTS)
-				)
+			outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.redstone_experiments.description"), FeatureSet.of(FeatureFlags.REDSTONE_EXPERIMENTS))
 		);
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "minecart_improvements");
 		pack3.addProvider(
-			dataOutput -> MetadataProvider.create(
-					dataOutput, Text.translatable("dataPack.minecart_improvements.description"), FeatureSet.of(FeatureFlags.MINECART_IMPROVEMENTS)
+			outputx -> MetadataProvider.create(
+					outputx, Text.translatable("dataPack.minecart_improvements.description"), FeatureSet.of(FeatureFlags.MINECART_IMPROVEMENTS)
 				)
 		);
 		return dataGenerator;

@@ -786,7 +786,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 						this.postDisconnectScreen,
 						this.serverCookies,
 						chatState,
-						this.strictErrorHandling,
 						this.customReportDetails,
 						this.serverLinks
 					)
@@ -1215,8 +1214,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			bl = false;
 		}
 
-		if (packet.getSyncId() == 0 && PlayerScreenHandler.isInHotbar(i)) {
-			if (!itemStack.isEmpty()) {
+		if (packet.getSyncId() == 0) {
+			if (PlayerScreenHandler.isInHotbar(i) && !itemStack.isEmpty()) {
 				ItemStack itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack();
 				if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {
 					itemStack.setBobbingAnimationTime(5);
@@ -1229,6 +1228,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		}
 
 		if (this.client.currentScreen instanceof CreativeInventoryScreen) {
+			playerEntity.playerScreenHandler.setPreviousTrackedSlot(i, itemStack);
 			playerEntity.playerScreenHandler.sendContentUpdates();
 		}
 	}

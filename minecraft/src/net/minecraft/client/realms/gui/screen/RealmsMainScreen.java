@@ -464,7 +464,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		for (RealmsServer realmsServer2 : this.serverFilterer) {
 			RealmsMainScreen.Entry entry;
-			if (isSnapshotRealmsEligible() && !realmsServer2.hasParentWorld()) {
+			if (isSnapshotRealmsEligible() && !realmsServer2.isPrerelease()) {
 				if (realmsServer2.state == RealmsServer.State.UNINITIALIZED) {
 					continue;
 				}
@@ -959,7 +959,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		public RealmSelectionListEntry(final RealmsServer server) {
 			this.server = server;
 			boolean bl = RealmsMainScreen.isSelfOwnedServer(server);
-			if (RealmsMainScreen.isSnapshotRealmsEligible() && bl && server.hasParentWorld()) {
+			if (RealmsMainScreen.isSnapshotRealmsEligible() && bl && server.isPrerelease()) {
 				this.tooltip.setTooltip(Tooltip.of(Text.translatable("mco.snapshot.paired", server.parentWorldName)));
 			} else if (!bl && server.needsDowngrade()) {
 				this.tooltip.setTooltip(Tooltip.of(Text.translatable("mco.snapshot.friendsRealm.downgrade", server.activeVersion)));
@@ -1042,7 +1042,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		private void createRealm() {
 			RealmsMainScreen.this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-			RealmsCreateRealmScreen realmsCreateRealmScreen = new RealmsCreateRealmScreen(RealmsMainScreen.this, this.server);
+			RealmsCreateRealmScreen realmsCreateRealmScreen = new RealmsCreateRealmScreen(RealmsMainScreen.this, this.server, this.server.isPrerelease());
 			RealmsMainScreen.this.client.setScreen(realmsCreateRealmScreen);
 		}
 
@@ -1142,7 +1142,7 @@ public class RealmsMainScreen extends RealmsScreen {
 						.message(Text.translatable("mco.snapshot.createSnapshotPopup.text"))
 						.button(
 							Text.translatable("mco.selectServer.create"),
-							screen -> RealmsMainScreen.this.client.setScreen(new RealmsCreateRealmScreen(RealmsMainScreen.this, this.server.id))
+							screen -> RealmsMainScreen.this.client.setScreen(new RealmsCreateRealmScreen(RealmsMainScreen.this, this.server, true))
 						)
 						.button(ScreenTexts.CANCEL, PopupScreen::close)
 						.build()
