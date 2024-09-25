@@ -931,10 +931,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return this.properties;
 	}
 
-	public GameRules getGameRules() {
-		return this.properties.getGameRules();
-	}
-
 	public abstract TickManager getTickManager();
 
 	public float getThunderGradient(float delta) {

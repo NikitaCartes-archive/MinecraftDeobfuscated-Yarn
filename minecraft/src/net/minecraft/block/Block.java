@@ -425,10 +425,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	private static void dropStack(World world, Supplier<ItemEntity> itemEntitySupplier, ItemStack stack) {
-		if (!world.isClient && !stack.isEmpty() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+		if (world instanceof ServerWorld serverWorld && !stack.isEmpty() && serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			ItemEntity itemEntity = (ItemEntity)itemEntitySupplier.get();
 			itemEntity.setToDefaultPickupDelay();
 			world.spawnEntity(itemEntity);
+			return;
 		}
 	}
 
@@ -601,8 +602,8 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 */
 	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		this.spawnBreakParticles(world, player, pos, state);
-		if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-			PiglinBrain.onGuardedBlockInteracted(player, false);
+		if (state.isIn(BlockTags.GUARDED_BY_PIGLINS) && world instanceof ServerWorld serverWorld) {
+			PiglinBrain.onGuardedBlockInteracted(serverWorld, player, false);
 		}
 
 		world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));

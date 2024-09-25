@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.raid.RaiderEntity;
 
 /**
@@ -17,7 +17,7 @@ public class DisableableFollowTargetGoal<T extends LivingEntity> extends ActiveT
 		int reciprocalChance,
 		boolean checkVisibility,
 		boolean checkCanNavigate,
-		@Nullable Predicate<LivingEntity> targetPredicate
+		@Nullable TargetPredicate.EntityPredicate targetPredicate
 	) {
 		super(actor, targetEntityClass, reciprocalChance, checkVisibility, checkCanNavigate, targetPredicate);
 	}

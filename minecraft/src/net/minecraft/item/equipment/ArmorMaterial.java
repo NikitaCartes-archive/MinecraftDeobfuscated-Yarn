@@ -52,6 +52,16 @@ public record ArmorMaterial(
 			);
 	}
 
+	public Item.Settings applyBodyArmorSettings(Item.Settings settings, SoundEvent equipSound, RegistryEntryList<EntityType<?>> allowedEntities) {
+		return settings.maxDamage(EquipmentType.BODY.getMaxDamage(this.durability))
+			.attributeModifiers(this.createAttributeModifiers(EquipmentType.BODY))
+			.repairable(this.repairIngredient)
+			.component(
+				DataComponentTypes.EQUIPPABLE,
+				EquippableComponent.builder(EquipmentSlot.BODY).equipSound(RegistryEntry.of(equipSound)).model(this.modelId).allowedEntities(allowedEntities).build()
+			);
+	}
+
 	private AttributeModifiersComponent createAttributeModifiers(EquipmentType equipmentType) {
 		int i = (Integer)this.defense.getOrDefault(equipmentType, 0);
 		AttributeModifiersComponent.Builder builder = AttributeModifiersComponent.builder();

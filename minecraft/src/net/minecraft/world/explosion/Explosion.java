@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -23,6 +24,8 @@ public interface Explosion {
 			case ProjectileEntity projectileEntity when projectileEntity.getOwner() instanceof LivingEntity livingEntity2 -> livingEntity2;
 		};
 	}
+
+	ServerWorld getWorld();
 
 	Explosion.DestructionType getDestructionType();
 

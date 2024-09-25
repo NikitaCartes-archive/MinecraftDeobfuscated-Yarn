@@ -52,7 +52,7 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 	private static boolean tryShearEntity(ServerWorld world, BlockPos pos, ItemStack shears) {
 		for (LivingEntity livingEntity : world.getEntitiesByClass(LivingEntity.class, new Box(pos), EntityPredicates.EXCEPT_SPECTATOR)) {
 			if (livingEntity instanceof Shearable shearable && shearable.isShearable()) {
-				shearable.sheared(SoundCategory.BLOCKS, shears);
+				shearable.sheared(world, SoundCategory.BLOCKS, shears);
 				world.emitGameEvent(null, GameEvent.SHEAR, pos);
 				return true;
 			}

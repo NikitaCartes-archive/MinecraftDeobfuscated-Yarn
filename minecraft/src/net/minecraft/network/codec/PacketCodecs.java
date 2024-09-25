@@ -140,6 +140,21 @@ public interface PacketCodecs {
 		}
 	};
 	/**
+	 * A codec for a long value.
+	 * 
+	 * @see io.netty.buffer.ByteBuf#readLong
+	 * @see io.netty.buffer.ByteBuf#writeLong
+	 */
+	PacketCodec<ByteBuf, Long> LONG = new PacketCodec<ByteBuf, Long>() {
+		public Long decode(ByteBuf byteBuf) {
+			return byteBuf.readLong();
+		}
+
+		public void encode(ByteBuf byteBuf, Long long_) {
+			byteBuf.writeLong(long_);
+		}
+	};
+	/**
 	 * A codec for a variable-length long (var long) value.
 	 * 
 	 * @see net.minecraft.network.PacketByteBuf#readVarLong
@@ -355,11 +370,11 @@ public interface PacketCodecs {
 				return PacketByteBuf.readByteArray(buf, maxLength);
 			}
 
-			public void encode(ByteBuf buf, byte[] value) {
-				if (value.length > maxLength) {
-					throw new EncoderException("ByteArray with size " + value.length + " is bigger than allowed " + maxLength);
+			public void encode(ByteBuf byteBuf, byte[] bs) {
+				if (bs.length > maxLength) {
+					throw new EncoderException("ByteArray with size " + bs.length + " is bigger than allowed " + maxLength);
 				} else {
-					PacketByteBuf.writeByteArray(buf, value);
+					PacketByteBuf.writeByteArray(byteBuf, bs);
 				}
 			}
 		};

@@ -89,8 +89,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ExperimentalMinecartController;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FuelRegistry;
@@ -417,7 +417,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		boolean bl = commonPlayerSpawnInfo.isDebug();
 		boolean bl2 = commonPlayerSpawnInfo.isFlat();
 		int i = commonPlayerSpawnInfo.seaLevel();
-		ClientWorld.Properties properties = new ClientWorld.Properties(this.enabledFeatures, Difficulty.NORMAL, packet.hardcore(), bl2);
+		ClientWorld.Properties properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.hardcore(), bl2);
 		this.worldProperties = properties;
 		this.world = new ClientWorld(
 			this,
@@ -942,9 +942,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.world.setTime(packet.getTime());
-		this.client.world.setTimeOfDay(packet.getTimeOfDay());
-		this.worldSession.setTick(packet.getTime());
+		this.world.setTime(packet.time(), packet.timeOfDay(), packet.tickDayTime());
+		this.worldSession.setTick(packet.time());
 	}
 
 	@Override
@@ -968,7 +967,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				if (entity2 != null) {
 					entity2.startRiding(entity, true);
 					if (entity2 == this.client.player && !bl) {
-						if (entity instanceof BoatEntity) {
+						if (entity instanceof AbstractBoatEntity) {
 							this.client.player.prevYaw = entity.getYaw();
 							this.client.player.setYaw(entity.getYaw());
 							this.client.player.setHeadYaw(entity.getYaw());
@@ -1066,9 +1065,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 			boolean bl2 = commonPlayerSpawnInfo.isDebug();
 			boolean bl3 = commonPlayerSpawnInfo.isFlat();
 			int i = commonPlayerSpawnInfo.seaLevel();
-			ClientWorld.Properties properties = new ClientWorld.Properties(
-				this.enabledFeatures, this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl3
-			);
+			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl3);
 			this.worldProperties = properties;
 			this.world = new ClientWorld(
 				this,

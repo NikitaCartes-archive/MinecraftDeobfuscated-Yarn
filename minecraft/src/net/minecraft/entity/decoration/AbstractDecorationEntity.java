@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -77,7 +78,7 @@ public abstract class AbstractDecorationEntity extends BlockAttachedEntity {
 	public abstract void onPlace();
 
 	@Override
-	public ItemEntity dropStack(ItemStack stack, float yOffset) {
+	public ItemEntity dropStack(ServerWorld world, ItemStack stack, float yOffset) {
 		ItemEntity itemEntity = new ItemEntity(
 			this.getWorld(),
 			this.getX() + (double)((float)this.facing.getOffsetX() * 0.15F),

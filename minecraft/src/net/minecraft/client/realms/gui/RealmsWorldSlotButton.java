@@ -32,6 +32,8 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	private static final Text MINIGAME_TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip.minigame");
 	private static final Text TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip");
 	static final Text MINIGAME_SLOT_NAME = Text.translatable("mco.worldSlot.minigame");
+	private static final int MAX_DISPLAYED_SLOT_NAME_LENGTH = 64;
+	private static final String ELLIPSIS = "...";
 	private final int slotIndex;
 	@Nullable
 	private RealmsWorldSlotButton.State state;
@@ -119,7 +121,12 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 			}
 
 			TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-			context.drawCenteredTextWithShadow(textRenderer, this.state.slotName, i + 40, j + 66, Colors.WHITE);
+			String string = this.state.slotName;
+			if (textRenderer.getWidth(string) > 64) {
+				string = textRenderer.trimToWidth(string, 64 - textRenderer.getWidth("...")) + "...";
+			}
+
+			context.drawCenteredTextWithShadow(textRenderer, string, i + 40, j + 66, Colors.WHITE);
 			context.drawCenteredTextWithShadow(
 				textRenderer, RealmsMainScreen.getVersionText(this.state.version, this.state.compatibility.isCompatible()), i + 40, j + 80 + 2, Colors.WHITE
 			);

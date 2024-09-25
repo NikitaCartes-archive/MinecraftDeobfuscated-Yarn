@@ -5,7 +5,6 @@ import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleEffect;
@@ -59,11 +58,6 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 				this.discard();
 			}
 		}
-	}
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return false;
 	}
 
 	@Override

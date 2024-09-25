@@ -20,6 +20,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -83,15 +84,15 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else {
 			if ((source.getAttacker() != null || source.isIn(DamageTypeTags.ALWAYS_TRIGGERS_SILVERFISH)) && this.callForHelpGoal != null) {
 				this.callForHelpGoal.onHurt();
 			}
 
-			return super.damage(source, amount);
+			return super.damage(world, source, amount);
 		}
 	}
 
@@ -157,7 +158,7 @@ public class SilverfishEntity extends HostileEntity {
 							BlockState blockState = world.getBlockState(blockPos2);
 							Block block = blockState.getBlock();
 							if (block instanceof InfestedBlock) {
-								if (world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+								if (castToServerWorld(world).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 									world.breakBlock(blockPos2, true, this.silverfish);
 								} else {
 									world.setBlockState(blockPos2, ((InfestedBlock)block).toRegularState(world.getBlockState(blockPos2)), Block.NOTIFY_ALL);
@@ -192,7 +193,7 @@ public class SilverfishEntity extends HostileEntity {
 				return false;
 			} else {
 				Random random = this.mob.getRandom();
-				if (this.mob.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(toGoalTicks(10)) == 0) {
+				if (getServerWorld(this.mob).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(toGoalTicks(10)) == 0) {
 					this.direction = Direction.random(random);
 					BlockPos blockPos = BlockPos.ofFloored(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
 					BlockState blockState = this.mob.getWorld().getBlockState(blockPos);

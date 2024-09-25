@@ -150,7 +150,12 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public void tick() {
-		boolean bl = this.isNoClip();
+		boolean bl = !this.isNoClip();
+		if (bl) {
+			this.applyGravity();
+		}
+
+		this.applyDrag();
 		Vec3d vec3d = this.getVelocity();
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			double d = vec3d.horizontalLength();
@@ -162,7 +167,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 		BlockPos blockPos = this.getBlockPos();
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
-		if (!blockState.isAir() && !bl) {
+		if (!blockState.isAir() && bl) {
 			VoxelShape voxelShape = blockState.getCollisionShape(this.getWorld(), blockPos);
 			if (!voxelShape.isEmpty()) {
 				Vec3d vec3d2 = this.getPos();
@@ -184,7 +189,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.extinguish();
 		}
 
-		if (this.inGround && !bl) {
+		if (this.inGround && bl) {
 			if (this.inBlockState != blockState && this.shouldFall()) {
 				this.fall();
 			} else if (!this.getWorld().isClient) {
@@ -211,7 +216,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			float f;
-			if (bl) {
+			if (!bl) {
 				f = (float)(MathHelper.atan2(-vec3d.x, -vec3d.z) * 180.0F / (float)Math.PI);
 			} else {
 				f = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
@@ -220,7 +225,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			float g = (float)(MathHelper.atan2(vec3d.y, vec3d.horizontalLength()) * 180.0F / (float)Math.PI);
 			this.setPitch(updateRotation(this.getPitch(), g));
 			this.setYaw(updateRotation(this.getYaw(), f));
-			if (!bl) {
+			if (bl) {
 				BlockHitResult blockHitResult = this.getWorld()
 					.getCollisionsIncludingWorldBorder(
 						new RaycastContext(vec3d3, vec3d3.add(vec3d), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)
@@ -229,16 +234,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			} else {
 				this.setPosition(vec3d3.add(vec3d));
 				this.tickBlockCollision();
-				if (this.portalManager != null && this.portalManager.isInPortal()) {
-					this.tickPortalTeleportation();
-				}
 			}
 
 			super.tick();
-			this.applyDrag();
-			if (!bl) {
-				this.applyGravity();
-			}
 		}
 	}
 
@@ -378,7 +376,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			entity.setOnFireFor(5.0F);
 		}
 
-		if (entity.damage(damageSource, (float)i)) {
+		if (entity.sidedDamage(damageSource, (float)i)) {
 			if (bl) {
 				return;
 			}
@@ -421,9 +419,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			entity.setFireTicks(j);
 			this.deflect(ProjectileDeflection.SIMPLE, entity, this.getOwner(), false);
 			this.setVelocity(this.getVelocity().multiply(0.2));
-			if (!this.getWorld().isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
+			if (this.getWorld() instanceof ServerWorld serverWorld3 && this.getVelocity().lengthSquared() < 1.0E-7) {
 				if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
-					this.dropStack(this.asItemStack(), 0.1F);
+					this.dropStack(serverWorld3, this.asItemStack(), 0.1F);
 				}
 
 				this.discard();

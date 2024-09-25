@@ -25,6 +25,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.potion.Potion;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -154,13 +155,13 @@ public record PotionContentsComponent(
 	}
 
 	public void apply(LivingEntity user) {
-		if (!user.getWorld().isClient) {
+		if (user.getWorld() instanceof ServerWorld serverWorld) {
 			PlayerEntity playerEntity2 = user instanceof PlayerEntity playerEntity ? playerEntity : null;
-			this.forEachEffect(effect -> {
-				if (effect.getEffectType().value().isInstant()) {
-					effect.getEffectType().value().applyInstantEffect(playerEntity2, playerEntity2, user, effect.getAmplifier(), 1.0);
+			this.forEachEffect(statusEffectInstance -> {
+				if (statusEffectInstance.getEffectType().value().isInstant()) {
+					statusEffectInstance.getEffectType().value().applyInstantEffect(serverWorld, playerEntity2, playerEntity2, user, statusEffectInstance.getAmplifier(), 1.0);
 				} else {
-					user.addStatusEffect(effect);
+					user.addStatusEffect(statusEffectInstance);
 				}
 			});
 		}

@@ -87,7 +87,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 			if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
 				return ActionResult.SUCCESS;
 			} else {
-				if (!world.isClient) {
+				if (world instanceof ServerWorld serverWorld) {
 					enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
 					player.openHandledScreen(
 						new SimpleNamedScreenHandlerFactory(
@@ -95,7 +95,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 						)
 					);
 					player.incrementStat(Stats.OPEN_ENDERCHEST);
-					PiglinBrain.onGuardedBlockInteracted(player, true);
+					PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 				}
 
 				return ActionResult.SUCCESS;

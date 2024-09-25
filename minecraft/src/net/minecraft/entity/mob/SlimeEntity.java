@@ -68,8 +68,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.goalSelector.add(2, new SlimeEntity.FaceTowardTargetGoal(this));
 		this.goalSelector.add(3, new SlimeEntity.RandomLookGoal(this));
 		this.goalSelector.add(5, new SlimeEntity.MoveGoal(this));
-		this.targetSelector
-			.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
+		this.targetSelector.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, (target, world) -> Math.abs(target.getY() - this.getY()) <= 4.0));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, true));
 	}
 
@@ -233,13 +232,11 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	protected void damage(LivingEntity target) {
-		if (this.isAlive() && this.isInAttackRange(target) && this.canSee(target)) {
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.isAlive() && this.isInAttackRange(target) && this.canSee(target)) {
 			DamageSource damageSource = this.getDamageSources().mobAttack(this);
-			if (target.damage(damageSource, this.getDamageAmount())) {
+			if (target.damage(serverWorld, damageSource, this.getDamageAmount())) {
 				this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-				if (this.getWorld() instanceof ServerWorld serverWorld) {
-					EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
-				}
+				EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
 			}
 		}
 	}

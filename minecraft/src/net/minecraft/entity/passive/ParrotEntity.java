@@ -240,7 +240,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (!this.isTamed() && itemStack.isIn(ItemTags.PARROT_FOOD)) {
-			itemStack.decrementUnlessCreative(1, player);
+			this.eat(player, hand, itemStack);
 			if (!this.isSilent()) {
 				this.getWorld()
 					.playSound(
@@ -276,10 +276,10 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 				return super.interactMob(player, hand);
 			}
 		} else {
-			itemStack.decrementUnlessCreative(1, player);
+			this.eat(player, hand, itemStack);
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
 			if (player.isCreative() || !this.isInvulnerable()) {
-				this.damage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
+				this.serverDamage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
 			}
 
 			return ActionResult.SUCCESS;
@@ -382,15 +382,12 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else {
-			if (!this.getWorld().isClient) {
-				this.setSitting(false);
-			}
-
-			return super.damage(source, amount);
+			this.setSitting(false);
+			return super.damage(world, source, amount);
 		}
 	}
 

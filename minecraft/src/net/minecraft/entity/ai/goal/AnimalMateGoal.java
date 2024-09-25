@@ -6,13 +6,12 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
 
 public class AnimalMateGoal extends Goal {
 	private static final TargetPredicate VALID_MATE_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0).ignoreVisibility();
 	protected final AnimalEntity animal;
 	private final Class<? extends AnimalEntity> entityClass;
-	protected final World world;
+	protected final ServerWorld world;
 	@Nullable
 	protected AnimalEntity mate;
 	private int timer;
@@ -24,7 +23,7 @@ public class AnimalMateGoal extends Goal {
 
 	public AnimalMateGoal(AnimalEntity animal, double speed, Class<? extends AnimalEntity> entityClass) {
 		this.animal = animal;
-		this.world = animal.getWorld();
+		this.world = getServerWorld(animal);
 		this.entityClass = entityClass;
 		this.speed = speed;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
@@ -78,6 +77,6 @@ public class AnimalMateGoal extends Goal {
 	}
 
 	protected void breed() {
-		this.animal.breed((ServerWorld)this.world, this.mate);
+		this.animal.breed(this.world, this.mate);
 	}
 }

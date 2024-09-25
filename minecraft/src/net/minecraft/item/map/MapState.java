@@ -19,6 +19,7 @@ import net.minecraft.component.type.MapColorComponent;
 import net.minecraft.component.type.MapDecorationsComponent;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -243,22 +245,21 @@ public class MapState extends PersistentState {
 
 		for (int i = 0; i < this.updateTrackers.size(); i++) {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
-			String string = playerUpdateTracker2.player.getName().getString();
-			if (!playerUpdateTracker2.player.isRemoved() && (playerUpdateTracker2.player.getInventory().contains(predicate) || stack.isInFrame())) {
-				if (!stack.isInFrame() && playerUpdateTracker2.player.getWorld().getRegistryKey() == this.dimension && this.showDecorations) {
+			PlayerEntity playerEntity = playerUpdateTracker2.player;
+			String string = playerEntity.getName().getString();
+			if (!playerEntity.isRemoved() && (playerEntity.getInventory().contains(predicate) || stack.isInFrame())) {
+				if (!stack.isInFrame() && playerEntity.getWorld().getRegistryKey() == this.dimension && this.showDecorations) {
 					this.addDecoration(
-						MapDecorationTypes.PLAYER,
-						playerUpdateTracker2.player.getWorld(),
-						string,
-						playerUpdateTracker2.player.getX(),
-						playerUpdateTracker2.player.getZ(),
-						(double)playerUpdateTracker2.player.getYaw(),
-						null
+						MapDecorationTypes.PLAYER, playerEntity.getWorld(), string, playerEntity.getX(), playerEntity.getZ(), (double)playerEntity.getYaw(), null
 					);
 				}
 			} else {
-				this.updateTrackersByPlayer.remove(playerUpdateTracker2.player);
+				this.updateTrackersByPlayer.remove(playerEntity);
 				this.updateTrackers.remove(playerUpdateTracker2);
+				this.removeDecoration(string);
+			}
+
+			if (!playerEntity.equals(player) && hasMapInvisibilityEquipment(playerEntity)) {
 				this.removeDecoration(string);
 			}
 		}
@@ -292,6 +293,18 @@ public class MapState extends PersistentState {
 				}
 			});
 		}
+	}
+
+	private static boolean hasMapInvisibilityEquipment(PlayerEntity player) {
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			if (equipmentSlot != EquipmentSlot.MAINHAND
+				&& equipmentSlot != EquipmentSlot.OFFHAND
+				&& player.getEquippedStack(equipmentSlot).isIn(ItemTags.MAP_INVISIBILITY_EQUIPMENT)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private void removeDecoration(String id) {

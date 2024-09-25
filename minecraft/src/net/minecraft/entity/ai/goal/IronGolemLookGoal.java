@@ -24,8 +24,7 @@ public class IronGolemLookGoal extends Goal {
 		} else if (this.golem.getRandom().nextInt(8000) != 0) {
 			return false;
 		} else {
-			this.targetVillager = this.golem
-				.getWorld()
+			this.targetVillager = getServerWorld(this.golem)
 				.getClosestEntity(
 					VillagerEntity.class,
 					CLOSE_VILLAGER_PREDICATE,

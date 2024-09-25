@@ -20,7 +20,6 @@ import net.minecraft.client.render.block.entity.model.BellBlockModel;
 import net.minecraft.client.render.block.entity.model.ChestBlockModel;
 import net.minecraft.client.render.entity.DragonEntityModel;
 import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
-import net.minecraft.entity.vehicle.BoatEntity;
 
 @Environment(EnvType.CLIENT)
 public class EntityModels {
@@ -333,28 +332,33 @@ public class EntityModels {
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_BABY, texturedModelData18.transform(BipedEntityModel.BABY_TRANSFORMER));
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_BABY_INNER_ARMOR, texturedModelData4.transform(BipedEntityModel.BABY_TRANSFORMER));
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_BABY_OUTER_ARMOR, texturedModelData3.transform(BipedEntityModel.BABY_TRANSFORMER));
+		builder.put(EntityModelLayers.BAMBOO_BOAT, RaftEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.BAMBOO_CHEST_BOAT, RaftEntityModel.getChestTexturedModelData());
 		TexturedModelData texturedModelData52 = BoatEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData53 = BoatEntityModel.getChestTexturedModelData();
-		TexturedModelData texturedModelData54 = RaftEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData55 = RaftEntityModel.getChestTexturedModelData();
-
-		for (BoatEntity.Type type : BoatEntity.Type.values()) {
-			if (type == BoatEntity.Type.BAMBOO) {
-				builder.put(EntityModelLayers.createBoat(type), texturedModelData54);
-				builder.put(EntityModelLayers.createChestBoat(type), texturedModelData55);
-			} else {
-				builder.put(EntityModelLayers.createBoat(type), texturedModelData52);
-				builder.put(EntityModelLayers.createChestBoat(type), texturedModelData53);
-			}
-		}
-
-		TexturedModelData texturedModelData56 = SignBlockEntityRenderer.getTexturedModelData(true);
-		TexturedModelData texturedModelData57 = SignBlockEntityRenderer.getTexturedModelData(false);
-		TexturedModelData texturedModelData58 = HangingSignBlockEntityRenderer.getTexturedModelData();
+		builder.put(EntityModelLayers.OAK_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.OAK_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.SPRUCE_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.SPRUCE_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.BIRCH_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.BIRCH_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.JUNGLE_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.JUNGLE_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.ACACIA_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.ACACIA_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.CHERRY_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.CHERRY_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.DARK_OAK_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.DARK_OAK_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.MANGROVE_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.MANGROVE_CHEST_BOAT, texturedModelData53);
+		TexturedModelData texturedModelData54 = SignBlockEntityRenderer.getTexturedModelData(true);
+		TexturedModelData texturedModelData55 = SignBlockEntityRenderer.getTexturedModelData(false);
+		TexturedModelData texturedModelData56 = HangingSignBlockEntityRenderer.getTexturedModelData();
 		WoodType.stream().forEach(woodType -> {
-			builder.put(EntityModelLayers.createStandingSign(woodType), texturedModelData56);
-			builder.put(EntityModelLayers.createWallSign(woodType), texturedModelData57);
-			builder.put(EntityModelLayers.createHangingSign(woodType), texturedModelData58);
+			builder.put(EntityModelLayers.createStandingSign(woodType), texturedModelData54);
+			builder.put(EntityModelLayers.createWallSign(woodType), texturedModelData55);
+			builder.put(EntityModelLayers.createHangingSign(woodType), texturedModelData56);
 		});
 		ImmutableMap<EntityModelLayer, TexturedModelData> immutableMap = builder.build();
 		List<EntityModelLayer> list = (List<EntityModelLayer>)EntityModelLayers.getLayers()

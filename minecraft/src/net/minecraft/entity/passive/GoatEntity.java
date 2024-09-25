@@ -185,15 +185,15 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("goatBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		profiler.push("goatActivityUpdate");
 		GoatBrain.updateActivities(this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override

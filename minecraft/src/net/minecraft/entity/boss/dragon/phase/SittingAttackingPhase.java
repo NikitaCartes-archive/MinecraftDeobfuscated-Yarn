@@ -1,6 +1,7 @@
 package net.minecraft.entity.boss.dragon.phase;
 
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 
 public class SittingAttackingPhase extends AbstractSittingPhase {
@@ -28,7 +29,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		if (this.ticks++ >= 40) {
 			this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_FLAMING);
 		}

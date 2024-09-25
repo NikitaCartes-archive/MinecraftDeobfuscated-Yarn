@@ -17,6 +17,7 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.IceBlock;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -118,7 +119,7 @@ public abstract class FlowableFluid extends Fluid {
 		}
 	}
 
-	protected void tryFlow(World world, BlockPos fluidPos, BlockState blockState, FluidState fluidState) {
+	protected void tryFlow(ServerWorld world, BlockPos fluidPos, BlockState blockState, FluidState fluidState) {
 		if (!fluidState.isEmpty()) {
 			BlockPos blockPos = fluidPos.down();
 			BlockState blockState2 = world.getBlockState(blockPos);
@@ -142,7 +143,7 @@ public abstract class FlowableFluid extends Fluid {
 		}
 	}
 
-	private void flowToSides(World world, BlockPos pos, FluidState fluidState, BlockState blockState) {
+	private void flowToSides(ServerWorld world, BlockPos pos, FluidState fluidState, BlockState blockState) {
 		int i = fluidState.getLevel() - this.getLevelDecreasePerBlock(world);
 		if ((Boolean)fluidState.get(FALLING)) {
 			i = 7;
@@ -160,7 +161,7 @@ public abstract class FlowableFluid extends Fluid {
 		}
 	}
 
-	protected FluidState getUpdatedState(World world, BlockPos pos, BlockState state) {
+	protected FluidState getUpdatedState(ServerWorld world, BlockPos pos, BlockState state) {
 		int i = 0;
 		int j = 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -252,7 +253,7 @@ public abstract class FlowableFluid extends Fluid {
 		return this.getStill().getDefaultState().with(FALLING, Boolean.valueOf(falling));
 	}
 
-	protected abstract boolean isInfinite(World world);
+	protected abstract boolean isInfinite(ServerWorld world);
 
 	protected void flow(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
 		if (state.getBlock() instanceof FluidFillable fluidFillable) {
@@ -338,7 +339,7 @@ public abstract class FlowableFluid extends Fluid {
 		return i;
 	}
 
-	protected Map<Direction, FluidState> getSpread(World world, BlockPos pos, BlockState state) {
+	protected Map<Direction, FluidState> getSpread(ServerWorld world, BlockPos pos, BlockState state) {
 		int i = 1000;
 		Map<Direction, FluidState> map = Maps.newEnumMap(Direction.class);
 		FlowableFluid.SpreadCache spreadCache = null;
@@ -413,7 +414,7 @@ public abstract class FlowableFluid extends Fluid {
 	}
 
 	@Override
-	public void onScheduledTick(World world, BlockPos pos, BlockState blockState, FluidState fluidState) {
+	public void onScheduledTick(ServerWorld world, BlockPos pos, BlockState blockState, FluidState fluidState) {
 		if (!fluidState.isStill()) {
 			FluidState fluidState2 = this.getUpdatedState(world, pos, world.getBlockState(pos));
 			int i = this.getNextTickDelay(world, pos, fluidState, fluidState2);

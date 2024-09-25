@@ -232,14 +232,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
 		DamageSource damageSource = this.getDamageSources().sting(this);
-		boolean bl = target.damage(damageSource, (float)((int)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE)));
+		boolean bl = target.damage(world, damageSource, (float)((int)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE)));
 		if (bl) {
-			if (this.getWorld() instanceof ServerWorld serverWorld) {
-				EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
-			}
-
+			EnchantmentHelper.onTargetDamaged(world, target, damageSource);
 			if (target instanceof LivingEntity livingEntity) {
 				livingEntity.setStingerCount(livingEntity.getStingerCount() + 1);
 				int i = 0;
@@ -374,7 +371,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		boolean bl = this.hasStung();
 		if (this.isInsideWaterOrBubbleColumn()) {
 			this.ticksInsideWater++;
@@ -383,13 +380,13 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		}
 
 		if (this.ticksInsideWater > 20) {
-			this.damage(this.getDamageSources().drown(), 1.0F);
+			this.damage(world, this.getDamageSources().drown(), 1.0F);
 		}
 
 		if (bl) {
 			this.ticksSinceSting++;
 			if (this.ticksSinceSting % 5 == 0 && this.random.nextInt(MathHelper.clamp(1200 - this.ticksSinceSting, 1, 1200)) == 0) {
-				this.damage(this.getDamageSources().generic(), this.getHealth());
+				this.damage(world, this.getDamageSources().generic(), this.getHealth());
 			}
 		}
 
@@ -397,9 +394,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			this.ticksSincePollination++;
 		}
 
-		if (!this.getWorld().isClient) {
-			this.tickAngerLogic((ServerWorld)this.getWorld(), false);
-		}
+		this.tickAngerLogic(world, false);
 	}
 
 	public void resetPollinationTicks() {
@@ -643,15 +638,12 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else {
-			if (!this.getWorld().isClient) {
-				this.pollinateGoal.cancel();
-			}
-
-			return super.damage(source, amount);
+			this.pollinateGoal.cancel();
+			return super.damage(world, source, amount);
 		}
 	}
 

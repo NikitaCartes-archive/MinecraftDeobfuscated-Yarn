@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
@@ -16,6 +15,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.VariantHolder;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
@@ -87,7 +87,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> ANGER_TIME = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<RegistryEntry<WolfVariant>> VARIANT = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.WOLF_VARIANT);
-	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = entity -> {
+	public static final TargetPredicate.EntityPredicate FOLLOW_TAMED_PREDICATE = (entity, serverWorld) -> {
 		EntityType<?> entityType = entity.getType();
 		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
 	};
@@ -345,15 +345,12 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else {
-			if (!this.getWorld().isClient) {
-				this.setSitting(false);
-			}
-
-			return super.damage(source, amount);
+			this.setSitting(false);
+			return super.damage(world, source, amount);
 		}
 	}
 
@@ -363,9 +360,9 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 	}
 
 	@Override
-	protected void applyDamage(DamageSource source, float amount) {
+	protected void applyDamage(ServerWorld world, DamageSource source, float amount) {
 		if (!this.shouldArmorAbsorbDamage(source)) {
-			super.applyDamage(source, amount);
+			super.applyDamage(world, source, amount);
 		} else {
 			ItemStack itemStack = this.getBodyArmor();
 			int i = itemStack.getDamage();
@@ -373,19 +370,17 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 			itemStack.damage(MathHelper.ceil(amount), this, EquipmentSlot.BODY);
 			if (Cracks.WOLF_ARMOR.getCrackLevel(i, j) != Cracks.WOLF_ARMOR.getCrackLevel(this.getBodyArmor())) {
 				this.playSoundIfNotSilent(SoundEvents.ITEM_WOLF_ARMOR_CRACK);
-				if (this.getWorld() instanceof ServerWorld serverWorld) {
-					serverWorld.spawnParticles(
-						new ItemStackParticleEffect(ParticleTypes.ITEM, Items.ARMADILLO_SCUTE.getDefaultStack()),
-						this.getX(),
-						this.getY() + 1.0,
-						this.getZ(),
-						20,
-						0.2,
-						0.1,
-						0.2,
-						0.1
-					);
-				}
+				world.spawnParticles(
+					new ItemStackParticleEffect(ParticleTypes.ITEM, Items.ARMADILLO_SCUTE.getDefaultStack()),
+					this.getX(),
+					this.getY() + 1.0,
+					this.getZ(),
+					20,
+					0.2,
+					0.1,
+					0.2,
+					0.1
+				);
 			}
 		}
 	}
@@ -415,7 +410,7 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 		Item item = itemStack.getItem();
 		if (this.isTamed()) {
 			if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
-				itemStack.decrementUnlessCreative(1, player);
+				this.eat(player, hand, itemStack);
 				FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
 				float f = foodComponent != null ? (float)foodComponent.nutrition() : 1.0F;
 				this.heal(2.0F * f);
@@ -444,7 +439,10 @@ public class WolfEntity extends TameableEntity implements Angerable, VariantHold
 					this.playSoundIfNotSilent(SoundEvents.ITEM_ARMOR_UNEQUIP_WOLF);
 					ItemStack itemStack2 = this.getBodyArmor();
 					this.equipBodyArmor(ItemStack.EMPTY);
-					this.dropStack(itemStack2);
+					if (this.getWorld() instanceof ServerWorld serverWorld) {
+						this.dropStack(serverWorld, itemStack2);
+					}
+
 					return ActionResult.SUCCESS;
 				} else if (this.isInSittingPose()
 					&& this.isWearingBodyArmor()

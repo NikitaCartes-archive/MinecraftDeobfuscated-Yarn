@@ -12,6 +12,7 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -72,7 +73,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	@Override
-	public void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+	public void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
 		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			int i = random.nextInt(3);
 			if (i > 0) {
@@ -184,7 +185,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	@Override
-	protected boolean isInfinite(World world) {
+	protected boolean isInfinite(ServerWorld world) {
 		return world.getGameRules().getBoolean(GameRules.LAVA_SOURCE_CONVERSION);
 	}
 

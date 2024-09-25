@@ -7,11 +7,11 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 import org.joml.Vector3f;
 
 class InfestedStatusEffect extends StatusEffect {
@@ -25,17 +25,17 @@ class InfestedStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void onEntityDamage(LivingEntity entity, int amplifier, DamageSource source, float amount) {
+	public void onEntityDamage(ServerWorld world, LivingEntity entity, int amplifier, DamageSource source, float amount) {
 		if (entity.getRandom().nextFloat() <= this.silverfishChance) {
 			int i = this.silverfishCountFunction.applyAsInt(entity.getRandom());
 
 			for (int j = 0; j < i; j++) {
-				this.spawnSilverfish(entity.getWorld(), entity, entity.getX(), entity.getY() + (double)entity.getHeight() / 2.0, entity.getZ());
+				this.spawnSilverfish(world, entity, entity.getX(), entity.getY() + (double)entity.getHeight() / 2.0, entity.getZ());
 			}
 		}
 	}
 
-	private void spawnSilverfish(World world, LivingEntity entity, double x, double y, double z) {
+	private void spawnSilverfish(ServerWorld world, LivingEntity entity, double x, double y, double z) {
 		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world, SpawnReason.TRIGGERED);
 		if (silverfishEntity != null) {
 			Random random = entity.getRandom();

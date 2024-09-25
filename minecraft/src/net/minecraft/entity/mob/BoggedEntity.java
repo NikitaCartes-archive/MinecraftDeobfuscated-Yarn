@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -70,9 +71,9 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
-			this.sheared(SoundCategory.PLAYERS, itemStack);
-			this.emitGameEvent(GameEvent.SHEAR, player);
-			if (!this.getWorld().isClient) {
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				this.sheared(serverWorld, SoundCategory.PLAYERS, itemStack);
+				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, getSlotForHand(hand));
 			}
 
@@ -123,14 +124,14 @@ public class BoggedEntity extends AbstractSkeletonEntity implements Shearable {
 	}
 
 	@Override
-	public void sheared(SoundCategory shearedSoundCategory, ItemStack shears) {
-		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_BOGGED_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
-		this.dropShearedItems(shears);
+	public void sheared(ServerWorld world, SoundCategory shearedSoundCategory, ItemStack shears) {
+		world.playSoundFromEntity(null, this, SoundEvents.ENTITY_BOGGED_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		this.dropShearedItems(world, shears);
 		this.setSheared(true);
 	}
 
-	private void dropShearedItems(ItemStack shears) {
-		this.forEachShearedItem(LootTables.BOGGED_SHEARING, shears, stack -> this.dropStack(stack, this.getHeight()));
+	private void dropShearedItems(ServerWorld world, ItemStack shears) {
+		this.forEachShearedItem(world, LootTables.BOGGED_SHEARING, shears, (worldx, stack) -> this.dropStack(worldx, stack, this.getHeight()));
 	}
 
 	@Override

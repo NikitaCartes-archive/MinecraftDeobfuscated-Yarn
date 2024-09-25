@@ -65,7 +65,7 @@ public class AttackGoal extends Goal {
 		if (!(e > d)) {
 			if (this.cooldown <= 0) {
 				this.cooldown = 20;
-				this.mob.tryAttack(this.target);
+				this.mob.tryAttack(getServerWorld(this.mob), this.target);
 			}
 		}
 	}

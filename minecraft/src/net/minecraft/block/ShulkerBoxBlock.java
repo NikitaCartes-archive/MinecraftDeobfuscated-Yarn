@@ -24,6 +24,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -100,10 +101,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (!world.isClient && world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity && canOpen(state, world, pos, shulkerBoxBlockEntity)) {
+		if (world instanceof ServerWorld serverWorld
+			&& world.getBlockEntity(pos) instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity
+			&& canOpen(state, world, pos, shulkerBoxBlockEntity)) {
 			player.openHandledScreen(shulkerBoxBlockEntity);
 			player.incrementStat(Stats.OPEN_SHULKER_BOX);
-			PiglinBrain.onGuardedBlockInteracted(player, true);
+			PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 		}
 
 		return ActionResult.SUCCESS;

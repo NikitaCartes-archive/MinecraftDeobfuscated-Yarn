@@ -228,7 +228,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	@Override
 	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		BlockPos blockPos = hit.getBlockPos();
-		if (!world.isClient && projectile.canModifyAt(world, blockPos) && projectile.canBreakBlocks(world)) {
+		if (world instanceof ServerWorld serverWorld && projectile.canModifyAt(serverWorld, blockPos) && projectile.canBreakBlocks(serverWorld)) {
 			world.setBlockState(blockPos, state.with(CRACKED, Boolean.valueOf(true)), Block.NO_REDRAW);
 			world.breakBlock(blockPos, true, projectile);
 		}

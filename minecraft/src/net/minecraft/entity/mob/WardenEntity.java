@@ -156,8 +156,8 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return this.isDiggingOrEmerging() && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) ? true : super.isInvulnerableTo(damageSource);
+	public boolean isInvulnerableTo(ServerWorld world, DamageSource source) {
+		return this.isDiggingOrEmerging() && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) ? true : super.isInvulnerableTo(world, source);
 	}
 
 	boolean isDiggingOrEmerging() {
@@ -221,11 +221,11 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+	public boolean tryAttack(ServerWorld world, Entity target) {
+		world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		this.playSound(SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, 10.0F, this.getSoundPitch());
 		SonicBoomTask.cooldown(this, 40);
-		return super.tryAttack(target);
+		return super.tryAttack(world, target);
 	}
 
 	@Override
@@ -282,19 +282,18 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	protected void mobTick() {
-		ServerWorld serverWorld = (ServerWorld)this.getWorld();
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("wardenBrain");
-		this.getBrain().tick(serverWorld, this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 		if ((this.age + this.getId()) % 120 == 0) {
-			addDarknessToClosePlayers(serverWorld, this.getPos(), this, 20);
+			addDarknessToClosePlayers(world, this.getPos(), this, 20);
 		}
 
 		if (this.age % 20 == 0) {
-			this.angerManager.tick(serverWorld, this::isValidTarget);
+			this.angerManager.tick(world, this::isValidTarget);
 			this.updateAnger();
 		}
 
@@ -515,9 +514,9 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		boolean bl = super.damage(source, amount);
-		if (!this.getWorld().isClient && !this.isAiDisabled() && !this.isDiggingOrEmerging()) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		boolean bl = super.damage(world, source, amount);
+		if (!this.isAiDisabled() && !this.isDiggingOrEmerging()) {
 			Entity entity = source.getAttacker();
 			this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
 			if (this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()

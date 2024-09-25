@@ -10,6 +10,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -59,10 +60,11 @@ public class WitherRoseBlock extends FlowerBlock {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (entity instanceof LivingEntity livingEntity && !livingEntity.isInvulnerableTo(world.getDamageSources().wither())) {
-				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
-			}
+		if (world instanceof ServerWorld serverWorld
+			&& world.getDifficulty() != Difficulty.PEACEFUL
+			&& entity instanceof LivingEntity livingEntity
+			&& !livingEntity.isInvulnerableTo(serverWorld, world.getDamageSources().wither())) {
+			livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
 		}
 	}
 }

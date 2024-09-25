@@ -197,19 +197,12 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				this.wingPosition = 0.5F;
 			} else {
 				this.frameTracker.tick(this.getY(), this.getYaw());
-				if (this.getWorld().isClient) {
-					if (this.bodyTrackingIncrements > 0) {
-						this.lerpPosAndRotation(this.bodyTrackingIncrements, this.serverX, this.serverY, this.serverZ, this.serverYaw, this.serverPitch);
-						this.bodyTrackingIncrements--;
-					}
-
-					this.phaseManager.getCurrent().clientTick();
-				} else {
+				if (this.getWorld() instanceof ServerWorld serverWorld2) {
 					Phase phase = this.phaseManager.getCurrent();
-					phase.serverTick();
+					phase.serverTick(serverWorld2);
 					if (this.phaseManager.getCurrent() != phase) {
 						phase = this.phaseManager.getCurrent();
-						phase.serverTick();
+						phase.serverTick(serverWorld2);
 					}
 
 					Vec3d vec3d2 = phase.getPathTarget();
@@ -254,6 +247,13 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 						double p = 0.8 + 0.15 * (vec3d5.dotProduct(vec3d4) + 1.0) / 2.0;
 						this.setVelocity(this.getVelocity().multiply(p, 0.91F, p));
 					}
+				} else {
+					if (this.bodyTrackingIncrements > 0) {
+						this.lerpPosAndRotation(this.bodyTrackingIncrements, this.serverX, this.serverY, this.serverZ, this.serverYaw, this.serverPitch);
+						this.bodyTrackingIncrements--;
+					}
+
+					this.phaseManager.getCurrent().clientTick();
 				}
 
 				if (!this.getWorld().isClient()) {
@@ -276,21 +276,25 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				this.movePart(this.body, (double)(v * 0.5F), 0.0, (double)(-w * 0.5F));
 				this.movePart(this.rightWing, (double)(w * 4.5F), 2.0, (double)(v * 4.5F));
 				this.movePart(this.leftWing, (double)(w * -4.5F), 2.0, (double)(v * -4.5F));
-				if (this.getWorld() instanceof ServerWorld serverWorld2 && this.hurtTime == 0) {
+				if (this.getWorld() instanceof ServerWorld serverWorld3 && this.hurtTime == 0) {
 					this.launchLivingEntities(
-						serverWorld2,
-						serverWorld2.getOtherEntities(
+						serverWorld3,
+						serverWorld3.getOtherEntities(
 							this, this.rightWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
 						)
 					);
 					this.launchLivingEntities(
-						serverWorld2,
-						serverWorld2.getOtherEntities(
+						serverWorld3,
+						serverWorld3.getOtherEntities(
 							this, this.leftWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
 						)
 					);
-					this.damageLivingEntities(serverWorld2.getOtherEntities(this, this.head.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-					this.damageLivingEntities(serverWorld2.getOtherEntities(this, this.neck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+					this.damageLivingEntities(
+						serverWorld3, serverWorld3.getOtherEntities(this, this.head.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)
+					);
+					this.damageLivingEntities(
+						serverWorld3, serverWorld3.getOtherEntities(this, this.neck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)
+					);
 				}
 
 				float x = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0) - this.yawAcceleration * 0.01F);
@@ -316,19 +320,19 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 					EnderDragonFrameTracker.Frame frame2 = this.frameTracker.getFrame(12 + aa * 2);
 					float ab = this.getYaw() * (float) (Math.PI / 180.0) + this.wrapYawChange((double)(frame2.yRot() - frame.yRot())) * (float) (Math.PI / 180.0);
-					float mx = MathHelper.sin(ab);
-					float n = MathHelper.cos(ab);
-					float o = 1.5F;
-					float ac = (float)(aa + 1) * 2.0F;
+					float ac = MathHelper.sin(ab);
+					float mx = MathHelper.cos(ab);
+					float n = 1.5F;
+					float o = (float)(aa + 1) * 2.0F;
 					this.movePart(
-						enderDragonPart, (double)(-(v * 1.5F + mx * ac) * s), frame2.y() - frame.y() - (double)((ac + 1.5F) * t) + 1.5, (double)((w * 1.5F + n * ac) * s)
+						enderDragonPart, (double)(-(v * 1.5F + ac * o) * s), frame2.y() - frame.y() - (double)((o + 1.5F) * t) + 1.5, (double)((w * 1.5F + mx * o) * s)
 					);
 				}
 
-				if (!this.getWorld().isClient) {
-					this.slowedDownByBlock = this.destroyBlocks(this.head.getBoundingBox())
-						| this.destroyBlocks(this.neck.getBoundingBox())
-						| this.destroyBlocks(this.body.getBoundingBox());
+				if (this.getWorld() instanceof ServerWorld serverWorld4) {
+					this.slowedDownByBlock = this.destroyBlocks(serverWorld4, this.head.getBoundingBox())
+						| this.destroyBlocks(serverWorld4, this.neck.getBoundingBox())
+						| this.destroyBlocks(serverWorld4, this.body.getBoundingBox());
 					if (this.fight != null) {
 						this.fight.updateFight(this);
 					}
@@ -406,21 +410,19 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				entity.addVelocity(f / h * 4.0, 0.2F, g / h * 4.0);
 				if (!this.phaseManager.getCurrent().isSittingOrHovering() && livingEntity.getLastAttackedTime() < entity.age - 2) {
 					DamageSource damageSource = this.getDamageSources().mobAttack(this);
-					entity.damage(damageSource, 5.0F);
+					entity.damage(world, damageSource, 5.0F);
 					EnchantmentHelper.onTargetDamaged(world, entity, damageSource);
 				}
 			}
 		}
 	}
 
-	private void damageLivingEntities(List<Entity> entities) {
+	private void damageLivingEntities(ServerWorld world, List<Entity> entities) {
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity) {
 				DamageSource damageSource = this.getDamageSources().mobAttack(this);
-				entity.damage(damageSource, 10.0F);
-				if (this.getWorld() instanceof ServerWorld serverWorld) {
-					EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
-				}
+				entity.damage(world, damageSource, 10.0F);
+				EnchantmentHelper.onTargetDamaged(world, entity, damageSource);
 			}
 		}
 	}
@@ -429,7 +431,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		return (float)MathHelper.wrapDegrees(yawDegrees);
 	}
 
-	private boolean destroyBlocks(Box box) {
+	private boolean destroyBlocks(ServerWorld world, Box box) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.floor(box.minY);
 		int k = MathHelper.floor(box.minZ);
@@ -443,10 +445,10 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			for (int p = j; p <= m; p++) {
 				for (int q = k; q <= n; q++) {
 					BlockPos blockPos = new BlockPos(o, p, q);
-					BlockState blockState = this.getWorld().getBlockState(blockPos);
+					BlockState blockState = world.getBlockState(blockPos);
 					if (!blockState.isAir() && !blockState.isIn(BlockTags.DRAGON_TRANSPARENT)) {
-						if (this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && !blockState.isIn(BlockTags.DRAGON_IMMUNE)) {
-							bl2 = this.getWorld().removeBlock(blockPos, false) || bl2;
+						if (world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && !blockState.isIn(BlockTags.DRAGON_IMMUNE)) {
+							bl2 = world.removeBlock(blockPos, false) || bl2;
 						} else {
 							bl = true;
 						}
@@ -457,13 +459,13 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 		if (bl2) {
 			BlockPos blockPos2 = new BlockPos(i + this.random.nextInt(l - i + 1), j + this.random.nextInt(m - j + 1), k + this.random.nextInt(n - k + 1));
-			this.getWorld().syncWorldEvent(WorldEvents.ENDER_DRAGON_BREAKS_BLOCK, blockPos2, 0);
+			world.syncWorldEvent(WorldEvents.ENDER_DRAGON_BREAKS_BLOCK, blockPos2, 0);
 		}
 
 		return bl;
 	}
 
-	public boolean damagePart(EnderDragonPart part, DamageSource source, float amount) {
+	public boolean damagePart(ServerWorld world, EnderDragonPart part, DamageSource source, float amount) {
 		if (this.phaseManager.getCurrent().getType() == PhaseType.DYING) {
 			return false;
 		} else {
@@ -477,7 +479,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			} else {
 				if (source.getAttacker() instanceof PlayerEntity || source.isIn(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS)) {
 					float f = this.getHealth();
-					this.parentDamage(source, amount);
+					this.parentDamage(world, source, amount);
 					if (this.isDead() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
 						this.setHealth(1.0F);
 						this.phaseManager.setPhase(PhaseType.DYING);
@@ -498,16 +500,16 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return !this.getWorld().isClient ? this.damagePart(this.body, source, amount) : false;
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return this.damagePart(world, this.body, source, amount);
 	}
 
-	protected boolean parentDamage(DamageSource source, float amount) {
-		return super.damage(source, amount);
+	protected void parentDamage(ServerWorld world, DamageSource source, float amount) {
+		super.damage(world, source, amount);
 	}
 
 	@Override
-	public void kill() {
+	public void kill(ServerWorld world) {
 		this.remove(Entity.RemovalReason.KILLED);
 		this.emitGameEvent(GameEvent.ENTITY_DIE);
 		if (this.fight != null) {
@@ -530,26 +532,25 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			this.getWorld().addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
 		}
 
-		boolean bl = this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT);
 		int i = 500;
 		if (this.fight != null && !this.fight.hasPreviouslyKilled()) {
 			i = 12000;
 		}
 
-		if (this.getWorld() instanceof ServerWorld) {
-			if (this.ticksSinceDeath > 150 && this.ticksSinceDeath % 5 == 0 && bl) {
-				ExperienceOrbEntity.spawn((ServerWorld)this.getWorld(), this.getPos(), MathHelper.floor((float)i * 0.08F));
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			if (this.ticksSinceDeath > 150 && this.ticksSinceDeath % 5 == 0 && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+				ExperienceOrbEntity.spawn(serverWorld, this.getPos(), MathHelper.floor((float)i * 0.08F));
 			}
 
 			if (this.ticksSinceDeath == 1 && !this.isSilent()) {
-				this.getWorld().syncGlobalEvent(WorldEvents.ENDER_DRAGON_DIES, this.getBlockPos(), 0);
+				serverWorld.syncGlobalEvent(WorldEvents.ENDER_DRAGON_DIES, this.getBlockPos(), 0);
 			}
 		}
 
 		this.move(MovementType.SELF, new Vec3d(0.0, 0.1F, 0.0));
-		if (this.ticksSinceDeath == 200 && this.getWorld() instanceof ServerWorld) {
-			if (bl) {
-				ExperienceOrbEntity.spawn((ServerWorld)this.getWorld(), this.getPos(), MathHelper.floor((float)i * 0.2F));
+		if (this.ticksSinceDeath == 200 && this.getWorld() instanceof ServerWorld serverWorld) {
+			if (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+				ExperienceOrbEntity.spawn(serverWorld, this.getPos(), MathHelper.floor((float)i * 0.2F));
 			}
 
 			if (this.fight != null) {
@@ -811,19 +812,19 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		return vec3d;
 	}
 
-	public void crystalDestroyed(EndCrystalEntity endCrystal, BlockPos pos, DamageSource source) {
+	public void crystalDestroyed(ServerWorld world, EndCrystalEntity crystal, BlockPos pos, DamageSource source) {
 		PlayerEntity playerEntity;
 		if (source.getAttacker() instanceof PlayerEntity) {
 			playerEntity = (PlayerEntity)source.getAttacker();
 		} else {
-			playerEntity = this.getWorld().getClosestPlayer(CLOSE_PLAYER_PREDICATE, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+			playerEntity = world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 		}
 
-		if (endCrystal == this.connectedCrystal) {
-			this.damagePart(this.head, this.getDamageSources().explosion(endCrystal, playerEntity), 10.0F);
+		if (crystal == this.connectedCrystal) {
+			this.damagePart(world, this.head, this.getDamageSources().explosion(crystal, playerEntity), 10.0F);
 		}
 
-		this.phaseManager.getCurrent().crystalDestroyed(endCrystal, pos, source, playerEntity);
+		this.phaseManager.getCurrent().crystalDestroyed(crystal, pos, source, playerEntity);
 	}
 
 	@Override

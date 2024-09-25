@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Scoreboard;
@@ -88,7 +89,7 @@ public enum EntityConversionType {
 		newEntity.setAbsorptionAmount(oldEntity.getAbsorptionAmount());
 
 		for (StatusEffectInstance statusEffectInstance : oldEntity.getStatusEffects()) {
-			newEntity.addStatusEffect(statusEffectInstance);
+			newEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
 		}
 
 		if (oldEntity.isBaby()) {
@@ -134,6 +135,10 @@ public enum EntityConversionType {
 			if (oldEntity.getScoreboardTeam() != null && oldEntity.getScoreboardTeam() == context.team()) {
 				scoreboard.removeScoreHolderFromTeam(oldEntity.getUuidAsString(), oldEntity.getScoreboardTeam());
 			}
+		}
+
+		if (oldEntity instanceof ZombieEntity zombieEntity && zombieEntity.canBreakDoors() && newEntity instanceof ZombieEntity zombieEntity2) {
+			zombieEntity2.setCanBreakDoors(true);
 		}
 	}
 }

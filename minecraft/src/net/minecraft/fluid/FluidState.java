@@ -11,6 +11,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
@@ -72,7 +73,7 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return false;
 	}
 
-	public void onScheduledTick(World world, BlockPos pos, BlockState state) {
+	public void onScheduledTick(ServerWorld world, BlockPos pos, BlockState state) {
 		this.getFluid().onScheduledTick(world, pos, state, this);
 	}
 
@@ -84,7 +85,7 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return this.getFluid().hasRandomTicks();
 	}
 
-	public void onRandomTick(World world, BlockPos pos, Random random) {
+	public void onRandomTick(ServerWorld world, BlockPos pos, Random random) {
 		this.getFluid().onRandomTick(world, pos, this, random);
 	}
 

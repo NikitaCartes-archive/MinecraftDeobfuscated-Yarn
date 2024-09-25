@@ -34,7 +34,7 @@ public class RealmsWorldCreating {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public static void showCreateWorldScreen(
-		MinecraftClient client, Screen parent, Screen realmsScreen, RealmsServer server, @Nullable WorldCreationTask creationTask
+		MinecraftClient client, Screen parent, Screen realmsScreen, int slotId, RealmsServer server, @Nullable WorldCreationTask creationTask
 	) {
 		CreateWorldScreen.show(
 			client,
@@ -43,16 +43,14 @@ public class RealmsWorldCreating {
 				Path path;
 				try {
 					path = saveTempWorld(dynamicRegistries, levelProperties, dataPackTempDir);
-				} catch (IOException var12) {
+				} catch (IOException var13) {
 					LOGGER.warn("Failed to create temporary world folder.");
 					client.setScreen(new RealmsGenericErrorScreen(Text.translatable("mco.create.world.failed"), realmsScreen));
 					return true;
 				}
 
 				RealmsWorldOptions realmsWorldOptions = RealmsWorldOptions.create(levelProperties.getLevelInfo(), SharedConstants.getGameVersion().getName());
-				RealmsUploader realmsUploader = new RealmsUploader(
-					path, realmsWorldOptions, client.getSession(), server.id, server.activeSlot, UploadProgressTracker.create()
-				);
+				RealmsUploader realmsUploader = new RealmsUploader(path, realmsWorldOptions, client.getSession(), server.id, slotId, UploadProgressTracker.create());
 				client.setScreenAndRender(
 					new NoticeScreen(realmsUploader::cancel, Text.translatable("mco.create.world.reset.title"), Text.empty(), ScreenTexts.CANCEL, false)
 				);
@@ -79,11 +77,11 @@ public class RealmsWorldCreating {
 						}
 					} else {
 						if (parent instanceof RealmsConfigureWorldScreen realmsConfigureWorldScreen) {
-							realmsConfigureWorldScreen.setActiveSlotWorldOptions(realmsWorldOptions);
+							realmsConfigureWorldScreen.fetchServerData(server.id);
 						}
 
 						if (creationTask != null) {
-							RealmsMainScreen.play(server, parent);
+							RealmsMainScreen.play(server, parent, true);
 						} else {
 							client.setScreenAndRender(parent);
 						}

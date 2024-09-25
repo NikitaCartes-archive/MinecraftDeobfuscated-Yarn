@@ -23,6 +23,7 @@ import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -111,7 +112,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if ((Boolean)state.get(LIT) && entity instanceof LivingEntity) {
-			entity.damage(world.getDamageSources().campfire(), (float)this.fireDamage);
+			entity.serverDamage(world.getDamageSources().campfire(), (float)this.fireDamage);
 		}
 
 		super.onEntityCollision(state, world, pos, entity);
@@ -246,7 +247,11 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		BlockPos blockPos = hit.getBlockPos();
-		if (!world.isClient && projectile.isOnFire() && projectile.canModifyAt(world, blockPos) && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
+		if (world instanceof ServerWorld serverWorld
+			&& projectile.isOnFire()
+			&& projectile.canModifyAt(serverWorld, blockPos)
+			&& !(Boolean)state.get(LIT)
+			&& !(Boolean)state.get(WATERLOGGED)) {
 			world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), Block.NOTIFY_ALL_AND_REDRAW);
 		}
 	}

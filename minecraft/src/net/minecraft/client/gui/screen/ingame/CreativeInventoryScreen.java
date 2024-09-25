@@ -54,7 +54,7 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
+public class CreativeInventoryScreen extends HandledScreen<CreativeInventoryScreen.CreativeScreenHandler> {
 	private static final Identifier SCROLLER_TEXTURE = Identifier.ofVanilla("container/creative_inventory/scroller");
 	private static final Identifier SCROLLER_DISABLED_TEXTURE = Identifier.ofVanilla("container/creative_inventory/scroller_disabled");
 	private static final Identifier[] TAB_TOP_UNSELECTED_TEXTURES = new Identifier[]{
@@ -115,6 +115,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private boolean lastClickOutsideBounds;
 	private final Set<TagKey<Item>> searchResultTags = new HashSet();
 	private final boolean operatorTabEnabled;
+	private final StatusEffectsDisplay statusEffectsDisplay;
 
 	public CreativeInventoryScreen(ClientPlayerEntity player, FeatureSet enabledFeatures, boolean operatorTabEnabled) {
 		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), ScreenTexts.EMPTY);
@@ -123,6 +124,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		this.backgroundWidth = 195;
 		this.operatorTabEnabled = operatorTabEnabled;
 		this.populateDisplay(player.networkHandler.getSearchManager(), enabledFeatures, this.shouldShowOperatorTab(player), player.getWorld().getRegistryManager());
+		this.statusEffectsDisplay = new StatusEffectsDisplay(this);
 	}
 
 	private boolean shouldShowOperatorTab(PlayerEntity player) {
@@ -671,6 +673,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
+		this.statusEffectsDisplay.drawStatusEffects(context, mouseX, mouseY, delta);
 
 		for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
 			if (this.renderTabTooltipIfHovered(context, itemGroup, mouseX, mouseY)) {
@@ -685,6 +688,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
+	}
+
+	@Override
+	public boolean shouldHideStatusEffectHud() {
+		return this.statusEffectsDisplay.shouldHideStatusEffectHud();
 	}
 
 	@Override

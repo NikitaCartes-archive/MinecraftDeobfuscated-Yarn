@@ -16,6 +16,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -59,20 +60,20 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		if (source.getSource() instanceof PersistentProjectileEntity persistentProjectileEntity && persistentProjectileEntity.isOnFire()) {
 			DamageSource damageSource = this.getDamageSources().explosion(this, source.getAttacker());
 			this.explode(damageSource, persistentProjectileEntity.getVelocity().lengthSquared());
 		}
 
-		return super.damage(source, amount);
+		return super.damage(world, source, amount);
 	}
 
 	@Override
-	public void killAndDropSelf(DamageSource source) {
+	public void killAndDropSelf(ServerWorld world, DamageSource damageSource) {
 		double d = this.getVelocity().horizontalLengthSquared();
-		if (!shouldDetonate(source) && !(d >= 0.01F)) {
-			this.killAndDropItem(this.asItem());
+		if (!shouldDetonate(damageSource) && !(d >= 0.01F)) {
+			this.killAndDropItem(world, this.asItem());
 		} else {
 			if (this.fuseTicks < 0) {
 				this.prime();
@@ -96,20 +97,19 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	protected void explode(@Nullable DamageSource damageSource, double power) {
-		if (!this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			double d = Math.min(Math.sqrt(power), 5.0);
-			this.getWorld()
-				.createExplosion(
-					this,
-					damageSource,
-					null,
-					this.getX(),
-					this.getY(),
-					this.getZ(),
-					(float)((double)this.explosionPower + this.random.nextDouble() * 1.5 * d),
-					false,
-					World.ExplosionSourceType.TNT
-				);
+			serverWorld.createExplosion(
+				this,
+				damageSource,
+				null,
+				this.getX(),
+				this.getY(),
+				this.getZ(),
+				(float)((double)this.explosionPower + this.random.nextDouble() * 1.5 * d),
+				false,
+				World.ExplosionSourceType.TNT
+			);
 			this.discard();
 		}
 	}

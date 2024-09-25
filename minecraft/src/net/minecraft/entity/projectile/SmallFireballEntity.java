@@ -38,7 +38,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 			int i = var7.getFireTicks();
 			var7.setOnFireFor(5.0F);
 			DamageSource damageSource = this.getDamageSources().fireball(this, entity2);
-			if (!var7.damage(damageSource, 5.0F)) {
+			if (!var7.damage(serverWorld, damageSource, 5.0F)) {
 				var7.setFireTicks(i);
 			} else {
 				EnchantmentHelper.onTargetDamaged(serverWorld, var7, damageSource);
@@ -49,9 +49,9 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		super.onBlockHit(blockHitResult);
-		if (!this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			Entity entity = this.getOwner();
-			if (!(entity instanceof MobEntity) || this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			if (!(entity instanceof MobEntity) || serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 				if (this.getWorld().isAir(blockPos)) {
 					this.getWorld().setBlockState(blockPos, AbstractFireBlock.getState(this.getWorld(), blockPos));
@@ -66,10 +66,5 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 		if (!this.getWorld().isClient) {
 			this.discard();
 		}
-	}
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return false;
 	}
 }

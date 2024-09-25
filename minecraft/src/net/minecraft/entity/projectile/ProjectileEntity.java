@@ -395,12 +395,12 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	public boolean canModifyAt(World world, BlockPos pos) {
+	public boolean canModifyAt(ServerWorld world, BlockPos pos) {
 		Entity entity = this.getOwner();
 		return entity instanceof PlayerEntity ? entity.canModifyAt(world, pos) : entity == null || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 	}
 
-	public boolean canBreakBlocks(World world) {
+	public boolean canBreakBlocks(ServerWorld world) {
 		return this.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES) && world.getGameRules().getBoolean(GameRules.PROJECTILES_CAN_BREAK_BLOCKS);
 	}
 
@@ -423,6 +423,15 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	@Override
 	public int getDefaultPortalCooldown() {
 		return 2;
+	}
+
+	@Override
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (!this.isAlwaysInvulnerableTo(source)) {
+			this.scheduleVelocityUpdate();
+		}
+
+		return false;
 	}
 
 	@FunctionalInterface

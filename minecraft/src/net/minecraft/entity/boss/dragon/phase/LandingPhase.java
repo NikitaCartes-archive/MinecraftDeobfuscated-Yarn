@@ -3,6 +3,7 @@ package net.minecraft.entity.boss.dragon.phase;
 import javax.annotation.Nullable;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
@@ -38,10 +39,10 @@ public class LandingPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		if (this.target == null) {
 			this.target = Vec3d.ofBottomCenter(
-				this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()))
+				world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()))
 			);
 		}
 

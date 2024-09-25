@@ -47,7 +47,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
@@ -123,7 +123,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
@@ -224,7 +223,7 @@ import org.slf4j.Logger;
  * Entities can be discarded (despawned) by calling {@link #discard}. This does not drop loot.
  * To kill entities and drop loot, call {@link #kill} or {@link damage} (with large enough damage amount).
  */
-public abstract class Entity implements DataTracked, Nameable, EntityLike, CommandOutput, ScoreHolder {
+public abstract class Entity implements DataTracked, Nameable, EntityLike, ScoreHolder {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ID_KEY = "id";
 	public static final String PASSENGERS_KEY = "Passengers";
@@ -515,7 +514,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * <p>This drops loot when applicable, and emits the {@link
 	 * net.minecraft.world.event.GameEvent#ENTITY_DIE} game event.
 	 */
-	public void kill() {
+	public void kill(ServerWorld world) {
 		this.remove(Entity.RemovalReason.KILLED);
 		this.emitGameEvent(GameEvent.ENTITY_DIE);
 	}
@@ -683,8 +682,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			this.ridingCooldown--;
 		}
 
-		this.prevPitch = this.getPitch();
-		this.prevYaw = this.getYaw();
 		this.tickPortalTeleportation();
 		if (this.shouldSpawnSprintingParticles()) {
 			this.spawnSprintingParticles();
@@ -695,26 +692,28 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.updateWaterState();
 		this.updateSubmergedInWaterState();
 		this.updateSwimming();
-		if (this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			if (this.fireTicks > 0) {
+				if (this.isFireImmune()) {
+					this.setFireTicks(this.fireTicks - 4);
+					if (this.fireTicks < 0) {
+						this.extinguish();
+					}
+				} else {
+					if (this.fireTicks % 20 == 0 && !this.isInLava()) {
+						this.damage(serverWorld, this.getDamageSources().onFire(), 1.0F);
+					}
+
+					this.setFireTicks(this.fireTicks - 1);
+				}
+
+				if (this.getFrozenTicks() > 0) {
+					this.setFrozenTicks(0);
+					this.getWorld().syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, this.blockPos, 1);
+				}
+			}
+		} else {
 			this.extinguish();
-		} else if (this.fireTicks > 0) {
-			if (this.isFireImmune()) {
-				this.setFireTicks(this.fireTicks - 4);
-				if (this.fireTicks < 0) {
-					this.extinguish();
-				}
-			} else {
-				if (this.fireTicks % 20 == 0 && !this.isInLava()) {
-					this.damage(this.getDamageSources().onFire(), 1.0F);
-				}
-
-				this.setFireTicks(this.fireTicks - 1);
-			}
-
-			if (this.getFrozenTicks() > 0) {
-				this.setFrozenTicks(0);
-				this.getWorld().syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, this.blockPos, 1);
-			}
 		}
 
 		if (this.isInLava()) {
@@ -728,8 +727,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		}
 
 		this.firstUpdate = false;
-		if (!this.getWorld().isClient && this instanceof Leashable) {
-			Leashable.tickLeash((Entity)((Leashable)this));
+		if (this.getWorld() instanceof ServerWorld serverWorldx && this instanceof Leashable) {
+			Leashable.tickLeash(serverWorldx, (Entity)((Leashable)this));
 		}
 
 		profiler.pop();
@@ -786,8 +785,13 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	public void setOnFireFromLava() {
 		if (!this.isFireImmune()) {
 			this.setOnFireFor(15.0F);
-			if (this.damage(this.getDamageSources().lava(), 4.0F) && this.shouldPlayBurnSoundInLava()) {
-				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+			if (this.getWorld() instanceof ServerWorld serverWorld
+				&& this.damage(serverWorld, this.getDamageSources().lava(), 4.0F)
+				&& this.shouldPlayBurnSoundInLava()
+				&& !this.isSilent()) {
+				serverWorld.playSound(
+					null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_GENERIC_BURN, this.getSoundCategory(), 0.4F, 2.0F + this.random.nextFloat() * 0.4F
+				);
 			}
 		}
 	}
@@ -1755,7 +1759,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	}
 
 	void checkWaterState() {
-		if (this.getVehicle() instanceof BoatEntity boatEntity && !boatEntity.isSubmergedInWater()) {
+		if (this.getVehicle() instanceof AbstractBoatEntity abstractBoatEntity && !abstractBoatEntity.isSubmergedInWater()) {
 			this.touchingWater = false;
 			return;
 		}
@@ -1777,10 +1781,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
 		this.submergedFluidTag.clear();
 		double d = this.getEyeY();
-		if (this.getVehicle() instanceof BoatEntity boatEntity
-			&& !boatEntity.isSubmergedInWater()
-			&& boatEntity.getBoundingBox().maxY >= d
-			&& boatEntity.getBoundingBox().minY <= d) {
+		if (this.getVehicle() instanceof AbstractBoatEntity abstractBoatEntity
+			&& !abstractBoatEntity.isSubmergedInWater()
+			&& abstractBoatEntity.getBoundingBox().maxY >= d
+			&& abstractBoatEntity.getBoundingBox().minY <= d) {
 			return;
 		}
 
@@ -2105,6 +2109,18 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		this.velocityModified = true;
 	}
 
+	@Deprecated
+	public final void serverDamage(DamageSource source, float amount) {
+		if (this.world instanceof ServerWorld serverWorld) {
+			this.damage(serverWorld, source, amount);
+		}
+	}
+
+	@Deprecated
+	public final boolean sidedDamage(DamageSource source, float amount) {
+		return this.world instanceof ServerWorld serverWorld ? this.damage(serverWorld, source, amount) : this.clientDamage(source);
+	}
+
 	/**
 	 * Applies a damage to this entity. The exact implementation differs between subclasses.
 	 * 
@@ -2125,13 +2141,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #isInvulnerableTo
 	 * @see net.minecraft.entity.LivingEntity#modifyAppliedDamage
 	 */
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
-			return false;
-		} else {
-			this.scheduleVelocityUpdate();
-			return false;
-		}
+	public abstract boolean damage(ServerWorld world, DamageSource source, float amount);
+
+	public boolean clientDamage(DamageSource source) {
+		return false;
 	}
 
 	public final Vec3d getRotationVec(float tickDelta) {
@@ -2508,8 +2521,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #dropStack(ItemStack, float)
 	 */
 	@Nullable
-	public ItemEntity dropItem(ItemConvertible item) {
-		return this.dropItem(item, 0);
+	public ItemEntity dropItem(ServerWorld world, ItemConvertible item) {
+		return this.dropItem(world, item, 0);
 	}
 
 	/**
@@ -2522,8 +2535,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #dropStack(ItemStack, float)
 	 */
 	@Nullable
-	public ItemEntity dropItem(ItemConvertible item, int yOffset) {
-		return this.dropStack(new ItemStack(item), (float)yOffset);
+	public ItemEntity dropItem(ServerWorld world, ItemConvertible item, int offsetY) {
+		return this.dropStack(world, new ItemStack(item), (float)offsetY);
 	}
 
 	/**
@@ -2537,8 +2550,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #dropStack(ItemStack, float)
 	 */
 	@Nullable
-	public ItemEntity dropStack(ItemStack stack) {
-		return this.dropStack(stack, 0.0F);
+	public ItemEntity dropStack(ServerWorld world, ItemStack stack) {
+		return this.dropStack(world, stack, 0.0F);
 	}
 
 	/**
@@ -2552,15 +2565,13 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * @see #dropStack(ItemStack)
 	 */
 	@Nullable
-	public ItemEntity dropStack(ItemStack stack, float yOffset) {
+	public ItemEntity dropStack(ServerWorld world, ItemStack stack, float yOffset) {
 		if (stack.isEmpty()) {
 			return null;
-		} else if (this.getWorld().isClient) {
-			return null;
 		} else {
-			ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getX(), this.getY() + (double)yOffset, this.getZ(), stack);
+			ItemEntity itemEntity = new ItemEntity(world, this.getX(), this.getY() + (double)yOffset, this.getZ(), stack);
 			itemEntity.setToDefaultPickupDelay();
-			this.getWorld().spawnEntity(itemEntity);
+			world.spawnEntity(itemEntity);
 			return itemEntity;
 		}
 	}
@@ -3570,7 +3581,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			this.setOnFireFor(8.0F);
 		}
 
-		this.damage(this.getDamageSources().lightningBolt(), 5.0F);
+		this.damage(world, this.getDamageSources().lightningBolt(), 5.0F);
 	}
 
 	/**
@@ -3816,25 +3827,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 			);
 	}
 
-	/**
-	 * {@return whether the entity is invulnerable to {@code damageSource}}
-	 * 
-	 * <p>This can be overridden to make the entity invulnerable to some damages, but
-	 * {@code super.isInvulnerableTo()} should be called in this case.
-	 * 
-	 * @implNote Entity is invulnerable to all damages if it is {@linkplain #isRemoved
-	 * removed}, and is invulnerable to all damages except {@link
-	 * net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD}
-	 * or damages from creative mode players if the entity is {@linkplain #isInvulnerable
-	 * invulnerable}. This also checks {@link #isFireImmune}.
-	 * 
-	 * @see net.minecraft.entity.damage.DamageSources
-	 * @see net.minecraft.registry.tag.DamageTypeTags
-	 * @see #isFireImmune
-	 * @see #damage
-	 * @see #isInvulnerable
-	 */
-	public boolean isInvulnerableTo(DamageSource damageSource) {
+	protected final boolean isAlwaysInvulnerableTo(DamageSource damageSource) {
 		return this.isRemoved()
 			|| this.invulnerable && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isSourceCreativePlayer()
 			|| damageSource.isIn(DamageTypeTags.IS_FIRE) && this.isFireImmune()
@@ -3931,7 +3924,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 					this.removeFromDimension();
 				}
 
-				entityx.setPosition(teleportTarget);
+				entityx.setPosition(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
 				if (this != entityx) {
 					serverWorld2.onDimensionChanged(entityx);
 				}
@@ -3952,9 +3945,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return null;
 	}
 
-	protected void setPosition(TeleportTarget teleportTarget) {
-		PlayerPosition playerPosition = PlayerPosition.fromTeleportTarget(teleportTarget);
-		PlayerPosition playerPosition2 = PlayerPosition.apply(PlayerPosition.fromEntity(this), playerPosition, teleportTarget.relatives());
+	public void setPosition(PlayerPosition pos, Set<PositionFlag> flags) {
+		PlayerPosition playerPosition = PlayerPosition.fromEntity(this);
+		PlayerPosition playerPosition2 = PlayerPosition.apply(playerPosition, pos, flags);
 		this.setPos(playerPosition2.position().x, playerPosition2.position().y, playerPosition2.position().z);
 		this.setYaw(playerPosition2.yaw());
 		this.setHeadYaw(playerPosition2.yaw());
@@ -4430,10 +4423,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return StackReference.EMPTY;
 	}
 
-	@Override
-	public void sendMessage(Text message) {
-	}
-
 	public World getEntityWorld() {
 		return this.getWorld();
 	}
@@ -4836,55 +4825,10 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	/**
 	 * {@return a command source which represents this entity}
 	 */
-	public ServerCommandSource getCommandSource() {
+	public ServerCommandSource getCommandSource(ServerWorld world) {
 		return new ServerCommandSource(
-			this,
-			this.getPos(),
-			this.getRotationClient(),
-			this.getWorld() instanceof ServerWorld ? (ServerWorld)this.getWorld() : null,
-			this.getPermissionLevel(),
-			this.getName().getString(),
-			this.getDisplayName(),
-			this.getWorld().getServer(),
-			this
+			CommandOutput.DUMMY, this.getPos(), this.getRotationClient(), world, 0, this.getName().getString(), this.getDisplayName(), world.getServer(), this
 		);
-	}
-
-	/**
-	 * {@return the permission level of this entity}
-	 * 
-	 * <p>This is {@code 0} for non-players.
-	 * 
-	 * @see #hasPermissionLevel
-	 */
-	protected int getPermissionLevel() {
-		return 0;
-	}
-
-	/**
-	 * {@return whether this entity has at least permission level {@code permissionLevel}}
-	 * 
-	 * <p>This is always {@code false} for non-players.
-	 * 
-	 * @see #getPermissionLevel
-	 */
-	public boolean hasPermissionLevel(int permissionLevel) {
-		return this.getPermissionLevel() >= permissionLevel;
-	}
-
-	@Override
-	public boolean shouldReceiveFeedback() {
-		return this.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK);
-	}
-
-	@Override
-	public boolean shouldTrackOutput() {
-		return true;
-	}
-
-	@Override
-	public boolean shouldBroadcastConsoleToOps() {
-		return true;
 	}
 
 	/**
@@ -5405,7 +5349,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 	 * 
 	 * @see World#canPlayerModifyAt
 	 */
-	public boolean canModifyAt(World world, BlockPos pos) {
+	public boolean canModifyAt(ServerWorld world, BlockPos pos) {
 		return true;
 	}
 
@@ -5453,8 +5397,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Comma
 		return null;
 	}
 
-	public Optional<RegistryKey<LootTable>> getLootTable() {
-		return this.type.getLootTable();
+	public Optional<RegistryKey<LootTable>> getLootTableKey() {
+		return this.type.getLootTableKey();
 	}
 
 	/**

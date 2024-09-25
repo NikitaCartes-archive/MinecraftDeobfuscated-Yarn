@@ -1,6 +1,7 @@
 package net.minecraft.entity;
 
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -43,21 +44,21 @@ public class OminousItemSpawnerEntity extends Entity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.getWorld().isClient) {
-			this.tickClient();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			this.tickServer(serverWorld);
 		} else {
-			this.tickServer();
+			this.tickClient();
 		}
 	}
 
-	private void tickServer() {
+	private void tickServer(ServerWorld world) {
 		if ((long)this.age == this.spawnItemAfterTicks - 36L) {
-			this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.BLOCK_TRIAL_SPAWNER_ABOUT_TO_SPAWN_ITEM, SoundCategory.NEUTRAL);
+			world.playSound(null, this.getBlockPos(), SoundEvents.BLOCK_TRIAL_SPAWNER_ABOUT_TO_SPAWN_ITEM, SoundCategory.NEUTRAL);
 		}
 
 		if ((long)this.age >= this.spawnItemAfterTicks) {
 			this.spawnItem();
-			this.kill();
+			this.kill(world);
 		}
 	}
 
@@ -174,5 +175,10 @@ public class OminousItemSpawnerEntity extends Entity {
 
 	private void setItem(ItemStack stack) {
 		this.getDataTracker().set(ITEM, stack);
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return false;
 	}
 }

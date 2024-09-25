@@ -68,10 +68,11 @@ public class TurtleEggBlock extends Block {
 	}
 
 	private void tryBreakEgg(World world, BlockState state, BlockPos pos, Entity entity, int inverseChance) {
-		if (this.breaksEgg(world, entity)) {
-			if (!world.isClient && world.random.nextInt(inverseChance) == 0 && state.isOf(Blocks.TURTLE_EGG)) {
-				this.breakEgg(world, pos, state);
-			}
+		if (state.isOf(Blocks.TURTLE_EGG)
+			&& world instanceof ServerWorld serverWorld
+			&& this.breaksEgg(serverWorld, entity)
+			&& world.random.nextInt(inverseChance) == 0) {
+			this.breakEgg(serverWorld, pos, state);
 		}
 	}
 
@@ -162,7 +163,7 @@ public class TurtleEggBlock extends Block {
 		builder.add(HATCH, EGGS);
 	}
 
-	private boolean breaksEgg(World world, Entity entity) {
+	private boolean breaksEgg(ServerWorld world, Entity entity) {
 		if (entity instanceof TurtleEntity || entity instanceof BatEntity) {
 			return false;
 		} else {

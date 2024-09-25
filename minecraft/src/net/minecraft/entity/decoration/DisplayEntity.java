@@ -14,6 +14,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -25,6 +26,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -113,6 +115,11 @@ public abstract class DisplayEntity extends Entity {
 		if (RENDERING_DATA_IDS.contains(data.id())) {
 			this.renderingDataSet = true;
 		}
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return false;
 	}
 
 	private static AffineTransformation getTransformation(DataTracker dataTracker) {
@@ -898,15 +905,15 @@ public abstract class DisplayEntity extends Entity {
 
 				try {
 					Text text = Text.Serialization.fromJson(string, this.getRegistryManager());
-					if (text != null) {
-						ServerCommandSource serverCommandSource = this.getCommandSource().withLevel(2);
+					if (text != null && this.getWorld() instanceof ServerWorld serverWorld) {
+						ServerCommandSource serverCommandSource = this.getCommandSource(serverWorld).withLevel(2);
 						Text text2 = Texts.parse(serverCommandSource, text, this, 0);
 						this.setText(text2);
 					} else {
 						this.setText(Text.empty());
 					}
-				} catch (Exception var8) {
-					DisplayEntity.LOGGER.warn("Failed to parse display entity text {}", string, var8);
+				} catch (Exception var9) {
+					DisplayEntity.LOGGER.warn("Failed to parse display entity text {}", string, var9);
 				}
 			}
 		}

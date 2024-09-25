@@ -6,15 +6,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.world.ServerWorld;
 
 public interface InventoryOwner {
 	String INVENTORY_KEY = "Inventory";
 
 	SimpleInventory getInventory();
 
-	static void pickUpItem(MobEntity entity, InventoryOwner inventoryOwner, ItemEntity item) {
+	static void pickUpItem(ServerWorld world, MobEntity entity, InventoryOwner inventoryOwner, ItemEntity item) {
 		ItemStack itemStack = item.getStack();
-		if (entity.canGather(itemStack)) {
+		if (entity.canGather(world, itemStack)) {
 			SimpleInventory simpleInventory = inventoryOwner.getInventory();
 			boolean bl = simpleInventory.canInsert(itemStack);
 			if (!bl) {

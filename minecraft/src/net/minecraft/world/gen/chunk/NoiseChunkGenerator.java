@@ -134,7 +134,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
+	public void appendDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
 		DecimalFormat decimalFormat = new DecimalFormat("0.000");
 		NoiseRouter noiseRouter = noiseConfig.getNoiseRouter();
 		DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ());

@@ -29,6 +29,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
@@ -95,7 +96,7 @@ public class TestContext {
 	public void killAllEntities(Class entityClass) {
 		Box box = this.getTestBox();
 		List<Entity> list = this.getWorld().getEntitiesByClass(entityClass, box.expand(1.0), entity -> !(entity instanceof PlayerEntity));
-		list.forEach(Entity::kill);
+		list.forEach(entity -> entity.kill(this.getWorld()));
 	}
 
 	public ItemEntity spawnItem(Item item, Vec3d pos) {
@@ -134,6 +135,14 @@ public class TestContext {
 			serverWorld.spawnEntity(entity);
 			return entity;
 		}
+	}
+
+	public void damage(Entity entity, DamageSource damageSource, float amount) {
+		entity.damage(this.getWorld(), damageSource, amount);
+	}
+
+	public void killEntity(Entity entity) {
+		entity.kill(this.getWorld());
 	}
 
 	public <E extends Entity> E expectEntityAtOrigin(EntityType<E> type) {

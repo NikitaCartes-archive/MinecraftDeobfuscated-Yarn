@@ -174,7 +174,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	}
 
 	@Override
-	public void mobTick() {
+	public void mobTick(ServerWorld world) {
 		if (this.ticksUntilJump > 0) {
 			this.ticksUntilJump--;
 		}
@@ -429,7 +429,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		@Override
 		public boolean canStart() {
 			if (this.cooldown <= 0) {
-				if (!this.rabbit.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+				if (!getServerWorld(this.rabbit).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					return false;
 				}
 

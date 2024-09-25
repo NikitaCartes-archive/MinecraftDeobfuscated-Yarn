@@ -24,7 +24,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -42,9 +42,12 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class RavagerEntity extends RaiderEntity {
-	private static final Predicate<Entity> CAN_KNOCK_BACK_WITH_ROAR = entity -> entity.isAlive()
-			&& !(entity instanceof RavagerEntity)
-			&& (entity.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) || !entity.getType().equals(EntityType.ARMOR_STAND));
+	private static final Predicate<Entity> CAN_KNOCK_BACK_WITH_ROAR = entity -> !(entity instanceof RavagerEntity) && entity.isAlive();
+	private static final Predicate<Entity> CAN_KNOCK_BACK_WITH_ROAR_NO_MOB_GRIEFING = entity -> CAN_KNOCK_BACK_WITH_ROAR.test(entity)
+			&& !entity.getType().equals(EntityType.ARMOR_STAND);
+	private static final Predicate<LivingEntity> CAN_KNOCK_BACK_WITH_ROAR_ON_CLIENT = entity -> !(entity instanceof RavagerEntity)
+			&& entity.isAlive()
+			&& entity.isLogicalSideForUpdatingMovement();
 	private static final double field_30480 = 0.3;
 	private static final double field_30481 = 0.35;
 	private static final int field_30482 = 8356754;
@@ -73,14 +76,14 @@ public class RavagerEntity extends RaiderEntity {
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(2, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(3, new ActiveTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(4, new ActiveTargetGoal(this, MerchantEntity.class, true, entity -> !entity.isBaby()));
+		this.targetSelector.add(4, new ActiveTargetGoal(this, MerchantEntity.class, true, (entity, world) -> !entity.isBaby()));
 		this.targetSelector.add(4, new ActiveTargetGoal(this, IronGolemEntity.class, true));
 	}
 
 	@Override
 	protected void updateGoalControls() {
 		boolean bl = !(this.getControllingPassenger() instanceof MobEntity) || this.getControllingPassenger().getType().isIn(EntityTypeTags.RAIDERS);
-		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
+		boolean bl2 = !(this.getVehicle() instanceof AbstractBoatEntity);
 		this.goalSelector.setControlEnabled(Goal.Control.MOVE, bl);
 		this.goalSelector.setControlEnabled(Goal.Control.JUMP, bl && bl2);
 		this.goalSelector.setControlEnabled(Goal.Control.LOOK, bl);
@@ -136,7 +139,7 @@ public class RavagerEntity extends RaiderEntity {
 				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
-			if (this.horizontalCollision && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			if (this.getWorld() instanceof ServerWorld serverWorld && this.horizontalCollision && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				boolean bl = false;
 				Box box = this.getBoundingBox().expand(0.2);
 
@@ -148,10 +151,10 @@ public class RavagerEntity extends RaiderEntity {
 					MathHelper.floor(box.maxY),
 					MathHelper.floor(box.maxZ)
 				)) {
-					BlockState blockState = this.getWorld().getBlockState(blockPos);
+					BlockState blockState = serverWorld.getBlockState(blockPos);
 					Block block = blockState.getBlock();
 					if (block instanceof LeavesBlock) {
-						bl = this.getWorld().breakBlock(blockPos, true, this) || bl;
+						bl = serverWorld.breakBlock(blockPos, true, this) || bl;
 					}
 				}
 
@@ -219,24 +222,37 @@ public class RavagerEntity extends RaiderEntity {
 
 	private void roar() {
 		if (this.isAlive()) {
-			for (LivingEntity livingEntity : this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), CAN_KNOCK_BACK_WITH_ROAR)) {
-				if (!(livingEntity instanceof IllagerEntity)) {
-					livingEntity.damage(this.getDamageSources().mobAttack(this), 6.0F);
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				Predicate<Entity> predicate = serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+					? CAN_KNOCK_BACK_WITH_ROAR
+					: CAN_KNOCK_BACK_WITH_ROAR_NO_MOB_GRIEFING;
+
+				for (LivingEntity livingEntity : this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), predicate)) {
+					if (!(livingEntity instanceof IllagerEntity)) {
+						livingEntity.damage(serverWorld, this.getDamageSources().mobAttack(this), 6.0F);
+					}
+
+					if (!(livingEntity instanceof PlayerEntity)) {
+						this.knockBack(livingEntity);
+					}
 				}
 
-				this.knockBack(livingEntity);
+				this.emitGameEvent(GameEvent.ENTITY_ACTION);
+			} else {
+				for (LivingEntity livingEntity2 : this.getWorld()
+					.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), CAN_KNOCK_BACK_WITH_ROAR_ON_CLIENT)) {
+					this.knockBack(livingEntity2);
+				}
+
+				Vec3d vec3d = this.getBoundingBox().getCenter();
+
+				for (int i = 0; i < 40; i++) {
+					double d = this.random.nextGaussian() * 0.2;
+					double e = this.random.nextGaussian() * 0.2;
+					double f = this.random.nextGaussian() * 0.2;
+					this.getWorld().addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
+				}
 			}
-
-			Vec3d vec3d = this.getBoundingBox().getCenter();
-
-			for (int i = 0; i < 40; i++) {
-				double d = this.random.nextGaussian() * 0.2;
-				double e = this.random.nextGaussian() * 0.2;
-				double f = this.random.nextGaussian() * 0.2;
-				this.getWorld().addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
-			}
-
-			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 		}
 	}
 
@@ -272,11 +288,11 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
 		this.attackTick = 10;
-		this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+		world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
-		return super.tryAttack(target);
+		return super.tryAttack(world, target);
 	}
 
 	@Nullable

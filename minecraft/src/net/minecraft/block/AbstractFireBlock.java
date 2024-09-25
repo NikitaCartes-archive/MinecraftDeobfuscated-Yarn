@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +20,8 @@ import net.minecraft.world.dimension.NetherPortal;
 
 public abstract class AbstractFireBlock extends Block {
 	private static final int SET_ON_FIRE_SECONDS = 8;
+	private static final int MIN_FIRE_TICK_INCREMENT = 1;
+	private static final int MAX_FIRE_TICK_INCREMENT = 3;
 	private final float damage;
 	protected static final float BASE_SOUND_VOLUME = 1.0F;
 	protected static final VoxelShape BASE_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -124,13 +127,19 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!entity.isFireImmune()) {
-			entity.setFireTicks(entity.getFireTicks() + 1);
-			if (entity.getFireTicks() == 0) {
+			if (entity.getFireTicks() >= 0) {
+				if (entity instanceof ServerPlayerEntity) {
+					int i = world.getRandom().nextBetweenExclusive(1, 3);
+					entity.setFireTicks(entity.getFireTicks() + i);
+				}
+
 				entity.setOnFireFor(8.0F);
+			} else {
+				entity.setFireTicks(entity.getFireTicks() + 1);
 			}
 		}
 
-		entity.damage(world.getDamageSources().inFire(), this.damage);
+		entity.serverDamage(world.getDamageSources().inFire(), this.damage);
 		super.onEntityCollision(state, world, pos, entity);
 	}
 

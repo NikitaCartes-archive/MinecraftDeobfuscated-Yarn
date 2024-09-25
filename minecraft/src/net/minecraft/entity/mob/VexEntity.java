@@ -74,7 +74,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 		this.setNoGravity(true);
 		if (this.alive && --this.lifeTicks <= 0) {
 			this.lifeTicks = 20;
-			this.damage(this.getDamageSources().starve(), 1.0F);
+			this.serverDamage(this.getDamageSources().starve(), 1.0F);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 			LivingEntity livingEntity = VexEntity.this.getTarget();
 			if (livingEntity != null) {
 				if (VexEntity.this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
-					VexEntity.this.tryAttack(livingEntity);
+					VexEntity.this.tryAttack(castToServerWorld(VexEntity.this.getWorld()), livingEntity);
 					VexEntity.this.setCharging(false);
 				} else {
 					double d = VexEntity.this.squaredDistanceTo(livingEntity);

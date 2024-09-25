@@ -147,7 +147,7 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 				this.client.textRenderer,
 				NEW_WORLD_BUTTON_TEXT,
 				NEW_WORLD_TEXTURE,
-				button -> RealmsWorldCreating.showCreateWorldScreen(this.client, this.parent, this, this.serverData, this.creationTask)
+				button -> RealmsWorldCreating.showCreateWorldScreen(this.client, this.parent, this, this.slot, this.serverData, this.creationTask)
 			)
 		);
 		adder.add(

@@ -526,7 +526,7 @@ public class WorldChunk extends Chunk {
 		return this.blockEntities;
 	}
 
-	public void runPostProcessing() {
+	public void runPostProcessing(ServerWorld world) {
 		ChunkPos chunkPos = this.getPos();
 
 		for (int i = 0; i < this.postProcessingLists.length; i++) {
@@ -536,13 +536,13 @@ public class WorldChunk extends Chunk {
 					BlockState blockState = this.getBlockState(blockPos);
 					FluidState fluidState = blockState.getFluidState();
 					if (!fluidState.isEmpty()) {
-						fluidState.onScheduledTick(this.world, blockPos, blockState);
+						fluidState.onScheduledTick(world, blockPos, blockState);
 					}
 
 					if (!(blockState.getBlock() instanceof FluidBlock)) {
-						BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
+						BlockState blockState2 = Block.postProcessState(blockState, world, blockPos);
 						if (blockState2 != blockState) {
-							this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
+							world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
 						}
 					}
 				}

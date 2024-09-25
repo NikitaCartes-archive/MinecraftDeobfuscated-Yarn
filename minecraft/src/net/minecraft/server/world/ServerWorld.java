@@ -124,6 +124,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.village.raid.RaidManager;
 import net.minecraft.world.EntityList;
+import net.minecraft.world.EntityLookupView;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
@@ -169,7 +170,7 @@ import net.minecraft.world.tick.TickManager;
 import net.minecraft.world.tick.WorldTickScheduler;
 import org.slf4j.Logger;
 
-public class ServerWorld extends World implements StructureWorldAccess {
+public class ServerWorld extends World implements EntityLookupView, StructureWorldAccess {
 	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
 	public static final IntProvider CLEAR_WEATHER_DURATION_PROVIDER = UniformIntProvider.create(12000, 180000);
 	public static final IntProvider RAIN_WEATHER_DURATION_PROVIDER = UniformIntProvider.create(12000, 24000);
@@ -451,7 +452,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			Profilers.get().push("scheduledFunctions");
 			this.worldProperties.getScheduledEvents().processEvents(this.server, l);
 			Profilers.get().pop();
-			if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
+			if (this.worldProperties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
 				this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
 			}
 		}
@@ -1916,6 +1917,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public RandomSequencesState getRandomSequences() {
 		return this.randomSequences;
+	}
+
+	public GameRules getGameRules() {
+		return this.worldProperties.getGameRules();
 	}
 
 	@Override

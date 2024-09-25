@@ -199,13 +199,16 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	private void applyWaterBuoyancy() {
-		Vec3d vec3d = this.getVelocity();
-		this.setVelocity(vec3d.x * 0.99F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.99F);
+		this.applyBuoyancy(0.99F);
 	}
 
 	private void applyLavaBuoyancy() {
+		this.applyBuoyancy(0.95F);
+	}
+
+	private void applyBuoyancy(double horizontalMultiplier) {
 		Vec3d vec3d = this.getVelocity();
-		this.setVelocity(vec3d.x * 0.95F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.95F);
+		this.setVelocity(vec3d.x * horizontalMultiplier, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * horizontalMultiplier);
 	}
 
 	private void tryMerge() {
@@ -275,15 +278,18 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public final boolean clientDamage(DamageSource source) {
+		return this.isAlwaysInvulnerableTo(source) ? false : this.getStack().takesDamageFrom(source);
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isAlwaysInvulnerableTo(source)) {
 			return false;
-		} else if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
+		} else if (!world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
 			return false;
 		} else if (!this.getStack().takesDamageFrom(source)) {
 			return false;
-		} else if (this.getWorld().isClient) {
-			return true;
 		} else {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - amount);

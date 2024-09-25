@@ -54,6 +54,7 @@ import net.minecraft.datafixer.fix.BlockNameFix;
 import net.minecraft.datafixer.fix.BlockNameFlatteningFix;
 import net.minecraft.datafixer.fix.BlockPosFormatFix;
 import net.minecraft.datafixer.fix.BlockStateStructureTemplateFix;
+import net.minecraft.datafixer.fix.BoatSplitFix;
 import net.minecraft.datafixer.fix.CarvingStepRemoveFix;
 import net.minecraft.datafixer.fix.CatTypeFix;
 import net.minecraft.datafixer.fix.CauldronRenameFix;
@@ -70,6 +71,7 @@ import net.minecraft.datafixer.fix.ChunkStatusFix2;
 import net.minecraft.datafixer.fix.ChunkStructuresTemplateRenameFix;
 import net.minecraft.datafixer.fix.ChunkToProtoChunkFix;
 import net.minecraft.datafixer.fix.ColorlessShulkerEntityFix;
+import net.minecraft.datafixer.fix.ContainerBlockEntityLockPredicateFix;
 import net.minecraft.datafixer.fix.DecoratedPotFieldRenameFix;
 import net.minecraft.datafixer.fix.DropInvalidSignDatafixDataFix;
 import net.minecraft.datafixer.fix.EmptyItemInHotbarFix;
@@ -144,6 +146,7 @@ import net.minecraft.datafixer.fix.LegacyDragonFightFix;
 import net.minecraft.datafixer.fix.LevelDataGeneratorOptionsFix;
 import net.minecraft.datafixer.fix.LevelFlatGeneratorInfoFix;
 import net.minecraft.datafixer.fix.LevelLegacyWorldGenSettingsFix;
+import net.minecraft.datafixer.fix.LockComponentPredicateFix;
 import net.minecraft.datafixer.fix.LodestoneCompassComponentFix;
 import net.minecraft.datafixer.fix.MapBannerBlockPosFormatFix;
 import net.minecraft.datafixer.fix.MapIdFix;
@@ -309,6 +312,7 @@ import net.minecraft.datafixer.schema.Schema3818_5;
 import net.minecraft.datafixer.schema.Schema3825;
 import net.minecraft.datafixer.schema.Schema3938;
 import net.minecraft.datafixer.schema.Schema4059;
+import net.minecraft.datafixer.schema.Schema4067;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1329,6 +1333,12 @@ public class Schemas {
 		builder.addFixer(new TrialSpawnerConfigInRegistryFix(schema231));
 		Schema schema232 = builder.addSchema(4064, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new FireResistantToDamageResistantComponentFix(schema232));
+		Schema schema233 = builder.addSchema(4067, Schema4067::new);
+		builder.addFixer(new BoatSplitFix(schema233));
+		builder.addFixer(new RemoveFeatureTogglesFix(schema233, "Remove Bundle experimental feature flag", Set.of("minecraft:bundle")));
+		Schema schema234 = builder.addSchema(4068, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new LockComponentPredicateFix(schema234));
+		builder.addFixer(new ContainerBlockEntityLockPredicateFix(schema234));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

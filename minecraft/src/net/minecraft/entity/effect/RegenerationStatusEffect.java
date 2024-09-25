@@ -1,6 +1,7 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 
 class RegenerationStatusEffect extends StatusEffect {
 	protected RegenerationStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
@@ -8,7 +9,7 @@ class RegenerationStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
 		if (entity.getHealth() < entity.getMaxHealth()) {
 			entity.heal(1.0F);
 		}

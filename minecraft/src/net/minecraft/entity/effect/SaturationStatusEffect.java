@@ -2,6 +2,7 @@ package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 class SaturationStatusEffect extends InstantStatusEffect {
 	protected SaturationStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
@@ -9,8 +10,8 @@ class SaturationStatusEffect extends InstantStatusEffect {
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
-		if (!entity.getWorld().isClient && entity instanceof PlayerEntity playerEntity) {
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
+		if (entity instanceof PlayerEntity playerEntity) {
 			playerEntity.getHungerManager().add(amplifier + 1, 1.0F);
 		}
 

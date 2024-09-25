@@ -267,14 +267,15 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	private void dropSeeds() {
-		if (!this.getWorld().isClient() && this.dataTracker.get(FINISH_DIG_TIME) == this.age) {
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.dataTracker.get(FINISH_DIG_TIME) == this.age) {
 			BlockPos blockPos = this.getDigPos();
-			this.forEachGiftedItem(LootTables.SNIFFER_DIGGING_GAMEPLAY, stack -> {
-				ItemEntity itemEntity = new ItemEntity(this.getWorld(), (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), stack);
+			this.forEachGiftedItem(serverWorld, LootTables.SNIFFER_DIGGING_GAMEPLAY, (serverWorldx, itemStack) -> {
+				ItemEntity itemEntity = new ItemEntity(this.getWorld(), (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
 				itemEntity.setToDefaultPickupDelay();
-				this.getWorld().spawnEntity(itemEntity);
+				serverWorldx.spawnEntity(itemEntity);
 			});
 			this.playSound(SoundEvents.ENTITY_SNIFFER_DROP_SEED, 1.0F, 1.0F);
+			return;
 		}
 	}
 
@@ -444,14 +445,14 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("snifferBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.swap("snifferActivityUpdate");
 		SnifferBrain.updateActivities(this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override

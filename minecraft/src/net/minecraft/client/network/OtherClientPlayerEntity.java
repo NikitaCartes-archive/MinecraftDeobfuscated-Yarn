@@ -3,11 +3,9 @@ package net.minecraft.client.network;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.profiler.ScopedProfiler;
@@ -37,7 +35,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean clientDamage(DamageSource source) {
 		return true;
 	}
 
@@ -94,12 +92,6 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	protected void updatePose() {
-	}
-
-	@Override
-	public void sendMessage(Text message) {
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.inGameHud.getChatHud().addMessage(message);
 	}
 
 	@Override

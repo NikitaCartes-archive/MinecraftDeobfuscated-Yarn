@@ -364,7 +364,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	public void removeFromCopiedStackNbt(NbtCompound nbt) {
 		nbt.remove("CustomName");
-		nbt.remove("Lock");
+		nbt.remove("lock");
 	}
 
 	@Override

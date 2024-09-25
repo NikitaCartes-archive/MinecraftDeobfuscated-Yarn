@@ -21,9 +21,9 @@ public class HuntHoglinTask {
 								if (!entity.isBaby()
 									&& !context.getOptionalValue(nearestVisibleAdultPiglins).map(piglin -> piglin.stream().anyMatch(HuntHoglinTask::hasHuntedRecently)).isPresent()) {
 									HoglinEntity hoglinEntity = context.getValue(nearestVisibleHuntableHoglin);
-									PiglinBrain.becomeAngryWith(entity, hoglinEntity);
+									PiglinBrain.becomeAngryWith(world, entity, hoglinEntity);
 									PiglinBrain.rememberHunting(entity);
-									PiglinBrain.angerAtCloserTargets(entity, hoglinEntity);
+									PiglinBrain.angerAtCloserTargets(world, entity, hoglinEntity);
 									context.getOptionalValue(nearestVisibleAdultPiglins).ifPresent(piglin -> piglin.forEach(PiglinBrain::rememberHunting));
 									return true;
 								} else {

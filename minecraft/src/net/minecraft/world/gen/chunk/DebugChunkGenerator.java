@@ -90,7 +90,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
+	public void appendDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
 	}
 
 	public static BlockState getBlockState(int x, int z) {

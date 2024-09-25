@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import java.util.UUID;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntUnaryOperator;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -91,7 +90,13 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	private static final float MAX_HEALTH_BONUS = getChildHealthBonus(max -> max - 1);
 	private static final float field_42979 = 0.25F;
 	private static final float field_42980 = 0.5F;
-	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof AbstractHorseEntity && ((AbstractHorseEntity)entity).isBred();
+	private static final TargetPredicate.EntityPredicate IS_BRED_HORSE = (entity, world) -> {
+		if (entity instanceof AbstractHorseEntity abstractHorseEntity && abstractHorseEntity.isBred()) {
+			return true;
+		}
+
+		return false;
+	};
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable()
 		.setBaseMaxDistance(16.0)
 		.ignoreVisibility()
@@ -311,10 +316,10 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		if (i <= 0) {
 			return false;
 		} else {
-			this.damage(damageSource, (float)i);
+			this.serverDamage(damageSource, (float)i);
 			if (this.hasPassengers()) {
 				for (Entity entity : this.getPassengersDeep()) {
-					entity.damage(damageSource, (float)i);
+					entity.serverDamage(damageSource, (float)i);
 				}
 			}
 
@@ -366,8 +371,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		boolean bl = super.damage(source, amount);
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		boolean bl = super.damage(world, source, amount);
 		if (bl && this.random.nextInt(3) == 0) {
 			this.updateAnger();
 		}
@@ -559,13 +564,13 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected void dropInventory() {
-		super.dropInventory();
+	protected void dropInventory(ServerWorld world) {
+		super.dropInventory(world);
 		if (this.items != null) {
 			for (int i = 0; i < this.items.size(); i++) {
 				ItemStack itemStack = this.items.getStack(i);
 				if (!itemStack.isEmpty() && !EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
-					this.dropStack(itemStack);
+					this.dropStack(world, itemStack);
 				}
 			}
 		}
@@ -578,7 +583,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 
 		super.tickMovement();
-		if (!this.getWorld().isClient && this.isAlive()) {
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.isAlive()) {
 			if (this.random.nextInt(900) == 0 && this.deathTime == 0) {
 				this.heal(1.0F);
 			}
@@ -587,7 +592,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.getWorld().getBlockState(this.getBlockPos().down()).isOf(Blocks.GRASS_BLOCK)) {
+					&& serverWorld.getBlockState(this.getBlockPos().down()).isOf(Blocks.GRASS_BLOCK)) {
 					this.setEatingGrass(true);
 				}
 
@@ -597,14 +602,16 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				}
 			}
 
-			this.walkToParent();
+			this.walkToParent(serverWorld);
+			return;
 		}
 	}
 
-	protected void walkToParent() {
+	protected void walkToParent(ServerWorld world) {
 		if (this.isBred() && this.isBaby() && !this.isEatingGrass()) {
-			LivingEntity livingEntity = this.getWorld()
-				.getClosestEntity(AbstractHorseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0));
+			LivingEntity livingEntity = world.getClosestEntity(
+				AbstractHorseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0)
+			);
 			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
 				this.navigation.findPathTo(livingEntity, 0);
 			}

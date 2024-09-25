@@ -178,15 +178,15 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<RegistryEn
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("frogBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		profiler.push("frogActivityUpdate");
 		FrogBrain.updateActivities(this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override

@@ -71,13 +71,13 @@ public class VindicatorEntity extends IllagerEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
-			boolean bl = ((ServerWorld)this.getWorld()).hasRaidAt(this.getBlockPos());
+			boolean bl = world.hasRaidAt(this.getBlockPos());
 			((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
 		}
 
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	public static DefaultAttributeContainer.Builder createVindicatorAttributes() {
@@ -201,7 +201,7 @@ public class VindicatorEntity extends IllagerEntity {
 
 	static class TargetGoal extends ActiveTargetGoal<LivingEntity> {
 		public TargetGoal(VindicatorEntity vindicator) {
-			super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::isMobOrPlayer);
+			super(vindicator, LivingEntity.class, 0, true, true, (target, world) -> target.isMobOrPlayer());
 		}
 
 		@Override

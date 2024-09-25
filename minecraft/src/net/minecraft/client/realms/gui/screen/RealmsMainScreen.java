@@ -712,7 +712,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	public static Text getVersionText(String version, int color) {
-		return (Text)(StringUtils.isBlank(version) ? ScreenTexts.EMPTY : Text.translatable("mco.version", Text.literal(version).withColor(color)));
+		return (Text)(StringUtils.isBlank(version) ? ScreenTexts.EMPTY : Text.literal(version).withColor(color));
 	}
 
 	static boolean isSelfOwnedServer(RealmsServer server) {

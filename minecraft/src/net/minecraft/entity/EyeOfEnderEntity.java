@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -9,6 +10,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -34,11 +36,11 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		this.setPosition(x, y, z);
 	}
 
-	public void setItem(ItemStack itemStack) {
-		if (itemStack.isEmpty()) {
+	public void setItem(ItemStack stack) {
+		if (stack.isEmpty()) {
 			this.getDataTracker().set(ITEM, this.getItem());
 		} else {
-			this.getDataTracker().set(ITEM, itemStack.copyWithCount(1));
+			this.getDataTracker().set(ITEM, stack.copyWithCount(1));
 		}
 	}
 
@@ -193,6 +195,11 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public boolean isAttackable() {
+		return false;
+	}
+
+	@Override
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		return false;
 	}
 }

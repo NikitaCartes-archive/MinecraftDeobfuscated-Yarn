@@ -57,8 +57,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
@@ -134,6 +134,8 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.ServerMetadata;
+import net.minecraft.server.command.CommandOutput;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
@@ -168,6 +170,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.TeleportTarget;
@@ -303,6 +306,27 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private PublicPlayerSession session;
 	@Nullable
 	public final Object field_49777;
+	private final CommandOutput commandOutput = new CommandOutput() {
+		@Override
+		public boolean shouldReceiveFeedback() {
+			return ServerPlayerEntity.this.getServerWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK);
+		}
+
+		@Override
+		public boolean shouldTrackOutput() {
+			return true;
+		}
+
+		@Override
+		public boolean shouldBroadcastConsoleToOps() {
+			return true;
+		}
+
+		@Override
+		public void sendMessage(Text message) {
+			ServerPlayerEntity.this.sendMessage(message);
+		}
+	};
 	private int screenHandlerSyncId;
 	public boolean notInAnyWorld;
 
@@ -767,6 +791,26 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
+	protected void tickHunger() {
+		if (this.getWorld().getDifficulty() == Difficulty.PEACEFUL && this.getServerWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION)) {
+			if (this.age % 20 == 0) {
+				if (this.getHealth() < this.getMaxHealth()) {
+					this.heal(1.0F);
+				}
+
+				float f = this.hungerManager.getSaturationLevel();
+				if (f < 20.0F) {
+					this.hungerManager.setSaturationLevel(f + 1.0F);
+				}
+			}
+
+			if (this.age % 10 == 0 && this.hungerManager.isNotFull()) {
+				this.hungerManager.setFoodLevel(this.hungerManager.getFoodLevel() + 1);
+			}
+		}
+	}
+
+	@Override
 	public void onLanding() {
 		if (this.getHealth() > 0.0F && this.fallStartPos != null) {
 			Criteria.FALL_FROM_HEIGHT.trigger(this, this.fallStartPos);
@@ -806,7 +850,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void onDeath(DamageSource damageSource) {
 		this.emitGameEvent(GameEvent.ENTITY_DIE);
-		boolean bl = this.getWorld().getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
+		boolean bl = this.getServerWorld().getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
@@ -836,7 +880,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		this.dropShoulderEntities();
-		if (this.getWorld().getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+		if (this.getServerWorld().getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
 			this.forgiveMobAnger();
 		}
 
@@ -869,7 +913,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			.getEntitiesByClass(MobEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR)
 			.stream()
 			.filter(entity -> entity instanceof Angerable)
-			.forEach(entity -> ((Angerable)entity).forgive(this));
+			.forEach(entity -> ((Angerable)entity).forgive(this.getServerWorld(), this));
 	}
 
 	@Override
@@ -902,8 +946,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else {
 			boolean bl = this.server.isDedicated() && this.isPvpEnabled() && source.isIn(DamageTypeTags.IS_FALL);
@@ -921,7 +965,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 					return false;
 				}
 
-				return super.damage(source, amount);
+				return super.damage(world, source, amount);
 			}
 		}
 	}
@@ -1006,7 +1050,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
 			this.stopRiding();
 			if (serverWorld.getRegistryKey() == registryKey) {
-				this.setPosition(teleportTarget);
 				this.networkHandler.requestTeleport(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
 				this.networkHandler.syncWithPlayerPosition();
 				teleportTarget.postDimensionTransition().onTransition(this);
@@ -1026,7 +1069,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 					this.enteredNetherPos = this.getPos();
 				}
 
-				this.setPosition(teleportTarget);
 				profiler.pop();
 				profiler.push("placing");
 				this.setServerWorld(serverWorld);
@@ -1101,7 +1143,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 						.getEntitiesByClass(
 							HostileEntity.class,
 							new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
-							entity -> entity.isAngryAt(this)
+							entity -> entity.isAngryAt(this.getServerWorld(), this)
 						);
 					if (!list.isEmpty()) {
 						return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
@@ -1161,8 +1203,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || this.isInTeleportationState() && !damageSource.isOf(DamageTypes.ENDER_PEARL);
+	public boolean isInvulnerableTo(ServerWorld world, DamageSource source) {
+		return super.isInvulnerableTo(world, source) || this.isInTeleportationState() && !source.isOf(DamageTypes.ENDER_PEARL);
 	}
 
 	@Override
@@ -1355,7 +1397,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			Entity entity = this.getVehicle();
 			if (entity instanceof AbstractMinecartEntity) {
 				this.increaseStat(Stats.MINECART_ONE_CM, i);
-			} else if (entity instanceof BoatEntity) {
+			} else if (entity instanceof AbstractBoatEntity) {
 				this.increaseStat(Stats.BOAT_ONE_CM, i);
 			} else if (entity instanceof PigEntity) {
 				this.increaseStat(Stats.PIG_ONE_CM, i);
@@ -1488,7 +1530,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		} else {
 			this.getAttributes().setBaseFrom(oldPlayer.getAttributes());
 			this.setHealth(this.getMaxHealth());
-			if (this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
+			if (this.getServerWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 				this.getInventory().clone(oldPlayer.getInventory());
 				this.experienceLevel = oldPlayer.experienceLevel;
 				this.totalExperience = oldPlayer.totalExperience;
@@ -1497,7 +1539,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			}
 		}
 
-		this.enchantmentTableSeed = oldPlayer.enchantmentTableSeed;
+		this.enchantingTableSeed = oldPlayer.enchantingTableSeed;
 		this.enderChestInventory = oldPlayer.enderChestInventory;
 		this.getDataTracker().set(PLAYER_MODEL_PARTS, oldPlayer.getDataTracker().get(PLAYER_MODEL_PARTS));
 		this.syncedExperience = -1;
@@ -1637,7 +1679,24 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.interactionManager.getGameMode() == GameMode.CREATIVE;
 	}
 
-	@Override
+	public CommandOutput getCommandOutput() {
+		return this.commandOutput;
+	}
+
+	public ServerCommandSource getCommandSource() {
+		return new ServerCommandSource(
+			this.getCommandOutput(),
+			this.getPos(),
+			this.getRotationClient(),
+			this.getServerWorld(),
+			this.getPermissionLevel(),
+			this.getName().getString(),
+			this.getDisplayName(),
+			this.server,
+			this
+		);
+	}
+
 	public void sendMessage(Text message) {
 		this.sendMessageToClient(message, false);
 	}
@@ -2027,7 +2086,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public boolean canModifyAt(World world, BlockPos pos) {
+	public boolean canModifyAt(ServerWorld world, BlockPos pos) {
 		return super.canModifyAt(world, pos) && world.canPlayerModifyAt(this, pos);
 	}
 
@@ -2044,6 +2103,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 			.getSlotIndex(playerInventory, playerInventory.selectedSlot)
 			.ifPresent(index -> this.currentScreenHandler.setPreviousTrackedSlot(index, playerInventory.getMainHandStack()));
 		return this.dropItem(itemStack, false, true) != null;
+	}
+
+	@Override
+	public void giveOrDropStack(ItemStack stack) {
+		if (!this.getInventory().insertStack(stack)) {
+			this.dropItem(stack, false);
+		}
 	}
 
 	public boolean allowsServerListing() {

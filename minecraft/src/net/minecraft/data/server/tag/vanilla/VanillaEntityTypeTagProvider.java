@@ -159,5 +159,17 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 			);
 		this.getOrCreateTagBuilder(EntityTypeTags.IMMUNE_TO_INFESTED).add(EntityType.SILVERFISH);
 		this.getOrCreateTagBuilder(EntityTypeTags.IMMUNE_TO_OOZING).add(EntityType.SLIME);
+		this.getOrCreateTagBuilder(EntityTypeTags.BOAT)
+			.add(
+				EntityType.OAK_BOAT,
+				EntityType.SPRUCE_BOAT,
+				EntityType.BIRCH_BOAT,
+				EntityType.JUNGLE_BOAT,
+				EntityType.ACACIA_BOAT,
+				EntityType.CHERRY_BOAT,
+				EntityType.DARK_OAK_BOAT,
+				EntityType.MANGROVE_BOAT,
+				EntityType.BAMBOO_RAFT
+			);
 	}
 }

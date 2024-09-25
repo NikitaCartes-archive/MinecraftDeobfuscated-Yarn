@@ -57,7 +57,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
@@ -872,7 +872,7 @@ public class ServerPlayNetworkHandler
 									q = 1;
 								}
 
-								if (!this.player.isInTeleportationState() && (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !bl)) {
+								if (!this.player.isInTeleportationState() && (!this.player.getServerWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !bl)) {
 									float r = bl ? 300.0F : 100.0F;
 									if (p - o > (double)(r * (float)q) && !this.isHost()) {
 										LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), l, m, n);
@@ -929,7 +929,10 @@ public class ServerPlayNetworkHandler
 								Vec3d vec3d = new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
 								this.player.setMovement(packet.isOnGround(), packet.horizontalCollision(), vec3d);
 								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
-								this.player.checkBlockCollision(new Vec3d(i, j, k), this.player.getPos());
+								if (!this.player.isSpectator()) {
+									this.player.checkBlockCollision(new Vec3d(i, j, k), this.player.getPos());
+								}
+
 								this.handleMovement(vec3d);
 								if (bl2) {
 									this.player.onLanding();
@@ -992,14 +995,8 @@ public class ServerPlayNetworkHandler
 			this.requestedTeleportId = 0;
 		}
 
-		PlayerPosition playerPosition = PlayerPosition.fromEntity(this.player);
-		PlayerPosition playerPosition2 = PlayerPosition.apply(playerPosition, pos, flags);
-		this.requestedTeleportPos = playerPosition2.position();
-		this.player.setVelocity(playerPosition2.deltaMovement());
-		this.player
-			.updatePositionAndAngles(
-				playerPosition2.position().x, playerPosition2.position().y, playerPosition2.position().z, playerPosition2.yaw(), playerPosition2.pitch()
-			);
+		this.player.setPosition(pos, flags);
+		this.requestedTeleportPos = this.player.getPos();
 		this.player.networkHandler.sendPacket(PlayerPositionLookS2CPacket.of(this.requestedTeleportId, pos, flags));
 	}
 
@@ -1146,8 +1143,8 @@ public class ServerPlayNetworkHandler
 	@Override
 	public void onBoatPaddleState(BoatPaddleStateC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (this.player.getControllingVehicle() instanceof BoatEntity boatEntity) {
-			boatEntity.setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
+		if (this.player.getControllingVehicle() instanceof AbstractBoatEntity abstractBoatEntity) {
+			abstractBoatEntity.setPaddlesMoving(packet.isLeftPaddling(), packet.isRightPaddling());
 		}
 	}
 
@@ -1584,6 +1581,7 @@ public class ServerPlayNetworkHandler
 				if (this.player.notInAnyWorld) {
 					this.player.notInAnyWorld = false;
 					this.player = this.server.getPlayerManager().respawnPlayer(this.player, true, Entity.RemovalReason.CHANGED_DIMENSION);
+					this.syncWithPlayerPosition();
 					Criteria.CHANGED_DIMENSION.trigger(this.player, World.END, World.OVERWORLD);
 				} else {
 					if (this.player.getHealth() > 0.0F) {
@@ -1591,9 +1589,10 @@ public class ServerPlayNetworkHandler
 					}
 
 					this.player = this.server.getPlayerManager().respawnPlayer(this.player, false, Entity.RemovalReason.KILLED);
+					this.syncWithPlayerPosition();
 					if (this.server.isHardcore()) {
 						this.player.changeGameMode(GameMode.SPECTATOR);
-						this.player.getWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);
+						this.player.getServerWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);
 					}
 				}
 				break;

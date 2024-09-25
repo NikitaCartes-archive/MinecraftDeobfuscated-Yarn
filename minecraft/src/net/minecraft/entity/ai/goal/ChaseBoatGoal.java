@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -25,11 +25,11 @@ public class ChaseBoatGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		List<BoatEntity> list = this.mob.getWorld().getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
+		List<AbstractBoatEntity> list = this.mob.getWorld().getNonSpectatingEntities(AbstractBoatEntity.class, this.mob.getBoundingBox().expand(5.0));
 		boolean bl = false;
 
-		for (BoatEntity boatEntity : list) {
-			Entity entity = boatEntity.getControllingPassenger();
+		for (AbstractBoatEntity abstractBoatEntity : list) {
+			Entity entity = abstractBoatEntity.getControllingPassenger();
 			if (entity instanceof PlayerEntity
 				&& (MathHelper.abs(((PlayerEntity)entity).sidewaysSpeed) > 0.0F || MathHelper.abs(((PlayerEntity)entity).forwardSpeed) > 0.0F)) {
 				bl = true;
@@ -54,8 +54,8 @@ public class ChaseBoatGoal extends Goal {
 
 	@Override
 	public void start() {
-		for (BoatEntity boatEntity : this.mob.getWorld().getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
-			if (boatEntity.getControllingPassenger() instanceof PlayerEntity playerEntity) {
+		for (AbstractBoatEntity abstractBoatEntity : this.mob.getWorld().getNonSpectatingEntities(AbstractBoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
+			if (abstractBoatEntity.getControllingPassenger() instanceof PlayerEntity playerEntity) {
 				this.passenger = playerEntity;
 				break;
 			}

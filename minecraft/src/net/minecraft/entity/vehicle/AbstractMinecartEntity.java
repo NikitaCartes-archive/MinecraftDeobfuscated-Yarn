@@ -32,6 +32,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -134,7 +135,7 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 
 	@Override
 	public boolean collidesWith(Entity other) {
-		return BoatEntity.canCollide(this, other);
+		return AbstractBoatEntity.canCollide(this, other);
 	}
 
 	@Override
@@ -276,8 +277,8 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		return new BlockPos(i, j, k);
 	}
 
-	protected double getMaxSpeed() {
-		return this.controller.getMaxSpeed();
+	protected double getMaxSpeed(ServerWorld world) {
+		return this.controller.getMaxSpeed(world);
 	}
 
 	public void onActivatorRail(int x, int y, int z, boolean powered) {
@@ -343,12 +344,12 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 		this.controller.setLerpTargetVelocity(x, y, z);
 	}
 
-	protected void moveOnRail() {
-		this.controller.moveOnRail();
+	protected void moveOnRail(ServerWorld world) {
+		this.controller.moveOnRail(world);
 	}
 
-	protected void moveOffRail() {
-		double d = this.getMaxSpeed();
+	protected void moveOffRail(ServerWorld world) {
+		double d = this.getMaxSpeed(world);
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(MathHelper.clamp(vec3d.x, -d, d), vec3d.y, MathHelper.clamp(vec3d.z, -d, d));
 		if (this.isOnGround()) {

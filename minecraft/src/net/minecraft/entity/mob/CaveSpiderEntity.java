@@ -10,6 +10,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -26,8 +27,8 @@ public class CaveSpiderEntity extends SpiderEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		if (super.tryAttack(target)) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
+		if (super.tryAttack(world, target)) {
 			if (target instanceof LivingEntity) {
 				int i = 0;
 				if (this.getWorld().getDifficulty() == Difficulty.NORMAL) {

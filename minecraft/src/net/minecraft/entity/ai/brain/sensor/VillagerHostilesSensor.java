@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.server.world.ServerWorld;
 
 public class VillagerHostilesSensor extends NearestVisibleLivingEntitySensor {
 	private static final ImmutableMap<EntityType<?>, Float> SQUARED_DISTANCES_FOR_DANGER = ImmutableMap.<EntityType<?>, Float>builder()
@@ -21,7 +22,7 @@ public class VillagerHostilesSensor extends NearestVisibleLivingEntitySensor {
 		.build();
 
 	@Override
-	protected boolean matches(LivingEntity entity, LivingEntity target) {
+	protected boolean matches(ServerWorld world, LivingEntity entity, LivingEntity target) {
 		return this.isHostile(target) && this.isCloseEnoughForDanger(entity, target);
 	}
 

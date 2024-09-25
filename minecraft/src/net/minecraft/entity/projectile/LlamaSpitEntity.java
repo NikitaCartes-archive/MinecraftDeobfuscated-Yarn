@@ -66,7 +66,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 		if (this.getOwner() instanceof LivingEntity livingEntity) {
 			Entity entity = entityHitResult.getEntity();
 			DamageSource damageSource = this.getDamageSources().spit(this, livingEntity);
-			if (entity.damage(damageSource, 1.0F) && this.getWorld() instanceof ServerWorld serverWorld) {
+			if (this.getWorld() instanceof ServerWorld serverWorld && entity.damage(serverWorld, damageSource, 1.0F)) {
 				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
 			}
 		}

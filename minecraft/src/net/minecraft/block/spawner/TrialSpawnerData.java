@@ -198,7 +198,7 @@ public class TrialSpawnerData {
 			if (entity != null) {
 				world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_SPAWNS_MOB_AT_SPAWN_POS, entity.getBlockPos(), TrialSpawnerLogic.Type.NORMAL.getIndex());
 				if (entity instanceof MobEntity mobEntity) {
-					mobEntity.dropAllEquipment();
+					mobEntity.dropAllEquipment(world);
 				}
 
 				entity.remove(Entity.RemovalReason.DISCARDED);

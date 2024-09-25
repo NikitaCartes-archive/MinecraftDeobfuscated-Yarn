@@ -112,7 +112,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 		}
 	}
 
-	private void execute(BlockState state, World world, BlockPos pos, CommandBlockExecutor executor, boolean hasCommand) {
+	private void execute(BlockState state, ServerWorld world, BlockPos pos, CommandBlockExecutor executor, boolean hasCommand) {
 		if (hasCommand) {
 			executor.execute(world);
 		} else {
@@ -148,9 +148,9 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 		if (world.getBlockEntity(pos) instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
-			if (!world.isClient) {
+			if (world instanceof ServerWorld serverWorld) {
 				if (!itemStack.contains(DataComponentTypes.BLOCK_ENTITY_DATA)) {
-					commandBlockExecutor.setTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
+					commandBlockExecutor.setTrackOutput(serverWorld.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
 					commandBlockBlockEntity.setAuto(this.auto);
 				}
 
@@ -185,7 +185,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 		return this.getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite());
 	}
 
-	private static void executeCommandChain(World world, BlockPos pos, Direction facing) {
+	private static void executeCommandChain(ServerWorld world, BlockPos pos, Direction facing) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 		GameRules gameRules = world.getGameRules();
 		int i = gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);

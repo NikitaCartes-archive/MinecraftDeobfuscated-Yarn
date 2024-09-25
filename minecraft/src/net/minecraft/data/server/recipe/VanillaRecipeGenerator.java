@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.data.DataOutput;
+import net.minecraft.item.BundleItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -2763,6 +2764,14 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 		this.createTrapdoorRecipe(Blocks.COPPER_TRAPDOOR, Ingredient.ofItem(Items.COPPER_INGOT))
 			.criterion(hasItem(Items.COPPER_INGOT), this.conditionsFromItem(Items.COPPER_INGOT))
 			.offerTo(this.exporter);
+		this.createShaped(RecipeCategory.TOOLS, Items.BUNDLE)
+			.input('-', Items.STRING)
+			.input('#', Items.LEATHER)
+			.pattern("-")
+			.pattern("#")
+			.criterion("has_string", this.conditionsFromItem(Items.STRING))
+			.offerTo(this.exporter);
+		this.generateDyedBundles();
 	}
 
 	public static Stream<VanillaRecipeGenerator.SmithingTemplate> streamSmithingTemplates() {
@@ -2798,6 +2807,17 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 				)
 				.group("shulker_box_dye")
 				.criterion("has_shulker_box", this.conditionsFromTag(ItemTags.SHULKER_BOXES))
+				.offerTo(this.exporter);
+		}
+	}
+
+	private void generateDyedBundles() {
+		Ingredient ingredient = this.ingredientFromTag(ItemTags.BUNDLES);
+
+		for (DyeColor dyeColor : DyeColor.values()) {
+			TransmuteRecipeJsonBuilder.create(RecipeCategory.TOOLS, ingredient, Ingredient.ofItem(DyeItem.byColor(dyeColor)), BundleItem.getBundle(dyeColor))
+				.group("bundle_dye")
+				.criterion("has_bundle", this.conditionsFromTag(ItemTags.BUNDLES))
 				.offerTo(this.exporter);
 		}
 	}

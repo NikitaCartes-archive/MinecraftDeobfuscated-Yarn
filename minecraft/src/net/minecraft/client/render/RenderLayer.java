@@ -990,7 +990,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getEyes(Identifier texture) {
-		return (RenderLayer)EYES.apply(texture, ADDITIVE_TRANSPARENCY);
+		return (RenderLayer)EYES.apply(texture, TRANSLUCENT_TRANSPARENCY);
 	}
 
 	public static RenderLayer getEntityTranslucentEmissiveNoOutline(Identifier texture) {

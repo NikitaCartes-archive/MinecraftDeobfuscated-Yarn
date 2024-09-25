@@ -7,6 +7,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -31,10 +32,10 @@ public class HoldingPatternPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		double d = this.pathTarget == null ? 0.0 : this.pathTarget.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
-			this.tickInRange();
+			this.tickInRange(world);
 		}
 	}
 
@@ -50,20 +51,18 @@ public class HoldingPatternPhase extends AbstractPhase {
 		return this.pathTarget;
 	}
 
-	private void tickInRange() {
+	private void tickInRange(ServerWorld world) {
 		if (this.path != null && this.path.isFinished()) {
-			BlockPos blockPos = this.dragon
-				.getWorld()
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin())));
+			BlockPos blockPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
 			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
 			if (this.dragon.getRandom().nextInt(i + 3) == 0) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.LANDING_APPROACH);
 				return;
 			}
 
-			PlayerEntity playerEntity = this.dragon
-				.getWorld()
-				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			PlayerEntity playerEntity = world.getClosestPlayer(
+				PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()
+			);
 			double d;
 			if (playerEntity != null) {
 				d = blockPos.getSquaredDistance(playerEntity.getPos()) / 512.0;

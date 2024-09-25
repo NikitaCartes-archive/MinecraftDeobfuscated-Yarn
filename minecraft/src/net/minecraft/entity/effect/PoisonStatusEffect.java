@@ -1,6 +1,7 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 
 class PoisonStatusEffect extends StatusEffect {
 	protected PoisonStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
@@ -8,9 +9,9 @@ class PoisonStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
 		if (entity.getHealth() > 1.0F) {
-			entity.damage(entity.getDamageSources().magic(), 1.0F);
+			entity.damage(world, entity.getDamageSources().magic(), 1.0F);
 		}
 
 		return true;

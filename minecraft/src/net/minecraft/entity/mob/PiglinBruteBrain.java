@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
-import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
@@ -28,6 +27,7 @@ import net.minecraft.entity.ai.brain.task.RangedApproachTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.GlobalPos;
 
 public class PiglinBruteBrain {
@@ -80,7 +80,7 @@ public class PiglinBruteBrain {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				ForgetAttackTargetTask.<MobEntity>create((Predicate<LivingEntity>)(entity -> !isTarget(piglinBrute, entity))),
+				ForgetAttackTargetTask.<MobEntity>create((world, target) -> !isTarget(world, piglinBrute, target)),
 				RangedApproachTask.create(1.0F),
 				MeleeAttackTask.create(20)
 			),
@@ -125,13 +125,13 @@ public class PiglinBruteBrain {
 		piglinBrute.setAttacking(brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
 	}
 
-	private static boolean isTarget(AbstractPiglinEntity piglin, LivingEntity entity) {
-		return getTarget(piglin).filter(target -> target == entity).isPresent();
+	private static boolean isTarget(ServerWorld world, AbstractPiglinEntity piglin, LivingEntity target) {
+		return getTarget(world, piglin).filter(targetx -> targetx == target).isPresent();
 	}
 
-	private static Optional<? extends LivingEntity> getTarget(AbstractPiglinEntity piglin) {
+	private static Optional<? extends LivingEntity> getTarget(ServerWorld world, AbstractPiglinEntity piglin) {
 		Optional<LivingEntity> optional = LookTargetUtil.getEntity(piglin, MemoryModuleType.ANGRY_AT);
-		if (optional.isPresent() && Sensor.testAttackableTargetPredicateIgnoreVisibility(piglin, (LivingEntity)optional.get())) {
+		if (optional.isPresent() && Sensor.testAttackableTargetPredicateIgnoreVisibility(world, piglin, (LivingEntity)optional.get())) {
 			return optional;
 		} else {
 			Optional<? extends LivingEntity> optional2 = piglin.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER);
@@ -139,9 +139,9 @@ public class PiglinBruteBrain {
 		}
 	}
 
-	protected static void tryRevenge(PiglinBruteEntity piglinBrute, LivingEntity target) {
+	protected static void tryRevenge(ServerWorld world, PiglinBruteEntity piglinBrute, LivingEntity target) {
 		if (!(target instanceof AbstractPiglinEntity)) {
-			PiglinBrain.tryRevenge(piglinBrute, target);
+			PiglinBrain.tryRevenge(world, piglinBrute, target);
 		}
 	}
 

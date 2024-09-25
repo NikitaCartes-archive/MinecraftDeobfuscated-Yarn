@@ -111,15 +111,15 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		if (!(target instanceof LivingEntity)) {
-			return false;
-		} else {
+	public boolean tryAttack(ServerWorld world, Entity target) {
+		if (target instanceof LivingEntity livingEntity) {
 			this.movementCooldownTicks = 10;
 			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK);
-			HoglinBrain.onAttacking(this, (LivingEntity)target);
-			return Hoglin.tryAttack(this, (LivingEntity)target);
+			HoglinBrain.onAttacking(this, livingEntity);
+			return Hoglin.tryAttack(world, this, livingEntity);
+		} else {
+			return false;
 		}
 	}
 
@@ -131,17 +131,13 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		boolean bl = super.damage(source, amount);
-		if (this.getWorld().isClient) {
-			return false;
-		} else {
-			if (bl && source.getAttacker() instanceof LivingEntity) {
-				HoglinBrain.onAttacked(this, (LivingEntity)source.getAttacker());
-			}
-
-			return bl;
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		boolean bl = super.damage(world, source, amount);
+		if (bl && source.getAttacker() instanceof LivingEntity livingEntity) {
+			HoglinBrain.onAttacked(world, this, livingEntity);
 		}
+
+		return bl;
 	}
 
 	@Override
@@ -160,10 +156,10 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("hoglinBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		HoglinBrain.refreshActivities(this);
 		if (this.canConvert()) {
@@ -256,7 +252,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	protected int getXpToDrop() {
+	protected int getXpToDrop(ServerWorld world) {
 		return this.experiencePoints;
 	}
 

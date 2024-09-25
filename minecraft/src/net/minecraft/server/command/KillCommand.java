@@ -22,7 +22,7 @@ public class KillCommand {
 
 	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets) {
 		for (Entity entity : targets) {
-			entity.kill();
+			entity.kill(source.getWorld());
 		}
 
 		if (targets.size() == 1) {

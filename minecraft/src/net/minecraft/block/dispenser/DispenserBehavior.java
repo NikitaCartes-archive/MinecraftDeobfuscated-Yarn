@@ -33,7 +33,6 @@ import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.ArmadilloEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.FluidModificationItem;
 import net.minecraft.item.HoneycombItem;
@@ -160,24 +159,24 @@ public interface DispenserBehavior {
 				}
 			}
 		);
-		DispenserBlock.registerBehavior(Items.OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.OAK));
-		DispenserBlock.registerBehavior(Items.SPRUCE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.SPRUCE));
-		DispenserBlock.registerBehavior(Items.BIRCH_BOAT, new BoatDispenserBehavior(BoatEntity.Type.BIRCH));
-		DispenserBlock.registerBehavior(Items.JUNGLE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.JUNGLE));
-		DispenserBlock.registerBehavior(Items.DARK_OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.DARK_OAK));
-		DispenserBlock.registerBehavior(Items.ACACIA_BOAT, new BoatDispenserBehavior(BoatEntity.Type.ACACIA));
-		DispenserBlock.registerBehavior(Items.CHERRY_BOAT, new BoatDispenserBehavior(BoatEntity.Type.CHERRY));
-		DispenserBlock.registerBehavior(Items.MANGROVE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.MANGROVE));
-		DispenserBlock.registerBehavior(Items.BAMBOO_RAFT, new BoatDispenserBehavior(BoatEntity.Type.BAMBOO));
-		DispenserBlock.registerBehavior(Items.OAK_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.OAK, true));
-		DispenserBlock.registerBehavior(Items.SPRUCE_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.SPRUCE, true));
-		DispenserBlock.registerBehavior(Items.BIRCH_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.BIRCH, true));
-		DispenserBlock.registerBehavior(Items.JUNGLE_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.JUNGLE, true));
-		DispenserBlock.registerBehavior(Items.DARK_OAK_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.DARK_OAK, true));
-		DispenserBlock.registerBehavior(Items.ACACIA_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.ACACIA, true));
-		DispenserBlock.registerBehavior(Items.CHERRY_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.CHERRY, true));
-		DispenserBlock.registerBehavior(Items.MANGROVE_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.MANGROVE, true));
-		DispenserBlock.registerBehavior(Items.BAMBOO_CHEST_RAFT, new BoatDispenserBehavior(BoatEntity.Type.BAMBOO, true));
+		DispenserBlock.registerBehavior(Items.OAK_BOAT, new BoatDispenserBehavior(EntityType.OAK_BOAT));
+		DispenserBlock.registerBehavior(Items.SPRUCE_BOAT, new BoatDispenserBehavior(EntityType.SPRUCE_BOAT));
+		DispenserBlock.registerBehavior(Items.BIRCH_BOAT, new BoatDispenserBehavior(EntityType.BIRCH_BOAT));
+		DispenserBlock.registerBehavior(Items.JUNGLE_BOAT, new BoatDispenserBehavior(EntityType.JUNGLE_BOAT));
+		DispenserBlock.registerBehavior(Items.DARK_OAK_BOAT, new BoatDispenserBehavior(EntityType.DARK_OAK_BOAT));
+		DispenserBlock.registerBehavior(Items.ACACIA_BOAT, new BoatDispenserBehavior(EntityType.ACACIA_BOAT));
+		DispenserBlock.registerBehavior(Items.CHERRY_BOAT, new BoatDispenserBehavior(EntityType.CHERRY_BOAT));
+		DispenserBlock.registerBehavior(Items.MANGROVE_BOAT, new BoatDispenserBehavior(EntityType.MANGROVE_BOAT));
+		DispenserBlock.registerBehavior(Items.BAMBOO_RAFT, new BoatDispenserBehavior(EntityType.BAMBOO_RAFT));
+		DispenserBlock.registerBehavior(Items.OAK_CHEST_BOAT, new BoatDispenserBehavior(EntityType.OAK_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.SPRUCE_CHEST_BOAT, new BoatDispenserBehavior(EntityType.SPRUCE_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.BIRCH_CHEST_BOAT, new BoatDispenserBehavior(EntityType.BIRCH_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.JUNGLE_CHEST_BOAT, new BoatDispenserBehavior(EntityType.JUNGLE_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.DARK_OAK_CHEST_BOAT, new BoatDispenserBehavior(EntityType.DARK_OAK_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.ACACIA_CHEST_BOAT, new BoatDispenserBehavior(EntityType.ACACIA_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.CHERRY_CHEST_BOAT, new BoatDispenserBehavior(EntityType.CHERRY_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.MANGROVE_CHEST_BOAT, new BoatDispenserBehavior(EntityType.MANGROVE_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.BAMBOO_CHEST_RAFT, new BoatDispenserBehavior(EntityType.BAMBOO_CHEST_RAFT));
 		DispenserBehavior dispenserBehavior = new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
 

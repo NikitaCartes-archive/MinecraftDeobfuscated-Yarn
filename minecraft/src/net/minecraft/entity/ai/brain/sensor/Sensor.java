@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -70,32 +70,32 @@ public abstract class Sensor<E extends LivingEntity> {
 
 	public abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
 
-	public static boolean testTargetPredicate(LivingEntity entity, LivingEntity target) {
+	public static boolean testTargetPredicate(ServerWorld world, LivingEntity entity, LivingEntity target) {
 		return entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)
-			? TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(entity, target)
-			: TARGET_PREDICATE.test(entity, target);
+			? TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(world, entity, target)
+			: TARGET_PREDICATE.test(world, entity, target);
 	}
 
-	public static boolean testAttackableTargetPredicate(LivingEntity entity, LivingEntity target) {
+	public static boolean testAttackableTargetPredicate(ServerWorld world, LivingEntity entity, LivingEntity target) {
 		return entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)
-			? ATTACKABLE_TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(entity, target)
-			: ATTACKABLE_TARGET_PREDICATE.test(entity, target);
+			? ATTACKABLE_TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(world, entity, target)
+			: ATTACKABLE_TARGET_PREDICATE.test(world, entity, target);
 	}
 
-	public static Predicate<LivingEntity> hasTargetBeenAttackableRecently(LivingEntity entity, int ticks) {
-		return hasPredicatePassedRecently(ticks, target -> testAttackableTargetPredicate(entity, target));
+	public static BiPredicate<ServerWorld, LivingEntity> hasTargetBeenAttackableRecently(LivingEntity entity, int ticks) {
+		return hasPredicatePassedRecently(ticks, (world, target) -> testAttackableTargetPredicate(world, entity, target));
 	}
 
-	public static boolean testAttackableTargetPredicateIgnoreVisibility(LivingEntity entity, LivingEntity target) {
+	public static boolean testAttackableTargetPredicateIgnoreVisibility(ServerWorld world, LivingEntity entity, LivingEntity target) {
 		return entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)
-			? ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY_OR_DISTANCE_SCALING.test(entity, target)
-			: ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY.test(entity, target);
+			? ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY_OR_DISTANCE_SCALING.test(world, entity, target)
+			: ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY.test(world, entity, target);
 	}
 
-	static <T> Predicate<T> hasPredicatePassedRecently(int times, Predicate<T> predicate) {
+	static <T, U> BiPredicate<T, U> hasPredicatePassedRecently(int times, BiPredicate<T, U> predicate) {
 		AtomicInteger atomicInteger = new AtomicInteger(0);
-		return target -> {
-			if (predicate.test(target)) {
+		return (world, target) -> {
+			if (predicate.test(world, target)) {
 				atomicInteger.set(times);
 				return true;
 			} else {

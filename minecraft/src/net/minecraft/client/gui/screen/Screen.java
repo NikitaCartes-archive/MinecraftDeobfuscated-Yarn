@@ -641,6 +641,14 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.setTooltip(tooltip.getLines(this.client), positioner, focused);
 	}
 
+	public TextRenderer getTextRenderer() {
+		return this.textRenderer;
+	}
+
+	public boolean shouldHideStatusEffectHud() {
+		return false;
+	}
+
 	@Override
 	public ScreenRect getNavigationFocus() {
 		return new ScreenRect(0, 0, this.width, this.height);

@@ -27,7 +27,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 			GlobalPos globalPos = (GlobalPos)optional.get();
 			BlockState blockState = world.getBlockState(globalPos.pos());
 			if (blockState.isOf(Blocks.COMPOSTER)) {
-				this.craftAndDropBread(entity);
+				this.craftAndDropBread(world, entity);
 				this.compostSeeds(world, entity, globalPos, blockState);
 			}
 		}
@@ -75,8 +75,8 @@ public class FarmerWorkTask extends VillagerWorkTask {
 		world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, newState != oldState ? 1 : 0);
 	}
 
-	private void craftAndDropBread(VillagerEntity entity) {
-		SimpleInventory simpleInventory = entity.getInventory();
+	private void craftAndDropBread(ServerWorld world, VillagerEntity villager) {
+		SimpleInventory simpleInventory = villager.getInventory();
 		if (simpleInventory.count(Items.BREAD) <= 36) {
 			int i = simpleInventory.count(Items.WHEAT);
 			int j = 3;
@@ -87,7 +87,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 				simpleInventory.removeItem(Items.WHEAT, m);
 				ItemStack itemStack = simpleInventory.addStack(new ItemStack(Items.BREAD, l));
 				if (!itemStack.isEmpty()) {
-					entity.dropStack(itemStack, 0.5F);
+					villager.dropStack(world, itemStack, 0.5F);
 				}
 			}
 		}

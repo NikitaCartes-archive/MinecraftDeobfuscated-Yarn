@@ -14,13 +14,13 @@ class WindChargedStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void onEntityRemoval(LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
-		if (reason == Entity.RemovalReason.KILLED && entity.getWorld() instanceof ServerWorld serverWorld) {
+	public void onEntityRemoval(ServerWorld world, LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
+		if (reason == Entity.RemovalReason.KILLED) {
 			double d = entity.getX();
 			double e = entity.getY() + (double)(entity.getHeight() / 2.0F);
 			double f = entity.getZ();
 			float g = 3.0F + entity.getRandom().nextFloat() * 2.0F;
-			serverWorld.createExplosion(
+			world.createExplosion(
 				entity,
 				null,
 				AbstractWindChargeEntity.EXPLOSION_BEHAVIOR,

@@ -13,22 +13,19 @@ public interface Hoglin {
 
 	int getMovementCooldownTicks();
 
-	static boolean tryAttack(LivingEntity attacker, LivingEntity target) {
+	static boolean tryAttack(ServerWorld world, LivingEntity attacker, LivingEntity target) {
 		float f = (float)attacker.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
 		float g;
 		if (!attacker.isBaby() && (int)f > 0) {
-			g = f / 2.0F + (float)attacker.getWorld().random.nextInt((int)f);
+			g = f / 2.0F + (float)world.random.nextInt((int)f);
 		} else {
 			g = f;
 		}
 
 		DamageSource damageSource = attacker.getDamageSources().mobAttack(attacker);
-		boolean bl = target.damage(damageSource, g);
+		boolean bl = target.damage(world, damageSource, g);
 		if (bl) {
-			if (attacker.getWorld() instanceof ServerWorld serverWorld) {
-				EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
-			}
-
+			EnchantmentHelper.onTargetDamaged(world, target, damageSource);
 			if (!attacker.isBaby()) {
 				knockback(attacker, target);
 			}

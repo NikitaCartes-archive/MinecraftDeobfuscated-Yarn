@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.List;
-import java.util.function.Predicate;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -22,6 +21,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
@@ -30,7 +30,7 @@ public class PufferfishEntity extends FishEntity {
 	private static final TrackedData<Integer> PUFF_STATE = DataTracker.registerData(PufferfishEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	int inflateTicks;
 	int deflateTicks;
-	private static final Predicate<LivingEntity> BLOW_UP_FILTER = entity -> {
+	private static final TargetPredicate.EntityPredicate BLOW_UP_FILTER = (entity, world) -> {
 		if (entity instanceof PlayerEntity playerEntity && playerEntity.isCreative()) {
 			return false;
 		}
@@ -128,20 +128,20 @@ public class PufferfishEntity extends FishEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (this.isAlive() && this.getPuffState() > 0) {
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.isAlive() && this.getPuffState() > 0) {
 			for (MobEntity mobEntity : this.getWorld()
-				.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), entity -> BLOW_UP_TARGET_PREDICATE.test(this, entity))) {
+				.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), mobEntityx -> BLOW_UP_TARGET_PREDICATE.test(serverWorld, this, mobEntityx))) {
 				if (mobEntity.isAlive()) {
-					this.sting(mobEntity);
+					this.sting(serverWorld, mobEntity);
 				}
 			}
 		}
 	}
 
-	private void sting(MobEntity mob) {
+	private void sting(ServerWorld world, MobEntity target) {
 		int i = this.getPuffState();
-		if (mob.damage(this.getDamageSources().mobAttack(this), (float)(1 + i))) {
-			mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
+		if (target.damage(world, this.getDamageSources().mobAttack(this), (float)(1 + i))) {
+			target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
 			this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0F, 1.0F);
 		}
 	}
@@ -149,10 +149,11 @@ public class PufferfishEntity extends FishEntity {
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
 		int i = this.getPuffState();
-		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(this.getDamageSources().mobAttack(this), (float)(1 + i))) {
+		if (player instanceof ServerPlayerEntity serverPlayerEntity
+			&& i > 0
+			&& player.damage(serverPlayerEntity.getServerWorld(), this.getDamageSources().mobAttack(this), (float)(1 + i))) {
 			if (!this.isSilent()) {
-				((ServerPlayerEntity)player)
-					.networkHandler
+				serverPlayerEntity.networkHandler
 					.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PUFFERFISH_STING, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			}
 
@@ -210,7 +211,7 @@ public class PufferfishEntity extends FishEntity {
 				.getEntitiesByClass(
 					LivingEntity.class,
 					this.pufferfish.getBoundingBox().expand(2.0),
-					livingEntity -> PufferfishEntity.BLOW_UP_TARGET_PREDICATE.test(this.pufferfish, livingEntity)
+					livingEntity -> PufferfishEntity.BLOW_UP_TARGET_PREDICATE.test(getServerWorld(this.pufferfish), this.pufferfish, livingEntity)
 				);
 			return !list.isEmpty();
 		}

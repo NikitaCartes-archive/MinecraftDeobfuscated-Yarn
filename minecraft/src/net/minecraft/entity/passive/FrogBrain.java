@@ -99,7 +99,10 @@ public class FrogBrain {
 				Pair.of(0, new BreedTask(EntityType.FROG)),
 				Pair.of(1, new TemptTask(frog -> 1.25F)),
 				Pair.of(
-					2, UpdateAttackTargetTask.create(FrogBrain::isNotBreeding, frog -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))
+					2,
+					UpdateAttackTargetTask.create(
+						(world, frog) -> isNotBreeding(frog), (world, frog) -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE)
+					)
 				),
 				Pair.of(3, WalkTowardsLandTask.create(6, 1.0F)),
 				Pair.of(
@@ -128,7 +131,10 @@ public class FrogBrain {
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new TemptTask(frog -> 1.25F)),
 				Pair.of(
-					2, UpdateAttackTargetTask.create(FrogBrain::isNotBreeding, frog -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))
+					2,
+					UpdateAttackTargetTask.create(
+						(world, frog) -> isNotBreeding(frog), (world, frog) -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE)
+					)
 				),
 				Pair.of(3, WalkTowardsLandTask.create(8, 1.5F)),
 				Pair.of(
@@ -159,7 +165,10 @@ public class FrogBrain {
 			ImmutableList.of(
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(
-					1, UpdateAttackTargetTask.create(FrogBrain::isNotBreeding, frog -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))
+					1,
+					UpdateAttackTargetTask.create(
+						(world, frog) -> isNotBreeding(frog), (world, frog) -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE)
+					)
 				),
 				Pair.of(2, WalkTowardsWaterTask.create(8, 1.0F)),
 				Pair.of(3, LayFrogSpawnTask.create(Blocks.FROGSPAWN)),

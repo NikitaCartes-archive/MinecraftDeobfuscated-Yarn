@@ -129,16 +129,16 @@ public class ArmadilloEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("armadilloBrain");
-		((Brain<ArmadilloEntity>)this.brain).tick((ServerWorld)this.getWorld(), this);
+		((Brain<ArmadilloEntity>)this.brain).tick(world, this);
 		profiler.pop();
 		profiler.push("armadilloActivityUpdate");
 		ArmadilloBrain.updateActivities(this);
 		profiler.pop();
 		if (this.isAlive() && !this.isBaby() && --this.nextScuteShedCooldown <= 0) {
-			if (this.forEachGiftedItem(LootTables.ARMADILLO_SHED_GAMEPLAY, this::dropStack)) {
+			if (this.forEachGiftedItem(world, LootTables.ARMADILLO_SHED_GAMEPLAY, this::dropStack)) {
 				this.playSound(SoundEvents.ENTITY_ARMADILLO_SCUTE_DROP, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				this.emitGameEvent(GameEvent.ENTITY_PLACE);
 			}
@@ -146,7 +146,7 @@ public class ArmadilloEntity extends AnimalEntity {
 			this.nextScuteShedCooldown = this.getNextScuteShedCooldown();
 		}
 
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	private int getNextScuteShedCooldown() {
@@ -274,17 +274,17 @@ public class ArmadilloEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		if (this.isNotIdle()) {
 			amount = (amount - 1.0F) / 2.0F;
 		}
 
-		return super.damage(source, amount);
+		return super.damage(world, source, amount);
 	}
 
 	@Override
-	protected void applyDamage(DamageSource source, float amount) {
-		super.applyDamage(source, amount);
+	protected void applyDamage(ServerWorld world, DamageSource source, float amount) {
+		super.applyDamage(world, source, amount);
 		if (!this.isAiDisabled() && !this.isDead()) {
 			if (source.getAttacker() instanceof LivingEntity) {
 				this.getBrain().remember(MemoryModuleType.DANGER_DETECTED_RECENTLY, true, 80L);
@@ -312,9 +312,12 @@ public class ArmadilloEntity extends AnimalEntity {
 		if (this.isBaby()) {
 			return false;
 		} else {
-			this.dropStack(new ItemStack(Items.ARMADILLO_SCUTE));
-			this.emitGameEvent(GameEvent.ENTITY_INTERACT);
-			this.playSoundIfNotSilent(SoundEvents.ENTITY_ARMADILLO_BRUSH);
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				this.dropStack(serverWorld, new ItemStack(Items.ARMADILLO_SCUTE));
+				this.emitGameEvent(GameEvent.ENTITY_INTERACT);
+				this.playSoundIfNotSilent(SoundEvents.ENTITY_ARMADILLO_BRUSH);
+			}
+
 			return true;
 		}
 	}

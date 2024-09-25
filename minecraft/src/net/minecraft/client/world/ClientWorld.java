@@ -78,7 +78,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.EntityList;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
@@ -129,6 +128,7 @@ public class ClientWorld extends World {
 	private int simulationDistance;
 	private final PendingUpdateManager pendingUpdateManager = new PendingUpdateManager();
 	private final int seaLevel;
+	private boolean shouldTickTimeOfDay;
 	private static final Set<Item> BLOCK_MARKER_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
 
 	public void handlePlayerActionResponse(int sequence) {
@@ -236,25 +236,16 @@ public class ClientWorld extends World {
 	}
 
 	private void tickTime() {
-		this.setTime(this.properties.getTime() + 1L);
-		if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-			this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
+		this.clientWorldProperties.setTime(this.clientWorldProperties.getTime() + 1L);
+		if (this.shouldTickTimeOfDay) {
+			this.clientWorldProperties.setTimeOfDay(this.clientWorldProperties.getTimeOfDay() + 1L);
 		}
 	}
 
-	public void setTime(long time) {
+	public void setTime(long time, long timeOfDay, boolean shouldTickTimeOfDay) {
 		this.clientWorldProperties.setTime(time);
-	}
-
-	public void setTimeOfDay(long timeOfDay) {
-		if (timeOfDay < 0L) {
-			timeOfDay = -timeOfDay;
-			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
-		} else {
-			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(true, null);
-		}
-
 		this.clientWorldProperties.setTimeOfDay(timeOfDay);
+		this.shouldTickTimeOfDay = shouldTickTimeOfDay;
 	}
 
 	public Iterable<Entity> getEntities() {
@@ -915,7 +906,6 @@ public class ClientWorld extends World {
 	@Environment(EnvType.CLIENT)
 	public static class Properties implements MutableWorldProperties {
 		private final boolean hardcore;
-		private final GameRules gameRules;
 		private final boolean flatWorld;
 		private BlockPos spawnPos;
 		private float spawnAngle;
@@ -925,11 +915,10 @@ public class ClientWorld extends World {
 		private Difficulty difficulty;
 		private boolean difficultyLocked;
 
-		public Properties(FeatureSet enabledFeatures, Difficulty difficulty, boolean hardcore, boolean flatWorld) {
+		public Properties(Difficulty difficulty, boolean hardcore, boolean flatWorld) {
 			this.difficulty = difficulty;
 			this.hardcore = hardcore;
 			this.flatWorld = flatWorld;
-			this.gameRules = new GameRules(enabledFeatures);
 		}
 
 		@Override
@@ -984,11 +973,6 @@ public class ClientWorld extends World {
 		@Override
 		public boolean isHardcore() {
 			return this.hardcore;
-		}
-
-		@Override
-		public GameRules getGameRules() {
-			return this.gameRules;
 		}
 
 		@Override

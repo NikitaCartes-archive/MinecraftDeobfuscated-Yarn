@@ -89,7 +89,7 @@ public class FrogEatEntityTask extends MultiTickTask<FrogEntity> {
 		if (optional.isPresent()) {
 			Entity entity = (Entity)optional.get();
 			if (entity.isAlive()) {
-				frog.tryAttack(entity);
+				frog.tryAttack(world, entity);
 				if (!entity.isAlive()) {
 					entity.remove(Entity.RemovalReason.KILLED);
 				}

@@ -9,11 +9,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 class WeavingStatusEffect extends StatusEffect {
@@ -25,13 +25,13 @@ class WeavingStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void onEntityRemoval(LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
-		if (reason == Entity.RemovalReason.KILLED && (entity instanceof PlayerEntity || entity.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))) {
-			this.tryPlaceCobweb(entity.getWorld(), entity.getRandom(), entity.getBlockPos());
+	public void onEntityRemoval(ServerWorld world, LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
+		if (reason == Entity.RemovalReason.KILLED && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))) {
+			this.tryPlaceCobweb(world, entity.getRandom(), entity.getBlockPos());
 		}
 	}
 
-	private void tryPlaceCobweb(World world, Random random, BlockPos pos) {
+	private void tryPlaceCobweb(ServerWorld world, Random random, BlockPos pos) {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		int i = this.cobwebChanceFunction.applyAsInt(random);
 

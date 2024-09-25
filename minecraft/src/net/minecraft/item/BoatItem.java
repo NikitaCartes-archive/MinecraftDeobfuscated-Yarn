@@ -1,11 +1,12 @@
 package net.minecraft.item;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.ChestBoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
@@ -19,13 +20,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class BoatItem extends Item {
-	private final BoatEntity.Type type;
-	private final boolean chest;
+	private final EntityType<? extends AbstractBoatEntity> boatEntityType;
 
-	public BoatItem(boolean chest, BoatEntity.Type type, Item.Settings settings) {
+	public BoatItem(EntityType<? extends AbstractBoatEntity> boatEntityType, Item.Settings settings) {
 		super(settings);
-		this.chest = chest;
-		this.type = type;
+		this.boatEntityType = boatEntityType;
 	}
 
 	@Override
@@ -50,20 +49,23 @@ public class BoatItem extends Item {
 			}
 
 			if (hitResult.getType() == HitResult.Type.BLOCK) {
-				BoatEntity boatEntity = this.createEntity(world, hitResult, itemStack, user);
-				boatEntity.setVariant(this.type);
-				boatEntity.setYaw(user.getYaw());
-				if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox())) {
+				AbstractBoatEntity abstractBoatEntity = this.createEntity(world, hitResult, itemStack, user);
+				if (abstractBoatEntity == null) {
 					return ActionResult.FAIL;
 				} else {
-					if (!world.isClient) {
-						world.spawnEntity(boatEntity);
-						world.emitGameEvent(user, GameEvent.ENTITY_PLACE, hitResult.getPos());
-						itemStack.decrementUnlessCreative(1, user);
-					}
+					abstractBoatEntity.setYaw(user.getYaw());
+					if (!world.isSpaceEmpty(abstractBoatEntity, abstractBoatEntity.getBoundingBox())) {
+						return ActionResult.FAIL;
+					} else {
+						if (!world.isClient) {
+							world.spawnEntity(abstractBoatEntity);
+							world.emitGameEvent(user, GameEvent.ENTITY_PLACE, hitResult.getPos());
+							itemStack.decrementUnlessCreative(1, user);
+						}
 
-					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					return ActionResult.SUCCESS;
+						user.incrementStat(Stats.USED.getOrCreateStat(this));
+						return ActionResult.SUCCESS;
+					}
 				}
 			} else {
 				return ActionResult.PASS;
@@ -71,13 +73,17 @@ public class BoatItem extends Item {
 		}
 	}
 
-	private BoatEntity createEntity(World world, HitResult hitResult, ItemStack stack, PlayerEntity player) {
-		Vec3d vec3d = hitResult.getPos();
-		BoatEntity boatEntity = (BoatEntity)(this.chest ? new ChestBoatEntity(world, vec3d.x, vec3d.y, vec3d.z) : new BoatEntity(world, vec3d.x, vec3d.y, vec3d.z));
-		if (world instanceof ServerWorld serverWorld) {
-			EntityType.copier(serverWorld, stack, player).accept(boatEntity);
+	@Nullable
+	private AbstractBoatEntity createEntity(World world, HitResult hitResult, ItemStack stack, PlayerEntity player) {
+		AbstractBoatEntity abstractBoatEntity = this.boatEntityType.create(world, SpawnReason.SPAWN_ITEM_USE);
+		if (abstractBoatEntity != null) {
+			Vec3d vec3d = hitResult.getPos();
+			abstractBoatEntity.initPosition(vec3d.x, vec3d.y, vec3d.z);
+			if (world instanceof ServerWorld serverWorld) {
+				EntityType.copier(serverWorld, stack, player).accept(abstractBoatEntity);
+			}
 		}
 
-		return boatEntity;
+		return abstractBoatEntity;
 	}
 }

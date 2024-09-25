@@ -6,14 +6,15 @@ import java.util.UUID;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.FrogEntity;
+import net.minecraft.server.world.ServerWorld;
 
 public class FrogAttackablesSensor extends NearestVisibleLivingEntitySensor {
 	public static final float RANGE = 10.0F;
 
 	@Override
-	protected boolean matches(LivingEntity entity, LivingEntity target) {
+	protected boolean matches(ServerWorld world, LivingEntity entity, LivingEntity target) {
 		return !entity.getBrain().hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)
-				&& Sensor.testAttackableTargetPredicate(entity, target)
+				&& Sensor.testAttackableTargetPredicate(world, entity, target)
 				&& FrogEntity.isValidFrogFood(target)
 				&& !this.isTargetUnreachable(entity, target)
 			? target.isInRange(entity, 10.0)

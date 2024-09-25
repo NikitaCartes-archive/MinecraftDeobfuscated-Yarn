@@ -1,6 +1,7 @@
 package net.minecraft.entity.vehicle;
 
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -49,7 +50,7 @@ public abstract class MinecartController {
 		return this.minecart.getWorld();
 	}
 
-	public abstract void moveOnRail();
+	public abstract void moveOnRail(ServerWorld world);
 
 	public abstract double moveAlongTrack(BlockPos blockPos, RailShape railShape, double remainingMovement);
 
@@ -115,7 +116,7 @@ public abstract class MinecartController {
 		return velocity;
 	}
 
-	public abstract double getMaxSpeed();
+	public abstract double getMaxSpeed(ServerWorld world);
 
 	public abstract double getSpeedRetention();
 }

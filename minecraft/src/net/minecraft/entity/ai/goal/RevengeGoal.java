@@ -34,7 +34,7 @@ public class RevengeGoal extends TrackTargetGoal {
 		int i = this.mob.getLastAttackedTime();
 		LivingEntity livingEntity = this.mob.getAttacker();
 		if (i != this.lastAttackedTime && livingEntity != null) {
-			if (livingEntity.getType() == EntityType.PLAYER && this.mob.getWorld().getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
+			if (livingEntity.getType() == EntityType.PLAYER && getServerWorld(this.mob).getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
 				return false;
 			} else {
 				for (Class<?> class_ : this.noRevengeTypes) {

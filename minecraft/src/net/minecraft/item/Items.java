@@ -30,7 +30,6 @@ import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.item.equipment.EquipmentModels;
@@ -43,7 +42,6 @@ import net.minecraft.registry.tag.BannerPatternTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -998,55 +996,45 @@ public class Items {
 			)
 			.repairable(PHANTOM_MEMBRANE)
 	);
-	public static final Item OAK_BOAT = register("oak_boat", settings -> new BoatItem(false, BoatEntity.Type.OAK, settings), new Item.Settings().maxCount(1));
+	public static final Item OAK_BOAT = register("oak_boat", settings -> new BoatItem(EntityType.OAK_BOAT, settings), new Item.Settings().maxCount(1));
 	public static final Item OAK_CHEST_BOAT = register(
-		"oak_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.OAK, settings), new Item.Settings().maxCount(1)
+		"oak_chest_boat", settings -> new BoatItem(EntityType.OAK_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
-	public static final Item SPRUCE_BOAT = register(
-		"spruce_boat", settings -> new BoatItem(false, BoatEntity.Type.SPRUCE, settings), new Item.Settings().maxCount(1)
-	);
+	public static final Item SPRUCE_BOAT = register("spruce_boat", settings -> new BoatItem(EntityType.SPRUCE_BOAT, settings), new Item.Settings().maxCount(1));
 	public static final Item SPRUCE_CHEST_BOAT = register(
-		"spruce_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.SPRUCE, settings), new Item.Settings().maxCount(1)
+		"spruce_chest_boat", settings -> new BoatItem(EntityType.SPRUCE_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
-	public static final Item BIRCH_BOAT = register("birch_boat", settings -> new BoatItem(false, BoatEntity.Type.BIRCH, settings), new Item.Settings().maxCount(1));
+	public static final Item BIRCH_BOAT = register("birch_boat", settings -> new BoatItem(EntityType.BIRCH_BOAT, settings), new Item.Settings().maxCount(1));
 	public static final Item BIRCH_CHEST_BOAT = register(
-		"birch_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.BIRCH, settings), new Item.Settings().maxCount(1)
+		"birch_chest_boat", settings -> new BoatItem(EntityType.BIRCH_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
-	public static final Item JUNGLE_BOAT = register(
-		"jungle_boat", settings -> new BoatItem(false, BoatEntity.Type.JUNGLE, settings), new Item.Settings().maxCount(1)
-	);
+	public static final Item JUNGLE_BOAT = register("jungle_boat", settings -> new BoatItem(EntityType.JUNGLE_BOAT, settings), new Item.Settings().maxCount(1));
 	public static final Item JUNGLE_CHEST_BOAT = register(
-		"jungle_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.JUNGLE, settings), new Item.Settings().maxCount(1)
+		"jungle_chest_boat", settings -> new BoatItem(EntityType.JUNGLE_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
-	public static final Item ACACIA_BOAT = register(
-		"acacia_boat", settings -> new BoatItem(false, BoatEntity.Type.ACACIA, settings), new Item.Settings().maxCount(1)
-	);
+	public static final Item ACACIA_BOAT = register("acacia_boat", settings -> new BoatItem(EntityType.ACACIA_BOAT, settings), new Item.Settings().maxCount(1));
 	public static final Item ACACIA_CHEST_BOAT = register(
-		"acacia_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.ACACIA, settings), new Item.Settings().maxCount(1)
+		"acacia_chest_boat", settings -> new BoatItem(EntityType.ACACIA_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
-	public static final Item CHERRY_BOAT = register(
-		"cherry_boat", settings -> new BoatItem(false, BoatEntity.Type.CHERRY, settings), new Item.Settings().maxCount(1)
-	);
+	public static final Item CHERRY_BOAT = register("cherry_boat", settings -> new BoatItem(EntityType.CHERRY_BOAT, settings), new Item.Settings().maxCount(1));
 	public static final Item CHERRY_CHEST_BOAT = register(
-		"cherry_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.CHERRY, settings), new Item.Settings().maxCount(1)
+		"cherry_chest_boat", settings -> new BoatItem(EntityType.CHERRY_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item DARK_OAK_BOAT = register(
-		"dark_oak_boat", settings -> new BoatItem(false, BoatEntity.Type.DARK_OAK, settings), new Item.Settings().maxCount(1)
+		"dark_oak_boat", settings -> new BoatItem(EntityType.DARK_OAK_BOAT, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item DARK_OAK_CHEST_BOAT = register(
-		"dark_oak_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.DARK_OAK, settings), new Item.Settings().maxCount(1)
+		"dark_oak_chest_boat", settings -> new BoatItem(EntityType.DARK_OAK_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item MANGROVE_BOAT = register(
-		"mangrove_boat", settings -> new BoatItem(false, BoatEntity.Type.MANGROVE, settings), new Item.Settings().maxCount(1)
+		"mangrove_boat", settings -> new BoatItem(EntityType.MANGROVE_BOAT, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item MANGROVE_CHEST_BOAT = register(
-		"mangrove_chest_boat", settings -> new BoatItem(true, BoatEntity.Type.MANGROVE, settings), new Item.Settings().maxCount(1)
+		"mangrove_chest_boat", settings -> new BoatItem(EntityType.MANGROVE_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
 	);
-	public static final Item BAMBOO_RAFT = register(
-		"bamboo_raft", settings -> new BoatItem(false, BoatEntity.Type.BAMBOO, settings), new Item.Settings().maxCount(1)
-	);
+	public static final Item BAMBOO_RAFT = register("bamboo_raft", settings -> new BoatItem(EntityType.BAMBOO_RAFT, settings), new Item.Settings().maxCount(1));
 	public static final Item BAMBOO_CHEST_RAFT = register(
-		"bamboo_chest_raft", settings -> new BoatItem(true, BoatEntity.Type.BAMBOO, settings), new Item.Settings().maxCount(1)
+		"bamboo_chest_raft", settings -> new BoatItem(EntityType.BAMBOO_CHEST_RAFT, settings), new Item.Settings().maxCount(1)
 	);
 	public static final Item STRUCTURE_BLOCK = register(Blocks.STRUCTURE_BLOCK, OperatorOnlyBlockItem::new, new Item.Settings().rarity(Rarity.EPIC));
 	public static final Item JIGSAW = register(Blocks.JIGSAW, OperatorOnlyBlockItem::new, new Item.Settings().rarity(Rarity.EPIC));
@@ -1306,87 +1294,87 @@ public class Items {
 	public static final Item BUNDLE = register(
 		"bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("bundle_open_front"), Identifier.ofVanilla("bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item WHITE_BUNDLE = register(
 		"white_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("white_bundle_open_front"), Identifier.ofVanilla("white_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item ORANGE_BUNDLE = register(
 		"orange_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("orange_bundle_open_front"), Identifier.ofVanilla("orange_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item MAGENTA_BUNDLE = register(
 		"magenta_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("magenta_bundle_open_front"), Identifier.ofVanilla("magenta_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item LIGHT_BLUE_BUNDLE = register(
 		"light_blue_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("light_blue_bundle_open_front"), Identifier.ofVanilla("light_blue_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item YELLOW_BUNDLE = register(
 		"yellow_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("yellow_bundle_open_front"), Identifier.ofVanilla("yellow_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item LIME_BUNDLE = register(
 		"lime_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("lime_bundle_open_front"), Identifier.ofVanilla("lime_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item PINK_BUNDLE = register(
 		"pink_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("pink_bundle_open_front"), Identifier.ofVanilla("pink_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item GRAY_BUNDLE = register(
 		"gray_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("gray_bundle_open_front"), Identifier.ofVanilla("gray_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item LIGHT_GRAY_BUNDLE = register(
 		"light_gray_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("light_gray_bundle_open_front"), Identifier.ofVanilla("light_gray_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item CYAN_BUNDLE = register(
 		"cyan_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("cyan_bundle_open_front"), Identifier.ofVanilla("cyan_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item PURPLE_BUNDLE = register(
 		"purple_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("purple_bundle_open_front"), Identifier.ofVanilla("purple_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item BLUE_BUNDLE = register(
 		"blue_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("blue_bundle_open_front"), Identifier.ofVanilla("blue_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item BROWN_BUNDLE = register(
 		"brown_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("brown_bundle_open_front"), Identifier.ofVanilla("brown_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item GREEN_BUNDLE = register(
 		"green_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("green_bundle_open_front"), Identifier.ofVanilla("green_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item RED_BUNDLE = register(
 		"red_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("red_bundle_open_front"), Identifier.ofVanilla("red_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item BLACK_BUNDLE = register(
 		"black_bundle",
 		settings -> new BundleItem(Identifier.ofVanilla("black_bundle_open_front"), Identifier.ofVanilla("black_bundle_open_back"), settings),
-		new Item.Settings().maxCount(1).requires(FeatureFlags.BUNDLE).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
+		new Item.Settings().maxCount(1).component(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT)
 	);
 	public static final Item FISHING_ROD = register("fishing_rod", FishingRodItem::new, new Item.Settings().maxDamage(64).enchantable(1));
 	public static final Item CLOCK = register("clock");
@@ -1708,16 +1696,24 @@ public class Items {
 	public static final Item RABBIT_HIDE = register("rabbit_hide");
 	public static final Item ARMOR_STAND = register("armor_stand", ArmorStandItem::new, new Item.Settings().maxCount(16));
 	public static final Item IRON_HORSE_ARMOR = register(
-		"iron_horse_armor", settings -> new AnimalArmorItem(ArmorMaterials.IRON, AnimalArmorItem.Type.EQUESTRIAN, settings), new Item.Settings().maxCount(1)
+		"iron_horse_armor",
+		settings -> new AnimalArmorItem(ArmorMaterials.IRON, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		new Item.Settings().maxCount(1)
 	);
 	public static final Item GOLDEN_HORSE_ARMOR = register(
-		"golden_horse_armor", settings -> new AnimalArmorItem(ArmorMaterials.GOLD, AnimalArmorItem.Type.EQUESTRIAN, settings), new Item.Settings().maxCount(1)
+		"golden_horse_armor",
+		settings -> new AnimalArmorItem(ArmorMaterials.GOLD, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		new Item.Settings().maxCount(1)
 	);
 	public static final Item DIAMOND_HORSE_ARMOR = register(
-		"diamond_horse_armor", settings -> new AnimalArmorItem(ArmorMaterials.DIAMOND, AnimalArmorItem.Type.EQUESTRIAN, settings), new Item.Settings().maxCount(1)
+		"diamond_horse_armor",
+		settings -> new AnimalArmorItem(ArmorMaterials.DIAMOND, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		new Item.Settings().maxCount(1)
 	);
 	public static final Item LEATHER_HORSE_ARMOR = register(
-		"leather_horse_armor", settings -> new AnimalArmorItem(ArmorMaterials.LEATHER, AnimalArmorItem.Type.EQUESTRIAN, settings), new Item.Settings().maxCount(1)
+		"leather_horse_armor",
+		settings -> new AnimalArmorItem(ArmorMaterials.LEATHER, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		new Item.Settings().maxCount(1)
 	);
 	public static final Item LEAD = register("lead", LeadItem::new);
 	public static final Item NAME_TAG = register("name_tag", NameTagItem::new);

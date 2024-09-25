@@ -20,6 +20,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
@@ -123,7 +124,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		this.eyeOffsetCooldown--;
 		if (this.eyeOffsetCooldown <= 0) {
 			this.eyeOffsetCooldown = 100;
@@ -137,7 +138,7 @@ public class BlazeEntity extends HostileEntity {
 			this.velocityDirty = true;
 		}
 
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -213,7 +214,7 @@ public class BlazeEntity extends HostileEntity {
 
 					if (this.fireballCooldown <= 0) {
 						this.fireballCooldown = 20;
-						this.blaze.tryAttack(livingEntity);
+						this.blaze.tryAttack(getServerWorld(this.blaze), livingEntity);
 					}
 
 					this.blaze.getMoveControl().moveTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), 1.0);

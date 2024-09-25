@@ -106,19 +106,19 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	}
 
 	@Override
-	public boolean canGather(ItemStack stack) {
-		return stack.isOf(Items.GOLDEN_AXE) ? super.canGather(stack) : false;
+	public boolean canGather(ServerWorld world, ItemStack stack) {
+		return stack.isOf(Items.GOLDEN_AXE) ? super.canGather(world, stack) : false;
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("piglinBruteBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		PiglinBruteBrain.tick(this);
 		PiglinBruteBrain.playSoundRandomly(this);
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -127,17 +127,13 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		boolean bl = super.damage(source, amount);
-		if (this.getWorld().isClient) {
-			return false;
-		} else {
-			if (bl && source.getAttacker() instanceof LivingEntity) {
-				PiglinBruteBrain.tryRevenge(this, (LivingEntity)source.getAttacker());
-			}
-
-			return bl;
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		boolean bl = super.damage(world, source, amount);
+		if (bl && source.getAttacker() instanceof LivingEntity livingEntity) {
+			PiglinBruteBrain.tryRevenge(world, this, livingEntity);
 		}
+
+		return bl;
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -48,7 +49,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		this.ticks++;
 		if (this.ticks >= 200) {
 			if (this.timesRun >= 4) {
@@ -65,7 +66,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			double h = g;
 			BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
 
-			while (this.dragon.getWorld().isAir(mutable)) {
+			while (world.isAir(mutable)) {
 				if (--h < 0.0) {
 					h = g;
 					break;
@@ -75,13 +76,13 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			}
 
 			h = (double)(MathHelper.floor(h) + 1);
-			this.dragonBreathEntity = new AreaEffectCloudEntity(this.dragon.getWorld(), d, h, e);
+			this.dragonBreathEntity = new AreaEffectCloudEntity(world, d, h, e);
 			this.dragonBreathEntity.setOwner(this.dragon);
 			this.dragonBreathEntity.setRadius(5.0F);
 			this.dragonBreathEntity.setDuration(200);
 			this.dragonBreathEntity.setParticleType(ParticleTypes.DRAGON_BREATH);
 			this.dragonBreathEntity.addEffect(new StatusEffectInstance(StatusEffects.INSTANT_DAMAGE));
-			this.dragon.getWorld().spawnEntity(this.dragonBreathEntity);
+			world.spawnEntity(this.dragonBreathEntity);
 		}
 	}
 

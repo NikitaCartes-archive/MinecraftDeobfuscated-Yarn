@@ -408,10 +408,10 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	protected void dropInventory() {
-		super.dropInventory();
+	protected void dropInventory(ServerWorld world) {
+		super.dropInventory(world);
 		if (this.isSaddled()) {
-			this.dropItem(Items.SADDLE);
+			this.dropItem(world, Items.SADDLE);
 		}
 	}
 

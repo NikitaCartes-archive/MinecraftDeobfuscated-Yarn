@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 
 public class TrackIronGolemTargetGoal extends TrackTargetGoal {
@@ -25,8 +26,9 @@ public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 	@Override
 	public boolean canStart() {
 		Box box = this.golem.getBoundingBox().expand(10.0, 8.0, 10.0);
-		List<? extends LivingEntity> list = this.golem.getWorld().getTargets(VillagerEntity.class, this.targetPredicate, this.golem, box);
-		List<PlayerEntity> list2 = this.golem.getWorld().getPlayers(this.targetPredicate, this.golem, box);
+		ServerWorld serverWorld = getServerWorld(this.golem);
+		List<? extends LivingEntity> list = serverWorld.getTargets(VillagerEntity.class, this.targetPredicate, this.golem, box);
+		List<PlayerEntity> list2 = serverWorld.getPlayers(this.targetPredicate, this.golem, box);
 
 		for (LivingEntity livingEntity : list) {
 			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;

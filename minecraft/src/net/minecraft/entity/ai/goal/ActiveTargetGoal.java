@@ -1,13 +1,13 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 
 /**
@@ -30,8 +30,8 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		this(mob, targetClass, 10, checkVisibility, false, null);
 	}
 
-	public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, Predicate<LivingEntity> targetPredicate) {
-		this(mob, targetClass, 10, checkVisibility, false, targetPredicate);
+	public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, TargetPredicate.EntityPredicate predicate) {
+		this(mob, targetClass, 10, checkVisibility, false, predicate);
 	}
 
 	public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, boolean checkCanNavigate) {
@@ -44,7 +44,7 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		int reciprocalChance,
 		boolean checkVisibility,
 		boolean checkCanNavigate,
-		@Nullable Predicate<LivingEntity> targetPredicate
+		@Nullable TargetPredicate.EntityPredicate targetPredicate
 	) {
 		super(mob, checkVisibility, checkCanNavigate);
 		this.targetClass = targetClass;
@@ -68,19 +68,18 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	}
 
 	protected void findClosestTarget() {
+		ServerWorld serverWorld = getServerWorld(this.mob);
 		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
-			this.targetEntity = this.mob
-				.getWorld()
-				.getClosestEntity(
-					this.mob.getWorld().getEntitiesByClass(this.targetClass, this.getSearchBox(this.getFollowRange()), livingEntity -> true),
-					this.getAndUpdateTargetPredicate(),
-					this.mob,
-					this.mob.getX(),
-					this.mob.getEyeY(),
-					this.mob.getZ()
-				);
+			this.targetEntity = serverWorld.getClosestEntity(
+				this.mob.getWorld().getEntitiesByClass(this.targetClass, this.getSearchBox(this.getFollowRange()), livingEntity -> true),
+				this.getAndUpdateTargetPredicate(),
+				this.mob,
+				this.mob.getX(),
+				this.mob.getEyeY(),
+				this.mob.getZ()
+			);
 		} else {
-			this.targetEntity = this.mob.getWorld().getClosestPlayer(this.getAndUpdateTargetPredicate(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+			this.targetEntity = serverWorld.getClosestPlayer(this.getAndUpdateTargetPredicate(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 		}
 	}
 

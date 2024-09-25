@@ -37,6 +37,7 @@ import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsPosTask;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -173,7 +174,9 @@ public class WardenBrain {
 			10,
 			ImmutableList.of(
 				RESET_DIG_COOLDOWN_TASK,
-				ForgetAttackTargetTask.create(entity -> !warden.getAngriness().isAngry() || !warden.isValidTarget(entity), WardenBrain::removeDeadSuspect, false),
+				ForgetAttackTargetTask.<WardenEntity>create(
+					(world, target) -> !warden.getAngriness().isAngry() || !warden.isValidTarget(target), WardenBrain::removeDeadSuspect, false
+				),
 				LookAtMobTask.create(entity -> isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.FOLLOW_RANGE)),
 				RangedApproachTask.create(1.2F),
 				new SonicBoomTask(),
@@ -187,9 +190,9 @@ public class WardenBrain {
 		return warden.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).filter(entityx -> entityx == entity).isPresent();
 	}
 
-	private static void removeDeadSuspect(WardenEntity warden, LivingEntity suspect) {
-		if (!warden.isValidTarget(suspect)) {
-			warden.removeSuspect(suspect);
+	private static void removeDeadSuspect(ServerWorld world, WardenEntity warden, LivingEntity target) {
+		if (!warden.isValidTarget(target)) {
+			warden.removeSuspect(target);
 		}
 
 		resetDigCooldown(warden);

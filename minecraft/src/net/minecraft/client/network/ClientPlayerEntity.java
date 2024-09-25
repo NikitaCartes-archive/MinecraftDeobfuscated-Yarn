@@ -49,14 +49,13 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerAbilities;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -165,11 +164,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
 		this.tickables.add(new BubbleColumnSoundPlayer(this));
 		this.tickables.add(new BiomeEffectSoundPlayer(this, client.getSoundManager(), world.getBiomeAccess()));
-	}
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return false;
 	}
 
 	@Override
@@ -329,13 +323,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	protected void applyDamage(DamageSource source, float amount) {
-		if (!this.isInvulnerableTo(source)) {
-			this.setHealth(this.getHealth() - amount);
-		}
-	}
-
-	@Override
 	public void closeHandledScreen() {
 		this.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(this.currentScreenHandler.syncId));
 		this.closeScreen();
@@ -464,11 +451,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.experienceProgress = progress;
 		this.totalExperience = total;
 		this.experienceLevel = level;
-	}
-
-	@Override
-	public void sendMessage(Text message) {
-		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 
 	@Override
@@ -881,8 +863,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void tickRiding() {
 		super.tickRiding();
 		this.riding = false;
-		if (this.getControllingVehicle() instanceof BoatEntity boatEntity) {
-			boatEntity.setInputs(this.input.playerInput.left(), this.input.playerInput.right(), this.input.playerInput.forward(), this.input.playerInput.backward());
+		if (this.getControllingVehicle() instanceof AbstractBoatEntity abstractBoatEntity) {
+			abstractBoatEntity.setInputs(
+				this.input.playerInput.left(), this.input.playerInput.right(), this.input.playerInput.forward(), this.input.playerInput.backward()
+			);
 			this.riding = this.riding
 				| (this.input.playerInput.left() || this.input.playerInput.right() || this.input.playerInput.forward() || this.input.playerInput.backward());
 		}

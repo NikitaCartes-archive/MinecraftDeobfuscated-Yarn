@@ -62,7 +62,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		if (sourceEntity != null) {
 			Entity entity = context.get(sourceEntity.getParameter());
 			if (entity != null) {
-				ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
+				ServerCommandSource serverCommandSource = entity.getCommandSource(context.getWorld()).withLevel(2);
 				return textComponent -> {
 					try {
 						return Texts.parse(serverCommandSource, textComponent, entity, 0);

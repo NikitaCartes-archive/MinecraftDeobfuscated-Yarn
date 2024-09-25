@@ -3,6 +3,7 @@ package net.minecraft.entity.boss.dragon.phase;
 import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import org.slf4j.Logger;
 
@@ -18,7 +19,7 @@ public class ChargingPlayerPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		if (this.pathTarget == null) {
 			LOGGER.warn("Aborting charge player as no target was set.");
 			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);

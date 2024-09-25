@@ -22,6 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
@@ -173,23 +174,23 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 				);
 		}
 
-		if (!this.getWorld().isClient && this.life > this.lifeTime) {
-			this.explodeAndRemove();
+		if (this.life > this.lifeTime && this.getWorld() instanceof ServerWorld serverWorld) {
+			this.explodeAndRemove(serverWorld);
 		}
 	}
 
-	private void explodeAndRemove() {
-		this.getWorld().sendEntityStatus(this, EntityStatuses.EXPLODE_FIREWORK_CLIENT);
+	private void explodeAndRemove(ServerWorld world) {
+		world.sendEntityStatus(this, EntityStatuses.EXPLODE_FIREWORK_CLIENT);
 		this.emitGameEvent(GameEvent.EXPLODE, this.getOwner());
-		this.explode();
+		this.explode(world);
 		this.discard();
 	}
 
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.getWorld().isClient) {
-			this.explodeAndRemove();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			this.explodeAndRemove(serverWorld);
 		}
 	}
 
@@ -197,8 +198,8 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		BlockPos blockPos = new BlockPos(blockHitResult.getBlockPos());
 		this.getWorld().getBlockState(blockPos).onEntityCollision(this.getWorld(), blockPos, this);
-		if (!this.getWorld().isClient() && this.hasExplosionEffects()) {
-			this.explodeAndRemove();
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.hasExplosionEffects()) {
+			this.explodeAndRemove(serverWorld);
 		}
 
 		super.onBlockHit(blockHitResult);
@@ -208,7 +209,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		return !this.getExplosions().isEmpty();
 	}
 
-	private void explode() {
+	private void explode(ServerWorld world) {
 		float f = 0.0F;
 		List<FireworkExplosionComponent> list = this.getExplosions();
 		if (!list.isEmpty()) {
@@ -217,7 +218,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 		if (f > 0.0F) {
 			if (this.shooter != null) {
-				this.shooter.damage(this.getDamageSources().fireworks(this, this.getOwner()), 5.0F + (float)(list.size() * 2));
+				this.shooter.damage(world, this.getDamageSources().fireworks(this, this.getOwner()), 5.0F + (float)(list.size() * 2));
 			}
 
 			double d = 5.0;
@@ -239,7 +240,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 					if (bl) {
 						float g = f * (float)Math.sqrt((5.0 - (double)this.distanceTo(livingEntity)) / 5.0);
-						livingEntity.damage(this.getDamageSources().fireworks(this, this.getOwner()), g);
+						livingEntity.damage(world, this.getDamageSources().fireworks(this, this.getOwner()), g);
 					}
 				}
 			}

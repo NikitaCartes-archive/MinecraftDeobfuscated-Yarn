@@ -85,7 +85,7 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 		LookTargetUtil.lookAt(villagerEntity, playerEntity);
 		if (this.isCloseEnough(villagerEntity, playerEntity)) {
 			if (l - this.startTime > 20L) {
-				this.giveGifts(villagerEntity, playerEntity);
+				this.giveGifts(serverWorld, villagerEntity, playerEntity);
 				this.done = true;
 			}
 		} else {
@@ -100,8 +100,8 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 	}
 
-	private void giveGifts(VillagerEntity villager, LivingEntity recipient) {
-		villager.forEachGiftedItem(getGiftLootTable(villager), stack -> LookTargetUtil.give(villager, stack, recipient.getPos()));
+	private void giveGifts(ServerWorld world, VillagerEntity villager, LivingEntity recipient) {
+		villager.forEachGiftedItem(world, getGiftLootTable(villager), (worldx, stack) -> LookTargetUtil.give(villager, stack, recipient.getPos()));
 	}
 
 	private static RegistryKey<LootTable> getGiftLootTable(VillagerEntity villager) {

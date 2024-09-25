@@ -27,7 +27,7 @@ public class MeleeAttackTask {
 									&& context.<LivingTargetCache>getValue(visibleMobs).contains(livingEntity)) {
 									lookTarget.remember(new EntityLookTarget(livingEntity, true));
 									entity.swingHand(Hand.MAIN_HAND);
-									entity.tryAttack(livingEntity);
+									entity.tryAttack(world, livingEntity);
 									attackCoolingDown.remember(true, (long)cooldown);
 									return true;
 								} else {

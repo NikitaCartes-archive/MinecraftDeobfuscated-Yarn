@@ -28,7 +28,7 @@ public class PiglinBruteSpecificSensor extends Sensor<LivingEntity> {
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
 		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
 		Optional<MobEntity> optional = livingTargetCache.findFirst(
-				livingEntityx -> livingEntityx instanceof WitherSkeletonEntity || livingEntityx instanceof WitherEntity
+				visibleEntity -> visibleEntity instanceof WitherSkeletonEntity || visibleEntity instanceof WitherEntity
 			)
 			.map(MobEntity.class::cast);
 

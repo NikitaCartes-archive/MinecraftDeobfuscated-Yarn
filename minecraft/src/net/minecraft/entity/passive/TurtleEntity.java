@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -15,10 +14,10 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -74,7 +73,7 @@ public class TurtleEntity extends AnimalEntity {
 		.withAttachments(EntityAttachments.builder().add(EntityAttachmentType.PASSENGER, 0.0F, EntityType.TURTLE.getHeight(), -0.25F))
 		.scaled(0.3F);
 	int sandDiggingCounter;
-	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = entity -> entity.isBaby() && !entity.isTouchingWater();
+	public static final TargetPredicate.EntityPredicate BABY_TURTLE_ON_LAND_FILTER = (entity, serverWorld) -> entity.isBaby() && !entity.isTouchingWater();
 
 	public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
 		super(entityType, world);
@@ -302,8 +301,8 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	protected void onGrowUp() {
 		super.onGrowUp();
-		if (!this.isBaby() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			this.dropItem(Items.TURTLE_SCUTE, 1);
+		if (!this.isBaby() && this.getWorld() instanceof ServerWorld serverWorld && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			this.dropItem(serverWorld, Items.TURTLE_SCUTE, 1);
 		}
 	}
 
@@ -328,7 +327,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
-		this.damage(this.getDamageSources().lightningBolt(), Float.MAX_VALUE);
+		this.damage(world, this.getDamageSources().lightningBolt(), Float.MAX_VALUE);
 	}
 
 	@Override
@@ -485,7 +484,7 @@ public class TurtleEntity extends AnimalEntity {
 			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
 			Random random = this.animal.getRandom();
-			if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			if (castToServerWorld(this.world).getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), random.nextInt(7) + 1));
 			}
 		}

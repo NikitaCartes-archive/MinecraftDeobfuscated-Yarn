@@ -496,7 +496,7 @@ public final class ItemStack implements ComponentHolder {
 		int i = stack.getCount();
 		ItemStack itemStack = this;
 		if (useRemainderComponent != null) {
-			itemStack = useRemainderComponent.convert(user, this, i);
+			itemStack = useRemainderComponent.convert(this, i, user.isInCreativeMode(), user::giveOrDropStack);
 		}
 
 		if (useCooldownComponent != null) {

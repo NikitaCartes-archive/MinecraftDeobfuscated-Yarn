@@ -238,12 +238,12 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	@Override
 	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-		if (!world.isClient) {
+		if (world instanceof ServerWorld serverWorld) {
 			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
 			if (namedScreenHandlerFactory != null) {
 				player.openHandledScreen(namedScreenHandlerFactory);
 				player.incrementStat(this.getOpenStat());
-				PiglinBrain.onGuardedBlockInteracted(player, true);
+				PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 			}
 		}
 

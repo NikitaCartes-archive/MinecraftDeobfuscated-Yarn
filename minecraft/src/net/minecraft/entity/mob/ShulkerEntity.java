@@ -35,6 +35,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -412,7 +413,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		if (this.isClosed()) {
 			Entity entity = source.getSource();
 			if (entity instanceof PersistentProjectileEntity) {
@@ -420,7 +421,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 			}
 		}
 
-		if (!super.damage(source, amount)) {
+		if (!super.damage(world, source, amount)) {
 			return false;
 		} else {
 			if ((double)this.getHealth() < (double)this.getMaxHealth() * 0.5 && this.random.nextInt(4) == 0) {
@@ -698,7 +699,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	 */
 	static class TargetOtherTeamGoal extends ActiveTargetGoal<LivingEntity> {
 		public TargetOtherTeamGoal(ShulkerEntity shulker) {
-			super(shulker, LivingEntity.class, 10, true, false, entity -> entity instanceof Monster);
+			super(shulker, LivingEntity.class, 10, true, false, (entity, world) -> entity instanceof Monster);
 		}
 
 		@Override

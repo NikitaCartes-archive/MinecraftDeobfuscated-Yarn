@@ -78,7 +78,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.targetSelector.add(2, new RevengeGoal(this));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector
-			.add(3, new ActiveTargetGoal(this, MobEntity.class, 5, false, false, entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)));
+			.add(3, new ActiveTargetGoal(this, MobEntity.class, 5, false, false, (entity, world) -> entity instanceof Monster && !(entity instanceof CreeperEntity)));
 		this.targetSelector.add(4, new UniversalAngerGoal<>(this, false));
 	}
 
@@ -186,20 +186,18 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
 		this.attackTicksLeft = 10;
-		this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+		world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		float f = this.getAttackDamage();
 		float g = (int)f > 0 ? f / 2.0F + (float)this.random.nextInt((int)f) : f;
 		DamageSource damageSource = this.getDamageSources().mobAttack(this);
-		boolean bl = target.damage(damageSource, g);
+		boolean bl = target.damage(world, damageSource, g);
 		if (bl) {
 			double d = target instanceof LivingEntity livingEntity ? livingEntity.getAttributeValue(EntityAttributes.KNOCKBACK_RESISTANCE) : 0.0;
 			double e = Math.max(0.0, 1.0 - d);
 			target.setVelocity(target.getVelocity().add(0.0, 0.4F * e, 0.0));
-			if (this.getWorld() instanceof ServerWorld serverWorld) {
-				EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
-			}
+			EnchantmentHelper.onTargetDamaged(world, target, damageSource);
 		}
 
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
@@ -207,9 +205,9 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		Cracks.CrackLevel crackLevel = this.getCrackLevel();
-		boolean bl = super.damage(source, amount);
+		boolean bl = super.damage(world, source, amount);
 		if (bl && this.getCrackLevel() != crackLevel) {
 			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0F, 1.0F);
 		}

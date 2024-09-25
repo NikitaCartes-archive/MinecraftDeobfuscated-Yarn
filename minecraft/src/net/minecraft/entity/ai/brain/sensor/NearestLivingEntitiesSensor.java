@@ -21,7 +21,7 @@ public class NearestLivingEntitiesSensor<T extends LivingEntity> extends Sensor<
 		list.sort(Comparator.comparingDouble(entity::squaredDistanceTo));
 		Brain<?> brain = entity.getBrain();
 		brain.remember(MemoryModuleType.MOBS, list);
-		brain.remember(MemoryModuleType.VISIBLE_MOBS, new LivingTargetCache(entity, list));
+		brain.remember(MemoryModuleType.VISIBLE_MOBS, new LivingTargetCache(world, entity, list));
 	}
 
 	@Override

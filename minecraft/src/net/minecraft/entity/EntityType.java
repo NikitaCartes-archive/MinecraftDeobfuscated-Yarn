@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -131,13 +132,17 @@ import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.entity.vehicle.ChestRaftEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
+import net.minecraft.entity.vehicle.RaftEntity;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -176,6 +181,22 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registries.ENTITY_TYPE.createEntry(this);
 	private static final float field_30054 = 1.3964844F;
 	private static final int field_42459 = 10;
+	public static final EntityType<BoatEntity> ACACIA_BOAT = register(
+		"acacia_boat",
+		EntityType.Builder.create(method_64432(() -> Items.ACACIA_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> ACACIA_CHEST_BOAT = register(
+		"acacia_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.ACACIA_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
 	public static final EntityType<AllayEntity> ALLAY = register(
 		"allay",
 		EntityType.Builder.create(AllayEntity::new, SpawnGroup.CREATURE)
@@ -213,11 +234,43 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<AxolotlEntity> AXOLOTL = register(
 		"axolotl", EntityType.Builder.create(AxolotlEntity::new, SpawnGroup.AXOLOTLS).dimensions(0.75F, 0.42F).eyeHeight(0.2751F).maxTrackingRange(10)
 	);
+	public static final EntityType<ChestRaftEntity> BAMBOO_CHEST_RAFT = register(
+		"bamboo_chest_raft",
+		EntityType.Builder.create(method_64438(() -> Items.BAMBOO_CHEST_RAFT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<RaftEntity> BAMBOO_RAFT = register(
+		"bamboo_raft",
+		EntityType.Builder.create(method_64436(() -> Items.BAMBOO_RAFT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
 	public static final EntityType<BatEntity> BAT = register(
 		"bat", EntityType.Builder.create(BatEntity::new, SpawnGroup.AMBIENT).dimensions(0.5F, 0.9F).eyeHeight(0.45F).maxTrackingRange(5)
 	);
 	public static final EntityType<BeeEntity> BEE = register(
 		"bee", EntityType.Builder.create(BeeEntity::new, SpawnGroup.CREATURE).dimensions(0.7F, 0.6F).eyeHeight(0.3F).maxTrackingRange(8)
+	);
+	public static final EntityType<BoatEntity> BIRCH_BOAT = register(
+		"birch_boat",
+		EntityType.Builder.create(method_64432(() -> Items.BIRCH_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> BIRCH_CHEST_BOAT = register(
+		"birch_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.BIRCH_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
 	);
 	public static final EntityType<BlazeEntity> BLAZE = register(
 		"blaze", EntityType.Builder.create(BlazeEntity::new, SpawnGroup.MONSTER).makeFireImmune().dimensions(0.6F, 1.8F).maxTrackingRange(8)
@@ -229,10 +282,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.dimensions(0.0F, 0.0F)
 			.maxTrackingRange(10)
 			.trackingTickInterval(1)
-	);
-	public static final EntityType<BoatEntity> BOAT = register(
-		"boat",
-		EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).dropsNothing().dimensions(1.375F, 0.5625F).eyeHeight(0.5625F).maxTrackingRange(10)
 	);
 	public static final EntityType<BoggedEntity> BOGGED = register(
 		"bogged",
@@ -260,9 +309,17 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<CaveSpiderEntity> CAVE_SPIDER = register(
 		"cave_spider", EntityType.Builder.create(CaveSpiderEntity::new, SpawnGroup.MONSTER).dimensions(0.7F, 0.5F).eyeHeight(0.45F).maxTrackingRange(8)
 	);
-	public static final EntityType<ChestBoatEntity> CHEST_BOAT = register(
-		"chest_boat",
-		EntityType.Builder.<ChestBoatEntity>create(ChestBoatEntity::new, SpawnGroup.MISC)
+	public static final EntityType<BoatEntity> CHERRY_BOAT = register(
+		"cherry_boat",
+		EntityType.Builder.create(method_64432(() -> Items.CHERRY_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> CHERRY_CHEST_BOAT = register(
+		"cherry_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.CHERRY_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -297,6 +354,22 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<CreeperEntity> CREEPER = register(
 		"creeper", EntityType.Builder.create(CreeperEntity::new, SpawnGroup.MONSTER).dimensions(0.6F, 1.7F).maxTrackingRange(8)
+	);
+	public static final EntityType<BoatEntity> DARK_OAK_BOAT = register(
+		"dark_oak_boat",
+		EntityType.Builder.create(method_64432(() -> Items.DARK_OAK_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> DARK_OAK_CHEST_BOAT = register(
+		"dark_oak_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.DARK_OAK_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
 	);
 	public static final EntityType<DolphinEntity> DOLPHIN = register(
 		"dolphin", EntityType.Builder.create(DolphinEntity::new, SpawnGroup.WATER_CREATURE).dimensions(0.9F, 0.6F).eyeHeight(0.3F)
@@ -338,14 +411,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.passengerAttachments(2.350625F)
 			.maxTrackingRange(10)
 	);
-	public static final EntityType<EndCrystalEntity> END_CRYSTAL = register(
-		"end_crystal",
-		EntityType.Builder.<EndCrystalEntity>create(EndCrystalEntity::new, SpawnGroup.MISC)
-			.dropsNothing()
-			.makeFireImmune()
-			.dimensions(2.0F, 2.0F)
-			.maxTrackingRange(16)
-			.trackingTickInterval(Integer.MAX_VALUE)
+	public static final EntityType<EndermanEntity> ENDERMAN = register(
+		"enderman",
+		EntityType.Builder.create(EndermanEntity::new, SpawnGroup.MONSTER).dimensions(0.6F, 2.9F).eyeHeight(2.55F).passengerAttachments(2.80625F).maxTrackingRange(8)
+	);
+	public static final EntityType<EndermiteEntity> ENDERMITE = register(
+		"endermite",
+		EntityType.Builder.create(EndermiteEntity::new, SpawnGroup.MONSTER).dimensions(0.4F, 0.3F).eyeHeight(0.13F).passengerAttachments(0.2375F).maxTrackingRange(8)
 	);
 	public static final EntityType<EnderDragonEntity> ENDER_DRAGON = register(
 		"ender_dragon",
@@ -363,13 +435,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(4)
 			.trackingTickInterval(10)
 	);
-	public static final EntityType<EndermanEntity> ENDERMAN = register(
-		"enderman",
-		EntityType.Builder.create(EndermanEntity::new, SpawnGroup.MONSTER).dimensions(0.6F, 2.9F).eyeHeight(2.55F).passengerAttachments(2.80625F).maxTrackingRange(8)
-	);
-	public static final EntityType<EndermiteEntity> ENDERMITE = register(
-		"endermite",
-		EntityType.Builder.create(EndermiteEntity::new, SpawnGroup.MONSTER).dimensions(0.4F, 0.3F).eyeHeight(0.13F).passengerAttachments(0.2375F).maxTrackingRange(8)
+	public static final EntityType<EndCrystalEntity> END_CRYSTAL = register(
+		"end_crystal",
+		EntityType.Builder.<EndCrystalEntity>create(EndCrystalEntity::new, SpawnGroup.MISC)
+			.dropsNothing()
+			.makeFireImmune()
+			.dimensions(2.0F, 2.0F)
+			.maxTrackingRange(16)
+			.trackingTickInterval(Integer.MAX_VALUE)
 	);
 	public static final EntityType<EvokerEntity> EVOKER = register(
 		"evoker",
@@ -418,6 +491,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.dimensions(0.98F, 0.98F)
 			.maxTrackingRange(10)
 			.trackingTickInterval(20)
+	);
+	public static final EntityType<FireballEntity> FIREBALL = register(
+		"fireball",
+		EntityType.Builder.<FireballEntity>create(FireballEntity::new, SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.0F, 1.0F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
 	public static final EntityType<FireworkRocketEntity> FIREWORK_ROCKET = register(
 		"firework_rocket",
@@ -557,16 +638,21 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(10)
 			.trackingTickInterval(Integer.MAX_VALUE)
 	);
-	public static final EntityType<OminousItemSpawnerEntity> OMINOUS_ITEM_SPAWNER = register(
-		"ominous_item_spawner", EntityType.Builder.create(OminousItemSpawnerEntity::new, SpawnGroup.MISC).dropsNothing().dimensions(0.25F, 0.25F).maxTrackingRange(8)
-	);
-	public static final EntityType<FireballEntity> FIREBALL = register(
-		"fireball",
-		EntityType.Builder.<FireballEntity>create(FireballEntity::new, SpawnGroup.MISC)
+	public static final EntityType<BoatEntity> JUNGLE_BOAT = register(
+		"jungle_boat",
+		EntityType.Builder.create(method_64432(() -> Items.JUNGLE_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
-			.dimensions(1.0F, 1.0F)
-			.maxTrackingRange(4)
-			.trackingTickInterval(10)
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> JUNGLE_CHEST_BOAT = register(
+		"jungle_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.JUNGLE_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
 	);
 	public static final EntityType<LeashKnotEntity> LEASH_KNOT = register(
 		"leash_knot",
@@ -612,6 +698,22 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.spawnBoxScale(4.0F)
 			.maxTrackingRange(8)
 	);
+	public static final EntityType<BoatEntity> MANGROVE_BOAT = register(
+		"mangrove_boat",
+		EntityType.Builder.create(method_64432(() -> Items.MANGROVE_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> MANGROVE_CHEST_BOAT = register(
+		"mangrove_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.MANGROVE_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
 	public static final EntityType<MarkerEntity> MARKER = register(
 		"marker", EntityType.Builder.create(MarkerEntity::new, SpawnGroup.MISC).dropsNothing().dimensions(0.0F, 0.0F).maxTrackingRange(0)
 	);
@@ -635,8 +737,27 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.passengerAttachments(1.2125F)
 			.maxTrackingRange(8)
 	);
+	public static final EntityType<BoatEntity> OAK_BOAT = register(
+		"oak_boat",
+		EntityType.Builder.create(method_64432(() -> Items.OAK_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> OAK_CHEST_BOAT = register(
+		"oak_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.OAK_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
 	public static final EntityType<OcelotEntity> OCELOT = register(
 		"ocelot", EntityType.Builder.create(OcelotEntity::new, SpawnGroup.CREATURE).dimensions(0.6F, 0.7F).passengerAttachments(0.6375F).maxTrackingRange(10)
+	);
+	public static final EntityType<OminousItemSpawnerEntity> OMINOUS_ITEM_SPAWNER = register(
+		"ominous_item_spawner", EntityType.Builder.create(OminousItemSpawnerEntity::new, SpawnGroup.MISC).dropsNothing().dimensions(0.25F, 0.25F).maxTrackingRange(8)
 	);
 	public static final EntityType<PaintingEntity> PAINTING = register(
 		"painting",
@@ -777,14 +898,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.nameTagAttachment(2.05F)
 			.maxTrackingRange(10)
 	);
-	public static final EntityType<SnowGolemEntity> SNOW_GOLEM = register(
-		"snow_golem",
-		EntityType.Builder.create(SnowGolemEntity::new, SpawnGroup.MISC)
-			.allowSpawningInside(Blocks.POWDER_SNOW)
-			.dimensions(0.7F, 1.9F)
-			.eyeHeight(1.7F)
-			.maxTrackingRange(8)
-	);
 	public static final EntityType<SnowballEntity> SNOWBALL = register(
 		"snowball",
 		EntityType.Builder.<SnowballEntity>create(SnowballEntity::new, SpawnGroup.MISC)
@@ -792,6 +905,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.dimensions(0.25F, 0.25F)
 			.maxTrackingRange(4)
 			.trackingTickInterval(10)
+	);
+	public static final EntityType<SnowGolemEntity> SNOW_GOLEM = register(
+		"snow_golem",
+		EntityType.Builder.create(SnowGolemEntity::new, SpawnGroup.MISC)
+			.allowSpawningInside(Blocks.POWDER_SNOW)
+			.dimensions(0.7F, 1.9F)
+			.eyeHeight(1.7F)
+			.maxTrackingRange(8)
 	);
 	public static final EntityType<SpawnerMinecartEntity> SPAWNER_MINECART = register(
 		"spawner_minecart",
@@ -813,6 +934,22 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<SpiderEntity> SPIDER = register(
 		"spider",
 		EntityType.Builder.create(SpiderEntity::new, SpawnGroup.MONSTER).dimensions(1.4F, 0.9F).eyeHeight(0.65F).passengerAttachments(0.765F).maxTrackingRange(8)
+	);
+	public static final EntityType<BoatEntity> SPRUCE_BOAT = register(
+		"spruce_boat",
+		EntityType.Builder.create(method_64432(() -> Items.SPRUCE_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> SPRUCE_CHEST_BOAT = register(
+		"spruce_chest_boat",
+		EntityType.Builder.create(method_64434(() -> Items.SPRUCE_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
 	);
 	public static final EntityType<SquidEntity> SQUID = register(
 		"squid", EntityType.Builder.create(SquidEntity::new, SpawnGroup.WATER_CREATURE).dimensions(0.8F, 0.8F).eyeHeight(0.4F).maxTrackingRange(8)
@@ -1038,7 +1175,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	private final String translationKey;
 	@Nullable
 	private Text name;
-	private final Optional<RegistryKey<LootTable>> lootTable;
+	private final Optional<RegistryKey<LootTable>> lootTableKey;
 	private final EntityDimensions dimensions;
 	private final float spawnBoxScale;
 	private final FeatureSet requiredFeatures;
@@ -1091,7 +1228,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		this.maxTrackDistance = maxTrackDistance;
 		this.trackTickInterval = trackTickInterval;
 		this.translationKey = translationKey;
-		this.lootTable = lootTable;
+		this.lootTableKey = lootTable;
 		this.requiredFeatures = requiredFeatures;
 	}
 
@@ -1236,8 +1373,8 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return i == -1 ? this.getTranslationKey() : this.getTranslationKey().substring(i + 1);
 	}
 
-	public Optional<RegistryKey<LootTable>> getLootTable() {
-		return this.lootTable;
+	public Optional<RegistryKey<LootTable>> getLootTableKey() {
+		return this.lootTableKey;
 	}
 
 	public float getWidth() {
@@ -1394,6 +1531,22 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	@Deprecated
 	public RegistryEntry.Reference<EntityType<?>> getRegistryEntry() {
 		return this.registryEntry;
+	}
+
+	private static EntityType.EntityFactory<BoatEntity> method_64432(Supplier<Item> supplier) {
+		return (entityType, world) -> new BoatEntity(entityType, world, supplier);
+	}
+
+	private static EntityType.EntityFactory<ChestBoatEntity> method_64434(Supplier<Item> supplier) {
+		return (entityType, world) -> new ChestBoatEntity(entityType, world, supplier);
+	}
+
+	private static EntityType.EntityFactory<RaftEntity> method_64436(Supplier<Item> supplier) {
+		return (entityType, world) -> new RaftEntity(entityType, world, supplier);
+	}
+
+	private static EntityType.EntityFactory<ChestRaftEntity> method_64438(Supplier<Item> supplier) {
+		return (entityType, world) -> new ChestRaftEntity(entityType, world, supplier);
 	}
 
 	public static class Builder<T extends Entity> {

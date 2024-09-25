@@ -34,7 +34,7 @@ public class GolemLastSeenSensor extends Sensor<LivingEntity> {
 	public static void senseIronGolem(LivingEntity entity) {
 		Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.MOBS);
 		if (!optional.isEmpty()) {
-			boolean bl = ((List)optional.get()).stream().anyMatch(livingEntity -> livingEntity.getType().equals(EntityType.IRON_GOLEM));
+			boolean bl = ((List)optional.get()).stream().anyMatch(seenEntity -> seenEntity.getType().equals(EntityType.IRON_GOLEM));
 			if (bl) {
 				rememberIronGolem(entity);
 			}

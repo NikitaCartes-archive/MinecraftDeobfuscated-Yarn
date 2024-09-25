@@ -31,9 +31,9 @@ public class TemptationsSensor extends Sensor<PathAwareEntity> {
 		List<PlayerEntity> list = (List<PlayerEntity>)serverWorld.getPlayers()
 			.stream()
 			.filter(EntityPredicates.EXCEPT_SPECTATOR)
-			.filter(player -> targetPredicate.test(pathAwareEntity, player))
+			.filter(player -> targetPredicate.test(serverWorld, pathAwareEntity, player))
 			.filter(this::test)
-			.filter(player -> !pathAwareEntity.hasPassenger(player))
+			.filter(playerx -> !pathAwareEntity.hasPassenger(playerx))
 			.sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo))
 			.collect(Collectors.toList());
 		if (!list.isEmpty()) {

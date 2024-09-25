@@ -154,10 +154,10 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	protected void dropInventory() {
-		super.dropInventory();
+	protected void dropInventory(ServerWorld world) {
+		super.dropInventory(world);
 		if (this.isSaddled()) {
-			this.dropItem(Items.SADDLE);
+			this.dropItem(world, Items.SADDLE);
 		}
 	}
 

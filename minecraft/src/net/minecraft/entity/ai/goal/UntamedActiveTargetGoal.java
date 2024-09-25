@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.passive.TameableEntity;
 
 /**
@@ -13,7 +13,9 @@ import net.minecraft.entity.passive.TameableEntity;
 public class UntamedActiveTargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
 	private final TameableEntity tameable;
 
-	public UntamedActiveTargetGoal(TameableEntity tameable, Class<T> targetClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> targetPredicate) {
+	public UntamedActiveTargetGoal(
+		TameableEntity tameable, Class<T> targetClass, boolean checkVisibility, @Nullable TargetPredicate.EntityPredicate targetPredicate
+	) {
 		super(tameable, targetClass, 10, checkVisibility, false, targetPredicate);
 		this.tameable = tameable;
 	}
@@ -25,6 +27,6 @@ public class UntamedActiveTargetGoal<T extends LivingEntity> extends ActiveTarge
 
 	@Override
 	public boolean shouldContinue() {
-		return this.targetPredicate != null ? this.targetPredicate.test(this.mob, this.targetEntity) : super.shouldContinue();
+		return this.targetPredicate != null ? this.targetPredicate.test(getServerWorld(this.mob), this.mob, this.targetEntity) : super.shouldContinue();
 	}
 }

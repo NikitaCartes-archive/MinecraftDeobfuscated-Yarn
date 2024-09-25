@@ -88,8 +88,8 @@ public class GlowSquidEntity extends SquidEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		boolean bl = super.damage(source, amount);
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		boolean bl = super.damage(world, source, amount);
 		if (bl) {
 			this.setDarkTicksRemaining(100);
 		}

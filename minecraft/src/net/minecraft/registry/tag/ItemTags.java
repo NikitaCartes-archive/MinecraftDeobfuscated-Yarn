@@ -173,6 +173,7 @@ public final class ItemTags {
 	public static final TagKey<Item> CROSSBOW_ENCHANTABLE = of("enchantable/crossbow");
 	public static final TagKey<Item> VANISHING_ENCHANTABLE = of("enchantable/vanishing");
 	public static final TagKey<Item> MACE_ENCHANTABLE = of("enchantable/mace");
+	public static final TagKey<Item> MAP_INVISIBILITY_EQUIPMENT = of("map_invisibility_equipment");
 
 	private ItemTags() {
 	}

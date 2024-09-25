@@ -1,8 +1,6 @@
 package net.minecraft.component.type;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -13,21 +11,19 @@ public record UseRemainderComponent(ItemStack convertInto) {
 		ItemStack.PACKET_CODEC, UseRemainderComponent::convertInto, UseRemainderComponent::new
 	);
 
-	public ItemStack convert(LivingEntity user, ItemStack stack, int count) {
-		boolean bl = user.isInCreativeMode();
-		ItemStack itemStack = this.convertInto.copy();
-		if (bl) {
+	public ItemStack convert(ItemStack stack, int oldCount, boolean inCreative, UseRemainderComponent.StackInserter inserter) {
+		if (inCreative) {
 			return stack;
-		} else if (stack.getCount() >= count) {
+		} else if (stack.getCount() >= oldCount) {
 			return stack;
-		} else if (stack.isEmpty()) {
-			return itemStack;
 		} else {
-			if (!user.getWorld().isClient() && user instanceof PlayerEntity playerEntity && !playerEntity.getInventory().insertStack(itemStack)) {
-				playerEntity.dropItem(itemStack, false);
+			ItemStack itemStack = this.convertInto.copy();
+			if (stack.isEmpty()) {
+				return itemStack;
+			} else {
+				inserter.apply(itemStack);
+				return stack;
 			}
-
-			return stack;
 		}
 	}
 
@@ -44,5 +40,10 @@ public record UseRemainderComponent(ItemStack convertInto) {
 
 	public int hashCode() {
 		return ItemStack.hashCode(this.convertInto);
+	}
+
+	@FunctionalInterface
+	public interface StackInserter {
+		void apply(ItemStack stack);
 	}
 }

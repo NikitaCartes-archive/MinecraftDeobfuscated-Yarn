@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -74,8 +75,10 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 		}
 
 		entity.setInPowderSnow(true);
-		if (!world.isClient) {
-			if (entity.isOnFire() && (world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) || entity instanceof PlayerEntity) && entity.canModifyAt(world, pos)) {
+		if (world instanceof ServerWorld serverWorld) {
+			if (entity.isOnFire()
+				&& (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) || entity instanceof PlayerEntity)
+				&& entity.canModifyAt(serverWorld, pos)) {
 				world.breakBlock(pos, false);
 			}
 

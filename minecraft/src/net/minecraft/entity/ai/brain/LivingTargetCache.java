@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.server.world.ServerWorld;
 
 public class LivingTargetCache {
 	private static final LivingTargetCache EMPTY = new LivingTargetCache();
@@ -19,10 +20,10 @@ public class LivingTargetCache {
 		this.targetPredicate = entity -> false;
 	}
 
-	public LivingTargetCache(LivingEntity owner, List<LivingEntity> entities) {
+	public LivingTargetCache(ServerWorld world, LivingEntity owner, List<LivingEntity> entities) {
 		this.entities = entities;
 		Object2BooleanOpenHashMap<LivingEntity> object2BooleanOpenHashMap = new Object2BooleanOpenHashMap<>(entities.size());
-		Predicate<LivingEntity> predicate = entity -> Sensor.testTargetPredicate(owner, entity);
+		Predicate<LivingEntity> predicate = target -> Sensor.testTargetPredicate(world, owner, target);
 		this.targetPredicate = entity -> object2BooleanOpenHashMap.computeIfAbsent(entity, predicate);
 	}
 

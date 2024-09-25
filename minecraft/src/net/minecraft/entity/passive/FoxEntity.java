@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import com.google.common.collect.Lists;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -139,10 +138,10 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	@Override
 	protected void initGoals() {
 		this.followChickenAndRabbitGoal = new ActiveTargetGoal(
-			this, AnimalEntity.class, 10, false, false, entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity
+			this, AnimalEntity.class, 10, false, false, (entity, world) -> entity instanceof ChickenEntity || entity instanceof RabbitEntity
 		);
 		this.followBabyTurtleGoal = new ActiveTargetGoal(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER);
-		this.followFishGoal = new ActiveTargetGoal(this, FishEntity.class, 20, false, false, entity -> entity instanceof SchoolingFishEntity);
+		this.followFishGoal = new ActiveTargetGoal(this, FishEntity.class, 20, false, false, (entity, world) -> entity instanceof SchoolingFishEntity);
 		this.goalSelector.add(0, new FoxEntity.FoxSwimGoal());
 		this.goalSelector.add(0, new PowderSnowJumpGoal(this, this.getWorld()));
 		this.goalSelector.add(1, new FoxEntity.StopWanderingGoal());
@@ -173,7 +172,9 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		this.targetSelector
 			.add(
 				3,
-				new FoxEntity.DefendFriendGoal(LivingEntity.class, false, false, entity -> JUST_ATTACKED_SOMETHING_FILTER.test(entity) && !this.canTrust(entity.getUuid()))
+				new FoxEntity.DefendFriendGoal(
+					LivingEntity.class, false, false, (entity, world) -> JUST_ATTACKED_SOMETHING_FILTER.test(entity) && !this.canTrust(entity.getUuid())
+				)
 			);
 	}
 
@@ -355,10 +356,15 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	List<UUID> getTrustedUuids() {
-		List<UUID> list = Lists.<UUID>newArrayList();
-		list.add((UUID)this.dataTracker.get(OWNER).orElse(null));
-		list.add((UUID)this.dataTracker.get(OTHER_TRUSTED).orElse(null));
-		return list;
+		Optional<UUID> optional = this.dataTracker.get(OWNER);
+		Optional<UUID> optional2 = this.dataTracker.get(OTHER_TRUSTED);
+		if (optional.isPresent() && optional2.isPresent()) {
+			return List.of((UUID)optional.get(), (UUID)optional2.get());
+		} else if (optional.isPresent()) {
+			return List.of((UUID)optional.get());
+		} else {
+			return optional2.isPresent() ? List.of((UUID)optional2.get()) : List.of();
+		}
 	}
 
 	void addTrustedUuid(@Nullable UUID uuid) {
@@ -376,9 +382,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		NbtList nbtList = new NbtList();
 
 		for (UUID uUID : list) {
-			if (uUID != null) {
-				nbtList.add(NbtHelper.fromUuid(uUID));
-			}
+			nbtList.add(NbtHelper.fromUuid(uUID));
 		}
 
 		nbt.put("Trusted", nbtList);
@@ -479,8 +483,8 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
-		ItemStack itemStack = item.getStack();
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		ItemStack itemStack = itemEntity.getStack();
 		if (this.canPickupItem(itemStack)) {
 			int i = itemStack.getCount();
 			if (i > 1) {
@@ -488,11 +492,11 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 			}
 
 			this.spit(this.getEquippedStack(EquipmentSlot.MAINHAND));
-			this.triggerItemPickedUpByEntityCriteria(item);
+			this.triggerItemPickedUpByEntityCriteria(itemEntity);
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack.split(1));
 			this.updateDropChances(EquipmentSlot.MAINHAND);
-			this.sendPickup(item, itemStack.getCount());
-			item.discard();
+			this.sendPickup(itemEntity, itemStack.getCount());
+			itemEntity.discard();
 			this.eatingTime = 0;
 		}
 	}
@@ -660,7 +664,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 	protected void drop(ServerWorld world, DamageSource damageSource) {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (!itemStack.isEmpty()) {
-			this.dropStack(itemStack);
+			this.dropStack(world, itemStack);
 			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}
 
@@ -701,7 +705,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		protected void attack(LivingEntity target) {
 			if (this.canAttack(target)) {
 				this.resetCooldown();
-				this.mob.tryAttack(target);
+				this.mob.tryAttack(getServerWorld(this.mob), target);
 				FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_BITE, 1.0F, 1.0F);
 			}
 		}
@@ -765,7 +769,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		protected boolean canCalmDown() {
-			return !FoxEntity.this.getWorld()
+			return !castToServerWorld(FoxEntity.this.getWorld())
 				.getTargets(LivingEntity.class, this.WORRIABLE_ENTITY_PREDICATE, FoxEntity.this, FoxEntity.this.getBoundingBox().expand(12.0, 6.0, 12.0))
 				.isEmpty();
 		}
@@ -782,7 +786,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 			final Class<LivingEntity> targetEntityClass,
 			final boolean checkVisibility,
 			final boolean checkCanNavigate,
-			@Nullable final Predicate<LivingEntity> targetPredicate
+			@Nullable final TargetPredicate.EntityPredicate targetPredicate
 		) {
 			super(FoxEntity.this, targetEntityClass, 10, checkVisibility, checkCanNavigate, targetPredicate);
 		}
@@ -792,10 +796,10 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 			if (this.reciprocalChance > 0 && this.mob.getRandom().nextInt(this.reciprocalChance) != 0) {
 				return false;
 			} else {
+				ServerWorld serverWorld = castToServerWorld(FoxEntity.this.getWorld());
+
 				for (UUID uUID : FoxEntity.this.getTrustedUuids()) {
-					if (uUID != null
-						&& FoxEntity.this.getWorld() instanceof ServerWorld
-						&& ((ServerWorld)FoxEntity.this.getWorld()).getEntity(uUID) instanceof LivingEntity livingEntity) {
+					if (serverWorld.getEntity(uUID) instanceof LivingEntity livingEntity) {
 						this.friend = livingEntity;
 						this.offender = livingEntity.getAttacker();
 						int i = livingEntity.getLastAttackedTime();
@@ -909,7 +913,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		protected void eatBerries() {
-			if (FoxEntity.this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			if (castToServerWorld(FoxEntity.this.getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				BlockState blockState = FoxEntity.this.getWorld().getBlockState(this.targetPos);
 				if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 					this.pickSweetBerries(blockState);
@@ -1162,7 +1166,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 			}
 
 			if (livingEntity != null && FoxEntity.this.distanceTo(livingEntity) <= 2.0F) {
-				FoxEntity.this.tryAttack(livingEntity);
+				FoxEntity.this.tryAttack(castToServerWorld(FoxEntity.this.getWorld()), livingEntity);
 			} else if (FoxEntity.this.getPitch() > 0.0F
 				&& FoxEntity.this.isOnGround()
 				&& (float)FoxEntity.this.getVelocity().y != 0.0F
@@ -1204,7 +1208,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 		@Override
 		protected void breed() {
-			ServerWorld serverWorld = (ServerWorld)this.world;
+			ServerWorld serverWorld = this.world;
 			FoxEntity foxEntity = (FoxEntity)this.animal.createChild(serverWorld, this.mate);
 			if (foxEntity != null) {
 				ServerPlayerEntity serverPlayerEntity = this.animal.getLovingPlayer();
@@ -1233,7 +1237,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 				foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0F, 0.0F);
 				serverWorld.spawnEntityAndPassengers(foxEntity);
 				this.world.sendEntityStatus(this.animal, EntityStatuses.ADD_BREEDING_PARTICLES);
-				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+				if (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 					this.world
 						.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
 				}
@@ -1477,16 +1481,17 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 	}
 
-	public class WorriableEntityFilter implements Predicate<LivingEntity> {
-		public boolean test(LivingEntity livingEntity) {
-			if (livingEntity instanceof FoxEntity) {
+	public class WorriableEntityFilter implements TargetPredicate.EntityPredicate {
+		@Override
+		public boolean method_18303(LivingEntity target, ServerWorld world) {
+			if (target instanceof FoxEntity) {
 				return false;
-			} else if (livingEntity instanceof ChickenEntity || livingEntity instanceof RabbitEntity || livingEntity instanceof HostileEntity) {
+			} else if (target instanceof ChickenEntity || target instanceof RabbitEntity || target instanceof HostileEntity) {
 				return true;
-			} else if (livingEntity instanceof TameableEntity) {
-				return !((TameableEntity)livingEntity).isTamed();
-			} else if (!(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()) {
-				return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.isSneaky();
+			} else if (target instanceof TameableEntity) {
+				return !((TameableEntity)target).isTamed();
+			} else if (!(target instanceof PlayerEntity) || !target.isSpectator() && !((PlayerEntity)target).isCreative()) {
+				return FoxEntity.this.canTrust(target.getUuid()) ? false : !target.isSleeping() && !target.isSneaky();
 			} else {
 				return false;
 			}

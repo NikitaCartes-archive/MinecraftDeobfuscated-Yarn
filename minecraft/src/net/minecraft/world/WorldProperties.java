@@ -22,8 +22,6 @@ public interface WorldProperties {
 
 	boolean isHardcore();
 
-	GameRules getGameRules();
-
 	Difficulty getDifficulty();
 
 	boolean isDifficultyLocked();

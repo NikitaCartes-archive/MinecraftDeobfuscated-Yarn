@@ -177,12 +177,12 @@ public class CreeperEntity extends HostileEntity {
 		Entity entity = source.getAttacker();
 		if (entity != this && entity instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			creeperEntity.onHeadDropped();
-			this.dropItem(Items.CREEPER_HEAD);
+			this.dropItem(world, Items.CREEPER_HEAD);
 		}
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
 		return true;
 	}
 
@@ -230,12 +230,12 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	private void explode() {
-		if (!this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			float f = this.isCharged() ? 2.0F : 1.0F;
 			this.dead = true;
-			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
+			serverWorld.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
 			this.spawnEffectsCloud();
-			this.onRemoval(Entity.RemovalReason.KILLED);
+			this.onRemoval(serverWorld, Entity.RemovalReason.KILLED);
 			this.discard();
 		}
 	}

@@ -61,7 +61,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 		super.dropEquipment(world, source, causedByPlayer);
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			creeperEntity.onHeadDropped();
-			this.dropItem(Items.WITHER_SKELETON_SKULL);
+			this.dropItem(world, Items.WITHER_SKELETON_SKULL);
 		}
 	}
 
@@ -84,8 +84,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		if (!super.tryAttack(target)) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
+		if (!super.tryAttack(world, target)) {
 			return false;
 		} else {
 			if (target instanceof LivingEntity) {

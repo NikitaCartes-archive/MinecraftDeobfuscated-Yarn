@@ -89,8 +89,8 @@ public class ChickenEntity extends AnimalEntity {
 		}
 
 		this.flapProgress = this.flapProgress + this.flapSpeed * 2.0F;
-		if (!this.getWorld().isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
-			if (this.forEachGiftedItem(LootTables.CHICKEN_LAY_GAMEPLAY, this::dropStack)) {
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
+			if (this.forEachGiftedItem(serverWorld, LootTables.CHICKEN_LAY_GAMEPLAY, this::dropStack)) {
 				this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				this.emitGameEvent(GameEvent.ENTITY_PLACE);
 			}
@@ -140,8 +140,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected int getXpToDrop() {
-		return this.hasJockey() ? 10 : super.getXpToDrop();
+	protected int getXpToDrop(ServerWorld world) {
+		return this.hasJockey() ? 10 : super.getXpToDrop(world);
 	}
 
 	@Override

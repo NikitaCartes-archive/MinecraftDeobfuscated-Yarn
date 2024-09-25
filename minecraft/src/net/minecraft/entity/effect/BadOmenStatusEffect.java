@@ -17,16 +17,16 @@ class BadOmenStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
-		if (entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.isSpectator()) {
-			ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
-			if (serverWorld.getDifficulty() != Difficulty.PEACEFUL && serverWorld.isNearOccupiedPointOfInterest(serverPlayerEntity.getBlockPos())) {
-				Raid raid = serverWorld.getRaidAt(serverPlayerEntity.getBlockPos());
-				if (raid == null || raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
-					serverPlayerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.RAID_OMEN, 600, amplifier));
-					serverPlayerEntity.setStartRaidPos(serverPlayerEntity.getBlockPos());
-					return false;
-				}
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
+		if (entity instanceof ServerPlayerEntity serverPlayerEntity
+			&& !serverPlayerEntity.isSpectator()
+			&& world.getDifficulty() != Difficulty.PEACEFUL
+			&& world.isNearOccupiedPointOfInterest(serverPlayerEntity.getBlockPos())) {
+			Raid raid = world.getRaidAt(serverPlayerEntity.getBlockPos());
+			if (raid == null || raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
+				serverPlayerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.RAID_OMEN, 600, amplifier));
+				serverPlayerEntity.setStartRaidPos(serverPlayerEntity.getBlockPos());
+				return false;
 			}
 		}
 

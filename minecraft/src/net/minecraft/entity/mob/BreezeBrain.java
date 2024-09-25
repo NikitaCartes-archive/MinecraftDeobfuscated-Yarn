@@ -76,8 +76,8 @@ public class BreezeBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, UpdateAttackTargetTask.create(breeze -> breeze.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
-				Pair.of(1, UpdateAttackTargetTask.create(BreezeEntity::getHurtBy)),
+				Pair.of(0, UpdateAttackTargetTask.create((world, breeze) -> breeze.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))),
+				Pair.of(1, UpdateAttackTargetTask.create((world, breeze) -> breeze.getHurtBy())),
 				Pair.of(2, new BreezeBrain.SlideAroundTask(20, 40)),
 				Pair.of(3, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
 			)
@@ -88,7 +88,7 @@ public class BreezeBrain {
 		brain.setTaskList(
 			Activity.FIGHT,
 			ImmutableList.of(
-				Pair.of(0, ForgetAttackTargetTask.create(Sensor.hasTargetBeenAttackableRecently(breeze, 100).negate())),
+				Pair.of(0, ForgetAttackTargetTask.create(Sensor.hasTargetBeenAttackableRecently(breeze, 100).negate()::test)),
 				Pair.of(1, new BreezeShootTask()),
 				Pair.of(2, new BreezeJumpTask()),
 				Pair.of(3, new BreezeShootIfStuckTask()),

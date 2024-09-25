@@ -114,13 +114,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		Slot slot = this.focusedSlot;
 		this.focusedSlot = this.getSlotAt((double)mouseX, (double)mouseY);
 		this.drawSlotHighlightBack(context);
-
-		for (Slot slot2 : this.handler.slots) {
-			if (slot2.isEnabled()) {
-				this.drawSlot(context, slot2);
-			}
-		}
-
+		this.drawSlots(context);
 		this.drawSlotHighlightFront(context);
 		if (slot != null && slot != this.focusedSlot) {
 			this.resetTooltipSubmenus(slot);
@@ -159,6 +153,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 
 		context.getMatrices().pop();
+	}
+
+	protected void drawSlots(DrawContext context) {
+		for (Slot slot : this.handler.slots) {
+			if (slot.isEnabled()) {
+				this.drawSlot(context, slot);
+			}
+		}
 	}
 
 	@Override

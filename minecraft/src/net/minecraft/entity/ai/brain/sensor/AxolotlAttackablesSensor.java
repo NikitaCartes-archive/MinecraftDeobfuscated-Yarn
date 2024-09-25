@@ -3,16 +3,17 @@ package net.minecraft.entity.ai.brain.sensor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.server.world.ServerWorld;
 
 public class AxolotlAttackablesSensor extends NearestVisibleLivingEntitySensor {
 	public static final float TARGET_RANGE = 8.0F;
 
 	@Override
-	protected boolean matches(LivingEntity entity, LivingEntity target) {
+	protected boolean matches(ServerWorld world, LivingEntity entity, LivingEntity target) {
 		return this.isInRange(entity, target)
 			&& target.isInsideWaterOrBubbleColumn()
 			&& (this.isAlwaysHostileTo(target) || this.canHunt(entity, target))
-			&& Sensor.testAttackableTargetPredicate(entity, target);
+			&& Sensor.testAttackableTargetPredicate(world, entity, target);
 	}
 
 	private boolean canHunt(LivingEntity axolotl, LivingEntity target) {

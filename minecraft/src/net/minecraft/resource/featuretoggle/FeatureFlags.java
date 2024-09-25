@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier;
 
 public class FeatureFlags {
 	public static final FeatureFlag VANILLA;
-	public static final FeatureFlag BUNDLE;
 	public static final FeatureFlag TRADE_REBALANCE;
 	public static final FeatureFlag REDSTONE_EXPERIMENTS;
 	public static final FeatureFlag MINECART_IMPROVEMENTS;
@@ -33,7 +32,6 @@ public class FeatureFlags {
 	static {
 		FeatureManager.Builder builder = new FeatureManager.Builder("main");
 		VANILLA = builder.addVanillaFlag("vanilla");
-		BUNDLE = builder.addVanillaFlag("bundle");
 		TRADE_REBALANCE = builder.addVanillaFlag("trade_rebalance");
 		REDSTONE_EXPERIMENTS = builder.addVanillaFlag("redstone_experiments");
 		MINECART_IMPROVEMENTS = builder.addVanillaFlag("minecart_improvements");

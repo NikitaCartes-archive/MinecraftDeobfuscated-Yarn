@@ -241,7 +241,7 @@ public class AxolotlEntity extends AnimalEntity implements VariantHolder<Axolotl
 			this.setAir(air - 1);
 			if (this.getAir() == -20) {
 				this.setAir(0);
-				this.damage(this.getDamageSources().dryOut(), 2.0F);
+				this.serverDamage(this.getDamageSources().dryOut(), 2.0F);
 			}
 		} else {
 			this.setAir(this.getMaxAir());
@@ -328,10 +328,10 @@ public class AxolotlEntity extends AnimalEntity implements VariantHolder<Axolotl
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("axolotlBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		profiler.push("axolotlActivityUpdate");
 		AxolotlBrain.updateActivities(this);
@@ -361,10 +361,9 @@ public class AxolotlEntity extends AnimalEntity implements VariantHolder<Axolotl
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		float f = this.getHealth();
-		if (!this.getWorld().isClient
-			&& !this.isAiDisabled()
+		if (!this.isAiDisabled()
 			&& this.getWorld().random.nextInt(3) == 0
 			&& ((float)this.getWorld().random.nextInt(3) < amount || f / this.getMaxHealth() < 0.5F)
 			&& amount < f
@@ -374,7 +373,7 @@ public class AxolotlEntity extends AnimalEntity implements VariantHolder<Axolotl
 			this.brain.remember(MemoryModuleType.PLAY_DEAD_TICKS, 200);
 		}
 
-		return super.damage(source, amount);
+		return super.damage(world, source, amount);
 	}
 
 	@Override
@@ -433,14 +432,13 @@ public class AxolotlEntity extends AnimalEntity implements VariantHolder<Axolotl
 		return !this.isPlayingDead() && super.canTakeDamage();
 	}
 
-	public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity entity) {
-		World world = axolotl.getWorld();
-		if (entity.isDead()) {
-			DamageSource damageSource = entity.getRecentDamageSource();
+	public static void appreciatePlayer(ServerWorld world, AxolotlEntity axolotl, LivingEntity target) {
+		if (target.isDead()) {
+			DamageSource damageSource = target.getRecentDamageSource();
 			if (damageSource != null) {
-				Entity entity2 = damageSource.getAttacker();
-				if (entity2 != null && entity2.getType() == EntityType.PLAYER) {
-					PlayerEntity playerEntity = (PlayerEntity)entity2;
+				Entity entity = damageSource.getAttacker();
+				if (entity != null && entity.getType() == EntityType.PLAYER) {
+					PlayerEntity playerEntity = (PlayerEntity)entity;
 					List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
 					if (list.contains(playerEntity)) {
 						axolotl.buffPlayer(playerEntity);

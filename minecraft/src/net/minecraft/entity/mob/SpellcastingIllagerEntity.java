@@ -12,6 +12,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.MathHelper;
@@ -67,8 +68,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		super.mobTick();
+	protected void mobTick(ServerWorld world) {
+		super.mobTick(world);
 		if (this.spellTicks > 0) {
 			this.spellTicks--;
 		}

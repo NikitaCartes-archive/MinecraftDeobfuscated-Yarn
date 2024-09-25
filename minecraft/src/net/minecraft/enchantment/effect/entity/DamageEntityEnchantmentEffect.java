@@ -27,7 +27,7 @@ public record DamageEntityEnchantmentEffect(EnchantmentLevelBasedValue minDamage
 	@Override
 	public void apply(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos) {
 		float f = MathHelper.nextBetween(user.getRandom(), this.minDamage.getValue(level), this.maxDamage.getValue(level));
-		user.damage(new DamageSource(this.damageType, context.owner()), f);
+		user.damage(world, new DamageSource(this.damageType, context.owner()), f);
 	}
 
 	@Override

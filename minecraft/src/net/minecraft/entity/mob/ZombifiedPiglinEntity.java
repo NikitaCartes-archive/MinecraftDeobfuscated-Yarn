@@ -93,7 +93,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (this.hasAngerTime()) {
 			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_MODIFIER_ID)) {
@@ -105,7 +105,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_MODIFIER_ID);
 		}
 
-		this.tickAngerLogic((ServerWorld)this.getWorld(), true);
+		this.tickAngerLogic(world, true);
 		if (this.getTarget() != null) {
 			this.tickAngerPassing();
 		}
@@ -114,7 +114,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			this.playerHitTimer = this.age;
 		}
 
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	private void tickAngrySound() {
@@ -241,12 +241,12 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	public boolean isAngryAt(PlayerEntity player) {
-		return this.shouldAngerAt(player);
+	public boolean isAngryAt(ServerWorld world, PlayerEntity player) {
+		return this.shouldAngerAt(player, world);
 	}
 
 	@Override
-	public boolean canGather(ItemStack stack) {
+	public boolean canGather(ServerWorld world, ItemStack stack) {
 		return this.canPickupItem(stack);
 	}
 }

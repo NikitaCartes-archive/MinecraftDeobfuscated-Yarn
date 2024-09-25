@@ -26,8 +26,8 @@ public class NearestItemsSensor extends Sensor<MobEntity> {
 		List<ItemEntity> list = serverWorld.getEntitiesByClass(ItemEntity.class, mobEntity.getBoundingBox().expand(32.0, 16.0, 32.0), itemEntity -> true);
 		list.sort(Comparator.comparingDouble(mobEntity::squaredDistanceTo));
 		Optional<ItemEntity> optional = list.stream()
-			.filter(itemEntity -> mobEntity.canGather(itemEntity.getStack()))
-			.filter(itemEntity -> itemEntity.isInRange(mobEntity, 32.0))
+			.filter(itemEntity -> mobEntity.canGather(serverWorld, itemEntity.getStack()))
+			.filter(itemEntityx -> itemEntityx.isInRange(mobEntity, 32.0))
 			.filter(mobEntity::canSee)
 			.findFirst();
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, optional);

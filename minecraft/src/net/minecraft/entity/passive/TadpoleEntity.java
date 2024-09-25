@@ -92,15 +92,15 @@ public class TadpoleEntity extends FishEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("tadpoleBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		profiler.push("tadpoleActivityUpdate");
 		TadpoleBrain.updateActivities(this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	public static DefaultAttributeContainer.Builder createTadpoleAttributes() {

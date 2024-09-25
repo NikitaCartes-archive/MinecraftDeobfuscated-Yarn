@@ -11,6 +11,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -26,24 +27,39 @@ public abstract class VehicleEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.getWorld().isClient || this.isRemoved()) {
+	public boolean clientDamage(DamageSource source) {
+		return true;
+	}
+
+	@Override
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isRemoved()) {
 			return true;
-		} else if (this.isInvulnerableTo(source)) {
+		} else if (this.isAlwaysInvulnerableTo(source)) {
 			return false;
 		} else {
-			this.setDamageWobbleSide(-this.getDamageWobbleSide());
-			this.setDamageWobbleTicks(10);
-			this.scheduleVelocityUpdate();
-			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
-			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
+			boolean var10000;
+			label32: {
+				this.setDamageWobbleSide(-this.getDamageWobbleSide());
+				this.setDamageWobbleTicks(10);
+				this.scheduleVelocityUpdate();
+				this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+				if (source.getAttacker() instanceof PlayerEntity playerEntity && playerEntity.getAbilities().creativeMode) {
+					var10000 = true;
+					break label32;
+				}
+
+				var10000 = false;
+			}
+
+			boolean bl = var10000;
 			if ((bl || !(this.getDamageWobbleStrength() > 40.0F)) && !this.shouldAlwaysKill(source)) {
 				if (bl) {
 					this.discard();
 				}
 			} else {
-				this.killAndDropSelf(source);
+				this.killAndDropSelf(world, source);
 			}
 
 			return true;
@@ -56,15 +72,15 @@ public abstract class VehicleEntity extends Entity {
 
 	@Override
 	public boolean isImmuneToExplosion(Explosion explosion) {
-		return explosion.getCausingEntity() instanceof MobEntity && !this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+		return explosion.getCausingEntity() instanceof MobEntity && !explosion.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 	}
 
-	public void killAndDropItem(Item selfAsItem) {
-		this.kill();
-		if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			ItemStack itemStack = new ItemStack(selfAsItem);
+	public void killAndDropItem(ServerWorld world, Item item) {
+		this.kill(world);
+		if (world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			ItemStack itemStack = new ItemStack(item);
 			itemStack.set(DataComponentTypes.CUSTOM_NAME, this.getCustomName());
-			this.dropStack(itemStack);
+			this.dropStack(world, itemStack);
 		}
 	}
 
@@ -99,8 +115,8 @@ public abstract class VehicleEntity extends Entity {
 		return this.dataTracker.get(DAMAGE_WOBBLE_SIDE);
 	}
 
-	protected void killAndDropSelf(DamageSource source) {
-		this.killAndDropItem(this.asItem());
+	protected void killAndDropSelf(ServerWorld world, DamageSource damageSource) {
+		this.killAndDropItem(world, this.asItem());
 	}
 
 	@Override
@@ -108,5 +124,5 @@ public abstract class VehicleEntity extends Entity {
 		return 10;
 	}
 
-	abstract Item asItem();
+	protected abstract Item asItem();
 }

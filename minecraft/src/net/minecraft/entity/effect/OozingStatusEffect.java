@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
@@ -31,10 +32,9 @@ class OozingStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void onEntityRemoval(LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
+	public void onEntityRemoval(ServerWorld world, LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
 		if (reason == Entity.RemovalReason.KILLED) {
 			int i = this.slimeCountFunction.applyAsInt(entity.getRandom());
-			World world = entity.getWorld();
 			int j = world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
 			int k = getSlimesToSpawn(j, OozingStatusEffect.SlimeCounter.around(entity), i);
 

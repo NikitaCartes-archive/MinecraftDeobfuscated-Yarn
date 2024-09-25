@@ -10,7 +10,7 @@ public class RemoveOffHandItemTask {
 		return TaskTriggerer.task(
 			context -> context.group(context.queryMemoryAbsent(MemoryModuleType.ADMIRING_ITEM)).apply(context, admiringItem -> (world, entity, time) -> {
 						if (!entity.getOffHandStack().isEmpty() && !entity.getOffHandStack().isOf(Items.SHIELD)) {
-							PiglinBrain.consumeOffHandItem(entity, true);
+							PiglinBrain.consumeOffHandItem(world, entity, true);
 							return true;
 						} else {
 							return false;

@@ -171,12 +171,12 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected int getXpToDrop() {
+	protected int getXpToDrop(ServerWorld world) {
 		if (this.isBaby()) {
 			this.experiencePoints = (int)((double)this.experiencePoints * 2.5);
 		}
 
-		return super.getXpToDrop();
+		return super.getXpToDrop(world);
 	}
 
 	@Override
@@ -297,24 +297,24 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (!super.damage(source, amount)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (!super.damage(world, source, amount)) {
 			return false;
-		} else if (this.getWorld() instanceof ServerWorld serverWorld) {
+		} else {
 			LivingEntity livingEntity = this.getTarget();
 			if (livingEntity == null && source.getAttacker() instanceof LivingEntity) {
 				livingEntity = (LivingEntity)source.getAttacker();
 			}
 
 			if (livingEntity != null
-				&& this.getWorld().getDifficulty() == Difficulty.HARD
+				&& world.getDifficulty() == Difficulty.HARD
 				&& (double)this.random.nextFloat() < this.getAttributeValue(EntityAttributes.SPAWN_REINFORCEMENTS)
-				&& this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+				&& world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 				int i = MathHelper.floor(this.getX());
 				int j = MathHelper.floor(this.getY());
 				int k = MathHelper.floor(this.getZ());
 				EntityType<? extends ZombieEntity> entityType = this.getType();
-				ZombieEntity zombieEntity = entityType.create(this.getWorld(), SpawnReason.REINFORCEMENT);
+				ZombieEntity zombieEntity = entityType.create(world, SpawnReason.REINFORCEMENT);
 				if (zombieEntity == null) {
 					return true;
 				}
@@ -324,16 +324,16 @@ public class ZombieEntity extends HostileEntity {
 					int n = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					int o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					BlockPos blockPos = new BlockPos(m, n, o);
-					if (SpawnRestriction.isSpawnPosAllowed(entityType, this.getWorld(), blockPos)
-						&& SpawnRestriction.canSpawn(entityType, serverWorld, SpawnReason.REINFORCEMENT, blockPos, this.getWorld().random)) {
+					if (SpawnRestriction.isSpawnPosAllowed(entityType, world, blockPos)
+						&& SpawnRestriction.canSpawn(entityType, world, SpawnReason.REINFORCEMENT, blockPos, world.random)) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
-						if (!this.getWorld().isPlayerInRange((double)m, (double)n, (double)o, 7.0)
-							&& this.getWorld().doesNotIntersectEntities(zombieEntity)
-							&& this.getWorld().isSpaceEmpty(zombieEntity)
-							&& !this.getWorld().containsFluid(zombieEntity.getBoundingBox())) {
+						if (!world.isPlayerInRange((double)m, (double)n, (double)o, 7.0)
+							&& world.doesNotIntersectEntities(zombieEntity)
+							&& world.isSpaceEmpty(zombieEntity)
+							&& (zombieEntity.canSpawnAsReinforcementInFluid() || !world.containsFluid(zombieEntity.getBoundingBox()))) {
 							zombieEntity.setTarget(livingEntity);
-							zombieEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null);
-							serverWorld.spawnEntityAndPassengers(zombieEntity);
+							zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null);
+							world.spawnEntityAndPassengers(zombieEntity);
 							EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.SPAWN_REINFORCEMENTS);
 							EntityAttributeModifier entityAttributeModifier = entityAttributeInstance.getModifier(REINFORCEMENT_CALLER_CHARGE_MODIFIER_ID);
 							double d = entityAttributeModifier != null ? entityAttributeModifier.value() : 0.0;
@@ -349,14 +349,12 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			return true;
-		} else {
-			return false;
 		}
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		boolean bl = super.tryAttack(target);
+	public boolean tryAttack(ServerWorld world, Entity target) {
+		boolean bl = super.tryAttack(world, target);
 		if (bl) {
 			float f = this.getWorld().getLocalDifficulty(this.getBlockPos()).getLocalDifficulty();
 			if (this.getMainHandStack().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
@@ -394,6 +392,10 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public EntityType<? extends ZombieEntity> getType() {
 		return (EntityType<? extends ZombieEntity>)super.getType();
+	}
+
+	protected boolean canSpawnAsReinforcementInFluid() {
+		return false;
 	}
 
 	@Override
@@ -456,8 +458,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canGather(ItemStack stack) {
-		return stack.isOf(Items.GLOW_INK_SAC) ? false : super.canGather(stack);
+	public boolean canGather(ServerWorld world, ItemStack stack) {
+		return stack.isOf(Items.GLOW_INK_SAC) ? false : super.canGather(world, stack);
 	}
 
 	@Nullable
@@ -525,8 +527,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@VisibleForTesting
-	public void method_63658(int i) {
-		this.ticksUntilWaterConversion = i;
+	public void setTicksUntilWaterConversionDirect(int ticksUntilWaterConversion) {
+		this.ticksUntilWaterConversion = ticksUntilWaterConversion;
 	}
 
 	public static boolean shouldBeBaby(Random random) {
@@ -569,7 +571,7 @@ public class ZombieEntity extends HostileEntity {
 			ItemStack itemStack = this.getSkull();
 			if (!itemStack.isEmpty()) {
 				creeperEntity.onHeadDropped();
-				this.dropStack(itemStack);
+				this.dropStack(world, itemStack);
 			}
 		}
 	}

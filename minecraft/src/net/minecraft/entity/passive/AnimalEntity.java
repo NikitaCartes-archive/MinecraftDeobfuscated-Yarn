@@ -5,6 +5,8 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.UseRemainderComponent;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -49,12 +51,12 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		if (this.getBreedingAge() != 0) {
 			this.loveTicks = 0;
 		}
 
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -76,9 +78,9 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	protected void applyDamage(DamageSource source, float amount) {
+	protected void applyDamage(ServerWorld world, DamageSource source, float amount) {
 		this.resetLoveTicks();
-		super.applyDamage(source, amount);
+		super.applyDamage(world, source, amount);
 	}
 
 	@Override
@@ -122,8 +124,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	protected int getXpToDrop() {
-		return 1 + this.getWorld().random.nextInt(3);
+	protected int getXpToDrop(ServerWorld world) {
+		return 1 + this.random.nextInt(3);
 	}
 
 	public abstract boolean isBreedingItem(ItemStack stack);
@@ -146,6 +148,10 @@ public abstract class AnimalEntity extends PassiveEntity {
 				this.playEatSound();
 				return ActionResult.SUCCESS;
 			}
+
+			if (this.getWorld().isClient) {
+				return ActionResult.CONSUME;
+			}
 		}
 
 		return super.interactMob(player, hand);
@@ -155,7 +161,13 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
+		int i = stack.getCount();
+		UseRemainderComponent useRemainderComponent = stack.get(DataComponentTypes.USE_REMAINDER);
 		stack.decrementUnlessCreative(1, player);
+		if (useRemainderComponent != null) {
+			ItemStack itemStack = useRemainderComponent.convert(stack, i, player.isInCreativeMode(), player::giveOrDropStack);
+			player.setStackInHand(hand, itemStack);
+		}
 	}
 
 	public boolean canEat() {

@@ -86,20 +86,25 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public final boolean clientDamage(DamageSource source) {
+		return this.isAlwaysInvulnerableTo(source) ? false : !(source.getAttacker() instanceof EnderDragonEntity);
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isAlwaysInvulnerableTo(source)) {
 			return false;
 		} else if (source.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.isRemoved() && !this.getWorld().isClient) {
+			if (!this.isRemoved()) {
 				this.remove(Entity.RemovalReason.KILLED);
 				if (!source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 					DamageSource damageSource = source.getAttacker() != null ? this.getDamageSources().explosion(this, source.getAttacker()) : null;
-					this.getWorld().createExplosion(this, damageSource, null, this.getX(), this.getY(), this.getZ(), 6.0F, false, World.ExplosionSourceType.BLOCK);
+					world.createExplosion(this, damageSource, null, this.getX(), this.getY(), this.getZ(), 6.0F, false, World.ExplosionSourceType.BLOCK);
 				}
 
-				this.crystalDestroyed(source);
+				this.crystalDestroyed(world, source);
 			}
 
 			return true;
@@ -107,17 +112,15 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	public void kill() {
-		this.crystalDestroyed(this.getDamageSources().generic());
-		super.kill();
+	public void kill(ServerWorld world) {
+		this.crystalDestroyed(world, this.getDamageSources().generic());
+		super.kill(world);
 	}
 
-	private void crystalDestroyed(DamageSource source) {
-		if (this.getWorld() instanceof ServerWorld) {
-			EnderDragonFight enderDragonFight = ((ServerWorld)this.getWorld()).getEnderDragonFight();
-			if (enderDragonFight != null) {
-				enderDragonFight.crystalDestroyed(this, source);
-			}
+	private void crystalDestroyed(ServerWorld world, DamageSource source) {
+		EnderDragonFight enderDragonFight = world.getEnderDragonFight();
+		if (enderDragonFight != null) {
+			enderDragonFight.crystalDestroyed(this, source);
 		}
 	}
 

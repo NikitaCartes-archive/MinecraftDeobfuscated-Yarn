@@ -8,6 +8,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.collection.IdList;
@@ -53,10 +54,10 @@ public abstract class Fluid {
 	protected void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 	}
 
-	protected void onScheduledTick(World world, BlockPos pos, BlockState blockState, FluidState fluidState) {
+	protected void onScheduledTick(ServerWorld world, BlockPos pos, BlockState blockState, FluidState fluidState) {
 	}
 
-	protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
+	protected void onRandomTick(ServerWorld world, BlockPos pos, FluidState state, Random random) {
 	}
 
 	@Nullable

@@ -99,6 +99,15 @@ public class FallingBlockEntity extends Entity {
 		return false;
 	}
 
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (!this.isAlwaysInvulnerableTo(source)) {
+			this.scheduleVelocityUpdate();
+		}
+
+		return false;
+	}
+
 	public void setFallingBlockPos(BlockPos pos) {
 		this.dataTracker.set(BLOCK_POS, pos);
 	}
@@ -138,7 +147,7 @@ public class FallingBlockEntity extends Entity {
 			this.move(MovementType.SELF, this.getVelocity());
 			this.tickBlockCollision();
 			this.tickPortalTeleportation();
-			if (!this.getWorld().isClient && (this.isAlive() || this.shouldDupe)) {
+			if (this.getWorld() instanceof ServerWorld serverWorld && (this.isAlive() || this.shouldDupe)) {
 				BlockPos blockPos = this.getBlockPos();
 				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
 				boolean bl2 = bl && this.getWorld().getFluidState(blockPos).isIn(FluidTags.WATER);
@@ -156,7 +165,16 @@ public class FallingBlockEntity extends Entity {
 					}
 				}
 
-				if (this.isOnGround() || bl2) {
+				if (!this.isOnGround() && !bl2) {
+					if (this.timeFalling > 100 && (blockPos.getY() <= this.getWorld().getBottomY() || blockPos.getY() > this.getWorld().getTopYInclusive())
+						|| this.timeFalling > 600) {
+						if (this.dropItem && serverWorld.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+							this.dropItem(serverWorld, block);
+						}
+
+						this.discard();
+					}
+				} else {
 					BlockState blockState = this.getWorld().getBlockState(blockPos);
 					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 					if (!blockState.isOf(Blocks.MOVING_PISTON)) {
@@ -190,23 +208,23 @@ public class FallingBlockEntity extends Entity {
 
 											try {
 												blockEntity.read(nbtCompound, this.getWorld().getRegistryManager());
-											} catch (Exception var15) {
-												LOGGER.error("Failed to load block entity from falling block", (Throwable)var15);
+											} catch (Exception var16) {
+												LOGGER.error("Failed to load block entity from falling block", (Throwable)var16);
 											}
 
 											blockEntity.markDirty();
 										}
 									}
-								} else if (this.dropItem && this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+								} else if (this.dropItem && serverWorld.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 									this.discard();
 									this.onDestroyedOnLanding(block, blockPos);
-									this.dropItem(block);
+									this.dropItem(serverWorld, block);
 								}
 							} else {
 								this.discard();
-								if (this.dropItem && this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+								if (this.dropItem && serverWorld.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 									this.onDestroyedOnLanding(block, blockPos);
-									this.dropItem(block);
+									this.dropItem(serverWorld, block);
 								}
 							}
 						} else {
@@ -214,16 +232,6 @@ public class FallingBlockEntity extends Entity {
 							this.onDestroyedOnLanding(block, blockPos);
 						}
 					}
-				} else if (!this.getWorld().isClient
-					&& (
-						this.timeFalling > 100 && (blockPos.getY() <= this.getWorld().getBottomY() || blockPos.getY() > this.getWorld().getTopYInclusive())
-							|| this.timeFalling > 600
-					)) {
-					if (this.dropItem && this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-						this.dropItem(block);
-					}
-
-					this.discard();
 				}
 			}
 
@@ -251,7 +259,7 @@ public class FallingBlockEntity extends Entity {
 					? landingBlock.getDamageSource(this)
 					: this.getDamageSources().fallingBlock(this);
 				float f = (float)Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
-				this.getWorld().getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource2, f));
+				this.getWorld().getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.serverDamage(damageSource2, f));
 				boolean bl = this.block.isIn(BlockTags.ANVIL);
 				if (bl && f > 0.0F && this.random.nextFloat() < 0.05F + (float)i * 0.05F) {
 					BlockState blockState = AnvilBlock.getLandingState(this.block);

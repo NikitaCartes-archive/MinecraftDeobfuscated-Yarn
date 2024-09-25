@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -30,7 +31,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		if (this.target == null) {
 			LOGGER.warn("Skipping player strafe phase because no player was found");
 			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
@@ -75,12 +76,12 @@ public class StrafePlayerPhase extends AbstractPhase {
 						double q = this.target.getZ() - n;
 						Vec3d vec3d4 = new Vec3d(o, p, q);
 						if (!this.dragon.isSilent()) {
-							this.dragon.getWorld().syncWorldEvent(null, WorldEvents.ENDER_DRAGON_SHOOTS, this.dragon.getBlockPos(), 0);
+							world.syncWorldEvent(null, WorldEvents.ENDER_DRAGON_SHOOTS, this.dragon.getBlockPos(), 0);
 						}
 
-						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.getWorld(), this.dragon, vec3d4.normalize());
+						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(world, this.dragon, vec3d4.normalize());
 						dragonFireballEntity.refreshPositionAndAngles(l, m, n, 0.0F, 0.0F);
-						this.dragon.getWorld().spawnEntity(dragonFireballEntity);
+						world.spawnEntity(dragonFireballEntity);
 						this.seenTargetTimes = 0;
 						if (this.path != null) {
 							while (!this.path.isFinished()) {

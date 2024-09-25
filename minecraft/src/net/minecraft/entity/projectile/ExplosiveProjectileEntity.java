@@ -14,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -68,6 +69,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	@Override
 	public void tick() {
 		Entity entity = this.getOwner();
+		this.applyDrag();
 		if (this.getWorld().isClient || (entity == null || !entity.isRemoved()) && this.getWorld().isChunkLoaded(this.getBlockPos())) {
 			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());
 			Vec3d vec3d;
@@ -89,7 +91,6 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				this.hitOrDeflect(hitResult);
 			}
 
-			this.applyDrag();
 			this.addParticles();
 		} else {
 			this.discard();
@@ -124,8 +125,8 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return !this.isInvulnerableTo(source);
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return false;
 	}
 
 	@Override

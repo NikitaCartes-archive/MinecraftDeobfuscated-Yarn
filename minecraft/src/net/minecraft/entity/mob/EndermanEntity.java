@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -257,16 +256,16 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	protected void mobTick() {
-		if (this.getWorld().isDay() && this.age >= this.ageWhenTargetSet + 600) {
+	protected void mobTick(ServerWorld world) {
+		if (world.isDay() && this.age >= this.ageWhenTargetSet + 600) {
 			float f = this.getBrightnessAtEyes();
-			if (f > 0.5F && this.getWorld().isSkyVisible(this.getBlockPos()) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
+			if (f > 0.5F && world.isSkyVisible(this.getBlockPos()) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
 				this.setTarget(null);
 				this.teleportRandomly();
 			}
 		}
 
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	protected boolean teleportRandomly() {
@@ -347,7 +346,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 				.addOptional(LootContextParameters.THIS_ENTITY, this);
 
 			for (ItemStack itemStack2 : blockState.getDroppedStacks(builder)) {
-				this.dropStack(itemStack2);
+				this.dropStack(world, itemStack2);
 			}
 		}
 	}
@@ -362,20 +361,20 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else {
 			boolean bl = source.getSource() instanceof PotionEntity;
 			if (!source.isIn(DamageTypeTags.IS_PROJECTILE) && !bl) {
-				boolean bl2 = super.damage(source, amount);
-				if (!this.getWorld().isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
+				boolean bl2 = super.damage(world, source, amount);
+				if (!(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
 					this.teleportRandomly();
 				}
 
 				return bl2;
 			} else {
-				boolean bl2 = bl && this.damageFromPotion(source, (PotionEntity)source.getSource(), amount);
+				boolean bl2 = bl && this.damageFromPotion(world, source, (PotionEntity)source.getSource(), amount);
 
 				for (int i = 0; i < 64; i++) {
 					if (this.teleportRandomly()) {
@@ -388,10 +387,10 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		}
 	}
 
-	private boolean damageFromPotion(DamageSource source, PotionEntity potion, float amount) {
+	private boolean damageFromPotion(ServerWorld world, DamageSource source, PotionEntity potion, float amount) {
 		ItemStack itemStack = potion.getStack();
 		PotionContentsComponent potionContentsComponent = itemStack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
-		return potionContentsComponent.matches(Potions.WATER) ? super.damage(source, amount) : false;
+		return potionContentsComponent.matches(Potions.WATER) ? super.damage(world, source, amount) : false;
 	}
 
 	public boolean isAngry() {
@@ -455,7 +454,9 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (this.enderman.getCarriedBlock() != null) {
 				return false;
 			} else {
-				return !this.enderman.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(toGoalTicks(20)) == 0;
+				return !getServerWorld(this.enderman).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+					? false
+					: this.enderman.getRandom().nextInt(toGoalTicks(20)) == 0;
 			}
 		}
 
@@ -494,7 +495,9 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (this.enderman.getCarriedBlock() == null) {
 				return false;
 			} else {
-				return !this.enderman.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(toGoalTicks(2000)) == 0;
+				return !getServerWorld(this.enderman).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+					? false
+					: this.enderman.getRandom().nextInt(toGoalTicks(2000)) == 0;
 			}
 		}
 
@@ -538,19 +541,19 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		private int ticksSinceUnseenTeleport;
 		private final TargetPredicate staringPlayerPredicate;
 		private final TargetPredicate validTargetPredicate = TargetPredicate.createAttackable().ignoreVisibility();
-		private final Predicate<LivingEntity> angerPredicate;
+		private final TargetPredicate.EntityPredicate angerPredicate;
 
-		public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> targetPredicate) {
+		public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable TargetPredicate.EntityPredicate targetPredicate) {
 			super(enderman, PlayerEntity.class, 10, false, false, targetPredicate);
 			this.enderman = enderman;
-			this.angerPredicate = playerEntity -> (enderman.isPlayerStaring((PlayerEntity)playerEntity) || enderman.shouldAngerAt(playerEntity))
+			this.angerPredicate = (playerEntity, world) -> (enderman.isPlayerStaring((PlayerEntity)playerEntity) || enderman.shouldAngerAt(playerEntity, world))
 					&& !enderman.hasPassengerDeep(playerEntity);
 			this.staringPlayerPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(this.angerPredicate);
 		}
 
 		@Override
 		public boolean canStart() {
-			this.targetPlayer = this.enderman.getWorld().getClosestPlayer(this.staringPlayerPredicate.setBaseMaxDistance(this.getFollowRange()), this.enderman);
+			this.targetPlayer = getServerWorld(this.enderman).getClosestPlayer(this.staringPlayerPredicate.setBaseMaxDistance(this.getFollowRange()), this.enderman);
 			return this.targetPlayer != null;
 		}
 
@@ -570,7 +573,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		@Override
 		public boolean shouldContinue() {
 			if (this.targetPlayer != null) {
-				if (!this.angerPredicate.test(this.targetPlayer)) {
+				if (!this.angerPredicate.method_18303(this.targetPlayer, getServerWorld(this.enderman))) {
 					return false;
 				} else {
 					this.enderman.lookAtEntity(this.targetPlayer, 10.0F, 10.0F);
@@ -582,7 +585,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 						return false;
 					}
 
-					if (this.validTargetPredicate.test(this.enderman, this.targetEntity)) {
+					if (this.validTargetPredicate.test(getServerWorld(this.enderman), this.enderman, this.targetEntity)) {
 						return true;
 					}
 				}

@@ -24,6 +24,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -83,17 +84,17 @@ public class PotionEntity extends ThrownItemEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			ItemStack itemStack = this.getStack();
 			PotionContentsComponent potionContentsComponent = itemStack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
 			if (potionContentsComponent.matches(Potions.WATER)) {
-				this.applyWater();
+				this.applyWater(serverWorld);
 			} else if (potionContentsComponent.hasEffects()) {
 				if (this.isLingering()) {
 					this.applyLingeringPotion(potionContentsComponent);
 				} else {
 					this.applySplashPotion(
-						potionContentsComponent.getEffects(), hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null
+						serverWorld, potionContentsComponent.getEffects(), hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null
 					);
 				}
 			}
@@ -101,19 +102,19 @@ public class PotionEntity extends ThrownItemEntity {
 			int i = potionContentsComponent.potion().isPresent() && ((Potion)((RegistryEntry)potionContentsComponent.potion().get()).value()).hasInstantEffect()
 				? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED
 				: WorldEvents.SPLASH_POTION_SPLASHED;
-			this.getWorld().syncWorldEvent(i, this.getBlockPos(), potionContentsComponent.getColor());
+			serverWorld.syncWorldEvent(i, this.getBlockPos(), potionContentsComponent.getColor());
 			this.discard();
 		}
 	}
 
-	private void applyWater() {
+	private void applyWater(ServerWorld world) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
 
 		for (LivingEntity livingEntity : this.getWorld().getEntitiesByClass(LivingEntity.class, box, AFFECTED_BY_WATER)) {
 			double d = this.squaredDistanceTo(livingEntity);
 			if (d < 16.0) {
 				if (livingEntity.hurtByWater()) {
-					livingEntity.damage(this.getDamageSources().indirectMagic(this, this.getOwner()), 1.0F);
+					livingEntity.damage(world, this.getDamageSources().indirectMagic(this, this.getOwner()), 1.0F);
 				}
 
 				if (livingEntity.isOnFire() && livingEntity.isAlive()) {
@@ -127,9 +128,9 @@ public class PotionEntity extends ThrownItemEntity {
 		}
 	}
 
-	private void applySplashPotion(Iterable<StatusEffectInstance> effects, @Nullable Entity entity) {
+	private void applySplashPotion(ServerWorld world, Iterable<StatusEffectInstance> effects, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list = this.getWorld().getNonSpectatingEntities(LivingEntity.class, box);
+		List<LivingEntity> list = world.getNonSpectatingEntities(LivingEntity.class, box);
 		if (!list.isEmpty()) {
 			Entity entity2 = this.getEffectCause();
 
@@ -147,7 +148,7 @@ public class PotionEntity extends ThrownItemEntity {
 						for (StatusEffectInstance statusEffectInstance : effects) {
 							RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
 							if (registryEntry.value().isInstant()) {
-								registryEntry.value().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
+								registryEntry.value().applyInstantEffect(world, this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
 							} else {
 								int i = statusEffectInstance.mapDuration(duration -> (int)(e * (double)duration + 0.5));
 								StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(

@@ -6,6 +6,7 @@ import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -65,9 +66,9 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!world.isClient && entity.isOnFire() && this.isEntityTouchingFluid(state, pos, entity)) {
+		if (world instanceof ServerWorld serverWorld && entity.isOnFire() && this.isEntityTouchingFluid(state, pos, entity)) {
 			entity.extinguish();
-			if (entity.canModifyAt(world, pos)) {
+			if (entity.canModifyAt(serverWorld, pos)) {
 				this.onFireCollision(state, world, pos);
 			}
 		}

@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -8,6 +9,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 
 public class LookAtEntityGoal extends Goal {
 	public static final float DEFAULT_CHANCE = 0.02F;
@@ -37,9 +39,8 @@ public class LookAtEntityGoal extends Goal {
 		this.lookForward = lookForward;
 		this.setControls(EnumSet.of(Goal.Control.LOOK));
 		if (targetType == PlayerEntity.class) {
-			this.targetPredicate = TargetPredicate.createNonAttackable()
-				.setBaseMaxDistance((double)range)
-				.setPredicate(entity -> EntityPredicates.rides(mob).test(entity));
+			Predicate<Entity> predicate = EntityPredicates.rides(mob);
+			this.targetPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance((double)range).setPredicate((entity, world) -> predicate.test(entity));
 		} else {
 			this.targetPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance((double)range);
 		}
@@ -54,21 +55,20 @@ public class LookAtEntityGoal extends Goal {
 				this.target = this.mob.getTarget();
 			}
 
+			ServerWorld serverWorld = getServerWorld(this.mob);
 			if (this.targetType == PlayerEntity.class) {
-				this.target = this.mob.getWorld().getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+				this.target = serverWorld.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 			} else {
-				this.target = this.mob
-					.getWorld()
-					.getClosestEntity(
-						this.mob
-							.getWorld()
-							.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
-						this.targetPredicate,
-						this.mob,
-						this.mob.getX(),
-						this.mob.getEyeY(),
-						this.mob.getZ()
-					);
+				this.target = serverWorld.getClosestEntity(
+					this.mob
+						.getWorld()
+						.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
+					this.targetPredicate,
+					this.mob,
+					this.mob.getX(),
+					this.mob.getEyeY(),
+					this.mob.getZ()
+				);
 			}
 
 			return this.target != null;

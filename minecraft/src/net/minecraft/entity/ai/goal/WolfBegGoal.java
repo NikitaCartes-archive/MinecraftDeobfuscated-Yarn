@@ -7,21 +7,21 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
-import net.minecraft.world.World;
 
 public class WolfBegGoal extends Goal {
 	private final WolfEntity wolf;
 	@Nullable
 	private PlayerEntity begFrom;
-	private final World world;
+	private final ServerWorld world;
 	private final float begDistance;
 	private int timer;
 	private final TargetPredicate validPlayerPredicate;
 
 	public WolfBegGoal(WolfEntity wolf, float begDistance) {
 		this.wolf = wolf;
-		this.world = wolf.getWorld();
+		this.world = getServerWorld(wolf);
 		this.begDistance = begDistance;
 		this.validPlayerPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance((double)begDistance);
 		this.setControls(EnumSet.of(Goal.Control.LOOK));

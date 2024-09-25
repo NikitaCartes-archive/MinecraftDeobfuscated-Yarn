@@ -249,7 +249,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		protected void attack(LivingEntity target) {
 			if (this.canAttack(target)) {
 				this.resetCooldown();
-				this.mob.tryAttack(target);
+				this.mob.tryAttack(getServerWorld(this.mob), target);
 				PolarBearEntity.this.setWarning(false);
 			} else if (this.mob.squaredDistanceTo(target) < (double)((target.getWidth() + 3.0F) * (target.getWidth() + 3.0F))) {
 				if (this.isCooledDown()) {

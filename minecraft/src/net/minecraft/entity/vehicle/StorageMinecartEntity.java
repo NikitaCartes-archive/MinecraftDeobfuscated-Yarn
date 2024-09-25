@@ -12,6 +12,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -30,9 +31,9 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public void killAndDropSelf(DamageSource source) {
-		super.killAndDropSelf(source);
-		this.onBroken(source, this.getWorld(), this);
+	public void killAndDropSelf(ServerWorld world, DamageSource damageSource) {
+		super.killAndDropSelf(world, damageSource);
+		this.onBroken(damageSource, world, this);
 	}
 
 	@Override

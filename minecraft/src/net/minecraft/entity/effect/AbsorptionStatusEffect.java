@@ -1,6 +1,7 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 
 class AbsorptionStatusEffect extends StatusEffect {
 	protected AbsorptionStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
@@ -8,8 +9,8 @@ class AbsorptionStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
-		return entity.getAbsorptionAmount() > 0.0F || entity.getWorld().isClient;
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
+		return entity.getAbsorptionAmount() > 0.0F;
 	}
 
 	@Override

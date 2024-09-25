@@ -312,12 +312,12 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
 		if (!this.isAttacking()) {
 			this.shouldAttack = true;
 		}
 
-		return super.tryAttack(target);
+		return super.tryAttack(world, target);
 	}
 
 	@Override
@@ -522,30 +522,27 @@ public class PandaEntity extends AnimalEntity {
 			}
 		}
 
-		if (!world.isClient() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			this.forEachGiftedItem(LootTables.PANDA_SNEEZE_GAMEPLAY, this::dropStack);
+		if (this.getWorld() instanceof ServerWorld serverWorld && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			this.forEachGiftedItem(serverWorld, LootTables.PANDA_SNEEZE_GAMEPLAY, this::dropStack);
 		}
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
-		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && canEatFromGround(item)) {
-			this.triggerItemPickedUpByEntityCriteria(item);
-			ItemStack itemStack = item.getStack();
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && canEatFromGround(itemEntity)) {
+			this.triggerItemPickedUpByEntityCriteria(itemEntity);
+			ItemStack itemStack = itemEntity.getStack();
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 			this.updateDropChances(EquipmentSlot.MAINHAND);
-			this.sendPickup(item, itemStack.getCount());
-			item.discard();
+			this.sendPickup(itemEntity, itemStack.getCount());
+			itemEntity.discard();
 		}
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (!this.getWorld().isClient) {
-			this.setSitting(false);
-		}
-
-		return super.damage(source, amount);
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		this.setSitting(false);
+		return super.damage(world, source, amount);
 	}
 
 	@Nullable
@@ -630,7 +627,7 @@ public class PandaEntity extends AnimalEntity {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
 			} else {
-				if (this.getWorld().isClient || this.isSitting() || this.isTouchingWater()) {
+				if (!(this.getWorld() instanceof ServerWorld serverWorld) || this.isSitting() || this.isTouchingWater()) {
 					return ActionResult.PASS;
 				}
 
@@ -638,7 +635,7 @@ public class PandaEntity extends AnimalEntity {
 				this.setEating(true);
 				ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
 				if (!itemStack2.isEmpty() && !player.isInCreativeMode()) {
-					this.dropStack(itemStack2);
+					this.dropStack(serverWorld, itemStack2);
 				}
 
 				this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(itemStack.getItem(), 1));
@@ -837,21 +834,20 @@ public class PandaEntity extends AnimalEntity {
 				return false;
 			} else {
 				if (this.target == null) {
+					ServerWorld serverWorld = getServerWorld(this.mob);
 					if (this.targetType == PlayerEntity.class) {
-						this.target = this.mob.getWorld().getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+						this.target = serverWorld.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 					} else {
-						this.target = this.mob
-							.getWorld()
-							.getClosestEntity(
-								this.mob
-									.getWorld()
-									.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
-								this.targetPredicate,
-								this.mob,
-								this.mob.getX(),
-								this.mob.getEyeY(),
-								this.mob.getZ()
-							);
+						this.target = serverWorld.getClosestEntity(
+							this.mob
+								.getWorld()
+								.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
+							this.targetPredicate,
+							this.mob,
+							this.mob.getX(),
+							this.mob.getEyeY(),
+							this.mob.getZ()
+						);
 					}
 				}
 
@@ -1049,7 +1045,7 @@ public class PandaEntity extends AnimalEntity {
 		public void stop() {
 			ItemStack itemStack = PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
 			if (!itemStack.isEmpty()) {
-				PandaEntity.this.dropStack(itemStack);
+				PandaEntity.this.dropStack(castToServerWorld(PandaEntity.this.getWorld()), itemStack);
 				PandaEntity.this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 				int i = PandaEntity.this.isLazy() ? PandaEntity.this.random.nextInt(50) + 10 : PandaEntity.this.random.nextInt(150) + 10;
 				this.startAge = PandaEntity.this.age + i * 20;

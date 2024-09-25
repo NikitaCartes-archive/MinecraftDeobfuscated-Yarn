@@ -225,6 +225,10 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		Vec3d vec3d = this.getVelocity();
 		this.setPosition(this.getPos().add(vec3d));
 		this.tickBlockCollision();
+		if (this.portalManager != null && this.portalManager.isInPortal()) {
+			this.tickPortalTeleportation();
+		}
+
 		if (hitResult != null && this.isAlive() && hitResult.getType() != HitResult.Type.MISS) {
 			this.hitOrDeflect(hitResult);
 		}
@@ -284,7 +288,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		Entity entity2 = this.getOwner();
 		LivingEntity livingEntity = entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null;
 		DamageSource damageSource = this.getDamageSources().mobProjectile(this, livingEntity);
-		boolean bl = entity.damage(damageSource, 4.0F);
+		boolean bl = entity.sidedDamage(damageSource, 4.0F);
 		if (bl) {
 			if (this.getWorld() instanceof ServerWorld serverWorld) {
 				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource);
@@ -320,13 +324,15 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (!this.getWorld().isClient) {
-			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
-			((ServerWorld)this.getWorld()).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
-			this.destroy();
-		}
+	public boolean clientDamage(DamageSource source) {
+		return true;
+	}
 
+	@Override
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
+		world.spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
+		this.destroy();
 		return true;
 	}
 

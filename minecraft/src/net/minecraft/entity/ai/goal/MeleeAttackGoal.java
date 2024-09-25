@@ -128,7 +128,7 @@ public class MeleeAttackGoal extends Goal {
 		if (this.canAttack(target)) {
 			this.resetCooldown();
 			this.mob.swingHand(Hand.MAIN_HAND);
-			this.mob.tryAttack(target);
+			this.mob.tryAttack(getServerWorld(this.mob), target);
 		}
 	}
 

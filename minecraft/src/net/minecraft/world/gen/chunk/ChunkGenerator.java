@@ -659,7 +659,7 @@ public abstract class ChunkGenerator {
 		return this.getHeight(x, z, heightmap, world, noiseConfig) - 1;
 	}
 
-	public abstract void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos);
+	public abstract void appendDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos);
 
 	@Deprecated
 	public GenerationSettings getGenerationSettings(RegistryEntry<Biome> biomeEntry) {

@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai;
 
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
 
 public class TargetPredicate {
@@ -14,7 +14,7 @@ public class TargetPredicate {
 	private boolean respectsVisibility = true;
 	private boolean useDistanceScalingFactor = true;
 	@Nullable
-	private Predicate<LivingEntity> predicate;
+	private TargetPredicate.EntityPredicate predicate;
 
 	private TargetPredicate(boolean attackable) {
 		this.attackable = attackable;
@@ -52,43 +52,48 @@ public class TargetPredicate {
 		return this;
 	}
 
-	public TargetPredicate setPredicate(@Nullable Predicate<LivingEntity> predicate) {
+	public TargetPredicate setPredicate(@Nullable TargetPredicate.EntityPredicate predicate) {
 		this.predicate = predicate;
 		return this;
 	}
 
-	public boolean test(@Nullable LivingEntity baseEntity, LivingEntity targetEntity) {
-		if (baseEntity == targetEntity) {
+	public boolean test(ServerWorld world, @Nullable LivingEntity tester, LivingEntity target) {
+		if (tester == target) {
 			return false;
-		} else if (!targetEntity.isPartOfGame()) {
+		} else if (!target.isPartOfGame()) {
 			return false;
-		} else if (this.predicate != null && !this.predicate.test(targetEntity)) {
+		} else if (this.predicate != null && !this.predicate.method_18303(target, world)) {
 			return false;
 		} else {
-			if (baseEntity == null) {
-				if (this.attackable && (!targetEntity.canTakeDamage() || targetEntity.getWorld().getDifficulty() == Difficulty.PEACEFUL)) {
+			if (tester == null) {
+				if (this.attackable && (!target.canTakeDamage() || world.getDifficulty() == Difficulty.PEACEFUL)) {
 					return false;
 				}
 			} else {
-				if (this.attackable && (!baseEntity.canTarget(targetEntity) || !baseEntity.canTarget(targetEntity.getType()) || baseEntity.isTeammate(targetEntity))) {
+				if (this.attackable && (!tester.canTarget(target) || !tester.canTarget(target.getType()) || tester.isTeammate(target))) {
 					return false;
 				}
 
 				if (this.baseMaxDistance > 0.0) {
-					double d = this.useDistanceScalingFactor ? targetEntity.getAttackDistanceScalingFactor(baseEntity) : 1.0;
+					double d = this.useDistanceScalingFactor ? target.getAttackDistanceScalingFactor(tester) : 1.0;
 					double e = Math.max(this.baseMaxDistance * d, 2.0);
-					double f = baseEntity.squaredDistanceTo(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
+					double f = tester.squaredDistanceTo(target.getX(), target.getY(), target.getZ());
 					if (f > e * e) {
 						return false;
 					}
 				}
 
-				if (this.respectsVisibility && baseEntity instanceof MobEntity mobEntity && !mobEntity.getVisibilityCache().canSee(targetEntity)) {
+				if (this.respectsVisibility && tester instanceof MobEntity mobEntity && !mobEntity.getVisibilityCache().canSee(target)) {
 					return false;
 				}
 			}
 
 			return true;
 		}
+	}
+
+	@FunctionalInterface
+	public interface EntityPredicate {
+		boolean method_18303(LivingEntity target, ServerWorld world);
 	}
 }

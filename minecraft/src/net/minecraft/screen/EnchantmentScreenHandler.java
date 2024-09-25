@@ -75,7 +75,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		this.addProperty(Property.create(this.enchantmentPower, 0));
 		this.addProperty(Property.create(this.enchantmentPower, 1));
 		this.addProperty(Property.create(this.enchantmentPower, 2));
-		this.addProperty(this.seed).set(playerInventory.player.getEnchantmentTableSeed());
+		this.addProperty(this.seed).set(playerInventory.player.getEnchantingTableSeed());
 		this.addProperty(Property.create(this.enchantmentId, 0));
 		this.addProperty(Property.create(this.enchantmentId, 1));
 		this.addProperty(Property.create(this.enchantmentId, 2));
@@ -171,7 +171,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 						}
 
 						this.inventory.markDirty();
-						this.seed.set(player.getEnchantmentTableSeed());
+						this.seed.set(player.getEnchantingTableSeed());
 						this.onContentChanged(this.inventory);
 						world.playSound(null, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 					}

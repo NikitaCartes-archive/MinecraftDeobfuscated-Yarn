@@ -106,9 +106,9 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		this.eatGrassTimer = this.eatGrassGoal.getTimer();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -162,28 +162,29 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS)) {
-			if (!this.getWorld().isClient && this.isShearable()) {
-				this.sheared(SoundCategory.PLAYERS, itemStack);
+			if (this.getWorld() instanceof ServerWorld serverWorld && this.isShearable()) {
+				this.sheared(serverWorld, SoundCategory.PLAYERS, itemStack);
 				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, getSlotForHand(hand));
 				return ActionResult.SUCCESS_SERVER;
-			} else {
-				return ActionResult.CONSUME;
 			}
+
+			return ActionResult.CONSUME;
 		} else {
 			return super.interactMob(player, hand);
 		}
 	}
 
 	@Override
-	public void sheared(SoundCategory shearedSoundCategory, ItemStack shears) {
-		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+	public void sheared(ServerWorld world, SoundCategory shearedSoundCategory, ItemStack shears) {
+		world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		this.forEachShearedItem(
+			world,
 			LootTables.SHEEP_SHEARING,
 			shears,
-			stack -> {
-				for (int i = 0; i < stack.getCount(); i++) {
-					ItemEntity itemEntity = this.dropStack(stack.copyWithCount(1), 1.0F);
+			(serverWorld, itemStack) -> {
+				for (int i = 0; i < itemStack.getCount(); i++) {
+					ItemEntity itemEntity = this.dropStack(serverWorld, itemStack.copyWithCount(1), 1.0F);
 					if (itemEntity != null) {
 						itemEntity.setVelocity(
 							itemEntity.getVelocity()

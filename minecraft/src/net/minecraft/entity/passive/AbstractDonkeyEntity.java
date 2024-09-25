@@ -18,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -65,13 +66,10 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected void dropInventory() {
-		super.dropInventory();
+	protected void dropInventory(ServerWorld world) {
+		super.dropInventory(world);
 		if (this.hasChest()) {
-			if (!this.getWorld().isClient) {
-				this.dropItem(Blocks.CHEST);
-			}
-
+			this.dropItem(world, Blocks.CHEST);
 			this.setHasChest(false);
 		}
 	}

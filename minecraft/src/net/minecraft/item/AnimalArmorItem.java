@@ -14,6 +14,11 @@ public class AnimalArmorItem extends Item {
 		this.type = type;
 	}
 
+	public AnimalArmorItem(ArmorMaterial material, AnimalArmorItem.Type type, SoundEvent equipSound, Item.Settings settings) {
+		super(material.applyBodyArmorSettings(settings, equipSound, type.allowedEntities));
+		this.type = type;
+	}
+
 	@Override
 	public SoundEvent getBreakSound() {
 		return this.type.breakSound;

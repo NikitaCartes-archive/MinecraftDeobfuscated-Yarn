@@ -213,10 +213,10 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	private void finishConversion(ServerWorld world) {
 		this.convertTo(
 			EntityType.VILLAGER,
-			EntityConversionContext.create(this, false, true),
+			EntityConversionContext.create(this, false, false),
 			villager -> {
 				for (EquipmentSlot equipmentSlot : this.dropEquipment(
-					stack -> !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)
+					world, stack -> !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)
 				)) {
 					StackReference stackReference = villager.getStackReference(equipmentSlot.getEntitySlotId() + 300);
 					stackReference.set(this.getEquippedStack(equipmentSlot));

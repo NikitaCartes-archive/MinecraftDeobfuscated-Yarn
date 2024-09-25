@@ -1,11 +1,13 @@
 package net.minecraft.entity;
 
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public class MarkerEntity extends Entity {
@@ -66,5 +68,10 @@ public class MarkerEntity extends Entity {
 	@Override
 	public boolean canAvoidTraps() {
 		return true;
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return false;
 	}
 }

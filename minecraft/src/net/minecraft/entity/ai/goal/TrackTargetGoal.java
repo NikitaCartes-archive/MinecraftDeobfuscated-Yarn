@@ -99,7 +99,7 @@ public abstract class TrackTargetGoal extends Goal {
 	protected boolean canTrack(@Nullable LivingEntity target, TargetPredicate targetPredicate) {
 		if (target == null) {
 			return false;
-		} else if (!targetPredicate.test(this.mob, target)) {
+		} else if (!targetPredicate.test(getServerWorld(this.mob), this.mob, target)) {
 			return false;
 		} else if (!this.mob.isInWalkTargetRange(target.getBlockPos())) {
 			return false;

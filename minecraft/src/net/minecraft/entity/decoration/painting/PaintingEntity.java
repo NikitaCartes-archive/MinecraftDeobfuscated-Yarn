@@ -25,6 +25,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.PaintingVariantTags;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -146,14 +147,14 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 	}
 
 	@Override
-	public void onBreak(@Nullable Entity breaker) {
-		if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+	public void onBreak(ServerWorld world, @Nullable Entity breaker) {
+		if (world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
 			if (breaker instanceof PlayerEntity playerEntity && playerEntity.isInCreativeMode()) {
 				return;
 			}
 
-			this.dropItem(Items.PAINTING);
+			this.dropItem(world, Items.PAINTING);
 		}
 	}
 

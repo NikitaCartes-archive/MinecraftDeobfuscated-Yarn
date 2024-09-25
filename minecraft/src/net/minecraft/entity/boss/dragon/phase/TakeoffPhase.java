@@ -3,6 +3,7 @@ package net.minecraft.entity.boss.dragon.phase;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -21,11 +22,9 @@ public class TakeoffPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		if (!this.shouldFindNewPath && this.path != null) {
-			BlockPos blockPos = this.dragon
-				.getWorld()
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
+			BlockPos blockPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
 			if (!blockPos.isWithinDistance(this.dragon.getPos(), 10.0)) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 			}

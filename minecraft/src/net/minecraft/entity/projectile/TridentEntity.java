@@ -63,8 +63,8 @@ public class TridentEntity extends PersistentProjectileEntity {
 		int i = this.dataTracker.get(LOYALTY);
 		if (i > 0 && (this.dealtDamage || this.isNoClip()) && entity != null) {
 			if (!this.isOwnerAlive()) {
-				if (!this.getWorld().isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
-					this.dropStack(this.asItemStack(), 0.1F);
+				if (this.getWorld() instanceof ServerWorld serverWorld && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
+					this.dropStack(serverWorld, this.asItemStack(), 0.1F);
 				}
 
 				this.discard();
@@ -111,13 +111,13 @@ public class TridentEntity extends PersistentProjectileEntity {
 		}
 
 		this.dealtDamage = true;
-		if (entity.damage(damageSource, f)) {
+		if (entity.sidedDamage(damageSource, f)) {
 			if (entity.getType() == EntityType.ENDERMAN) {
 				return;
 			}
 
 			if (this.getWorld() instanceof ServerWorld serverWorld) {
-				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource, this.getWeaponStack(), item -> this.kill());
+				EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource, this.getWeaponStack(), item -> this.kill(serverWorld));
 			}
 
 			if (entity instanceof LivingEntity livingEntity) {
@@ -142,7 +142,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 			null,
 			vec3d,
 			world.getBlockState(blockHitResult.getBlockPos()),
-			item -> this.kill()
+			item -> this.kill(world)
 		);
 	}
 

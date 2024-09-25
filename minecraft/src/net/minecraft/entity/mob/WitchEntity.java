@@ -61,7 +61,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.raidGoal = new RaidGoal<>(this, RaiderEntity.class, true, entity -> entity != null && this.hasActiveRaid() && entity.getType() != EntityType.WITCH);
+		this.raidGoal = new RaidGoal<>(this, RaiderEntity.class, true, (target, world) -> this.hasActiveRaid() && target.getType() != EntityType.WITCH);
 		this.attackPlayerGoal = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0F));

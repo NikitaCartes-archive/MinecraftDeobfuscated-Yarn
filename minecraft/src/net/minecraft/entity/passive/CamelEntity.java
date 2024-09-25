@@ -139,16 +139,16 @@ public class CamelEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("camelBrain");
 		Brain<?> brain = this.getBrain();
-		((Brain<CamelEntity>)brain).tick((ServerWorld)this.getWorld(), this);
+		((Brain<CamelEntity>)brain).tick(world, this);
 		profiler.pop();
 		profiler.push("camelActivityUpdate");
 		CamelBrain.updateActivities(this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -449,9 +449,9 @@ public class CamelEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected void applyDamage(DamageSource source, float amount) {
+	protected void applyDamage(ServerWorld world, DamageSource source, float amount) {
 		this.setStanding();
-		super.applyDamage(source, amount);
+		super.applyDamage(world, source, amount);
 	}
 
 	@Override

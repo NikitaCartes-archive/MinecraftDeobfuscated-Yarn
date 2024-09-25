@@ -9,7 +9,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class NearestVisibleLivingEntitySensor extends Sensor<LivingEntity> {
-	protected abstract boolean matches(LivingEntity entity, LivingEntity target);
+	protected abstract boolean matches(ServerWorld world, LivingEntity entity, LivingEntity target);
 
 	protected abstract MemoryModuleType<LivingEntity> getOutputMemoryModule();
 
@@ -20,11 +20,11 @@ public abstract class NearestVisibleLivingEntitySensor extends Sensor<LivingEnti
 
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		entity.getBrain().remember(this.getOutputMemoryModule(), this.getNearestVisibleLivingEntity(entity));
+		entity.getBrain().remember(this.getOutputMemoryModule(), this.getNearestVisibleLivingEntity(world, entity));
 	}
 
-	private Optional<LivingEntity> getNearestVisibleLivingEntity(LivingEntity entity) {
-		return this.getVisibleLivingEntities(entity).flatMap(livingTargetCache -> livingTargetCache.findFirst(livingEntity2 -> this.matches(entity, livingEntity2)));
+	private Optional<LivingEntity> getNearestVisibleLivingEntity(ServerWorld world, LivingEntity entity) {
+		return this.getVisibleLivingEntities(entity).flatMap(entities -> entities.findFirst(target -> this.matches(world, entity, target)));
 	}
 
 	protected Optional<LivingTargetCache> getVisibleLivingEntities(LivingEntity entity) {

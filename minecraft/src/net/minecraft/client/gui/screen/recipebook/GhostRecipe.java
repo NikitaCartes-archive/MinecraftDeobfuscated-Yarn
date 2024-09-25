@@ -35,21 +35,21 @@ public class GhostRecipe {
 		this.items.put(slot, new GhostRecipe.CyclingItem(items, false));
 	}
 
-	public void draw(DrawContext context, MinecraftClient client, int x, int y, boolean notInventory) {
+	public void draw(DrawContext context, MinecraftClient client, boolean resultHasPadding) {
 		this.items.forEach((slot, item) -> {
-			int k = slot.x + x;
-			int l = slot.y + y;
-			if (item.isResultSlot && notInventory) {
-				context.fill(k - 4, l - 4, k + 20, l + 20, 822018048);
+			int i = slot.x;
+			int j = slot.y;
+			if (item.isResultSlot && resultHasPadding) {
+				context.fill(i - 4, j - 4, i + 20, j + 20, 822018048);
 			} else {
-				context.fill(k, l, k + 16, l + 16, 822018048);
+				context.fill(i, j, i + 16, j + 16, 822018048);
 			}
 
 			ItemStack itemStack = item.get(this.currentIndexProvider.currentIndex());
-			context.drawItemWithoutEntity(itemStack, k, l);
-			context.fill(RenderLayer.getGuiGhostRecipeOverlay(), k, l, k + 16, l + 16, 822083583);
+			context.drawItemWithoutEntity(itemStack, i, j);
+			context.fill(RenderLayer.getGuiGhostRecipeOverlay(), i, j, i + 16, j + 16, 822083583);
 			if (item.isResultSlot) {
-				context.drawItemInSlot(client.textRenderer, itemStack, k, l);
+				context.drawItemInSlot(client.textRenderer, itemStack, i, j);
 			}
 		});
 	}

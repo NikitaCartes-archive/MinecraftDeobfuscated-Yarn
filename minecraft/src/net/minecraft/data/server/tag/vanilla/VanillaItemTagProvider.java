@@ -110,6 +110,26 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 				Items.CHERRY_BOAT
 			)
 			.addTag(ItemTags.CHEST_BOATS);
+		this.getOrCreateTagBuilder(ItemTags.BUNDLES)
+			.add(
+				Items.BUNDLE,
+				Items.BLACK_BUNDLE,
+				Items.BLUE_BUNDLE,
+				Items.BROWN_BUNDLE,
+				Items.CYAN_BUNDLE,
+				Items.GRAY_BUNDLE,
+				Items.GREEN_BUNDLE,
+				Items.LIGHT_BLUE_BUNDLE,
+				Items.LIGHT_GRAY_BUNDLE,
+				Items.LIME_BUNDLE,
+				Items.MAGENTA_BUNDLE,
+				Items.ORANGE_BUNDLE,
+				Items.PINK_BUNDLE,
+				Items.PURPLE_BUNDLE,
+				Items.RED_BUNDLE,
+				Items.YELLOW_BUNDLE,
+				Items.WHITE_BUNDLE
+			);
 		this.getOrCreateTagBuilder(ItemTags.CHEST_BOATS)
 			.add(
 				Items.OAK_CHEST_BOAT,
@@ -462,5 +482,6 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.COW_FOOD).add(Items.WHEAT);
 		this.getOrCreateTagBuilder(ItemTags.SHEEP_FOOD).add(Items.WHEAT);
 		this.getOrCreateTagBuilder(ItemTags.GOAT_FOOD).add(Items.WHEAT);
+		this.getOrCreateTagBuilder(ItemTags.MAP_INVISIBILITY_EQUIPMENT).add(Items.CARVED_PUMPKIN);
 	}
 }

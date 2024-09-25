@@ -357,10 +357,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 			return false;
 		} else {
 			if (fallDistance >= 6.0F) {
-				this.damage(damageSource, (float)i);
+				this.serverDamage(damageSource, (float)i);
 				if (this.hasPassengers()) {
 					for (Entity entity : this.getPassengersDeep()) {
-						entity.damage(damageSource, (float)i);
+						entity.serverDamage(damageSource, (float)i);
 					}
 				}
 			}
@@ -402,9 +402,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	protected void walkToParent() {
+	protected void walkToParent(ServerWorld world) {
 		if (!this.isFollowing() && this.isBaby()) {
-			super.walkToParent();
+			super.walkToParent(world);
 		}
 	}
 
@@ -435,7 +435,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	static class ChaseWolvesGoal extends ActiveTargetGoal<WolfEntity> {
 		public ChaseWolvesGoal(LlamaEntity llama) {
-			super(llama, WolfEntity.class, 16, false, true, wolf -> !((WolfEntity)wolf).isTamed());
+			super(llama, WolfEntity.class, 16, false, true, (wolf, world) -> !((WolfEntity)wolf).isTamed());
 		}
 
 		@Override

@@ -36,13 +36,13 @@ public abstract class BlockAttachedEntity extends Entity {
 
 	@Override
 	public void tick() {
-		if (!this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			this.attemptTickInVoid();
 			if (this.attachCheckTimer++ == 100) {
 				this.attachCheckTimer = 0;
 				if (!this.isRemoved() && !this.canStayAttached()) {
 					this.discard();
-					this.onBreak(null);
+					this.onBreak(serverWorld, null);
 				}
 			}
 		}
@@ -60,23 +60,28 @@ public abstract class BlockAttachedEntity extends Entity {
 		if (attacker instanceof PlayerEntity playerEntity) {
 			return !this.getWorld().canPlayerModifyAt(playerEntity, this.attachedBlockPos)
 				? true
-				: this.damage(this.getDamageSources().playerAttack(playerEntity), 0.0F);
+				: this.sidedDamage(this.getDamageSources().playerAttack(playerEntity), 0.0F);
 		} else {
 			return false;
 		}
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean clientDamage(DamageSource source) {
+		return !this.isAlwaysInvulnerableTo(source);
+	}
+
+	@Override
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isAlwaysInvulnerableTo(source)) {
 			return false;
-		} else if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
+		} else if (!world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
 			return false;
 		} else {
-			if (!this.isRemoved() && !this.getWorld().isClient) {
-				this.kill();
+			if (!this.isRemoved()) {
+				this.kill(world);
 				this.scheduleVelocityUpdate();
-				this.onBreak(source.getAttacker());
+				this.onBreak(world, source.getAttacker());
 			}
 
 			return true;
@@ -90,17 +95,17 @@ public abstract class BlockAttachedEntity extends Entity {
 
 	@Override
 	public void move(MovementType movementType, Vec3d movement) {
-		if (!this.getWorld().isClient && !this.isRemoved() && movement.lengthSquared() > 0.0) {
-			this.kill();
-			this.onBreak(null);
+		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved() && movement.lengthSquared() > 0.0) {
+			this.kill(serverWorld);
+			this.onBreak(serverWorld, null);
 		}
 	}
 
 	@Override
 	public void addVelocity(double deltaX, double deltaY, double deltaZ) {
-		if (!this.getWorld().isClient && !this.isRemoved() && deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ > 0.0) {
-			this.kill();
-			this.onBreak(null);
+		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved() && deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ > 0.0) {
+			this.kill(serverWorld);
+			this.onBreak(serverWorld, null);
 		}
 	}
 
@@ -122,7 +127,7 @@ public abstract class BlockAttachedEntity extends Entity {
 		}
 	}
 
-	public abstract void onBreak(@Nullable Entity breaker);
+	public abstract void onBreak(ServerWorld world, @Nullable Entity breaker);
 
 	@Override
 	protected boolean shouldSetPositionOnLoad() {

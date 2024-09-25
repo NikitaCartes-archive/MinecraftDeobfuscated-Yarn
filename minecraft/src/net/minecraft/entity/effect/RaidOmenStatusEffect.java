@@ -17,12 +17,11 @@ class RaidOmenStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
 		if (entity instanceof ServerPlayerEntity serverPlayerEntity && !entity.isSpectator()) {
-			ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
 			BlockPos blockPos = serverPlayerEntity.getStartRaidPos();
 			if (blockPos != null) {
-				serverWorld.getRaidManager().startRaid(serverPlayerEntity, blockPos);
+				world.getRaidManager().startRaid(serverPlayerEntity, blockPos);
 				serverPlayerEntity.clearStartRaidPos();
 				return false;
 			}

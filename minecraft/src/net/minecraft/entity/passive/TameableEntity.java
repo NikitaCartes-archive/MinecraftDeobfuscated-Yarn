@@ -27,6 +27,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -227,8 +228,10 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (!this.getWorld().isClient && this.getWorld().getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
-			this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
+		if (this.getWorld() instanceof ServerWorld serverWorld
+			&& serverWorld.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES)
+			&& this.getOwner() instanceof ServerPlayerEntity serverPlayerEntity) {
+			serverPlayerEntity.sendMessage(this.getDamageTracker().getDeathMessage());
 		}
 
 		super.onDeath(damageSource);

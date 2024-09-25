@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.component.type.PotionContentsComponent;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -132,13 +133,17 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	@Override
 	public void tick() {
 		super.tick();
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			this.serverTick(serverWorld);
+		} else {
+			this.clientTick();
+		}
+	}
+
+	private void clientTick() {
 		boolean bl = this.isWaiting();
 		float f = this.getRadius();
-		if (this.getWorld().isClient) {
-			if (bl && this.random.nextBoolean()) {
-				return;
-			}
-
+		if (!bl || !this.random.nextBoolean()) {
 			ParticleEffect particleEffect = this.getParticleType();
 			int i;
 			float g;
@@ -168,87 +173,90 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 					this.getWorld().addImportantParticle(particleEffect, d, e, l, (0.5 - this.random.nextDouble()) * 0.15, 0.01F, (0.5 - this.random.nextDouble()) * 0.15);
 				}
 			}
-		} else {
-			if (this.age >= this.waitTime + this.duration) {
-				this.discard();
-				return;
-			}
+		}
+	}
 
+	private void serverTick(ServerWorld world) {
+		if (this.age >= this.waitTime + this.duration) {
+			this.discard();
+		} else {
+			boolean bl = this.isWaiting();
 			boolean bl2 = this.age < this.waitTime;
 			if (bl != bl2) {
 				this.setWaiting(bl2);
 			}
 
-			if (bl2) {
-				return;
-			}
-
-			if (this.radiusGrowth != 0.0F) {
-				f += this.radiusGrowth;
-				if (f < 0.5F) {
-					this.discard();
-					return;
-				}
-
-				this.setRadius(f);
-			}
-
-			if (this.age % 5 == 0) {
-				this.affectedEntities.entrySet().removeIf(entry -> this.age >= (Integer)entry.getValue());
-				if (!this.potionContentsComponent.hasEffects()) {
-					this.affectedEntities.clear();
-				} else {
-					List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
-					if (this.potionContentsComponent.potion().isPresent()) {
-						for (StatusEffectInstance statusEffectInstance : ((Potion)((RegistryEntry)this.potionContentsComponent.potion().get()).value()).getEffects()) {
-							list.add(
-								new StatusEffectInstance(
-									statusEffectInstance.getEffectType(),
-									statusEffectInstance.mapDuration(duration -> duration / 4),
-									statusEffectInstance.getAmplifier(),
-									statusEffectInstance.isAmbient(),
-									statusEffectInstance.shouldShowParticles()
-								)
-							);
-						}
+			if (!bl2) {
+				float f = this.getRadius();
+				if (this.radiusGrowth != 0.0F) {
+					f += this.radiusGrowth;
+					if (f < 0.5F) {
+						this.discard();
+						return;
 					}
 
-					list.addAll(this.potionContentsComponent.customEffects());
-					List<LivingEntity> list2 = this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
-					if (!list2.isEmpty()) {
-						for (LivingEntity livingEntity : list2) {
-							if (!this.affectedEntities.containsKey(livingEntity)
-								&& livingEntity.isAffectedBySplashPotions()
-								&& !list.stream().noneMatch(livingEntity::canHaveStatusEffect)) {
-								double m = livingEntity.getX() - this.getX();
-								double n = livingEntity.getZ() - this.getZ();
-								double o = m * m + n * n;
-								if (o <= (double)(f * f)) {
-									this.affectedEntities.put(livingEntity, this.age + this.reapplicationDelay);
+					this.setRadius(f);
+				}
 
-									for (StatusEffectInstance statusEffectInstance2 : list) {
-										if (statusEffectInstance2.getEffectType().value().isInstant()) {
-											statusEffectInstance2.getEffectType().value().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
-										} else {
-											livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance2), this);
+				if (this.age % 5 == 0) {
+					this.affectedEntities.entrySet().removeIf(entity -> this.age >= (Integer)entity.getValue());
+					if (!this.potionContentsComponent.hasEffects()) {
+						this.affectedEntities.clear();
+					} else {
+						List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
+						if (this.potionContentsComponent.potion().isPresent()) {
+							for (StatusEffectInstance statusEffectInstance : ((Potion)((RegistryEntry)this.potionContentsComponent.potion().get()).value()).getEffects()) {
+								list.add(
+									new StatusEffectInstance(
+										statusEffectInstance.getEffectType(),
+										statusEffectInstance.mapDuration(duration -> duration / 4),
+										statusEffectInstance.getAmplifier(),
+										statusEffectInstance.isAmbient(),
+										statusEffectInstance.shouldShowParticles()
+									)
+								);
+							}
+						}
+
+						list.addAll(this.potionContentsComponent.customEffects());
+						List<LivingEntity> list2 = this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
+						if (!list2.isEmpty()) {
+							for (LivingEntity livingEntity : list2) {
+								if (!this.affectedEntities.containsKey(livingEntity)
+									&& livingEntity.isAffectedBySplashPotions()
+									&& !list.stream().noneMatch(livingEntity::canHaveStatusEffect)) {
+									double d = livingEntity.getX() - this.getX();
+									double e = livingEntity.getZ() - this.getZ();
+									double g = d * d + e * e;
+									if (g <= (double)(f * f)) {
+										this.affectedEntities.put(livingEntity, this.age + this.reapplicationDelay);
+
+										for (StatusEffectInstance statusEffectInstance2 : list) {
+											if (statusEffectInstance2.getEffectType().value().isInstant()) {
+												statusEffectInstance2.getEffectType()
+													.value()
+													.applyInstantEffect(world, this, this.getOwner(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
+											} else {
+												livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance2), this);
+											}
 										}
-									}
 
-									if (this.radiusOnUse != 0.0F) {
-										f += this.radiusOnUse;
-										if (f < 0.5F) {
-											this.discard();
-											return;
+										if (this.radiusOnUse != 0.0F) {
+											f += this.radiusOnUse;
+											if (f < 0.5F) {
+												this.discard();
+												return;
+											}
+
+											this.setRadius(f);
 										}
 
-										this.setRadius(f);
-									}
-
-									if (this.durationOnUse != 0) {
-										this.duration = this.duration + this.durationOnUse;
-										if (this.duration <= 0) {
-											this.discard();
-											return;
+										if (this.durationOnUse != 0) {
+											this.duration = this.duration + this.durationOnUse;
+											if (this.duration <= 0) {
+												this.discard();
+												return;
+											}
 										}
 									}
 								}
@@ -378,5 +386,10 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	@Override
 	public EntityDimensions getDimensions(EntityPose pose) {
 		return EntityDimensions.changing(this.getRadius() * 2.0F, 0.5F);
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return false;
 	}
 }

@@ -30,6 +30,7 @@ import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.TimeHelper;
@@ -162,7 +163,7 @@ public class HoglinBrain {
 		hoglin.getBrain().remember(MemoryModuleType.AVOID_TARGET, target, (long)AVOID_MEMORY_DURATION.get(hoglin.getWorld().random));
 	}
 
-	private static Optional<? extends LivingEntity> getNearestVisibleTargetablePlayer(HoglinEntity hoglin) {
+	private static Optional<? extends LivingEntity> getNearestVisibleTargetablePlayer(ServerWorld world, HoglinEntity hoglin) {
 		return !isNearPlayer(hoglin) && !hasBreedTarget(hoglin)
 			? hoglin.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER)
 			: Optional.empty();
@@ -187,22 +188,22 @@ public class HoglinBrain {
 		}
 	}
 
-	protected static void onAttacked(HoglinEntity hoglin, LivingEntity attacker) {
+	protected static void onAttacked(ServerWorld world, HoglinEntity hoglin, LivingEntity attacker) {
 		Brain<HoglinEntity> brain = hoglin.getBrain();
 		brain.forget(MemoryModuleType.PACIFIED);
 		brain.forget(MemoryModuleType.BREED_TARGET);
 		if (hoglin.isBaby()) {
 			avoidEnemy(hoglin, attacker);
 		} else {
-			targetEnemy(hoglin, attacker);
+			targetEnemy(world, hoglin, attacker);
 		}
 	}
 
-	private static void targetEnemy(HoglinEntity hoglin, LivingEntity target) {
+	private static void targetEnemy(ServerWorld world, HoglinEntity hoglin, LivingEntity target) {
 		if (!hoglin.getBrain().hasActivity(Activity.AVOID) || target.getType() != EntityType.PIGLIN) {
 			if (target.getType() != EntityType.HOGLIN) {
 				if (!LookTargetUtil.isNewTargetTooFar(hoglin, target, 4.0)) {
-					if (Sensor.testAttackableTargetPredicate(hoglin, target)) {
+					if (Sensor.testAttackableTargetPredicate(world, hoglin, target)) {
 						setAttackTarget(hoglin, target);
 						askAdultsForHelp(hoglin, target);
 					}

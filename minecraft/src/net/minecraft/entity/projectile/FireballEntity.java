@@ -29,8 +29,8 @@ public class FireballEntity extends AbstractFireballEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.getWorld().isClient) {
-			boolean bl = this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			boolean bl = serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, World.ExplosionSourceType.MOB);
 			this.discard();
 		}
@@ -43,7 +43,7 @@ public class FireballEntity extends AbstractFireballEntity {
 			Entity var6 = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
 			DamageSource damageSource = this.getDamageSources().fireball(this, entity2);
-			var6.damage(damageSource, 6.0F);
+			var6.damage(serverWorld, damageSource, 6.0F);
 			EnchantmentHelper.onTargetDamaged(serverWorld, var6, damageSource);
 		}
 	}

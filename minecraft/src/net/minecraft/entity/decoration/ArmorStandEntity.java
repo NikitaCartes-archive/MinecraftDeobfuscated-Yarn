@@ -381,32 +381,30 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		if (this.isRemoved()) {
 			return false;
-		} else if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
-			return false;
-		} else if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
+		} else if (!world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && source.getAttacker() instanceof MobEntity) {
 			return false;
 		} else if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-			this.kill();
+			this.kill(world);
 			return false;
-		} else if (this.isInvulnerableTo(source) || this.invisible || this.isMarker()) {
+		} else if (this.isInvulnerableTo(world, source) || this.invisible || this.isMarker()) {
 			return false;
 		} else if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-			this.onBreak(serverWorld, source);
-			this.kill();
+			this.onBreak(world, source);
+			this.kill(world);
 			return false;
 		} else if (source.isIn(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
 			if (this.isOnFire()) {
-				this.updateHealth(serverWorld, source, 0.15F);
+				this.updateHealth(world, source, 0.15F);
 			} else {
 				this.setOnFireFor(5.0F);
 			}
 
 			return false;
 		} else if (source.isIn(DamageTypeTags.BURNS_ARMOR_STANDS) && this.getHealth() > 0.5F) {
-			this.updateHealth(serverWorld, source, 4.0F);
+			this.updateHealth(world, source, 4.0F);
 			return false;
 		} else {
 			boolean bl = source.isIn(DamageTypeTags.CAN_BREAK_ARMOR_STAND);
@@ -421,18 +419,18 @@ public class ArmorStandEntity extends LivingEntity {
 				if (source.isSourceCreativePlayer()) {
 					this.playBreakSound();
 					this.spawnBreakParticles();
-					this.kill();
+					this.kill(world);
 					return true;
 				} else {
-					long l = serverWorld.getTime();
+					long l = world.getTime();
 					if (l - this.lastHitTime > 5L && !bl2) {
-						serverWorld.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
+						world.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
 						this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
 						this.lastHitTime = l;
 					} else {
-						this.breakAndDropItem(serverWorld, source);
+						this.breakAndDropItem(world, source);
 						this.spawnBreakParticles();
-						this.kill();
+						this.kill(world);
 					}
 
 					return true;
@@ -486,7 +484,7 @@ public class ArmorStandEntity extends LivingEntity {
 		f -= amount;
 		if (f <= 0.5F) {
 			this.onBreak(world, damageSource);
-			this.kill();
+			this.kill(world);
 		} else {
 			this.setHealth(f);
 			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, damageSource.getAttacker());
@@ -602,7 +600,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void kill() {
+	public void kill(ServerWorld world) {
 		this.remove(Entity.RemovalReason.KILLED);
 		this.emitGameEvent(GameEvent.ENTITY_DIE);
 	}

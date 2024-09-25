@@ -183,7 +183,7 @@ public final class TrialSpawnerLogic {
 		return this.entitySelector;
 	}
 
-	public boolean canActivate(World world) {
+	public boolean canActivate(ServerWorld world) {
 		if (this.forceActivate) {
 			return true;
 		} else {

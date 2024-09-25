@@ -3,7 +3,6 @@ package net.minecraft.entity.boss;
 import com.google.common.collect.ImmutableList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -70,7 +69,8 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	private final int[] chargedSkullCooldowns = new int[2];
 	private int blockBreakingCooldown;
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.PURPLE, BossBar.Style.PROGRESS).setDarkenSky(true);
-	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = entity -> !entity.getType().isIn(EntityTypeTags.WITHER_FRIENDS) && entity.isMobOrPlayer();
+	private static final TargetPredicate.EntityPredicate CAN_ATTACK_PREDICATE = (entity, world) -> !entity.getType().isIn(EntityTypeTags.WITHER_FRIENDS)
+			&& entity.isMobOrPlayer();
 	private static final TargetPredicate HEAD_TARGET_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(20.0).setPredicate(CAN_ATTACK_PREDICATE);
 
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
@@ -252,14 +252,14 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		if (this.getInvulnerableTimer() > 0) {
 			int i = this.getInvulnerableTimer() - 1;
 			this.bossBar.setPercent(1.0F - (float)i / 220.0F);
 			if (i <= 0) {
-				this.getWorld().createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, World.ExplosionSourceType.MOB);
+				world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, World.ExplosionSourceType.MOB);
 				if (!this.isSilent()) {
-					this.getWorld().syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
+					world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
 				}
 			}
 
@@ -268,13 +268,12 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 				this.heal(10.0F);
 			}
 		} else {
-			super.mobTick();
+			super.mobTick(world);
 
 			for (int ix = 1; ix < 3; ix++) {
 				if (this.age >= this.skullCooldowns[ix - 1]) {
 					this.skullCooldowns[ix - 1] = this.age + 10 + this.random.nextInt(10);
-					if ((this.getWorld().getDifficulty() == Difficulty.NORMAL || this.getWorld().getDifficulty() == Difficulty.HARD)
-						&& this.chargedSkullCooldowns[ix - 1]++ > 15) {
+					if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && this.chargedSkullCooldowns[ix - 1]++ > 15) {
 						float f = 10.0F;
 						float g = 5.0F;
 						double d = MathHelper.nextDouble(this.random, this.getX() - 10.0, this.getX() + 10.0);
@@ -286,7 +285,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 					int j = this.getTrackedEntityId(ix);
 					if (j > 0) {
-						LivingEntity livingEntity = (LivingEntity)this.getWorld().getEntityById(j);
+						LivingEntity livingEntity = (LivingEntity)world.getEntityById(j);
 						if (livingEntity != null && this.canTarget(livingEntity) && !(this.squaredDistanceTo(livingEntity) > 900.0) && this.canSee(livingEntity)) {
 							this.shootSkullAt(ix + 1, livingEntity);
 							this.skullCooldowns[ix - 1] = this.age + 40 + this.random.nextInt(20);
@@ -295,7 +294,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 							this.setTrackedEntityId(ix, 0);
 						}
 					} else {
-						List<LivingEntity> list = this.getWorld().getTargets(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
+						List<LivingEntity> list = world.getTargets(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
 						if (!list.isEmpty()) {
 							LivingEntity livingEntity2 = (LivingEntity)list.get(this.random.nextInt(list.size()));
 							this.setTrackedEntityId(ix, livingEntity2.getId());
@@ -312,7 +311,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 			if (this.blockBreakingCooldown > 0) {
 				this.blockBreakingCooldown--;
-				if (this.blockBreakingCooldown == 0 && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+				if (this.blockBreakingCooldown == 0 && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					boolean bl = false;
 					int j = MathHelper.floor(this.getWidth() / 2.0F + 1.0F);
 					int k = MathHelper.floor(this.getHeight());
@@ -320,14 +319,14 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 					for (BlockPos blockPos : BlockPos.iterate(
 						this.getBlockX() - j, this.getBlockY(), this.getBlockZ() - j, this.getBlockX() + j, this.getBlockY() + k, this.getBlockZ() + j
 					)) {
-						BlockState blockState = this.getWorld().getBlockState(blockPos);
+						BlockState blockState = world.getBlockState(blockPos);
 						if (canDestroy(blockState)) {
-							bl = this.getWorld().breakBlock(blockPos, true, this) || bl;
+							bl = world.breakBlock(blockPos, true, this) || bl;
 						}
 					}
 
 					if (bl) {
-						this.getWorld().syncWorldEvent(null, WorldEvents.WITHER_BREAKS_BLOCK, this.getBlockPos(), 0);
+						world.syncWorldEvent(null, WorldEvents.WITHER_BREAKS_BLOCK, this.getBlockPos(), 0);
 					}
 				}
 			}
@@ -438,8 +437,8 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else if (source.isIn(DamageTypeTags.WITHER_IMMUNE_TO) || source.getAttacker() instanceof WitherEntity) {
 			return false;
@@ -465,7 +464,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 					this.chargedSkullCooldowns[i] = this.chargedSkullCooldowns[i] + 3;
 				}
 
-				return super.damage(source, amount);
+				return super.damage(world, source, amount);
 			}
 		}
 	}
@@ -473,7 +472,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	@Override
 	protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
 		super.dropEquipment(world, source, causedByPlayer);
-		ItemEntity itemEntity = this.dropItem(Items.NETHER_STAR);
+		ItemEntity itemEntity = this.dropItem(world, Items.NETHER_STAR);
 		if (itemEntity != null) {
 			itemEntity.setCovetedItem();
 		}

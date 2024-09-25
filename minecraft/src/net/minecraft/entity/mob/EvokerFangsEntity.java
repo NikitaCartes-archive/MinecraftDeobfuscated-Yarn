@@ -118,14 +118,14 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 		LivingEntity livingEntity = this.getOwner();
 		if (target.isAlive() && !target.isInvulnerable() && target != livingEntity) {
 			if (livingEntity == null) {
-				target.damage(this.getDamageSources().magic(), 6.0F);
+				target.serverDamage(this.getDamageSources().magic(), 6.0F);
 			} else {
 				if (livingEntity.isTeammate(target)) {
 					return;
 				}
 
 				DamageSource damageSource = this.getDamageSources().indirectMagic(this, livingEntity);
-				if (target.damage(damageSource, 6.0F) && this.getWorld() instanceof ServerWorld serverWorld) {
+				if (this.getWorld() instanceof ServerWorld serverWorld && target.damage(serverWorld, damageSource, 6.0F)) {
 					EnchantmentHelper.onTargetDamaged(serverWorld, target, damageSource);
 				}
 			}
@@ -160,5 +160,10 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 			int i = this.ticksLeft - 2;
 			return i <= 0 ? 1.0F : 1.0F - ((float)i - tickDelta) / 20.0F;
 		}
+	}
+
+	@Override
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return false;
 	}
 }

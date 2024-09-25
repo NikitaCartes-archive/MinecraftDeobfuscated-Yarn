@@ -8,6 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -51,8 +52,8 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		boolean bl = super.tryAttack(target);
+	public boolean tryAttack(ServerWorld world, Entity target) {
+		boolean bl = super.tryAttack(world, target);
 		if (bl && this.getMainHandStack().isEmpty() && target instanceof LivingEntity) {
 			float f = this.getWorld().getLocalDifficulty(this.getBlockPos()).getLocalDifficulty();
 			((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f), this);

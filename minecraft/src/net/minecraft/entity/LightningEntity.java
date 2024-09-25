@@ -12,6 +12,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.Oxidizable;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -167,7 +168,7 @@ public class LightningEntity extends Entity {
 	}
 
 	private void spawnFire(int spreadAttempts) {
-		if (!this.cosmetic && !this.getWorld().isClient && this.getWorld().getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+		if (!this.cosmetic && this.getWorld() instanceof ServerWorld serverWorld && serverWorld.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			BlockPos blockPos = this.getBlockPos();
 			BlockState blockState = AbstractFireBlock.getState(this.getWorld(), blockPos);
 			if (this.getWorld().getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.getWorld(), blockPos)) {
@@ -260,5 +261,10 @@ public class LightningEntity extends Entity {
 
 	public Stream<Entity> getStruckEntities() {
 		return this.struckEntities.stream().filter(Entity::isAlive);
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return false;
 	}
 }

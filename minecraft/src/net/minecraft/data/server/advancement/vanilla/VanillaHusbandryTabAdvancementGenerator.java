@@ -54,6 +54,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -466,7 +467,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 					EntityPredicate.Builder.create()
 						.vehicle(
 							EntityPredicate.Builder.create()
-								.type(registryEntryLookup, EntityType.BOAT)
+								.type(registryEntryLookup, EntityTypeTags.BOAT)
 								.passenger(EntityPredicate.Builder.create().type(registryEntryLookup, EntityType.GOAT))
 						)
 				)

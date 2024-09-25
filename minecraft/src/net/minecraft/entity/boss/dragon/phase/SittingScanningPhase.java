@@ -3,6 +3,7 @@ package net.minecraft.entity.boss.dragon.phase;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -19,15 +20,13 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 		super(enderDragonEntity);
 		this.CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable()
 			.setBaseMaxDistance(20.0)
-			.setPredicate(player -> Math.abs(player.getY() - enderDragonEntity.getY()) <= 10.0);
+			.setPredicate((player, world) -> Math.abs(player.getY() - enderDragonEntity.getY()) <= 10.0);
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		this.ticks++;
-		LivingEntity livingEntity = this.dragon
-			.getWorld()
-			.getClosestPlayer(this.CLOSE_PLAYER_PREDICATE, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+		LivingEntity livingEntity = world.getClosestPlayer(this.CLOSE_PLAYER_PREDICATE, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (livingEntity != null) {
 			if (this.ticks > 25) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_ATTACKING);
@@ -57,9 +56,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 				}
 			}
 		} else if (this.ticks >= 100) {
-			livingEntity = this.dragon
-				.getWorld()
-				.getClosestPlayer(PLAYER_WITHIN_RANGE_PREDICATE, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+			livingEntity = world.getClosestPlayer(PLAYER_WITHIN_RANGE_PREDICATE, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 			this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
 			if (livingEntity != null) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);

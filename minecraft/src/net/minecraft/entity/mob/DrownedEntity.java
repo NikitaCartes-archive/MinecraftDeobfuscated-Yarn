@@ -81,7 +81,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		this.goalSelector.add(6, new DrownedEntity.TargetAboveWaterGoal(this, 1.0, this.getWorld().getSeaLevel()));
 		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
 		this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombifiedPiglinEntity.class));
-		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::canDrownedAttackTarget));
+		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, (target, world) -> this.canDrownedAttackTarget(target)));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, MerchantEntity.class, false));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, AxolotlEntity.class, true, false));
@@ -107,12 +107,12 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 			boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
 				&& (SpawnReason.isTrialSpawner(spawnReason) || isSpawnDark(world, pos, random))
 				&& (SpawnReason.isAnySpawner(spawnReason) || world.getFluidState(pos).isIn(FluidTags.WATER));
-			if (bl && SpawnReason.isAnySpawner(spawnReason)) {
-				return true;
-			} else {
+			if (!bl || !SpawnReason.isAnySpawner(spawnReason) && spawnReason != SpawnReason.REINFORCEMENT) {
 				return registryEntry.isIn(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS)
 					? random.nextInt(15) == 0 && bl
 					: random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl;
+			} else {
+				return true;
 			}
 		}
 	}
@@ -144,6 +144,11 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	@Override
 	protected SoundEvent getSwimSound() {
 		return SoundEvents.ENTITY_DROWNED_SWIM;
+	}
+
+	@Override
+	protected boolean canSpawnAsReinforcementInFluid() {
+		return true;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 
 class WitherStatusEffect extends StatusEffect {
 	protected WitherStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
@@ -8,8 +9,8 @@ class WitherStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
-		entity.damage(entity.getDamageSources().wither(), 1.0F);
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
+		entity.damage(world, entity.getDamageSources().wither(), 1.0F);
 		return true;
 	}
 

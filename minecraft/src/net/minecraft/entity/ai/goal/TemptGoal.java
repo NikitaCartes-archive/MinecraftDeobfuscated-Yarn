@@ -33,7 +33,7 @@ public class TemptGoal extends Goal {
 		this.foodPredicate = foodPredicate;
 		this.canBeScared = canBeScared;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		this.predicate = TEMPTING_ENTITY_PREDICATE.copy().setPredicate(this::isTemptedBy);
+		this.predicate = TEMPTING_ENTITY_PREDICATE.copy().setPredicate((entityx, world) -> this.isTemptedBy(entityx));
 	}
 
 	@Override
@@ -42,8 +42,7 @@ public class TemptGoal extends Goal {
 			this.cooldown--;
 			return false;
 		} else {
-			this.closestPlayer = this.mob
-				.getWorld()
+			this.closestPlayer = getServerWorld(this.mob)
 				.getClosestPlayer(this.predicate.setBaseMaxDistance(this.mob.getAttributeValue(EntityAttributes.TEMPT_RANGE)), this.mob);
 			return this.closestPlayer != null;
 		}

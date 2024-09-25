@@ -183,12 +183,9 @@ public class SquidEntity extends WaterAnimalEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (super.damage(source, amount) && this.getAttacker() != null) {
-			if (!this.getWorld().isClient) {
-				this.squirt();
-			}
-
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (super.damage(world, source, amount) && this.getAttacker() != null) {
+			this.squirt();
 			return true;
 		} else {
 			return false;

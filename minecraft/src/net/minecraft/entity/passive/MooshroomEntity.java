@@ -108,9 +108,9 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return ActionResult.SUCCESS;
 		} else if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
-			this.sheared(SoundCategory.PLAYERS, itemStack);
-			this.emitGameEvent(GameEvent.SHEAR, player);
-			if (!this.getWorld().isClient) {
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				this.sheared(serverWorld, SoundCategory.PLAYERS, itemStack);
+				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, getSlotForHand(hand));
 			}
 
@@ -161,18 +161,16 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	}
 
 	@Override
-	public void sheared(SoundCategory shearedSoundCategory, ItemStack shears) {
-		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
-		if (!this.getWorld().isClient()) {
-			this.convertTo(EntityType.COW, EntityConversionContext.create(this, false, false), cowEntity -> {
-				((ServerWorld)this.getWorld()).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
-				this.forEachShearedItem(LootTables.MOOSHROOM_SHEARING, shears, stack -> {
-					for (int i = 0; i < stack.getCount(); i++) {
-						this.getWorld().spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getBodyY(1.0), this.getZ(), stack.copyWithCount(1)));
-					}
-				});
+	public void sheared(ServerWorld world, SoundCategory shearedSoundCategory, ItemStack shears) {
+		world.playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		this.convertTo(EntityType.COW, EntityConversionContext.create(this, false, false), cow -> {
+			world.spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+			this.forEachShearedItem(world, LootTables.MOOSHROOM_SHEARING, shears, (worldx, stack) -> {
+				for (int i = 0; i < stack.getCount(); i++) {
+					worldx.spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getBodyY(1.0), this.getZ(), stack.copyWithCount(1)));
+				}
 			});
-		}
+		});
 	}
 
 	@Override

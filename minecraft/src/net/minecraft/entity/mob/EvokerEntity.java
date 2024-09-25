@@ -93,11 +93,6 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		super.mobTick();
-	}
-
-	@Override
 	protected boolean isInSameTeam(Entity other) {
 		if (other == this) {
 			return true;
@@ -247,7 +242,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			if (!super.canStart()) {
 				return false;
 			} else {
-				int i = EvokerEntity.this.getWorld()
+				int i = castToServerWorld(EvokerEntity.this.getWorld())
 					.getTargets(VexEntity.class, this.closeVexPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0))
 					.size();
 				return EvokerEntity.this.random.nextInt(8) + 1 > i;
@@ -302,7 +297,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	public class WololoGoal extends SpellcastingIllagerEntity.CastSpellGoal {
 		private final TargetPredicate convertibleSheepPredicate = TargetPredicate.createNonAttackable()
 			.setBaseMaxDistance(16.0)
-			.setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
+			.setPredicate((sheep, world) -> ((SheepEntity)sheep).getColor() == DyeColor.BLUE);
 
 		@Override
 		public boolean canStart() {
@@ -312,16 +307,20 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else if (EvokerEntity.this.age < this.startTime) {
 				return false;
-			} else if (!EvokerEntity.this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-				return false;
 			} else {
-				List<SheepEntity> list = EvokerEntity.this.getWorld()
-					.getTargets(SheepEntity.class, this.convertibleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
-				if (list.isEmpty()) {
+				ServerWorld serverWorld = castToServerWorld(EvokerEntity.this.getWorld());
+				if (!serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					return false;
 				} else {
-					EvokerEntity.this.setWololoTarget((SheepEntity)list.get(EvokerEntity.this.random.nextInt(list.size())));
-					return true;
+					List<SheepEntity> list = serverWorld.getTargets(
+						SheepEntity.class, this.convertibleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0)
+					);
+					if (list.isEmpty()) {
+						return false;
+					} else {
+						EvokerEntity.this.setWololoTarget((SheepEntity)list.get(EvokerEntity.this.random.nextInt(list.size())));
+						return true;
+					}
 				}
 			}
 		}

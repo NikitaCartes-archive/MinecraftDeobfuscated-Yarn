@@ -98,7 +98,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		entityHitResult.getEntity().damage(this.getDamageSources().thrown(this, this.getOwner()), 0.0F);
+		entityHitResult.getEntity().serverDamage(this.getDamageSources().thrown(this, this.getOwner()), 0.0F);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 						if (playerEntity != null) {
 							playerEntity.onLanding();
 							playerEntity.clearCurrentExplosion();
-							playerEntity.damage(this.getDamageSources().enderPearl(), 5.0F);
+							playerEntity.damage(serverPlayerEntity.getServerWorld(), this.getDamageSources().enderPearl(), 5.0F);
 						}
 
 						this.playTeleportSound(serverWorld, vec3d4);
@@ -179,19 +179,27 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Override
 	public void tick() {
-		int i = ChunkSectionPos.getSectionCoordFloored(this.getPos().getX());
-		int j = ChunkSectionPos.getSectionCoordFloored(this.getPos().getZ());
-		Entity entity = this.getOwner();
-		if (entity instanceof ServerPlayerEntity && !entity.isAlive() && this.getWorld().getGameRules().getBoolean(GameRules.ENDER_PEARLS_VANISH_ON_DEATH)) {
-			this.discard();
-		} else {
+		int i;
+		int j;
+		Entity entity;
+		label26: {
+			i = ChunkSectionPos.getSectionCoordFloored(this.getPos().getX());
+			j = ChunkSectionPos.getSectionCoordFloored(this.getPos().getZ());
+			entity = this.getOwner();
+			if (entity instanceof ServerPlayerEntity serverPlayerEntity
+				&& !entity.isAlive()
+				&& serverPlayerEntity.getServerWorld().getGameRules().getBoolean(GameRules.ENDER_PEARLS_VANISH_ON_DEATH)) {
+				this.discard();
+				break label26;
+			}
+
 			super.tick();
 		}
 
 		BlockPos blockPos = BlockPos.ofFloored(this.getPos());
 		if ((--this.chunkTicketExpiryTicks <= 0L || i != ChunkSectionPos.getSectionCoord(blockPos.getX()) || j != ChunkSectionPos.getSectionCoord(blockPos.getZ()))
-			&& entity instanceof ServerPlayerEntity serverPlayerEntity) {
-			this.chunkTicketExpiryTicks = serverPlayerEntity.handleThrownEnderPearl(this);
+			&& entity instanceof ServerPlayerEntity serverPlayerEntity2) {
+			this.chunkTicketExpiryTicks = serverPlayerEntity2.handleThrownEnderPearl(this);
 		}
 	}
 

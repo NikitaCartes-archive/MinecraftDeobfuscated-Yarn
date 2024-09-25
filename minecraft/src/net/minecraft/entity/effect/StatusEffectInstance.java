@@ -20,6 +20,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
@@ -237,7 +238,9 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	public boolean update(LivingEntity entity, Runnable overwriteCallback) {
 		if (this.isActive()) {
 			int i = this.isInfinite() ? entity.age : this.duration;
-			if (this.type.value().canApplyUpdateEffect(i, this.amplifier) && !this.type.value().applyUpdateEffect(entity, this.amplifier)) {
+			if (entity.getWorld() instanceof ServerWorld serverWorld
+				&& this.type.value().canApplyUpdateEffect(i, this.amplifier)
+				&& !this.type.value().applyUpdateEffect(serverWorld, entity, this.amplifier)) {
 				entity.removeStatusEffect(this.type);
 			}
 
@@ -269,12 +272,12 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		this.type.value().onApplied(entity, this.amplifier);
 	}
 
-	public void onEntityRemoval(LivingEntity entity, Entity.RemovalReason reason) {
-		this.type.value().onEntityRemoval(entity, this.amplifier, reason);
+	public void onEntityRemoval(ServerWorld world, LivingEntity entity, Entity.RemovalReason reason) {
+		this.type.value().onEntityRemoval(world, entity, this.amplifier, reason);
 	}
 
-	public void onEntityDamage(LivingEntity entity, DamageSource source, float amount) {
-		this.type.value().onEntityDamage(entity, this.amplifier, source, amount);
+	public void onEntityDamage(ServerWorld world, LivingEntity entity, DamageSource source, float amount) {
+		this.type.value().onEntityDamage(world, entity, this.amplifier, source, amount);
 	}
 
 	public String getTranslationKey() {

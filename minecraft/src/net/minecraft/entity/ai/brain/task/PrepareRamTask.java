@@ -91,7 +91,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends MultiTickTask<E> 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		Brain<?> brain = pathAwareEntity.getBrain();
 		brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS)
-			.flatMap(mob -> mob.findFirst(mobx -> this.targetPredicate.test(pathAwareEntity, mobx)))
+			.flatMap(mobs -> mobs.findFirst(mob -> this.targetPredicate.test(serverWorld, pathAwareEntity, mob)))
 			.ifPresent(mob -> this.findRam(pathAwareEntity, mob));
 	}
 

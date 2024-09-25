@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.world.ServerWorld;
 
 public class EnderDragonPart extends Entity {
 	public final EnderDragonEntity owner;
@@ -49,8 +50,8 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return this.isInvulnerableTo(source) ? false : this.owner.damagePart(this, source, amount);
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		return this.isAlwaysInvulnerableTo(source) ? false : this.owner.damagePart(world, this, source, amount);
 	}
 
 	@Override

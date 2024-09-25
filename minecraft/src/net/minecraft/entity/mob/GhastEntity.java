@@ -18,6 +18,7 @@ import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -46,7 +47,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		this.goalSelector.add(5, new GhastEntity.FlyRandomlyGoal(this));
 		this.goalSelector.add(7, new GhastEntity.LookAtTargetGoal(this));
 		this.goalSelector.add(7, new GhastEntity.ShootFireballGoal(this));
-		this.targetSelector.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, entity -> Math.abs(entity.getY() - this.getY()) <= 4.0));
+		this.targetSelector.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, (entity, world) -> Math.abs(entity.getY() - this.getY()) <= 4.0));
 	}
 
 	public boolean isShooting() {
@@ -77,18 +78,18 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return this.isInvulnerable() && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)
-			|| !isFireballFromPlayer(damageSource) && super.isInvulnerableTo(damageSource);
+	public boolean isInvulnerableTo(ServerWorld world, DamageSource source) {
+		return this.isInvulnerable() && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)
+			|| !isFireballFromPlayer(source) && super.isInvulnerableTo(world, source);
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		if (isFireballFromPlayer(source)) {
-			super.damage(source, 1000.0F);
+			super.damage(world, source, 1000.0F);
 			return true;
 		} else {
-			return this.isInvulnerableTo(source) ? false : super.damage(source, amount);
+			return this.isInvulnerableTo(world, source) ? false : super.damage(world, source, amount);
 		}
 	}
 

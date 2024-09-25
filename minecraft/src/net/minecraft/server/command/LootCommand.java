@@ -444,7 +444,7 @@ public class LootCommand {
 	}
 
 	private static int executeKill(CommandContext<ServerCommandSource> context, Entity entity, LootCommand.Target constructor) throws CommandSyntaxException {
-		Optional<RegistryKey<LootTable>> optional = entity.getLootTable();
+		Optional<RegistryKey<LootTable>> optional = entity.getLootTableKey();
 		if (optional.isEmpty()) {
 			throw NO_LOOT_TABLE_ENTITY_EXCEPTION.create(entity.getDisplayName());
 		} else {

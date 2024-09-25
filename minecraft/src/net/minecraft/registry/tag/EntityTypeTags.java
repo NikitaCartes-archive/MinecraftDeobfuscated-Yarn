@@ -39,6 +39,7 @@ public interface EntityTypeTags {
 	TagKey<EntityType<?>> IMMUNE_TO_OOZING = of("immune_to_oozing");
 	TagKey<EntityType<?>> IMMUNE_TO_INFESTED = of("immune_to_infested");
 	TagKey<EntityType<?>> REDIRECTABLE_PROJECTILE = of("redirectable_projectile");
+	TagKey<EntityType<?>> BOAT = of("boat");
 
 	private static TagKey<EntityType<?>> of(String id) {
 		return TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.ofVanilla(id));

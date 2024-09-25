@@ -194,11 +194,14 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public final boolean clientDamage(DamageSource source) {
+		return !this.isAlwaysInvulnerableTo(source);
+	}
+
+	@Override
+	public final boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isAlwaysInvulnerableTo(source)) {
 			return false;
-		} else if (this.getWorld().isClient) {
-			return true;
 		} else {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - amount);

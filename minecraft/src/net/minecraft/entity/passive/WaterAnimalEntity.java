@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -28,8 +29,8 @@ public abstract class WaterAnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public int getXpToDrop() {
-		return 1 + this.getWorld().random.nextInt(3);
+	public int getXpToDrop(ServerWorld world) {
+		return 1 + this.random.nextInt(3);
 	}
 
 	protected void tickBreathing(int air) {
@@ -37,7 +38,7 @@ public abstract class WaterAnimalEntity extends PassiveEntity {
 			this.setAir(air - 1);
 			if (this.getAir() == -20) {
 				this.setAir(0);
-				this.damage(this.getDamageSources().drown(), 2.0F);
+				this.serverDamage(this.getDamageSources().drown(), 2.0F);
 			}
 		} else {
 			this.setAir(300);

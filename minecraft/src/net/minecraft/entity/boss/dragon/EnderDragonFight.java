@@ -462,9 +462,8 @@ public class EnderDragonFight {
 			this.generateEndPortal(true);
 		} else {
 			this.countAliveCrystals();
-			Entity entity = this.world.getEntity(this.dragonUuid);
-			if (entity instanceof EnderDragonEntity) {
-				((EnderDragonEntity)entity).crystalDestroyed(enderCrystal, enderCrystal.getBlockPos(), source);
+			if (this.world.getEntity(this.dragonUuid) instanceof EnderDragonEntity enderDragonEntity) {
+				enderDragonEntity.crystalDestroyed(this.world, enderCrystal, enderCrystal.getBlockPos(), source);
 			}
 		}
 	}

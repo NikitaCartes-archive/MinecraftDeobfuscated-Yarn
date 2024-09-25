@@ -29,8 +29,8 @@ public class HurtBySensor extends Sensor<LivingEntity> {
 			brain.forget(MemoryModuleType.HURT_BY);
 		}
 
-		brain.getOptionalRegisteredMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(livingEntity -> {
-			if (!livingEntity.isAlive() || livingEntity.getWorld() != world) {
+		brain.getOptionalRegisteredMemory(MemoryModuleType.HURT_BY_ENTITY).ifPresent(hurtByEntity -> {
+			if (!hurtByEntity.isAlive() || hurtByEntity.getWorld() != world) {
 				brain.forget(MemoryModuleType.HURT_BY_ENTITY);
 			}
 		});

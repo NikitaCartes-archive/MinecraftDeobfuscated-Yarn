@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
@@ -27,7 +27,7 @@ public class LilyPadBlock extends PlantBlock {
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		super.onEntityCollision(state, world, pos, entity);
-		if (world instanceof ServerWorld && entity instanceof BoatEntity) {
+		if (world instanceof ServerWorld && entity instanceof AbstractBoatEntity) {
 			world.breakBlock(new BlockPos(pos), true, entity);
 		}
 	}

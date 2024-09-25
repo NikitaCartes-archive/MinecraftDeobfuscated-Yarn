@@ -3,7 +3,6 @@ package net.minecraft.entity.projectile;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -40,6 +39,10 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	}
 
 	@Override
+	protected void playExtinguishSound() {
+	}
+
+	@Override
 	public ItemStack getStack() {
 		return this.getDataTracker().get(ITEM);
 	}
@@ -72,11 +75,6 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	@Override
 	public StackReference getStackReference(int mappedIndex) {
 		return mappedIndex == 0 ? StackReference.of(this::getStack, this::setItem) : super.getStackReference(mappedIndex);
-	}
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return false;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.border.WorldBorder;
@@ -84,4 +85,6 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 	void setTime(long time);
 
 	void setTimeOfDay(long timeOfDay);
+
+	GameRules getGameRules();
 }

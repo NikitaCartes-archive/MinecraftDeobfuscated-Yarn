@@ -1,15 +1,12 @@
 package net.minecraft.world;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList.Builder;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.TypeFilter;
@@ -149,73 +146,6 @@ public interface EntityView {
 		}
 
 		return false;
-	}
-
-	@Nullable
-	default PlayerEntity getClosestPlayer(TargetPredicate targetPredicate, LivingEntity entity) {
-		return this.getClosestEntity(this.getPlayers(), targetPredicate, entity, entity.getX(), entity.getY(), entity.getZ());
-	}
-
-	@Nullable
-	default PlayerEntity getClosestPlayer(TargetPredicate targetPredicate, LivingEntity entity, double x, double y, double z) {
-		return this.getClosestEntity(this.getPlayers(), targetPredicate, entity, x, y, z);
-	}
-
-	@Nullable
-	default PlayerEntity getClosestPlayer(TargetPredicate targetPredicate, double x, double y, double z) {
-		return this.getClosestEntity(this.getPlayers(), targetPredicate, null, x, y, z);
-	}
-
-	@Nullable
-	default <T extends LivingEntity> T getClosestEntity(
-		Class<? extends T> entityClass, TargetPredicate targetPredicate, @Nullable LivingEntity entity, double x, double y, double z, Box box
-	) {
-		return this.getClosestEntity(this.getEntitiesByClass(entityClass, box, entityOfClass -> true), targetPredicate, entity, x, y, z);
-	}
-
-	@Nullable
-	default <T extends LivingEntity> T getClosestEntity(
-		List<? extends T> entityList, TargetPredicate targetPredicate, @Nullable LivingEntity entity, double x, double y, double z
-	) {
-		double d = -1.0;
-		T livingEntity = null;
-
-		for (T livingEntity2 : entityList) {
-			if (targetPredicate.test(entity, livingEntity2)) {
-				double e = livingEntity2.squaredDistanceTo(x, y, z);
-				if (d == -1.0 || e < d) {
-					d = e;
-					livingEntity = livingEntity2;
-				}
-			}
-		}
-
-		return livingEntity;
-	}
-
-	default List<PlayerEntity> getPlayers(TargetPredicate targetPredicate, LivingEntity entity, Box box) {
-		List<PlayerEntity> list = Lists.<PlayerEntity>newArrayList();
-
-		for (PlayerEntity playerEntity : this.getPlayers()) {
-			if (box.contains(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ()) && targetPredicate.test(entity, playerEntity)) {
-				list.add(playerEntity);
-			}
-		}
-
-		return list;
-	}
-
-	default <T extends LivingEntity> List<T> getTargets(Class<T> entityClass, TargetPredicate targetPredicate, LivingEntity targetingEntity, Box box) {
-		List<T> list = this.getEntitiesByClass(entityClass, box, livingEntityx -> true);
-		List<T> list2 = Lists.<T>newArrayList();
-
-		for (T livingEntity : list) {
-			if (targetPredicate.test(targetingEntity, livingEntity)) {
-				list2.add(livingEntity);
-			}
-		}
-
-		return list2;
 	}
 
 	@Nullable

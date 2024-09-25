@@ -78,7 +78,7 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			LivingEntity livingEntity2 = this.getOwner() instanceof LivingEntity livingEntity ? livingEntity : null;
 			Entity entity = entityHitResult.getEntity();
 			if (livingEntity2 != null) {
@@ -86,8 +86,8 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 			}
 
 			DamageSource damageSource = this.getDamageSources().windCharge(this, livingEntity2);
-			if (entity.damage(damageSource, 1.0F) && entity instanceof LivingEntity livingEntity3) {
-				EnchantmentHelper.onTargetDamaged((ServerWorld)this.getWorld(), livingEntity3, damageSource);
+			if (entity.damage(serverWorld, damageSource, 1.0F) && entity instanceof LivingEntity livingEntity3) {
+				EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity3, damageSource);
 			}
 
 			this.createExplosion(this.getPos());
@@ -154,10 +154,5 @@ public abstract class AbstractWindChargeEntity extends ExplosiveProjectileEntity
 		} else {
 			super.tick();
 		}
-	}
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return false;
 	}
 }

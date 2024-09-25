@@ -111,7 +111,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 				entityType -> {
 					EntityType<?> entityType2 = (EntityType<?>)entityType.value();
 					if (entityType2.isEnabled(this.requiredFeatures)) {
-						Optional<RegistryKey<LootTable>> optional = entityType2.getLootTable();
+						Optional<RegistryKey<LootTable>> optional = entityType2.getLootTableKey();
 						if (optional.isPresent()) {
 							Map<RegistryKey<LootTable>, LootTable.Builder> map = (Map<RegistryKey<LootTable>, LootTable.Builder>)this.lootTables.remove(entityType2);
 							if (entityType2.isEnabled(this.featureSet) && (map == null || !map.containsKey(optional.get()))) {
@@ -168,7 +168,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	protected void register(EntityType<?> entityType, LootTable.Builder lootTable) {
 		this.register(
 			entityType,
-			(RegistryKey<LootTable>)entityType.getLootTable().orElseThrow(() -> new IllegalStateException("Entity " + entityType + " has no loot table")),
+			(RegistryKey<LootTable>)entityType.getLootTableKey().orElseThrow(() -> new IllegalStateException("Entity " + entityType + " has no loot table")),
 			lootTable
 		);
 	}

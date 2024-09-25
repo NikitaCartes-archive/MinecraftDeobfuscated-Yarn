@@ -319,8 +319,8 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 
 	protected abstract Text getToggleCraftableButtonText();
 
-	public void drawGhostSlots(DrawContext context, int x, int y, boolean notInventory) {
-		this.ghostRecipe.draw(context, this.client, x, y, notInventory);
+	public void drawGhostSlots(DrawContext context, boolean resultHasPadding) {
+		this.ghostRecipe.draw(context, this.client, resultHasPadding);
 	}
 
 	@Override

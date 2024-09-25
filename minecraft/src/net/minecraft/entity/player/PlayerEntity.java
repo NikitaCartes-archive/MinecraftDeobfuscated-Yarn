@@ -176,7 +176,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public int experienceLevel;
 	public int totalExperience;
 	public float experienceProgress;
-	protected int enchantmentTableSeed;
+	protected int enchantingTableSeed;
 	protected final float field_7509 = 0.02F;
 	private int lastPlayedLevelUpSoundTime;
 	private final GameProfile gameProfile;
@@ -278,8 +278,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.updateCapeAngles();
-		if (!this.getWorld().isClient) {
-			this.hungerManager.update(this);
+		if (this instanceof ServerPlayerEntity serverPlayerEntity) {
+			this.hungerManager.update(serverPlayerEntity);
 			this.incrementStat(Stats.PLAY_TIME);
 			this.incrementStat(Stats.TOTAL_WORLD_TIME);
 			if (this.isAlive()) {
@@ -557,20 +557,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.abilityResyncCountdown--;
 		}
 
-		if (this.getWorld().getDifficulty() == Difficulty.PEACEFUL && this.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION)) {
-			if (this.getHealth() < this.getMaxHealth() && this.age % 20 == 0) {
-				this.heal(1.0F);
-			}
-
-			if (this.hungerManager.getSaturationLevel() < 20.0F && this.age % 20 == 0) {
-				this.hungerManager.setSaturationLevel(this.hungerManager.getSaturationLevel() + 1.0F);
-			}
-
-			if (this.hungerManager.isNotFull() && this.age % 10 == 0) {
-				this.hungerManager.setFoodLevel(this.hungerManager.getFoodLevel() + 1);
-			}
-		}
-
+		this.tickHunger();
 		this.inventory.updateItems();
 		this.prevStrideDistance = this.strideDistance;
 		if (this.abilities.flying && !this.hasVehicle()) {
@@ -616,6 +603,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (!this.getWorld().isClient && (this.fallDistance > 0.5F || this.isTouchingWater()) || this.abilities.flying || this.isSleeping() || this.inPowderSnow) {
 			this.dropShoulderEntities();
 		}
+	}
+
+	protected void tickHunger() {
 	}
 
 	private void updateShoulderEntity(@Nullable NbtCompound entityNbt) {
@@ -703,9 +693,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void dropInventory() {
-		super.dropInventory();
-		if (!this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+	protected void dropInventory(ServerWorld world) {
+		super.dropInventory(world);
+		if (!world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
 			this.vanishCursedItems();
 			this.inventory.dropAll();
 		}
@@ -805,9 +795,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.experienceProgress = nbt.getFloat("XpP");
 		this.experienceLevel = nbt.getInt("XpLevel");
 		this.totalExperience = nbt.getInt("XpTotal");
-		this.enchantmentTableSeed = nbt.getInt("XpSeed");
-		if (this.enchantmentTableSeed == 0) {
-			this.enchantmentTableSeed = this.random.nextInt();
+		this.enchantingTableSeed = nbt.getInt("XpSeed");
+		if (this.enchantingTableSeed == 0) {
+			this.enchantingTableSeed = this.random.nextInt();
 		}
 
 		this.setScore(nbt.getInt("Score"));
@@ -851,7 +841,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		nbt.putFloat("XpP", this.experienceProgress);
 		nbt.putInt("XpLevel", this.experienceLevel);
 		nbt.putInt("XpTotal", this.totalExperience);
-		nbt.putInt("XpSeed", this.enchantmentTableSeed);
+		nbt.putInt("XpSeed", this.enchantingTableSeed);
 		nbt.putInt("Score", this.getScore());
 		this.hungerManager.writeNbt(nbt);
 		this.abilities.writeNbt(nbt);
@@ -876,23 +866,23 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean isInvulnerableTo(DamageSource damageSource) {
-		if (super.isInvulnerableTo(damageSource)) {
+	public boolean isInvulnerableTo(ServerWorld world, DamageSource source) {
+		if (super.isInvulnerableTo(world, source)) {
 			return true;
-		} else if (damageSource.isIn(DamageTypeTags.IS_DROWNING)) {
-			return !this.getWorld().getGameRules().getBoolean(GameRules.DROWNING_DAMAGE);
-		} else if (damageSource.isIn(DamageTypeTags.IS_FALL)) {
-			return !this.getWorld().getGameRules().getBoolean(GameRules.FALL_DAMAGE);
-		} else if (damageSource.isIn(DamageTypeTags.IS_FIRE)) {
-			return !this.getWorld().getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
+		} else if (source.isIn(DamageTypeTags.IS_DROWNING)) {
+			return !world.getGameRules().getBoolean(GameRules.DROWNING_DAMAGE);
+		} else if (source.isIn(DamageTypeTags.IS_FALL)) {
+			return !world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
+		} else if (source.isIn(DamageTypeTags.IS_FIRE)) {
+			return !world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
 		} else {
-			return damageSource.isIn(DamageTypeTags.IS_FREEZING) ? !this.getWorld().getGameRules().getBoolean(GameRules.FREEZE_DAMAGE) : false;
+			return source.isIn(DamageTypeTags.IS_FREEZING) ? !world.getGameRules().getBoolean(GameRules.FREEZE_DAMAGE) : false;
 		}
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else if (this.abilities.invulnerable && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 			return false;
@@ -901,25 +891,22 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (this.isDead()) {
 				return false;
 			} else {
-				if (!this.getWorld().isClient) {
-					this.dropShoulderEntities();
-				}
-
+				this.dropShoulderEntities();
 				if (source.isScaledWithDifficulty()) {
-					if (this.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
+					if (world.getDifficulty() == Difficulty.PEACEFUL) {
 						amount = 0.0F;
 					}
 
-					if (this.getWorld().getDifficulty() == Difficulty.EASY) {
+					if (world.getDifficulty() == Difficulty.EASY) {
 						amount = Math.min(amount / 2.0F + 1.0F, amount);
 					}
 
-					if (this.getWorld().getDifficulty() == Difficulty.HARD) {
+					if (world.getDifficulty() == Difficulty.HARD) {
 						amount = amount * 3.0F / 2.0F;
 					}
 				}
 
-				return amount == 0.0F ? false : super.damage(source, amount);
+				return amount == 0.0F ? false : super.damage(world, source, amount);
 			}
 		}
 	}
@@ -984,23 +971,23 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void applyDamage(DamageSource source, float amount) {
-		if (!this.isInvulnerableTo(source)) {
+	protected void applyDamage(ServerWorld world, DamageSource source, float amount) {
+		if (!this.isInvulnerableTo(world, source)) {
 			amount = this.applyArmorToDamage(source, amount);
 			amount = this.modifyAppliedDamage(source, amount);
-			float var7 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
-			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var7));
-			float g = amount - var7;
+			float var8 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
+			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var8));
+			float g = amount - var8;
 			if (g > 0.0F && g < 3.4028235E37F) {
 				this.increaseStat(Stats.DAMAGE_ABSORBED, Math.round(g * 10.0F));
 			}
 
-			if (var7 != 0.0F) {
+			if (var8 != 0.0F) {
 				this.addExhaustion(source.getExhaustion());
-				this.getDamageTracker().onDamage(source, var7);
-				this.setHealth(this.getHealth() - var7);
-				if (var7 < 3.4028235E37F) {
-					this.increaseStat(Stats.DAMAGE_TAKEN, Math.round(var7 * 10.0F));
+				this.getDamageTracker().onDamage(source, var8);
+				this.setHealth(this.getHealth() - var8);
+				if (var8 < 3.4028235E37F) {
+					this.increaseStat(Stats.DAMAGE_TAKEN, Math.round(var8 * 10.0F));
 				}
 
 				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
@@ -1229,7 +1216,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					}
 
 					Vec3d vec3d = target.getVelocity();
-					boolean bl5 = target.damage(damageSource, i);
+					boolean bl5 = target.sidedDamage(damageSource, i);
 					if (bl5) {
 						float k = this.getKnockbackAgainst(target, damageSource) + (bl2 ? 1.0F : 0.0F);
 						if (k > 0.0F) {
@@ -1264,7 +1251,7 @@ public abstract class PlayerEntity extends LivingEntity {
 									livingEntity3.takeKnockback(
 										0.4F, (double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)), (double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 									);
-									livingEntity3.damage(damageSource, m);
+									livingEntity3.serverDamage(damageSource, m);
 									if (this.getWorld() instanceof ServerWorld serverWorld) {
 										EnchantmentHelper.onTargetDamaged(serverWorld, livingEntity3, damageSource);
 									}
@@ -1694,8 +1681,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public int getEnchantmentTableSeed() {
-		return this.enchantmentTableSeed;
+	public int getEnchantingTableSeed() {
+		return this.enchantingTableSeed;
 	}
 
 	public void applyEnchantmentCosts(ItemStack enchantedItem, int experienceLevels) {
@@ -1706,7 +1693,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.totalExperience = 0;
 		}
 
-		this.enchantmentTableSeed = this.random.nextInt();
+		this.enchantingTableSeed = this.random.nextInt();
 	}
 
 	public void addExperienceLevels(int levels) {
@@ -1771,8 +1758,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected int getXpToDrop() {
-		return !this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator() ? Math.min(this.experienceLevel * 7, 100) : 0;
+	protected int getXpToDrop(ServerWorld world) {
+		return !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator() ? Math.min(this.experienceLevel * 7, 100) : 0;
 	}
 
 	@Override
@@ -2053,6 +2040,14 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public boolean isCreativeLevelTwoOp() {
 		return this.abilities.creativeMode && this.getPermissionLevel() >= 2;
+	}
+
+	protected int getPermissionLevel() {
+		return 0;
+	}
+
+	public boolean hasPermissionLevel(int level) {
+		return this.getPermissionLevel() >= level;
 	}
 
 	@Override

@@ -264,10 +264,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("villagerBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		if (this.natural) {
 			this.natural = false;
@@ -285,16 +285,16 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			}
 		}
 
-		if (this.lastCustomer != null && this.getWorld() instanceof ServerWorld) {
-			((ServerWorld)this.getWorld()).handleInteraction(EntityInteraction.TRADE, this.lastCustomer, this);
-			this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
+		if (this.lastCustomer != null) {
+			world.handleInteraction(EntityInteraction.TRADE, this.lastCustomer, this);
+			world.sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
 			this.lastCustomer = null;
 		}
 
 		if (!this.isAiDisabled() && this.random.nextInt(100) == 0) {
-			Raid raid = ((ServerWorld)this.getWorld()).getRaidAt(this.getBlockPos());
+			Raid raid = world.getRaidAt(this.getBlockPos());
 			if (raid != null && raid.isActive() && !raid.isFinished()) {
-				this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_SPLASH_PARTICLES);
+				world.sendEntityStatus(this, EntityStatuses.ADD_SPLASH_PARTICLES);
 			}
 		}
 
@@ -302,7 +302,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			this.resetCustomer();
 		}
 
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -815,12 +815,12 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
-		InventoryOwner.pickUpItem(this, this, item);
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		InventoryOwner.pickUpItem(world, this, this, itemEntity);
 	}
 
 	@Override
-	public boolean canGather(ItemStack stack) {
+	public boolean canGather(ServerWorld world, ItemStack stack) {
 		Item item = stack.getItem();
 		return (stack.isIn(ItemTags.VILLAGER_PICKS_UP) || this.getVillagerData().getProfession().gatherableItems().contains(item))
 			&& this.getInventory().canInsert(stack);

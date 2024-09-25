@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
@@ -44,7 +44,6 @@ import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.effect.EnchantmentLocationBasedEffect;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -291,8 +290,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
-	public void kill() {
-		this.damage(this.getDamageSources().genericKill(), Float.MAX_VALUE);
+	public void kill(ServerWorld world) {
+		this.damage(world, this.getDamageSources().genericKill(), Float.MAX_VALUE);
 	}
 
 	public boolean canTarget(EntityType<?> type) {
@@ -357,7 +356,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				float k = (float)MathHelper.ceil((double)this.fallDistance - d);
 				double l = Math.min((double)(0.2F + k / 15.0F), 2.5);
 				int m = (int)(150.0 * l);
-				((ServerWorld)this.getWorld()).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), e, f, g, m, 0.0, 0.0, 0.0, 0.15F);
+				serverWorld.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), e, f, g, m, 0.0, 0.0, 0.0, 0.15F);
 			}
 		}
 
@@ -399,15 +398,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		if (this.isAlive()) {
 			boolean bl = this instanceof PlayerEntity;
-			if (!this.getWorld().isClient) {
+			if (this.getWorld() instanceof ServerWorld serverWorld2) {
 				if (this.isInsideWall()) {
-					this.damage(this.getDamageSources().inWall(), 1.0F);
+					this.damage(serverWorld2, this.getDamageSources().inWall(), 1.0F);
 				} else if (bl && !this.getWorld().getWorldBorder().contains(this.getBoundingBox())) {
 					double d = this.getWorld().getWorldBorder().getDistanceInsideBorder(this) + this.getWorld().getWorldBorder().getSafeZone();
 					if (d < 0.0) {
 						double e = this.getWorld().getWorldBorder().getDamagePerBlock();
 						if (e > 0.0) {
-							this.damage(this.getDamageSources().outsideBorder(), (float)Math.max(1, MathHelper.floor(-d * e)));
+							this.damage(serverWorld2, this.getDamageSources().outsideBorder(), (float)Math.max(1, MathHelper.floor(-d * e)));
 						}
 					}
 				}
@@ -423,13 +422,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 						Vec3d vec3d = this.getVelocity();
 
 						for (int i = 0; i < 8; i++) {
+							double e = this.random.nextDouble() - this.random.nextDouble();
 							double f = this.random.nextDouble() - this.random.nextDouble();
 							double g = this.random.nextDouble() - this.random.nextDouble();
-							double h = this.random.nextDouble() - this.random.nextDouble();
-							this.getWorld().addParticle(ParticleTypes.BUBBLE, this.getX() + f, this.getY() + g, this.getZ() + h, vec3d.x, vec3d.y, vec3d.z);
+							this.getWorld().addParticle(ParticleTypes.BUBBLE, this.getX() + e, this.getY() + f, this.getZ() + g, vec3d.x, vec3d.y, vec3d.z);
 						}
 
-						this.damage(this.getDamageSources().drown(), 2.0F);
+						this.serverDamage(this.getDamageSources().drown(), 2.0F);
 					}
 				}
 
@@ -440,11 +439,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				this.setAir(this.getNextAirOnLand(this.getAir()));
 			}
 
-			if (this.getWorld() instanceof ServerWorld serverWorld2) {
+			if (this.getWorld() instanceof ServerWorld serverWorld2x) {
 				BlockPos blockPos = this.getBlockPos();
 				if (!Objects.equal(this.lastBlockPos, blockPos)) {
 					this.lastBlockPos = blockPos;
-					this.applyMovementEffects(serverWorld2, blockPos);
+					this.applyMovementEffects(serverWorld2x, blockPos);
 				}
 			}
 		}
@@ -593,7 +592,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public final int getXpToDrop(ServerWorld world, @Nullable Entity attacker) {
-		return EnchantmentHelper.getMobExperience(world, attacker, this, this.getXpToDrop());
+		return EnchantmentHelper.getMobExperience(world, attacker, this, this.getXpToDrop(world));
 	}
 
 	/**
@@ -604,7 +603,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * @see #shouldAlwaysDropXp()
 	 * @see #shouldDropXp()
 	 */
-	protected int getXpToDrop() {
+	protected int getXpToDrop(ServerWorld world) {
 		return 0;
 	}
 
@@ -701,17 +700,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public void remove(Entity.RemovalReason reason) {
-		if (reason == Entity.RemovalReason.KILLED || reason == Entity.RemovalReason.DISCARDED) {
-			this.onRemoval(reason);
+		if ((reason == Entity.RemovalReason.KILLED || reason == Entity.RemovalReason.DISCARDED) && this.getWorld() instanceof ServerWorld serverWorld) {
+			this.onRemoval(serverWorld, reason);
 		}
 
 		super.remove(reason);
 		this.brain.forgetAll();
 	}
 
-	protected void onRemoval(Entity.RemovalReason reason) {
+	protected void onRemoval(ServerWorld world, Entity.RemovalReason reason) {
 		for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-			statusEffectInstance.onEntityRemoval(this, reason);
+			statusEffectInstance.onEntityRemoval(world, this, reason);
 		}
 
 		this.activeStatusEffects.clear();
@@ -900,10 +899,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public boolean canTarget(LivingEntity target) {
 		return target instanceof PlayerEntity && this.getWorld().getDifficulty() == Difficulty.PEACEFUL ? false : target.canTakeDamage();
-	}
-
-	public boolean isTarget(LivingEntity entity, TargetPredicate predicate) {
-		return predicate.test(this, entity);
 	}
 
 	public boolean canTakeDamage() {
@@ -1178,17 +1173,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
-			return false;
-		} else if (this.getWorld().isClient) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else if (this.isDead()) {
 			return false;
 		} else if (source.isIn(DamageTypeTags.IS_FIRE) && this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 			return false;
 		} else {
-			if (this.isSleeping() && !this.getWorld().isClient) {
+			if (this.isSleeping()) {
 				this.wakeUp();
 			}
 
@@ -1231,13 +1224,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					return false;
 				}
 
-				this.applyDamage(source, amount - this.lastDamageTaken);
+				this.applyDamage(world, source, amount - this.lastDamageTaken);
 				this.lastDamageTaken = amount;
 				bl2 = false;
 			} else {
 				this.lastDamageTaken = amount;
 				this.timeUntilRegen = 20;
-				this.applyDamage(source, amount);
+				this.applyDamage(world, source, amount);
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
 			}
@@ -1265,9 +1258,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			if (bl2) {
 				if (bl) {
-					this.getWorld().sendEntityStatus(this, EntityStatuses.BLOCK_WITH_SHIELD);
+					world.sendEntityStatus(this, EntityStatuses.BLOCK_WITH_SHIELD);
 				} else {
-					this.getWorld().sendEntityDamage(this, source);
+					world.sendEntityDamage(this, source);
 				}
 
 				if (!source.isIn(DamageTypeTags.NO_IMPACT) && (!bl || amount > 0.0F)) {
@@ -1311,19 +1304,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				this.lastDamageTime = this.getWorld().getTime();
 
 				for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-					statusEffectInstance.onEntityDamage(this, source, amount);
+					statusEffectInstance.onEntityDamage(world, this, source, amount);
 				}
 			}
 
-			if (this instanceof ServerPlayerEntity) {
-				Criteria.ENTITY_HURT_PLAYER.trigger((ServerPlayerEntity)this, source, f, amount, bl);
+			if (this instanceof ServerPlayerEntity serverPlayerEntity) {
+				Criteria.ENTITY_HURT_PLAYER.trigger(serverPlayerEntity, source, f, amount, bl);
 				if (g > 0.0F && g < 3.4028235E37F) {
-					((ServerPlayerEntity)this).increaseStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(g * 10.0F));
+					serverPlayerEntity.increaseStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(g * 10.0F));
 				}
 			}
 
-			if (entity2 instanceof ServerPlayerEntity) {
-				Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
+			if (entity2 instanceof ServerPlayerEntity serverPlayerEntityx) {
+				Criteria.PLAYER_HURT_ENTITY.trigger(serverPlayerEntityx, this, source, f, amount, bl);
 			}
 
 			return bl3;
@@ -1463,19 +1456,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * @param adversary the main adversary responsible for this entity's death
 	 */
 	protected void onKilledBy(@Nullable LivingEntity adversary) {
-		if (!this.getWorld().isClient) {
-			boolean bl = false;
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			boolean var6 = false;
 			if (adversary instanceof WitherEntity) {
-				if (this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+				if (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					BlockPos blockPos = this.getBlockPos();
 					BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
 					if (this.getWorld().getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.getWorld(), blockPos)) {
 						this.getWorld().setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
-						bl = true;
+						var6 = true;
 					}
 				}
 
-				if (!bl) {
+				if (!var6) {
 					ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
 					this.getWorld().spawnEntity(itemEntity);
 				}
@@ -1486,15 +1479,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected void drop(ServerWorld world, DamageSource damageSource) {
 		boolean bl = this.playerHitTimer > 0;
 		if (this.shouldDropLoot() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			this.dropLoot(damageSource, bl);
+			this.dropLoot(world, damageSource, bl);
 			this.dropEquipment(world, damageSource, bl);
 		}
 
-		this.dropInventory();
-		this.dropXp(damageSource.getAttacker());
+		this.dropInventory(world);
+		this.dropXp(world, damageSource.getAttacker());
 	}
 
-	protected void dropInventory() {
+	protected void dropInventory(ServerWorld world) {
 	}
 
 	/**
@@ -1504,11 +1497,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * {@link #shouldAlwaysDropXp()}, {@link #shouldDropXp()}, and
 	 * {@link #getXpToDrop()}.
 	 */
-	protected void dropXp(@Nullable Entity attacker) {
-		if (this.getWorld() instanceof ServerWorld serverWorld
-			&& !this.isExperienceDroppingDisabled()
-			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-			ExperienceOrbEntity.spawn(serverWorld, this.getPos(), this.getXpToDrop(serverWorld, attacker));
+	protected void dropXp(ServerWorld world, @Nullable Entity attacker) {
+		if (!this.isExperienceDroppingDisabled()
+			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+			ExperienceOrbEntity.spawn(world, this.getPos(), this.getXpToDrop(world, attacker));
 		}
 	}
 
@@ -1526,11 +1518,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			: f;
 	}
 
-	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
-		Optional<RegistryKey<LootTable>> optional = this.getLootTable();
+	protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
+		Optional<RegistryKey<LootTable>> optional = this.getLootTableKey();
 		if (!optional.isEmpty()) {
-			LootTable lootTable = this.getWorld().getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)optional.get());
-			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)optional.get());
+			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
 				.add(LootContextParameters.THIS_ENTITY, this)
 				.add(LootContextParameters.ORIGIN, this.getPos())
 				.add(LootContextParameters.DAMAGE_SOURCE, damageSource)
@@ -1541,13 +1533,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			}
 
 			LootContextParameterSet lootContextParameterSet = builder.build(LootContextTypes.ENTITY);
-			lootTable.generateLoot(lootContextParameterSet, this.getLootTableSeed(), this::dropStack);
+			lootTable.generateLoot(lootContextParameterSet, this.getLootTableSeed(), stack -> this.dropStack(world, stack));
 		}
 	}
 
-	public boolean forEachGiftedItem(RegistryKey<LootTable> lootTable, Consumer<ItemStack> lootConsumer) {
+	public boolean forEachGiftedItem(ServerWorld world, RegistryKey<LootTable> lootTableKey, BiConsumer<ServerWorld, ItemStack> lootConsumer) {
 		return this.forEachGeneratedItem(
-			lootTable,
+			world,
+			lootTableKey,
 			parameterSetBuilder -> parameterSetBuilder.add(LootContextParameters.ORIGIN, this.getPos())
 					.add(LootContextParameters.THIS_ENTITY, this)
 					.build(LootContextTypes.GIFT),
@@ -1555,9 +1548,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		);
 	}
 
-	protected void forEachShearedItem(RegistryKey<LootTable> lootTable, ItemStack tool, Consumer<ItemStack> lootConsumer) {
+	protected void forEachShearedItem(ServerWorld world, RegistryKey<LootTable> lootTableKey, ItemStack tool, BiConsumer<ServerWorld, ItemStack> lootConsumer) {
 		this.forEachGeneratedItem(
-			lootTable,
+			world,
+			lootTableKey,
 			parameterSetBuilder -> parameterSetBuilder.add(LootContextParameters.ORIGIN, this.getPos())
 					.add(LootContextParameters.THIS_ENTITY, this)
 					.add(LootContextParameters.TOOL, tool)
@@ -1567,25 +1561,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected boolean forEachGeneratedItem(
-		RegistryKey<LootTable> lootTable,
+		ServerWorld world,
+		RegistryKey<LootTable> lootTableKey,
 		Function<LootContextParameterSet.Builder, LootContextParameterSet> lootContextParametersFactory,
-		Consumer<ItemStack> lootConsumer
+		BiConsumer<ServerWorld, ItemStack> lootConsumer
 	) {
-		if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
-			return false;
+		LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(lootTableKey);
+		LootContextParameterSet lootContextParameterSet = (LootContextParameterSet)lootContextParametersFactory.apply(new LootContextParameterSet.Builder(world));
+		List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
+		if (!list.isEmpty()) {
+			list.forEach(stack -> lootConsumer.accept(world, stack));
+			return true;
 		} else {
-			LootTable lootTable2 = serverWorld.getServer().getReloadableRegistries().getLootTable(lootTable);
-			LootContextParameterSet lootContextParameterSet = (LootContextParameterSet)lootContextParametersFactory.apply(
-				new LootContextParameterSet.Builder(serverWorld)
-			);
-			boolean bl = false;
-
-			for (ItemStack itemStack : lootTable2.generateLoot(lootContextParameterSet)) {
-				lootConsumer.accept(itemStack);
-				bl = true;
-			}
-
-			return bl;
+			return false;
 		}
 	}
 
@@ -1650,9 +1638,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	public Map<Enchantment, Set<EnchantmentLocationBasedEffect>> getLocationBasedEnchantmentEffects(EquipmentSlot equipmentSlot) {
+	public Map<Enchantment, Set<EnchantmentLocationBasedEffect>> getLocationBasedEnchantmentEffects(EquipmentSlot slot) {
 		return (Map<Enchantment, Set<EnchantmentLocationBasedEffect>>)this.locationBasedEnchantmentEffects
-			.computeIfAbsent(equipmentSlot, equipmentSlotx -> new Reference2ObjectArrayMap());
+			.computeIfAbsent(slot, equipmentSlot -> new Reference2ObjectArrayMap());
 	}
 
 	public LivingEntity.FallSounds getFallSounds() {
@@ -1711,7 +1699,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (i > 0) {
 			this.playSound(this.getFallSound(i), 1.0F, 1.0F);
 			this.playBlockFallSound();
-			this.damage(damageSource, (float)i);
+			this.serverDamage(damageSource, (float)i);
 			return true;
 		} else {
 			return bl;
@@ -1833,21 +1821,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	protected void applyDamage(DamageSource source, float amount) {
-		if (!this.isInvulnerableTo(source)) {
+	protected void applyDamage(ServerWorld world, DamageSource source, float amount) {
+		if (!this.isInvulnerableTo(world, source)) {
 			amount = this.applyArmorToDamage(source, amount);
 			amount = this.modifyAppliedDamage(source, amount);
-			float var9 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
-			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var9));
-			float g = amount - var9;
+			float var10 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
+			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var10));
+			float g = amount - var10;
 			if (g > 0.0F && g < 3.4028235E37F && source.getAttacker() instanceof ServerPlayerEntity serverPlayerEntity) {
 				serverPlayerEntity.increaseStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(g * 10.0F));
 			}
 
-			if (var9 != 0.0F) {
-				this.getDamageTracker().onDamage(source, var9);
-				this.setHealth(this.getHealth() - var9);
-				this.setAbsorptionAmount(this.getAbsorptionAmount() - var9);
+			if (var10 != 0.0F) {
+				this.getDamageTracker().onDamage(source, var10);
+				this.setHealth(this.getHealth() - var10);
+				this.setAbsorptionAmount(this.getAbsorptionAmount() - var10);
 				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
 			}
 		}
@@ -1932,7 +1920,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.playSound(soundEvent, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 		}
 
-		this.damage(this.getDamageSources().generic(), 0.0F);
 		this.lastDamageSource = damageSource;
 		this.lastDamageTime = this.getWorld().getTime();
 	}
@@ -2023,7 +2010,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	protected void tickInVoid() {
-		this.damage(this.getDamageSources().outOfWorld(), 4.0F);
+		this.serverDamage(this.getDamageSources().outOfWorld(), 4.0F);
 	}
 
 	protected void tickHandSwing() {
@@ -2207,7 +2194,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d2, (double)this.getWidth(), (double)this.getHeight(), (double)this.getWidth()));
 				vec3d = (Vec3d)this.getWorld()
 					.findClosestCollision(this, voxelShape, vec3d2, (double)this.getWidth(), (double)this.getHeight(), (double)this.getWidth())
-					.map(vec3dx -> vec3dx.add(0.0, -e, 0.0))
+					.map(pos -> pos.add(0.0, -e, 0.0))
 					.orElse(vec3d);
 			}
 		}
@@ -2414,7 +2401,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			float f = (float)(d * 10.0 - 3.0);
 			if (f > 0.0F) {
 				this.playSound(this.getFallSound((int)f), 1.0F, 1.0F);
-				this.damage(this.getDamageSources().flyIntoWall(), f);
+				this.serverDamage(this.getDamageSources().flyIntoWall(), f);
 			}
 		}
 	}
@@ -2516,7 +2503,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.movementSpeed = movementSpeed;
 	}
 
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
 		this.onAttacking(target);
 		return false;
 	}
@@ -2699,11 +2686,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				EquipmentSlot equipmentSlot2 = (EquipmentSlot)entry.getKey();
 				ItemStack itemStack2 = (ItemStack)entry.getValue();
 				if (!itemStack2.isEmpty() && !itemStack2.shouldBreak()) {
-					itemStack2.applyAttributeModifiers(equipmentSlot2, (registryEntry, entityAttributeModifier) -> {
-						EntityAttributeInstance entityAttributeInstance = this.attributes.getCustomInstance(registryEntry);
+					itemStack2.applyAttributeModifiers(equipmentSlot2, (attribute, modifier) -> {
+						EntityAttributeInstance entityAttributeInstance = this.attributes.getCustomInstance(attribute);
 						if (entityAttributeInstance != null) {
-							entityAttributeInstance.removeModifier(entityAttributeModifier.id());
-							entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
+							entityAttributeInstance.removeModifier(modifier.id());
+							entityAttributeInstance.addTemporaryModifier(modifier);
 						}
 					});
 					if (this.getWorld() instanceof ServerWorld serverWorld) {
@@ -2922,8 +2909,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		this.removePowderSnowSlow();
 		this.addPowderSnowSlowIfNeeded();
-		if (!this.getWorld().isClient && this.age % 40 == 0 && this.isFrozen() && this.canFreeze()) {
-			this.damage(this.getDamageSources().freeze(), 1.0F);
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.age % 40 == 0 && this.isFrozen() && this.canFreeze()) {
+			this.damage(serverWorld, this.getDamageSources().freeze(), 1.0F);
 		}
 
 		profiler.pop();
@@ -2935,8 +2922,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		this.tickCramming();
 		profiler.pop();
-		if (!this.getWorld().isClient && this.hurtByWater() && this.isWet()) {
-			this.damage(this.getDamageSources().drown(), 1.0F);
+		if (this.getWorld() instanceof ServerWorld serverWorld && this.hurtByWater() && this.isWet()) {
+			this.damage(serverWorld, this.getDamageSources().drown(), 1.0F);
 		}
 	}
 
@@ -2984,14 +2971,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected void tickCramming() {
-		if (this.getWorld().isClient()) {
+		if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
 			this.getWorld()
 				.getEntitiesByType(TypeFilter.instanceOf(PlayerEntity.class), this.getBoundingBox(), EntityPredicates.canBePushedBy(this))
 				.forEach(this::pushAway);
 		} else {
 			List<Entity> list = this.getWorld().getOtherEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
 			if (!list.isEmpty()) {
-				int i = this.getWorld().getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
+				int i = serverWorld.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
 				if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
 					int j = 0;
 
@@ -3002,7 +2989,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					}
 
 					if (j > i - 1) {
-						this.damage(this.getDamageSources().cramming(), 6.0F);
+						this.damage(serverWorld, this.getDamageSources().cramming(), 6.0F);
 					}
 				}
 
@@ -3335,6 +3322,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 			}
 		}
+	}
+
+	public void giveOrDropStack(ItemStack stack) {
 	}
 
 	public ItemStack getActiveItem() {
@@ -3759,17 +3749,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return false;
 	}
 
-	@Override
-	public boolean isInvulnerableTo(DamageSource damageSource) {
-		if (super.isInvulnerableTo(damageSource)) {
-			return true;
-		} else {
-			if (this.getWorld() instanceof ServerWorld serverWorld && EnchantmentHelper.isInvulnerableTo(serverWorld, this, damageSource)) {
-				return true;
-			}
-
-			return false;
-		}
+	public boolean isInvulnerableTo(ServerWorld world, DamageSource source) {
+		return this.isAlwaysInvulnerableTo(source) || EnchantmentHelper.isInvulnerableTo(world, this, source);
 	}
 
 	public static boolean canGlideWith(ItemStack stack, EquipmentSlot slot) {

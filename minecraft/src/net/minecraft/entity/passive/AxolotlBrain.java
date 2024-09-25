@@ -38,6 +38,7 @@ import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
@@ -223,7 +224,7 @@ public class AxolotlBrain {
 		return entity.isInsideWaterOrBubbleColumn() ? 0.5F : 0.15F;
 	}
 
-	private static Optional<? extends LivingEntity> getAttackTarget(AxolotlEntity axolotl) {
+	private static Optional<? extends LivingEntity> getAttackTarget(ServerWorld world, AxolotlEntity axolotl) {
 		return LookTargetUtil.hasBreedTarget(axolotl) ? Optional.empty() : axolotl.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE);
 	}
 

@@ -1,15 +1,15 @@
 package net.minecraft.entity.ai.goal;
 
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.raid.RaiderEntity;
 
 public class RaidGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
 	private static final int MAX_COOLDOWN = 200;
 	private int cooldown = 0;
 
-	public RaidGoal(RaiderEntity raider, Class<T> targetEntityClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> targetPredicate) {
+	public RaidGoal(RaiderEntity raider, Class<T> targetEntityClass, boolean checkVisibility, @Nullable TargetPredicate.EntityPredicate targetPredicate) {
 		super(raider, targetEntityClass, 500, checkVisibility, false, targetPredicate);
 	}
 

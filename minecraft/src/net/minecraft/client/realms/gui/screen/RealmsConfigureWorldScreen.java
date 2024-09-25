@@ -237,7 +237,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		}
 	}
 
-	private void fetchServerData(long worldId) {
+	public void fetchServerData(long worldId) {
 		new Thread(() -> {
 			RealmsClient realmsClient = RealmsClient.create();
 
@@ -391,13 +391,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		}
 
 		this.client.setScreen(this);
-	}
-
-	public void setActiveSlotWorldOptions(RealmsWorldOptions worldOptions) {
-		RealmsWorldOptions realmsWorldOptions = (RealmsWorldOptions)this.server.slots.get(this.server.activeSlot);
-		worldOptions.templateId = realmsWorldOptions.templateId;
-		worldOptions.templateImage = realmsWorldOptions.templateImage;
-		this.server.slots.put(this.server.activeSlot, worldOptions);
 	}
 
 	public void saveSettings(String name, String desc) {

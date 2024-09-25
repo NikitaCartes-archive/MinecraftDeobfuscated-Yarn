@@ -16,6 +16,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -55,7 +56,7 @@ public class LeashKnotEntity extends BlockAttachedEntity {
 	}
 
 	@Override
-	public void onBreak(@Nullable Entity breaker) {
+	public void onBreak(ServerWorld world, @Nullable Entity breaker) {
 		this.playSound(SoundEvents.ENTITY_LEASH_KNOT_BREAK, 1.0F, 1.0F);
 	}
 

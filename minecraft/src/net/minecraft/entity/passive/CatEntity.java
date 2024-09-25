@@ -184,7 +184,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 	}
 
 	@Override
-	public void mobTick() {
+	public void mobTick(ServerWorld world) {
 		if (this.getMoveControl().isMoving()) {
 			double d = this.getMoveControl().getSpeed();
 			if (d == 0.6) {
@@ -574,18 +574,17 @@ public class CatEntity extends TameableEntity implements VariantHolder<RegistryE
 			mutable.set(this.cat.getBlockPos());
 			this.cat
 				.forEachGiftedItem(
+					getServerWorld(this.cat),
 					LootTables.CAT_MORNING_GIFT_GAMEPLAY,
-					stack -> this.cat
-							.getWorld()
-							.spawnEntity(
-								new ItemEntity(
-									this.cat.getWorld(),
-									(double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
-									(double)mutable.getY(),
-									(double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
-									stack
-								)
+					(world, stack) -> world.spawnEntity(
+							new ItemEntity(
+								world,
+								(double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
+								(double)mutable.getY(),
+								(double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
+								stack
 							)
+						)
 				);
 		}
 

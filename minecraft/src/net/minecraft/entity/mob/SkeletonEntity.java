@@ -134,7 +134,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 		super.dropEquipment(world, source, causedByPlayer);
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			creeperEntity.onHeadDropped();
-			this.dropItem(Items.SKELETON_SKULL);
+			this.dropItem(world, Items.SKELETON_SKULL);
 		}
 	}
 }

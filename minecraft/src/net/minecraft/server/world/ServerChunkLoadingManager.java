@@ -667,7 +667,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		CompletableFuture<OptionalChunk<List<Chunk>>> completableFuture = this.getRegion(holder, 1, distance -> ChunkStatus.FULL);
 		CompletableFuture<OptionalChunk<WorldChunk>> completableFuture2 = completableFuture.thenApplyAsync(optionalChunk -> optionalChunk.map(chunks -> {
 				WorldChunk worldChunk = (WorldChunk)chunks.get(chunks.size() / 2);
-				worldChunk.runPostProcessing();
+				worldChunk.runPostProcessing(this.world);
 				this.world.disableTickSchedulers(worldChunk);
 				CompletableFuture<?> completableFuturex = holder.getPostProcessingFuture();
 				if (completableFuturex.isDone()) {

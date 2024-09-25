@@ -16,7 +16,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
@@ -89,16 +88,6 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 	public HorseMarking getMarking() {
 		return HorseMarking.byIndex((this.getHorseVariant() & 0xFF00) >> 8);
-	}
-
-	@Override
-	public void onInventoryChanged(Inventory sender) {
-		ItemStack itemStack = this.getBodyArmor();
-		super.onInventoryChanged(sender);
-		ItemStack itemStack2 = this.getBodyArmor();
-		if (this.age > 20 && this.canEquip(itemStack2, EquipmentSlot.BODY) && itemStack != itemStack2) {
-			this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5F, 1.0F);
-		}
 	}
 
 	@Override

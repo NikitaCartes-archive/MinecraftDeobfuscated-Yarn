@@ -25,7 +25,6 @@ import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.WolfVariant;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryCodecs;
@@ -49,12 +48,6 @@ public class EntitySubPredicateTypes {
 		"axolotl",
 		EntitySubPredicateTypes.VariantType.create(
 			AxolotlEntity.Variant.CODEC, entity -> entity instanceof AxolotlEntity axolotlEntity ? Optional.of(axolotlEntity.getVariant()) : Optional.empty()
-		)
-	);
-	public static final EntitySubPredicateTypes.VariantType<BoatEntity.Type> BOAT = register(
-		"boat",
-		EntitySubPredicateTypes.VariantType.create(
-			BoatEntity.Type.CODEC, entity -> entity instanceof BoatEntity boatEntity ? Optional.of(boatEntity.getVariant()) : Optional.empty()
 		)
 	);
 	public static final EntitySubPredicateTypes.VariantType<FoxEntity.Type> FOX = register(

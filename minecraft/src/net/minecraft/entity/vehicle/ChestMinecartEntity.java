@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Direction;
@@ -61,9 +62,9 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		ActionResult actionResult = this.open(player);
-		if (actionResult.isAccepted()) {
+		if (actionResult.isAccepted() && player.getWorld() instanceof ServerWorld serverWorld) {
 			this.emitGameEvent(GameEvent.CONTAINER_OPEN, player);
-			PiglinBrain.onGuardedBlockInteracted(player, true);
+			PiglinBrain.onGuardedBlockInteracted(serverWorld, player, true);
 		}
 
 		return actionResult;

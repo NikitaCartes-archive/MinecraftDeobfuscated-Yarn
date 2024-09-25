@@ -14,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Direction;
@@ -63,8 +64,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected double getMaxSpeed() {
-		return this.isTouchingWater() ? super.getMaxSpeed() * 0.75 : super.getMaxSpeed() * 0.5;
+	protected double getMaxSpeed(ServerWorld world) {
+		return this.isTouchingWater() ? super.getMaxSpeed(world) * 0.75 : super.getMaxSpeed(world) * 0.5;
 	}
 
 	@Override

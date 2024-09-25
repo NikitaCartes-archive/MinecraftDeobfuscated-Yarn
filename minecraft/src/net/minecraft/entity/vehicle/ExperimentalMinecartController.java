@@ -18,6 +18,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -45,20 +46,20 @@ public class ExperimentalMinecartController extends MinecartController {
 
 	@Override
 	public void tick() {
-		if (this.getWorld().isClient) {
-			this.tickClient();
-			boolean bl = AbstractRailBlock.isRail(this.getWorld().getBlockState(this.minecart.getRailOrMinecartPos()));
-			this.minecart.setOnRail(bl);
-		} else {
-			BlockPos blockPos = this.minecart.getRailOrMinecartPos();
-			BlockState blockState = this.getWorld().getBlockState(blockPos);
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			BlockPos var5 = this.minecart.getRailOrMinecartPos();
+			BlockState blockState = this.getWorld().getBlockState(var5);
 			if (this.minecart.isFirstUpdate()) {
 				this.minecart.setOnRail(AbstractRailBlock.isRail(blockState));
-				this.adjustToRail(blockPos, blockState, true);
+				this.adjustToRail(var5, blockState, true);
 			}
 
 			this.minecart.applyGravity();
-			this.minecart.moveOnRail();
+			this.minecart.moveOnRail(serverWorld);
+		} else {
+			this.tickClient();
+			boolean bl = AbstractRailBlock.isRail(this.getWorld().getBlockState(this.minecart.getRailOrMinecartPos()));
+			this.minecart.setOnRail(bl);
 		}
 	}
 
@@ -220,7 +221,7 @@ public class ExperimentalMinecartController extends MinecartController {
 	}
 
 	@Override
-	public void moveOnRail() {
+	public void moveOnRail(ServerWorld world) {
 		for (ExperimentalMinecartController.MoveIteration moveIteration = new ExperimentalMinecartController.MoveIteration();
 			moveIteration.shouldContinue() && this.minecart.isAlive();
 			moveIteration.initial = false
@@ -242,7 +243,7 @@ public class ExperimentalMinecartController extends MinecartController {
 				}
 
 				RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
-				Vec3d vec3d2 = this.calcNewHorizontalVelocity(vec3d.getHorizontal(), moveIteration, blockPos, blockState, railShape);
+				Vec3d vec3d2 = this.calcNewHorizontalVelocity(world, vec3d.getHorizontal(), moveIteration, blockPos, blockState, railShape);
 				if (moveIteration.initial) {
 					moveIteration.remainingMovement = vec3d2.horizontalLength();
 				} else {
@@ -252,7 +253,7 @@ public class ExperimentalMinecartController extends MinecartController {
 				this.setVelocity(vec3d2);
 				moveIteration.remainingMovement = this.minecart.moveAlongTrack(blockPos, railShape, moveIteration.remainingMovement);
 			} else {
-				this.minecart.moveOffRail();
+				this.minecart.moveOffRail(world);
 				moveIteration.remainingMovement = 0.0;
 			}
 
@@ -275,7 +276,7 @@ public class ExperimentalMinecartController extends MinecartController {
 				}
 
 				this.stagingLerpSteps
-					.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)Math.min(d, this.getMaxSpeed())));
+					.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), (float)Math.min(d, this.getMaxSpeed(world))));
 			} else if (vec3d.horizontalLengthSquared() > 0.0) {
 				this.stagingLerpSteps.add(new ExperimentalMinecartController.Step(vec3d3, this.getVelocity(), this.getYaw(), this.getPitch(), 1.0F));
 			}
@@ -287,7 +288,7 @@ public class ExperimentalMinecartController extends MinecartController {
 	}
 
 	private Vec3d calcNewHorizontalVelocity(
-		Vec3d horizontalVelocity, ExperimentalMinecartController.MoveIteration iteration, BlockPos pos, BlockState railState, RailShape railShape
+		ServerWorld world, Vec3d horizontalVelocity, ExperimentalMinecartController.MoveIteration iteration, BlockPos pos, BlockState railState, RailShape railShape
 	) {
 		Vec3d vec3d = horizontalVelocity;
 		if (!iteration.slopeVelocityApplied) {
@@ -317,7 +318,7 @@ public class ExperimentalMinecartController extends MinecartController {
 		if (iteration.initial) {
 			vec3d = this.minecart.applySlowdown(vec3d);
 			if (vec3d.lengthSquared() > 0.0) {
-				double d = Math.min(vec3d.length(), this.minecart.getMaxSpeed());
+				double d = Math.min(vec3d.length(), this.minecart.getMaxSpeed(world));
 				vec3d = vec3d.normalize().multiply(d);
 			}
 		}
@@ -465,8 +466,8 @@ public class ExperimentalMinecartController extends MinecartController {
 	}
 
 	@Override
-	public double getMaxSpeed() {
-		return (double)this.getWorld().getGameRules().getInt(GameRules.MINECART_MAX_SPEED) * (this.minecart.isTouchingWater() ? 0.5 : 1.0) / 20.0;
+	public double getMaxSpeed(ServerWorld world) {
+		return (double)world.getGameRules().getInt(GameRules.MINECART_MAX_SPEED) * (this.minecart.isTouchingWater() ? 0.5 : 1.0) / 20.0;
 	}
 
 	private boolean ascends(Vec3d velocity, RailShape railShape) {

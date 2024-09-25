@@ -276,9 +276,9 @@ public class BeehiveBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient
+		if (world instanceof ServerWorld serverWorld
 			&& player.isCreative()
-			&& world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)
+			&& serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)
 			&& world.getBlockEntity(pos) instanceof BeehiveBlockEntity beehiveBlockEntity) {
 			int i = (Integer)state.get(HONEY_LEVEL);
 			boolean bl = !beehiveBlockEntity.hasNoBees();

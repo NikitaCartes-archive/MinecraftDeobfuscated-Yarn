@@ -28,7 +28,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	private final TargetPredicate withinRangePredicate;
 
 	public FleeEntityGoal(PathAwareEntity mob, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
-		this(mob, fleeFromType, livingEntity -> true, distance, slowSpeed, fastSpeed, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
+		this(mob, fleeFromType, entity -> true, distance, slowSpeed, fastSpeed, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
 	}
 
 	public FleeEntityGoal(
@@ -51,7 +51,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 		this.withinRangePredicate = TargetPredicate.createAttackable()
 			.setBaseMaxDistance((double)distance)
-			.setPredicate(inclusionSelector.and(extraInclusionSelector));
+			.setPredicate((entity, world) -> inclusionSelector.test(entity) && extraInclusionSelector.test(entity));
 	}
 
 	public FleeEntityGoal(
@@ -62,13 +62,12 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		double fleeFastSpeed,
 		Predicate<LivingEntity> inclusionSelector
 	) {
-		this(fleeingEntity, classToFleeFrom, livingEntity -> true, fleeDistance, fleeSlowSpeed, fleeFastSpeed, inclusionSelector);
+		this(fleeingEntity, classToFleeFrom, entity -> true, fleeDistance, fleeSlowSpeed, fleeFastSpeed, inclusionSelector);
 	}
 
 	@Override
 	public boolean canStart() {
-		this.targetEntity = this.mob
-			.getWorld()
+		this.targetEntity = getServerWorld(this.mob)
 			.getClosestEntity(
 				this.mob
 					.getWorld()

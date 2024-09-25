@@ -161,8 +161,8 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-			world.breakBlock(pos, true, entity);
+		if (world instanceof ServerWorld serverWorld && entity instanceof RavagerEntity && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			serverWorld.breakBlock(pos, true, entity);
 		}
 
 		super.onEntityCollision(state, world, pos, entity);

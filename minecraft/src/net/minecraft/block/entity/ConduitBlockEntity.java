@@ -214,7 +214,7 @@ public class ConduitBlockEntity extends BlockEntity {
 				1.0F,
 				1.0F
 			);
-			blockEntity.targetEntity.damage(world.getDamageSources().magic(), 4.0F);
+			blockEntity.targetEntity.serverDamage(world.getDamageSources().magic(), 4.0F);
 		}
 
 		if (livingEntity != blockEntity.targetEntity) {

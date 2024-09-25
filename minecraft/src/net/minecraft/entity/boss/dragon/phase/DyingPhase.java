@@ -3,6 +3,7 @@ package net.minecraft.entity.boss.dragon.phase;
 import javax.annotation.Nullable;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
@@ -32,10 +33,10 @@ public class DyingPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		this.ticks++;
 		if (this.target == null) {
-			BlockPos blockPos = this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
+			BlockPos blockPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
 			this.target = Vec3d.ofBottomCenter(blockPos);
 		}
 

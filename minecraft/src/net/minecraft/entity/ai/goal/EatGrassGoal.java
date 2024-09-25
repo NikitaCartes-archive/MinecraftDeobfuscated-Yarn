@@ -63,7 +63,7 @@ public class EatGrassGoal extends Goal {
 		if (this.timer == this.getTickCount(4)) {
 			BlockPos blockPos = this.mob.getBlockPos();
 			if (SHORT_GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
-				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+				if (castToServerWorld(this.world).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					this.world.breakBlock(blockPos, false);
 				}
 
@@ -71,7 +71,7 @@ public class EatGrassGoal extends Goal {
 			} else {
 				BlockPos blockPos2 = blockPos.down();
 				if (this.world.getBlockState(blockPos2).isOf(Blocks.GRASS_BLOCK)) {
-					if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+					if (castToServerWorld(this.world).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 						this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));
 						this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), Block.NOTIFY_LISTENERS);
 					}

@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -125,7 +126,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 		return true;
 	}
 
-	public boolean isAngryAt(PlayerEntity player) {
+	public boolean isAngryAt(ServerWorld world, PlayerEntity player) {
 		return true;
 	}
 

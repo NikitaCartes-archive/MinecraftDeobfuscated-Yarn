@@ -14,7 +14,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.LayeredDrawer;
-import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
@@ -423,11 +422,7 @@ public class InGameHud {
 
 	private void renderStatusEffectOverlay(DrawContext context, RenderTickCounter tickCounter) {
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
-		if (!collection.isEmpty()) {
-			if (this.client.currentScreen instanceof AbstractInventoryScreen abstractInventoryScreen && abstractInventoryScreen.hideStatusEffectHud()) {
-				return;
-			}
-
+		if (!collection.isEmpty() && (this.client.currentScreen == null || !this.client.currentScreen.shouldHideStatusEffectHud())) {
 			int i = 0;
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();

@@ -35,7 +35,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.stepAndDestroyMob.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+		if (!getServerWorld(this.stepAndDestroyMob).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 			return false;
 		} else if (this.cooldown > 0) {
 			this.cooldown--;

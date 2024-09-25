@@ -191,7 +191,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		if (source.getAttacker() instanceof PlayerEntity playerEntity) {
 			Optional<UUID> optional = this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LIKED_PLAYER);
 			if (optional.isPresent() && playerEntity.getUuid().equals(optional.get())) {
@@ -199,7 +199,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 			}
 		}
 
-		return super.damage(source, amount);
+		return super.damage(world, source, amount);
 	}
 
 	@Override
@@ -231,15 +231,15 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("allayBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		profiler.push("allayActivityUpdate");
 		AllayBrain.updateActivities(this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -366,10 +366,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	public boolean canGather(ItemStack stack) {
+	public boolean canGather(ServerWorld world, ItemStack stack) {
 		ItemStack itemStack = this.getStackInHand(Hand.MAIN_HAND);
 		return !itemStack.isEmpty()
-			&& this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+			&& world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 			&& this.inventory.canInsert(stack)
 			&& this.areItemsEqual(itemStack, stack);
 	}
@@ -385,8 +385,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
-		InventoryOwner.pickUpItem(this, this, item);
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		InventoryOwner.pickUpItem(world, this, this, itemEntity);
 	}
 
 	@Override
@@ -443,12 +443,12 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	protected void dropInventory() {
-		super.dropInventory();
-		this.inventory.clearToList().forEach(this::dropStack);
+	protected void dropInventory(ServerWorld world) {
+		super.dropInventory(world);
+		this.inventory.clearToList().forEach(stack -> this.dropStack(world, stack));
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (!itemStack.isEmpty() && !EnchantmentHelper.hasAnyEnchantmentsWith(itemStack, EnchantmentEffectComponentTypes.PREVENT_EQUIPMENT_DROP)) {
-			this.dropStack(itemStack);
+			this.dropStack(world, itemStack);
 			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}
 	}
@@ -466,7 +466,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		Vibrations.ListenerData.CODEC
 			.encodeStart(registryOps, this.vibrationListenerData)
 			.resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Allay: '{}'", string))
-			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
+			.ifPresent(encodedVibrationListenerData -> nbt.put("listener", encodedVibrationListenerData));
 		nbt.putLong("DuplicationCooldown", this.duplicationCooldown);
 		nbt.putBoolean("CanDuplicate", this.canDuplicate());
 	}
@@ -480,7 +480,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 			Vibrations.ListenerData.CODEC
 				.parse(registryOps, nbt.getCompound("listener"))
 				.resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Allay: '{}'", string))
-				.ifPresent(listenerData -> this.vibrationListenerData = listenerData);
+				.ifPresent(vibrationListenerData -> this.vibrationListenerData = vibrationListenerData);
 		}
 
 		this.duplicationCooldown = (long)nbt.getInt("DuplicationCooldown");

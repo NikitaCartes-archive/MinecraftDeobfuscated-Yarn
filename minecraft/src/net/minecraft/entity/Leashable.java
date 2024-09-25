@@ -96,7 +96,7 @@ public interface Leashable {
 			}
 
 			if (entity.age > 100) {
-				entity.dropItem(Items.LEAD);
+				entity.dropItem(serverWorld, Items.LEAD);
 				entity.setLeashData(null);
 			}
 		}
@@ -110,17 +110,19 @@ public interface Leashable {
 		Leashable.LeashData leashData = entity.getLeashData();
 		if (leashData != null && leashData.leashHolder != null) {
 			entity.setLeashData(null);
-			if (!entity.getWorld().isClient && dropItem) {
-				entity.dropItem(Items.LEAD);
-			}
+			if (entity.getWorld() instanceof ServerWorld serverWorld) {
+				if (dropItem) {
+					entity.dropItem(serverWorld, Items.LEAD);
+				}
 
-			if (sendPacket && entity.getWorld() instanceof ServerWorld serverWorld) {
-				serverWorld.getChunkManager().sendToOtherNearbyPlayers(entity, new EntityAttachS2CPacket(entity, null));
+				if (sendPacket) {
+					serverWorld.getChunkManager().sendToOtherNearbyPlayers(entity, new EntityAttachS2CPacket(entity, null));
+				}
 			}
 		}
 	}
 
-	static <E extends Entity & Leashable> void tickLeash(E entity) {
+	static <E extends Entity & Leashable> void tickLeash(ServerWorld world, E entity) {
 		Leashable.LeashData leashData = entity.getLeashData();
 		if (leashData != null && leashData.unresolvedLeashData != null) {
 			resolveLeashData(entity, leashData);
@@ -128,7 +130,7 @@ public interface Leashable {
 
 		if (leashData != null && leashData.leashHolder != null) {
 			if (!entity.isAlive() || !leashData.leashHolder.isAlive()) {
-				detachLeash(entity, true, entity.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS));
+				detachLeash(entity, true, world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS));
 			}
 
 			Entity entity2 = entity.getLeashHolder();

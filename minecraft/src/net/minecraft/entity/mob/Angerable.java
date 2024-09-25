@@ -81,15 +81,15 @@ public interface Angerable {
 		}
 	}
 
-	default boolean shouldAngerAt(LivingEntity entity) {
+	default boolean shouldAngerAt(LivingEntity entity, ServerWorld world) {
 		if (!this.canTarget(entity)) {
 			return false;
 		} else {
-			return entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(entity.getWorld()) ? true : entity.getUuid().equals(this.getAngryAt());
+			return entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(world) ? true : entity.getUuid().equals(this.getAngryAt());
 		}
 	}
 
-	default boolean isUniversallyAngry(World world) {
+	default boolean isUniversallyAngry(ServerWorld world) {
 		return world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.hasAngerTime() && this.getAngryAt() == null;
 	}
 
@@ -97,8 +97,8 @@ public interface Angerable {
 		return this.getAngerTime() > 0;
 	}
 
-	default void forgive(PlayerEntity player) {
-		if (player.getWorld().getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+	default void forgive(ServerWorld world, PlayerEntity player) {
+		if (world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
 			if (player.getUuid().equals(this.getAngryAt())) {
 				this.stopAnger();
 			}

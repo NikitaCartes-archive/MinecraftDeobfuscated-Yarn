@@ -1,7 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -9,6 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -33,6 +33,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -312,23 +313,19 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.getWorld().isClient) {
-			return false;
-		} else {
-			if (!this.areSpikesRetracted()
-				&& !source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS)
-				&& !source.isOf(DamageTypes.THORNS)
-				&& source.getSource() instanceof LivingEntity livingEntity) {
-				livingEntity.damage(this.getDamageSources().thorns(this), 2.0F);
-			}
-
-			if (this.wanderGoal != null) {
-				this.wanderGoal.ignoreChanceOnce();
-			}
-
-			return super.damage(source, amount);
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (!this.areSpikesRetracted()
+			&& !source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS)
+			&& !source.isOf(DamageTypes.THORNS)
+			&& source.getSource() instanceof LivingEntity livingEntity) {
+			livingEntity.damage(world, this.getDamageSources().thorns(this), 2.0F);
 		}
+
+		if (this.wanderGoal != null) {
+			this.wanderGoal.ignoreChanceOnce();
+		}
+
+		return super.damage(world, source, amount);
 	}
 
 	@Override
@@ -421,8 +418,9 @@ public class GuardianEntity extends HostileEntity {
 							f += 2.0F;
 						}
 
-						livingEntity.damage(this.guardian.getDamageSources().indirectMagic(this.guardian, this.guardian), f);
-						this.guardian.tryAttack(livingEntity);
+						ServerWorld serverWorld = getServerWorld(this.guardian);
+						livingEntity.damage(serverWorld, this.guardian.getDamageSources().indirectMagic(this.guardian, this.guardian), f);
+						this.guardian.tryAttack(serverWorld, livingEntity);
 						this.guardian.setTarget(null);
 					}
 
@@ -481,16 +479,16 @@ public class GuardianEntity extends HostileEntity {
 		}
 	}
 
-	static class GuardianTargetPredicate implements Predicate<LivingEntity> {
+	static class GuardianTargetPredicate implements TargetPredicate.EntityPredicate {
 		private final GuardianEntity owner;
 
 		public GuardianTargetPredicate(GuardianEntity owner) {
 			this.owner = owner;
 		}
 
-		public boolean test(@Nullable LivingEntity livingEntity) {
-			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity || livingEntity instanceof AxolotlEntity)
-				&& livingEntity.squaredDistanceTo(this.owner) > 9.0;
+		@Override
+		public boolean method_18303(@Nullable LivingEntity target, ServerWorld world) {
+			return (target instanceof PlayerEntity || target instanceof SquidEntity || target instanceof AxolotlEntity) && target.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}
 }

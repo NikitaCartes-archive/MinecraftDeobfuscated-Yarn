@@ -228,14 +228,14 @@ public class BreezeEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("breezeBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.swap("breezeActivityUpdate");
 		BreezeBrain.updateActivities(this);
 		profiler.pop();
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
@@ -265,8 +265,8 @@ public class BreezeEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return damageSource.getAttacker() instanceof BreezeEntity || super.isInvulnerableTo(damageSource);
+	public boolean isInvulnerableTo(ServerWorld world, DamageSource source) {
+		return source.getAttacker() instanceof BreezeEntity || super.isInvulnerableTo(world, source);
 	}
 
 	@Override

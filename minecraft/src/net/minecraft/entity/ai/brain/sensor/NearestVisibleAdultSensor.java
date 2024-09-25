@@ -17,12 +17,11 @@ public class NearestVisibleAdultSensor extends Sensor<PassiveEntity> {
 	protected void sense(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		passiveEntity.getBrain()
 			.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS)
-			.ifPresent(livingTargetCache -> this.findNearestVisibleAdult(passiveEntity, livingTargetCache));
+			.ifPresent(targetCache -> this.findNearestVisibleAdult(passiveEntity, targetCache));
 	}
 
-	private void findNearestVisibleAdult(PassiveEntity entity, LivingTargetCache livingTarget) {
-		Optional<PassiveEntity> optional = livingTarget.findFirst(livingEntity -> livingEntity.getType() == entity.getType() && !livingEntity.isBaby())
-			.map(PassiveEntity.class::cast);
+	private void findNearestVisibleAdult(PassiveEntity entity, LivingTargetCache targetCache) {
+		Optional<PassiveEntity> optional = targetCache.findFirst(target -> target.getType() == entity.getType() && !target.isBaby()).map(PassiveEntity.class::cast);
 		entity.getBrain().remember(MemoryModuleType.NEAREST_VISIBLE_ADULT, optional);
 	}
 }

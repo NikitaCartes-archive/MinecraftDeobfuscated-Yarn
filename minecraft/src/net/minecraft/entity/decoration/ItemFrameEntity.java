@@ -26,6 +26,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.EntityTrackerEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -126,27 +127,39 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void kill() {
+	public void kill(ServerWorld world) {
 		this.removeFromFrame(this.getHeldItemStack());
-		super.kill();
+		super.kill(world);
+	}
+
+	private boolean shouldDropHeldStackWhenDamaged(DamageSource damageSource) {
+		return !damageSource.isIn(DamageTypeTags.IS_EXPLOSION) && !this.getHeldItemStack().isEmpty();
+	}
+
+	private static boolean canDamageWhenFixed(DamageSource damageSource) {
+		return damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) || damageSource.isSourceCreativePlayer();
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.fixed) {
-			return !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !source.isSourceCreativePlayer() ? false : super.damage(source, amount);
-		} else if (this.isInvulnerableTo(source)) {
-			return false;
-		} else if (!source.isIn(DamageTypeTags.IS_EXPLOSION) && !this.getHeldItemStack().isEmpty()) {
-			if (!this.getWorld().isClient) {
-				this.dropHeldStack(source.getAttacker(), false);
+	public boolean clientDamage(DamageSource source) {
+		return this.fixed && !canDamageWhenFixed(source) ? false : !this.isAlwaysInvulnerableTo(source);
+	}
+
+	@Override
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (!this.fixed) {
+			if (this.isAlwaysInvulnerableTo(source)) {
+				return false;
+			} else if (this.shouldDropHeldStackWhenDamaged(source)) {
+				this.dropHeldStack(world, source.getAttacker(), false);
 				this.emitGameEvent(GameEvent.BLOCK_CHANGE, source.getAttacker());
 				this.playSound(this.getRemoveItemSound(), 1.0F, 1.0F);
+				return true;
+			} else {
+				return super.damage(world, source, amount);
 			}
-
-			return true;
 		} else {
-			return super.damage(source, amount);
+			return canDamageWhenFixed(source) && super.damage(world, source, amount);
 		}
 	}
 
@@ -162,9 +175,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void onBreak(@Nullable Entity breaker) {
+	public void onBreak(ServerWorld world, @Nullable Entity breaker) {
 		this.playSound(this.getBreakSound(), 1.0F, 1.0F);
-		this.dropHeldStack(breaker, true);
+		this.dropHeldStack(world, breaker, true);
 		this.emitGameEvent(GameEvent.BLOCK_CHANGE, breaker);
 	}
 
@@ -181,11 +194,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		return SoundEvents.ENTITY_ITEM_FRAME_PLACE;
 	}
 
-	private void dropHeldStack(@Nullable Entity entity, boolean alwaysDrop) {
+	private void dropHeldStack(ServerWorld world, @Nullable Entity entity, boolean dropSelf) {
 		if (!this.fixed) {
 			ItemStack itemStack = this.getHeldItemStack();
 			this.setHeldItemStack(ItemStack.EMPTY);
-			if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			if (!world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 				if (entity == null) {
 					this.removeFromFrame(itemStack);
 				}
@@ -195,15 +208,15 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 					return;
 				}
 
-				if (alwaysDrop) {
-					this.dropStack(this.getAsItemStack());
+				if (dropSelf) {
+					this.dropStack(world, this.getAsItemStack());
 				}
 
 				if (!itemStack.isEmpty()) {
 					itemStack = itemStack.copy();
 					this.removeFromFrame(itemStack);
 					if (this.random.nextFloat() < this.itemDropChance) {
-						this.dropStack(itemStack);
+						this.dropStack(world, itemStack);
 					}
 				}
 			}
@@ -227,8 +240,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Nullable
-	public MapIdComponent getMapId(ItemStack itemStack) {
-		return itemStack.get(DataComponentTypes.MAP_ID);
+	public MapIdComponent getMapId(ItemStack stack) {
+		return stack.get(DataComponentTypes.MAP_ID);
 	}
 
 	public boolean containsMap() {

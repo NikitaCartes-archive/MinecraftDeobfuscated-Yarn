@@ -3,20 +3,17 @@ package net.minecraft.entity.player;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 
 public class HungerManager {
 	private int foodLevel = 20;
-	private float saturationLevel;
+	private float saturationLevel = 5.0F;
 	private float exhaustion;
 	private int foodTickTimer;
-	private int prevFoodLevel = 20;
-
-	public HungerManager() {
-		this.saturationLevel = 5.0F;
-	}
 
 	private void addInternal(int nutrition, float saturation) {
 		this.foodLevel = MathHelper.clamp(nutrition + this.foodLevel, 0, 20);
@@ -31,9 +28,9 @@ public class HungerManager {
 		this.addInternal(foodComponent.nutrition(), foodComponent.saturation());
 	}
 
-	public void update(PlayerEntity player) {
-		Difficulty difficulty = player.getWorld().getDifficulty();
-		this.prevFoodLevel = this.foodLevel;
+	public void update(ServerPlayerEntity player) {
+		ServerWorld serverWorld = player.getServerWorld();
+		Difficulty difficulty = serverWorld.getDifficulty();
 		if (this.exhaustion > 4.0F) {
 			this.exhaustion -= 4.0F;
 			if (this.saturationLevel > 0.0F) {
@@ -43,7 +40,7 @@ public class HungerManager {
 			}
 		}
 
-		boolean bl = player.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
+		boolean bl = serverWorld.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
 		if (bl && this.saturationLevel > 0.0F && player.canFoodHeal() && this.foodLevel >= 20) {
 			this.foodTickTimer++;
 			if (this.foodTickTimer >= 10) {
@@ -63,7 +60,7 @@ public class HungerManager {
 			this.foodTickTimer++;
 			if (this.foodTickTimer >= 80) {
 				if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
-					player.damage(player.getDamageSources().starve(), 1.0F);
+					player.damage(serverWorld, player.getDamageSources().starve(), 1.0F);
 				}
 
 				this.foodTickTimer = 0;
@@ -93,20 +90,12 @@ public class HungerManager {
 		return this.foodLevel;
 	}
 
-	public int getPrevFoodLevel() {
-		return this.prevFoodLevel;
-	}
-
 	public boolean isNotFull() {
 		return this.foodLevel < 20;
 	}
 
 	public void addExhaustion(float exhaustion) {
 		this.exhaustion = Math.min(this.exhaustion + exhaustion, 40.0F);
-	}
-
-	public float getExhaustion() {
-		return this.exhaustion;
 	}
 
 	public float getSaturationLevel() {
@@ -119,9 +108,5 @@ public class HungerManager {
 
 	public void setSaturationLevel(float saturationLevel) {
 		this.saturationLevel = saturationLevel;
-	}
-
-	public void setExhaustion(float exhaustion) {
-		this.exhaustion = exhaustion;
 	}
 }

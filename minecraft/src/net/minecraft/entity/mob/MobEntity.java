@@ -51,7 +51,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
@@ -194,7 +194,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		Arrays.fill(this.armorDropChances, 0.085F);
 		Arrays.fill(this.handDropChances, 0.085F);
 		this.bodyArmorDropChance = 0.085F;
-		if (world != null && !world.isClient) {
+		if (world instanceof ServerWorld) {
 			this.initGoals();
 		}
 	}
@@ -343,7 +343,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	@Override
-	protected int getXpToDrop() {
+	protected int getXpToDrop(ServerWorld world) {
 		if (this.experiencePoints > 0) {
 			int i = this.experiencePoints;
 
@@ -402,7 +402,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 	protected void updateGoalControls() {
 		boolean bl = !(this.getControllingPassenger() instanceof MobEntity);
-		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
+		boolean bl2 = !(this.getVehicle() instanceof AbstractBoatEntity);
 		this.goalSelector.setControlEnabled(Goal.Control.MOVE, bl);
 		this.goalSelector.setControlEnabled(Goal.Control.JUMP, bl && bl2);
 		this.goalSelector.setControlEnabled(Goal.Control.LOOK, bl);
@@ -539,14 +539,14 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	@Override
-	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
-		super.dropLoot(damageSource, causedByPlayer);
+	protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
+		super.dropLoot(world, damageSource, causedByPlayer);
 		this.lootTable = Optional.empty();
 	}
 
 	@Override
-	public final Optional<RegistryKey<LootTable>> getLootTable() {
-		return this.lootTable.isPresent() ? this.lootTable : super.getLootTable();
+	public final Optional<RegistryKey<LootTable>> getLootTableKey() {
+		return this.lootTable.isPresent() ? this.lootTable : super.getLootTableKey();
 	}
 
 	@Override
@@ -584,15 +584,17 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		super.tickMovement();
 		Profiler profiler = Profilers.get();
 		profiler.push("looting");
-		if (!this.getWorld().isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
-			)
-		 {
+		if (this.getWorld() instanceof ServerWorld serverWorld
+			&& this.canPickUpLoot()
+			&& this.isAlive()
+			&& !this.dead
+			&& serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 			Vec3i vec3i = this.getItemPickUpRangeExpander();
 
 			for (ItemEntity itemEntity : this.getWorld()
 				.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
-				if (!itemEntity.isRemoved() && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup() && this.canGather(itemEntity.getStack())) {
-					this.loot(itemEntity);
+				if (!itemEntity.isRemoved() && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup() && this.canGather(serverWorld, itemEntity.getStack())) {
+					this.loot(serverWorld, itemEntity);
 				}
 			}
 		}
@@ -604,20 +606,20 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		return ITEM_PICK_UP_RANGE_EXPANDER;
 	}
 
-	protected void loot(ItemEntity item) {
-		ItemStack itemStack = item.getStack();
-		ItemStack itemStack2 = this.tryEquip(itemStack.copy());
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		ItemStack itemStack = itemEntity.getStack();
+		ItemStack itemStack2 = this.tryEquip(world, itemStack.copy());
 		if (!itemStack2.isEmpty()) {
-			this.triggerItemPickedUpByEntityCriteria(item);
-			this.sendPickup(item, itemStack2.getCount());
+			this.triggerItemPickedUpByEntityCriteria(itemEntity);
+			this.sendPickup(itemEntity, itemStack2.getCount());
 			itemStack.decrement(itemStack2.getCount());
 			if (itemStack.isEmpty()) {
-				item.discard();
+				itemEntity.discard();
 			}
 		}
 	}
 
-	public ItemStack tryEquip(ItemStack stack) {
+	public ItemStack tryEquip(ServerWorld world, ItemStack stack) {
 		EquipmentSlot equipmentSlot = this.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 		boolean bl = this.prefersNewEquipment(stack, itemStack, equipmentSlot);
@@ -630,7 +632,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		if (bl && this.canPickupItem(stack)) {
 			double d = (double)this.getDropChance(equipmentSlot);
 			if (!itemStack.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
-				this.dropStack(itemStack);
+				this.dropStack(world, itemStack);
 			}
 
 			ItemStack itemStack2 = equipmentSlot.split(stack);
@@ -732,7 +734,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		return true;
 	}
 
-	public boolean canGather(ItemStack stack) {
+	public boolean canGather(ServerWorld world, ItemStack stack) {
 		return this.canPickupItem(stack);
 	}
 
@@ -803,7 +805,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		this.navigation.tick();
 		profiler.pop();
 		profiler.push("mob tick");
-		this.mobTick();
+		this.mobTick((ServerWorld)this.getWorld());
 		profiler.pop();
 		profiler.push("controls");
 		profiler.push("move");
@@ -821,7 +823,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		DebugInfoSender.sendGoalSelector(this.getWorld(), this, this.goalSelector);
 	}
 
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 	}
 
 	/**
@@ -1025,7 +1027,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 						itemStack.setDamage(itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1))));
 					}
 
-					this.dropStack(itemStack);
+					this.dropStack(world, itemStack);
 					this.equipStack(equipmentSlot, ItemStack.EMPTY);
 				}
 			}
@@ -1040,11 +1042,11 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		};
 	}
 
-	public void dropAllEquipment() {
-		this.dropEquipment(stack -> true);
+	public void dropAllEquipment(ServerWorld world) {
+		this.dropEquipment(world, stack -> true);
 	}
 
-	public Set<EquipmentSlot> dropEquipment(Predicate<ItemStack> dropPredicate) {
+	public Set<EquipmentSlot> dropEquipment(ServerWorld world, Predicate<ItemStack> dropPredicate) {
 		Set<EquipmentSlot> set = new HashSet();
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
@@ -1056,7 +1058,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 					double d = (double)this.getDropChance(equipmentSlot);
 					if (d > 1.0) {
 						this.equipStack(equipmentSlot, ItemStack.EMPTY);
-						this.dropStack(itemStack);
+						this.dropStack(world, itemStack);
 					}
 				}
 			}
@@ -1485,16 +1487,13 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(ServerWorld world, Entity target) {
 		float f = (float)this.getAttributeValue(EntityAttributes.ATTACK_DAMAGE);
 		ItemStack itemStack = this.getWeaponStack();
 		DamageSource damageSource = (DamageSource)Optional.ofNullable(itemStack.getItem().getDamageSource(this)).orElse(this.getDamageSources().mobAttack(this));
-		if (this.getWorld() instanceof ServerWorld serverWorld) {
-			f = EnchantmentHelper.getDamage(serverWorld, itemStack, target, damageSource, f);
-		}
-
+		f = EnchantmentHelper.getDamage(world, itemStack, target, damageSource, f);
 		f += itemStack.getItem().getBonusAttackDamage(target, f, damageSource);
-		boolean bl = target.damage(damageSource, f);
+		boolean bl = target.damage(world, damageSource, f);
 		if (bl) {
 			float g = this.getKnockbackAgainst(target, damageSource);
 			if (g > 0.0F && target instanceof LivingEntity livingEntity) {
@@ -1506,14 +1505,11 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 				this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));
 			}
 
-			if (this.getWorld() instanceof ServerWorld serverWorld2) {
-				if (target instanceof LivingEntity livingEntity2) {
-					itemStack.postHit(livingEntity2, this);
-				}
-
-				EnchantmentHelper.onTargetDamaged(serverWorld2, target, damageSource);
+			if (target instanceof LivingEntity livingEntity) {
+				itemStack.postHit(livingEntity, this);
 			}
 
+			EnchantmentHelper.onTargetDamaged(world, target, damageSource);
 			this.onAttacking(target);
 			this.playAttackSound();
 		}

@@ -201,7 +201,7 @@ public class PlayerAdvancementTracker {
 			if (!bl2 && advancementProgress.isDone()) {
 				advancement.value().rewards().apply(this.owner);
 				advancement.value().display().ifPresent(display -> {
-					if (display.shouldAnnounceToChat() && this.owner.getWorld().getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
+					if (display.shouldAnnounceToChat() && this.owner.getServerWorld().getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
 						this.playerManager.broadcast(display.getFrame().getChatAnnouncementText(advancement, this.owner), false);
 					}
 				});

@@ -28,6 +28,7 @@ import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.featuretoggle.ToggleableFeature;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -68,12 +69,14 @@ public class StatusEffect implements ToggleableFeature {
 		return this.fadeTicks;
 	}
 
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
 		return true;
 	}
 
-	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
-		this.applyUpdateEffect(target, amplifier);
+	public void applyInstantEffect(
+		ServerWorld world, @Nullable Entity effectEntity, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity
+	) {
+		this.applyUpdateEffect(world, target, amplifier);
 	}
 
 	public boolean canApplyUpdateEffect(int duration, int amplifier) {
@@ -88,10 +91,10 @@ public class StatusEffect implements ToggleableFeature {
 			.ifPresent(sound -> entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, entity.getSoundCategory(), 1.0F, 1.0F));
 	}
 
-	public void onEntityRemoval(LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
+	public void onEntityRemoval(ServerWorld world, LivingEntity entity, int amplifier, Entity.RemovalReason reason) {
 	}
 
-	public void onEntityDamage(LivingEntity entity, int amplifier, DamageSource source, float amount) {
+	public void onEntityDamage(ServerWorld world, LivingEntity entity, int amplifier, DamageSource source, float amount) {
 	}
 
 	public boolean isInstant() {

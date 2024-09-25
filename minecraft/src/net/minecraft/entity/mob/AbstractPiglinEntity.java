@@ -72,8 +72,8 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		super.mobTick();
+	protected void mobTick(ServerWorld world) {
+		super.mobTick(world);
 		if (this.shouldZombify()) {
 			this.timeInOverworld++;
 		} else {
@@ -82,7 +82,7 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 
 		if (this.timeInOverworld > 300) {
 			this.playZombificationSound();
-			this.zombify((ServerWorld)this.getWorld());
+			this.zombify(world);
 		}
 	}
 

@@ -64,15 +64,13 @@ public class ElderGuardianEntity extends GuardianEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		super.mobTick();
+	protected void mobTick(ServerWorld world) {
+		super.mobTick(world);
 		if ((this.age + this.getId()) % 1200 == 0) {
 			StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 6000, 2);
-			List<ServerPlayerEntity> list = StatusEffectUtil.addEffectToPlayersWithinDistance(
-				(ServerWorld)this.getWorld(), this, this.getPos(), 50.0, statusEffectInstance, 1200
-			);
+			List<ServerPlayerEntity> list = StatusEffectUtil.addEffectToPlayersWithinDistance(world, this, this.getPos(), 50.0, statusEffectInstance, 1200);
 			list.forEach(
-				serverPlayerEntity -> serverPlayerEntity.networkHandler
+				player -> player.networkHandler
 						.sendPacket(
 							new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : 1.0F)
 						)

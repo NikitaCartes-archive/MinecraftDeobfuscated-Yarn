@@ -111,7 +111,7 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 			Activity.IDLE,
 			10,
 			ImmutableList.of(
-				UpdateAttackTargetTask.create(ZoglinEntity::getHoglinTarget),
+				UpdateAttackTargetTask.create((world, target) -> target.getHoglinTarget(world)),
 				LookAtMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
 				new RandomTask<>(
 					ImmutableList.of(Pair.of(StrollTask.create(0.4F), 2), Pair.of(GoTowardsLookTargetTask.create(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
@@ -134,14 +134,14 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 		);
 	}
 
-	private Optional<? extends LivingEntity> getHoglinTarget() {
+	private Optional<? extends LivingEntity> getHoglinTarget(ServerWorld world) {
 		return ((LivingTargetCache)this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty()))
-			.findFirst(this::shouldAttack);
+			.findFirst(target -> this.shouldAttack(world, target));
 	}
 
-	private boolean shouldAttack(LivingEntity entity) {
-		EntityType<?> entityType = entity.getType();
-		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.testAttackableTargetPredicate(this, entity);
+	private boolean shouldAttack(ServerWorld world, LivingEntity target) {
+		EntityType<?> entityType = target.getType();
+		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.testAttackableTargetPredicate(world, this, target);
 	}
 
 	@Override
@@ -182,14 +182,14 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		if (!(target instanceof LivingEntity)) {
-			return false;
-		} else {
+	public boolean tryAttack(ServerWorld world, Entity target) {
+		if (target instanceof LivingEntity livingEntity) {
 			this.movementCooldownTicks = 10;
-			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+			world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK);
-			return Hoglin.tryAttack(this, (LivingEntity)target);
+			return Hoglin.tryAttack(world, this, livingEntity);
+		} else {
+			return false;
 		}
 	}
 
@@ -206,17 +206,14 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		boolean bl = super.damage(source, amount);
-		if (this.getWorld().isClient) {
-			return false;
-		} else if (bl && source.getAttacker() instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)source.getAttacker();
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		boolean bl = super.damage(world, source, amount);
+		if (bl && source.getAttacker() instanceof LivingEntity livingEntity) {
 			if (this.canTarget(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
 				this.setAttackTarget(livingEntity);
 			}
 
-			return bl;
+			return true;
 		} else {
 			return bl;
 		}
@@ -244,10 +241,10 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("zoglinBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		this.tickBrain();
 	}

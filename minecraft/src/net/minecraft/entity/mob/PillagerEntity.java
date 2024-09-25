@@ -191,15 +191,15 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
-		ItemStack itemStack = item.getStack();
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		ItemStack itemStack = itemEntity.getStack();
 		if (itemStack.getItem() instanceof BannerItem) {
-			super.loot(item);
+			super.loot(world, itemEntity);
 		} else if (this.isRaidCaptain(itemStack)) {
-			this.triggerItemPickedUpByEntityCriteria(item);
+			this.triggerItemPickedUpByEntityCriteria(itemEntity);
 			ItemStack itemStack2 = this.inventory.addStack(itemStack);
 			if (itemStack2.isEmpty()) {
-				item.discard();
+				itemEntity.discard();
 			} else {
 				itemStack.setCount(itemStack2.getCount());
 			}

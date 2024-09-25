@@ -1,8 +1,6 @@
 package net.minecraft.item;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
@@ -12,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.tooltip.BundleTooltipData;
 import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -73,6 +72,7 @@ public class BundleItem extends Item {
 				}
 
 				stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+				this.onContentChanged(player);
 				return true;
 			} else if (clickType == ClickType.RIGHT && itemStack.isEmpty()) {
 				ItemStack itemStack2 = builder.removeSelected();
@@ -86,6 +86,7 @@ public class BundleItem extends Item {
 				}
 
 				stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+				this.onContentChanged(player);
 				return true;
 			} else {
 				return false;
@@ -112,6 +113,7 @@ public class BundleItem extends Item {
 					}
 
 					stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+					this.onContentChanged(player);
 					return true;
 				} else if (clickType == ClickType.RIGHT && otherStack.isEmpty()) {
 					if (slot.canTakePartial(player)) {
@@ -123,6 +125,7 @@ public class BundleItem extends Item {
 					}
 
 					stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+					this.onContentChanged(player);
 					return true;
 				} else {
 					setSelectedStackIndex(stack, -1);
@@ -255,30 +258,6 @@ public class BundleItem extends Item {
 		}
 	}
 
-	public static List<BundleItem> getBundles() {
-		return Stream.of(
-				Items.BUNDLE,
-				Items.WHITE_BUNDLE,
-				Items.ORANGE_BUNDLE,
-				Items.MAGENTA_BUNDLE,
-				Items.LIGHT_BLUE_BUNDLE,
-				Items.YELLOW_BUNDLE,
-				Items.LIME_BUNDLE,
-				Items.PINK_BUNDLE,
-				Items.GRAY_BUNDLE,
-				Items.LIGHT_GRAY_BUNDLE,
-				Items.CYAN_BUNDLE,
-				Items.BLACK_BUNDLE,
-				Items.BROWN_BUNDLE,
-				Items.GREEN_BUNDLE,
-				Items.RED_BUNDLE,
-				Items.BLUE_BUNDLE,
-				Items.PURPLE_BUNDLE
-			)
-			.map(item -> (BundleItem)item)
-			.toList();
-	}
-
 	public static Item getBundle(DyeColor color) {
 		return switch (color) {
 			case WHITE -> Items.WHITE_BUNDLE;
@@ -314,5 +293,12 @@ public class BundleItem extends Item {
 
 	private static void playDropContentsSound(Entity entity) {
 		entity.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+	}
+
+	private void onContentChanged(PlayerEntity user) {
+		ScreenHandler screenHandler = user.currentScreenHandler;
+		if (screenHandler != null) {
+			screenHandler.onContentChanged(user.getInventory());
+		}
 	}
 }

@@ -19,6 +19,7 @@ import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -136,31 +137,31 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		super.mobTick();
+	protected void mobTick(ServerWorld world) {
+		super.mobTick(world);
 		BlockPos blockPos = this.getBlockPos();
 		BlockPos blockPos2 = blockPos.up();
 		if (this.isRoosting()) {
 			boolean bl = this.isSilent();
-			if (this.getWorld().getBlockState(blockPos2).isSolidBlock(this.getWorld(), blockPos)) {
+			if (world.getBlockState(blockPos2).isSolidBlock(world, blockPos)) {
 				if (this.random.nextInt(200) == 0) {
 					this.headYaw = (float)this.random.nextInt(360);
 				}
 
-				if (this.getWorld().getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
+				if (world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
 					this.setRoosting(false);
 					if (!bl) {
-						this.getWorld().syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
+						world.syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
 					}
 				}
 			} else {
 				this.setRoosting(false);
 				if (!bl) {
-					this.getWorld().syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
+					world.syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
 				}
 			}
 		} else {
-			if (this.hangingPosition != null && (!this.getWorld().isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.getWorld().getBottomY())) {
+			if (this.hangingPosition != null && (!world.isAir(this.hangingPosition) || this.hangingPosition.getY() <= world.getBottomY())) {
 				this.hangingPosition = null;
 			}
 
@@ -182,7 +183,7 @@ public class BatEntity extends AmbientEntity {
 			float h = MathHelper.wrapDegrees(g - this.getYaw());
 			this.forwardSpeed = 0.5F;
 			this.setYaw(this.getYaw() + h);
-			if (this.random.nextInt(100) == 0 && this.getWorld().getBlockState(blockPos2).isSolidBlock(this.getWorld(), blockPos2)) {
+			if (this.random.nextInt(100) == 0 && world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
 				this.setRoosting(true);
 			}
 		}
@@ -203,15 +204,15 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		if (this.isInvulnerableTo(world, source)) {
 			return false;
 		} else {
-			if (!this.getWorld().isClient && this.isRoosting()) {
+			if (this.isRoosting()) {
 				this.setRoosting(false);
 			}
 
-			return super.damage(source, amount);
+			return super.damage(world, source, amount);
 		}
 	}
 

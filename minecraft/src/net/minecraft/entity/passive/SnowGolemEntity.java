@@ -55,7 +55,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		this.goalSelector.add(2, new WanderAroundFarGoal(this, 1.0, 1.0000001E-5F));
 		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(4, new LookAroundGoal(this));
-		this.targetSelector.add(1, new ActiveTargetGoal(this, MobEntity.class, 10, true, false, entity -> entity instanceof Monster));
+		this.targetSelector.add(1, new ActiveTargetGoal(this, MobEntity.class, 10, true, false, (entity, serverWorld) -> entity instanceof Monster));
 	}
 
 	public static DefaultAttributeContainer.Builder createSnowGolemAttributes() {
@@ -90,12 +90,12 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.getWorld().isClient) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			if (this.getWorld().getBiome(this.getBlockPos()).isIn(BiomeTags.SNOW_GOLEM_MELTS)) {
-				this.damage(this.getDamageSources().onFire(), 1.0F);
+				this.damage(serverWorld, this.getDamageSources().onFire(), 1.0F);
 			}
 
-			if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			if (!serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				return;
 			}
 
@@ -134,9 +134,9 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
-			this.sheared(SoundCategory.PLAYERS, itemStack);
-			this.emitGameEvent(GameEvent.SHEAR, player);
-			if (!this.getWorld().isClient) {
+			if (this.getWorld() instanceof ServerWorld serverWorld) {
+				this.sheared(serverWorld, SoundCategory.PLAYERS, itemStack);
+				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, getSlotForHand(hand));
 			}
 
@@ -147,12 +147,12 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	public void sheared(SoundCategory shearedSoundCategory, ItemStack shears) {
-		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
-		if (!this.getWorld().isClient()) {
-			this.setHasPumpkin(false);
-			this.forEachShearedItem(LootTables.SNOW_GOLEM_SHEARING, shears, stack -> this.dropStack(stack, this.getStandingEyeHeight()));
-		}
+	public void sheared(ServerWorld world, SoundCategory shearedSoundCategory, ItemStack shears) {
+		world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		this.setHasPumpkin(false);
+		this.forEachShearedItem(
+			world, LootTables.SNOW_GOLEM_SHEARING, shears, (serverWorld, itemStack) -> this.dropStack(serverWorld, itemStack, this.getStandingEyeHeight())
+		);
 	}
 
 	@Override

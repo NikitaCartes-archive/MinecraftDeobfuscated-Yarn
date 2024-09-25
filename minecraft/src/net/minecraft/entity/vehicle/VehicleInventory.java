@@ -81,14 +81,12 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 		}
 	}
 
-	default void onBroken(DamageSource source, World world, Entity vehicle) {
+	default void onBroken(DamageSource source, ServerWorld world, Entity vehicle) {
 		if (world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			ItemScatterer.spawn(world, vehicle, this);
-			if (!world.isClient) {
-				Entity entity = source.getSource();
-				if (entity != null && entity.getType() == EntityType.PLAYER) {
-					PiglinBrain.onGuardedBlockInteracted((PlayerEntity)entity, true);
-				}
+			Entity entity = source.getSource();
+			if (entity != null && entity.getType() == EntityType.PLAYER) {
+				PiglinBrain.onGuardedBlockInteracted(world, (PlayerEntity)entity, true);
 			}
 		}
 	}

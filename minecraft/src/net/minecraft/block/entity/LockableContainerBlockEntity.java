@@ -164,7 +164,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Override
 	public void removeFromCopiedStackNbt(NbtCompound nbt) {
 		nbt.remove("CustomName");
-		nbt.remove("Lock");
+		nbt.remove("lock");
 		nbt.remove("Items");
 	}
 }

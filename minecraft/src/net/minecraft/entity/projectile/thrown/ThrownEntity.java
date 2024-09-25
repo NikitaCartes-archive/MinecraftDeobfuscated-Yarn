@@ -43,6 +43,8 @@ public abstract class ThrownEntity extends ProjectileEntity {
 	@Override
 	public void tick() {
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
+		this.applyGravity();
+		this.applyDrag();
 		Vec3d vec3d;
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			vec3d = hitResult.getPos();
@@ -57,9 +59,6 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		if (hitResult.getType() != HitResult.Type.MISS && this.isAlive()) {
 			this.hitOrDeflect(hitResult);
 		}
-
-		this.applyDrag();
-		this.applyGravity();
 	}
 
 	private void applyDrag() {

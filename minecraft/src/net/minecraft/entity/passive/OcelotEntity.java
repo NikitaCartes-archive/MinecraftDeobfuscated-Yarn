@@ -104,7 +104,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void mobTick() {
+	public void mobTick(ServerWorld world) {
 		if (this.getMoveControl().isMoving()) {
 			double d = this.getMoveControl().getSpeed();
 			if (d == 0.6) {

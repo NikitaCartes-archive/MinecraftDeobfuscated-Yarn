@@ -554,7 +554,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 		if (this.getPlayerOwner() == null) {
 			int i = packet.getEntityData();
 			LOGGER.error("Failed to recreate fishing hook on client. {} (id: {}) is not a valid owner.", this.getWorld().getEntityById(i), i);
-			this.kill();
+			this.discard();
 		}
 	}
 

@@ -6,6 +6,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -35,10 +36,10 @@ public class LandingApproachPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void serverTick(ServerWorld world) {
 		double d = this.pathTarget == null ? 0.0 : this.pathTarget.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
-			this.updatePath();
+			this.updatePath(world);
 		}
 	}
 
@@ -48,15 +49,13 @@ public class LandingApproachPhase extends AbstractPhase {
 		return this.pathTarget;
 	}
 
-	private void updatePath() {
+	private void updatePath(ServerWorld world) {
 		if (this.path == null || this.path.isFinished()) {
 			int i = this.dragon.getNearestPathNodeIndex();
-			BlockPos blockPos = this.dragon
-				.getWorld()
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
-			PlayerEntity playerEntity = this.dragon
-				.getWorld()
-				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			BlockPos blockPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
+			PlayerEntity playerEntity = world.getClosestPlayer(
+				PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()
+			);
 			int j;
 			if (playerEntity != null) {
 				Vec3d vec3d = new Vec3d(playerEntity.getX(), 0.0, playerEntity.getZ()).normalize();

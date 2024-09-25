@@ -209,8 +209,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
-		ItemStack itemStack = item.getStack();
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		ItemStack itemStack = itemEntity.getStack();
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
 		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.createOminousBanner(this.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN)))
 			)
@@ -219,17 +219,17 @@ public abstract class RaiderEntity extends PatrolEntity {
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
 			if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
-				this.dropStack(itemStack2);
+				this.dropStack(world, itemStack2);
 			}
 
-			this.triggerItemPickedUpByEntityCriteria(item);
+			this.triggerItemPickedUpByEntityCriteria(itemEntity);
 			this.equipStack(equipmentSlot, itemStack);
-			this.sendPickup(item, itemStack.getCount());
-			item.discard();
+			this.sendPickup(itemEntity, itemStack.getCount());
+			itemEntity.discard();
 			this.getRaid().setWaveCaptain(this.getWave(), this);
 			this.setPatrolLeader(true);
 		} else {
-			super.loot(item);
+			super.loot(world, itemEntity);
 		}
 	}
 
@@ -252,12 +252,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		if (this.hasActiveRaid()) {
 			this.getRaid().updateBar();
 		}
 
-		return super.damage(source, amount);
+		return super.damage(world, source, amount);
 	}
 
 	@Nullable
@@ -440,7 +440,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			super.start();
 			RaiderEntity.this.getNavigation().stop();
 
-			for (RaiderEntity raiderEntity : RaiderEntity.this.getWorld()
+			for (RaiderEntity raiderEntity : getServerWorld(RaiderEntity.this)
 				.getTargets(RaiderEntity.class, this.closeRaiderPredicate, RaiderEntity.this, RaiderEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0))) {
 				raiderEntity.setTarget(RaiderEntity.this.getTarget());
 			}
@@ -451,7 +451,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			super.stop();
 			LivingEntity livingEntity = RaiderEntity.this.getTarget();
 			if (livingEntity != null) {
-				for (RaiderEntity raiderEntity : RaiderEntity.this.getWorld()
+				for (RaiderEntity raiderEntity : getServerWorld(RaiderEntity.this)
 					.getTargets(RaiderEntity.class, this.closeRaiderPredicate, RaiderEntity.this, RaiderEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0))) {
 					raiderEntity.setTarget(livingEntity);
 					raiderEntity.setAttacking(true);
@@ -570,7 +570,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		@Override
 		public void tick() {
 			if (this.bannerItemEntity != null && this.bannerItemEntity.isInRange(this.actor, 1.414)) {
-				this.actor.loot(this.bannerItemEntity);
+				this.actor.loot(castToServerWorld(RaiderEntity.this.getWorld()), this.bannerItemEntity);
 			}
 		}
 	}

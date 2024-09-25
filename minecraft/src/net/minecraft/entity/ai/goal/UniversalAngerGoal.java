@@ -22,7 +22,7 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.getWorld().getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.canStartUniversalAnger();
+		return getServerWorld(this.mob).getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.canStartUniversalAnger();
 	}
 
 	private boolean canStartUniversalAnger() {

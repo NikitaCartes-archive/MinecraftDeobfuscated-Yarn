@@ -1,19 +1,21 @@
 package net.minecraft.inventory;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import net.minecraft.component.DataComponentTypes;
+import com.mojang.serialization.DataResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.predicate.item.ItemPredicate;
 
-public record ContainerLock(String key) {
+public record ContainerLock(ItemPredicate predicate) {
 	/**
 	 * An empty container lock that can always be opened.
 	 */
-	public static final ContainerLock EMPTY = new ContainerLock("");
-	public static final Codec<ContainerLock> CODEC = Codec.STRING.xmap(ContainerLock::new, ContainerLock::key);
-	public static final String LOCK_KEY = "Lock";
+	public static final ContainerLock EMPTY = new ContainerLock(ItemPredicate.Builder.create().build());
+	public static final Codec<ContainerLock> CODEC = ItemPredicate.CODEC.xmap(ContainerLock::new, ContainerLock::predicate);
+	public static final String LOCK_KEY = "lock";
 
 	/**
 	 * Returns true if this lock can be opened with the key item stack.
@@ -22,20 +24,16 @@ public record ContainerLock(String key) {
 	 * or if the key string is empty.
 	 */
 	public boolean canOpen(ItemStack stack) {
-		if (this.key.isEmpty()) {
-			return true;
-		} else {
-			Text text = stack.get(DataComponentTypes.CUSTOM_NAME);
-			return text != null && this.key.equals(text.getString());
-		}
+		return this.predicate.test(stack);
 	}
 
 	/**
 	 * Inserts the key string of this lock into the {@code Lock} key of the NBT compound.
 	 */
 	public void writeNbt(NbtCompound nbt) {
-		if (!this.key.isEmpty()) {
-			nbt.putString("Lock", this.key);
+		if (this != EMPTY) {
+			DataResult<NbtElement> dataResult = CODEC.encode(this, NbtOps.INSTANCE, new NbtCompound());
+			dataResult.result().ifPresent(lock -> nbt.put("lock", lock));
 		}
 	}
 
@@ -45,6 +43,13 @@ public record ContainerLock(String key) {
 	 * If the {@code Lock} key is not present, returns an empty lock.
 	 */
 	public static ContainerLock fromNbt(NbtCompound nbt) {
-		return nbt.contains("Lock", NbtElement.STRING_TYPE) ? new ContainerLock(nbt.getString("Lock")) : EMPTY;
+		if (nbt.contains("lock", NbtElement.COMPOUND_TYPE)) {
+			DataResult<Pair<ContainerLock, NbtElement>> dataResult = CODEC.decode(NbtOps.INSTANCE, nbt.get("lock"));
+			if (dataResult.isSuccess()) {
+				return dataResult.getOrThrow().getFirst();
+			}
+		}
+
+		return EMPTY;
 	}
 }

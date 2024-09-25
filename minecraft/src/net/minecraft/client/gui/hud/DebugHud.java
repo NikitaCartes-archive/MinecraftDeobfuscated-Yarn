@@ -405,7 +405,7 @@ public class DebugHud {
 				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 				ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
 				NoiseConfig noiseConfig = serverChunkManager.getNoiseConfig();
-				chunkGenerator.getDebugHudText(list, noiseConfig, blockPos);
+				chunkGenerator.appendDebugHudText(list, noiseConfig, blockPos);
 				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = noiseConfig.getMultiNoiseSampler();
 				BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 				biomeSource.addDebugInfo(list, blockPos, multiNoiseSampler);

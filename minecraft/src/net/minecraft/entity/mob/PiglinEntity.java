@@ -157,10 +157,10 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		if (source.getAttacker() instanceof CreeperEntity creeperEntity && creeperEntity.shouldDropHead()) {
 			ItemStack itemStack = new ItemStack(Items.PIGLIN_HEAD);
 			creeperEntity.onHeadDropped();
-			this.dropStack(itemStack);
+			this.dropStack(world, itemStack);
 		}
 
-		this.inventory.clearToList().forEach(this::dropStack);
+		this.inventory.clearToList().forEach(stack -> this.dropStack(world, stack));
 	}
 
 	protected ItemStack addItem(ItemStack stack) {
@@ -262,8 +262,8 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		ActionResult actionResult = super.interactMob(player, hand);
 		if (actionResult.isAccepted()) {
 			return actionResult;
-		} else if (!this.getWorld().isClient) {
-			return PiglinBrain.playerInteract(this, player, hand);
+		} else if (this.getWorld() instanceof ServerWorld serverWorld) {
+			return PiglinBrain.playerInteract(serverWorld, this, player, hand);
 		} else {
 			boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != PiglinActivity.ADMIRING_ITEM;
 			return (ActionResult)(bl ? ActionResult.SUCCESS : ActionResult.PASS);
@@ -302,24 +302,24 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	protected void mobTick() {
+	protected void mobTick(ServerWorld world) {
 		Profiler profiler = Profilers.get();
 		profiler.push("piglinBrain");
-		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getBrain().tick(world, this);
 		profiler.pop();
 		PiglinBrain.tickActivities(this);
-		super.mobTick();
+		super.mobTick(world);
 	}
 
 	@Override
-	protected int getXpToDrop() {
+	protected int getXpToDrop(ServerWorld world) {
 		return this.experiencePoints;
 	}
 
 	@Override
 	protected void zombify(ServerWorld world) {
-		PiglinBrain.pickupItemWithOffHand(this);
-		this.inventory.clearToList().forEach(this::dropStack);
+		PiglinBrain.pickupItemWithOffHand(world, this);
+		this.inventory.clearToList().forEach(stack -> this.dropStack(world, stack));
 		super.zombify(world);
 	}
 
@@ -365,17 +365,13 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		boolean bl = super.damage(source, amount);
-		if (this.getWorld().isClient) {
-			return false;
-		} else {
-			if (bl && source.getAttacker() instanceof LivingEntity) {
-				PiglinBrain.onAttacked(this, (LivingEntity)source.getAttacker());
-			}
-
-			return bl;
+	public boolean damage(ServerWorld world, DamageSource source, float amount) {
+		boolean bl = super.damage(world, source, amount);
+		if (bl && source.getAttacker() instanceof LivingEntity livingEntity) {
+			PiglinBrain.onAttacked(world, this, livingEntity);
 		}
+
+		return bl;
 	}
 
 	@Override
@@ -402,8 +398,8 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	public boolean canGather(ItemStack stack) {
-		return this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && this.canPickUpLoot() && PiglinBrain.canGather(this, stack);
+	public boolean canGather(ServerWorld world, ItemStack stack) {
+		return world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && this.canPickUpLoot() && PiglinBrain.canGather(this, stack);
 	}
 
 	/**
@@ -433,9 +429,9 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
-		this.triggerItemPickedUpByEntityCriteria(item);
-		PiglinBrain.loot(this, item);
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
+		this.triggerItemPickedUpByEntityCriteria(itemEntity);
+		PiglinBrain.loot(world, this, itemEntity);
 	}
 
 	@Override

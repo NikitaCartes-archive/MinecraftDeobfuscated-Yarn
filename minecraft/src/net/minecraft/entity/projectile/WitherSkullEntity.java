@@ -58,7 +58,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 			boolean bl;
 			if (this.getOwner() instanceof LivingEntity livingEntity) {
 				DamageSource damageSource = this.getDamageSources().witherSkull(this, livingEntity);
-				bl = var8.damage(damageSource, 8.0F);
+				bl = var8.damage(serverWorld, damageSource, 8.0F);
 				if (bl) {
 					if (var8.isAlive()) {
 						EnchantmentHelper.onTargetDamaged(serverWorld, var8, damageSource);
@@ -67,7 +67,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 					}
 				}
 			} else {
-				bl = var8.damage(this.getDamageSources().magic(), 5.0F);
+				bl = var8.damage(serverWorld, this.getDamageSources().magic(), 5.0F);
 			}
 
 			if (bl && var8 instanceof LivingEntity livingEntityx) {
@@ -92,11 +92,6 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, World.ExplosionSourceType.MOB);
 			this.discard();
 		}
-	}
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return false;
 	}
 
 	@Override

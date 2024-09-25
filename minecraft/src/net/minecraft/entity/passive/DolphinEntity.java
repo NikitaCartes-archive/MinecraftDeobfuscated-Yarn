@@ -225,15 +225,15 @@ public class DolphinEntity extends WaterAnimalEntity {
 	}
 
 	@Override
-	protected void loot(ItemEntity item) {
+	protected void loot(ServerWorld world, ItemEntity itemEntity) {
 		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
-			ItemStack itemStack = item.getStack();
+			ItemStack itemStack = itemEntity.getStack();
 			if (this.canPickupItem(itemStack)) {
-				this.triggerItemPickedUpByEntityCriteria(item);
+				this.triggerItemPickedUpByEntityCriteria(itemEntity);
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 				this.updateDropChances(EquipmentSlot.MAINHAND);
-				this.sendPickup(item, itemStack.getCount());
-				item.discard();
+				this.sendPickup(itemEntity, itemStack.getCount());
+				itemEntity.discard();
 			}
 		}
 	}
@@ -249,7 +249,7 @@ public class DolphinEntity extends WaterAnimalEntity {
 			} else {
 				this.setMoistness(this.getMoistness() - 1);
 				if (this.getMoistness() <= 0) {
-					this.damage(this.getDamageSources().dryOut(), 1.0F);
+					this.serverDamage(this.getDamageSources().dryOut(), 1.0F);
 				}
 
 				if (this.isOnGround()) {
@@ -563,7 +563,7 @@ public class DolphinEntity extends WaterAnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			this.closestPlayer = this.dolphin.getWorld().getClosestPlayer(DolphinEntity.CLOSE_PLAYER_PREDICATE, this.dolphin);
+			this.closestPlayer = getServerWorld(this.dolphin).getClosestPlayer(DolphinEntity.CLOSE_PLAYER_PREDICATE, this.dolphin);
 			return this.closestPlayer == null ? false : this.closestPlayer.isSwimming() && this.dolphin.getTarget() != this.closestPlayer;
 		}
 

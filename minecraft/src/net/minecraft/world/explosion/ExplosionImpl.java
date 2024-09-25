@@ -192,7 +192,7 @@ public class ExplosionImpl implements Explosion {
 						float p = this.behavior.getKnockbackModifier(entity);
 						float q = !bl && p == 0.0F ? 0.0F : calculateReceivedDamage(this.pos, entity);
 						if (bl) {
-							entity.damage(this.damageSource, this.behavior.calculateDamage(this, entity, q));
+							entity.damage(this.world, this.damageSource, this.behavior.calculateDamage(this, entity, q));
 						}
 
 						double r = (1.0 - d) * (double)q * (double)p;
@@ -276,6 +276,11 @@ public class ExplosionImpl implements Explosion {
 
 	public Map<PlayerEntity, Vec3d> getKnockbackByPlayer() {
 		return this.knockbackByPlayer;
+	}
+
+	@Override
+	public ServerWorld getWorld() {
+		return this.world;
 	}
 
 	@Nullable

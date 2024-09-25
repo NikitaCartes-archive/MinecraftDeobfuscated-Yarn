@@ -26,6 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -147,11 +148,6 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected void mobTick() {
-		super.mobTick();
-	}
-
-	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
 		this.circlingCenter = this.getBlockPos().up(5);
 		this.setPhantomSize(0);
@@ -217,6 +213,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		int i = this.getPhantomSize();
 		EntityDimensions entityDimensions = super.getBaseDimensions(pose);
 		return entityDimensions.scaled(1.0F + 0.15F * (float)i);
+	}
+
+	boolean testTargetPredicate(ServerWorld world, LivingEntity target, TargetPredicate predicate) {
+		return predicate.test(world, this, target);
 	}
 
 	class CircleMovementGoal extends PhantomEntity.MovementGoal {
@@ -294,13 +294,15 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				return false;
 			} else {
 				this.delay = toGoalTicks(60);
-				List<PlayerEntity> list = PhantomEntity.this.getWorld()
-					.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+				ServerWorld serverWorld = castToServerWorld(PhantomEntity.this.getWorld());
+				List<PlayerEntity> list = serverWorld.getPlayers(
+					this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0)
+				);
 				if (!list.isEmpty()) {
 					list.sort(Comparator.comparing(Entity::getY).reversed());
 
 					for (PlayerEntity playerEntity : list) {
-						if (PhantomEntity.this.isTarget(playerEntity, TargetPredicate.DEFAULT)) {
+						if (PhantomEntity.this.testTargetPredicate(serverWorld, playerEntity, TargetPredicate.DEFAULT)) {
 							PhantomEntity.this.setTarget(playerEntity);
 							return true;
 						}
@@ -314,7 +316,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public boolean shouldContinue() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			return livingEntity != null ? PhantomEntity.this.isTarget(livingEntity, TargetPredicate.DEFAULT) : false;
+			return livingEntity != null
+				? PhantomEntity.this.testTargetPredicate(castToServerWorld(PhantomEntity.this.getWorld()), livingEntity, TargetPredicate.DEFAULT)
+				: false;
 		}
 	}
 
@@ -412,7 +416,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			return livingEntity != null ? PhantomEntity.this.isTarget(livingEntity, TargetPredicate.DEFAULT) : false;
+			return livingEntity != null
+				? PhantomEntity.this.testTargetPredicate(castToServerWorld(PhantomEntity.this.getWorld()), livingEntity, TargetPredicate.DEFAULT)
+				: false;
 		}
 
 		@Override
@@ -510,7 +516,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			if (livingEntity != null) {
 				PhantomEntity.this.targetPosition = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5), livingEntity.getZ());
 				if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
-					PhantomEntity.this.tryAttack(livingEntity);
+					PhantomEntity.this.tryAttack(castToServerWorld(PhantomEntity.this.getWorld()), livingEntity);
 					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 					if (!PhantomEntity.this.isSilent()) {
 						PhantomEntity.this.getWorld().syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
