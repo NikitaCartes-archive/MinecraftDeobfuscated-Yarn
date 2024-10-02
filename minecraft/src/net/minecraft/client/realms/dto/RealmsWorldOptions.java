@@ -91,7 +91,7 @@ public class RealmsWorldOptions extends ValueObject {
 		this.empty = empty;
 	}
 
-	public static RealmsWorldOptions parse(JsonObject json) {
+	public static RealmsWorldOptions parse(JsonObject json, RealmsWorldSettings settings) {
 		RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(
 			JsonUtils.getBooleanOr("pvp", json, true),
 			JsonUtils.getBooleanOr("spawnMonsters", json, true),
@@ -99,7 +99,7 @@ public class RealmsWorldOptions extends ValueObject {
 			JsonUtils.getBooleanOr("commandBlocks", json, false),
 			JsonUtils.getIntOr("difficulty", json, 2),
 			JsonUtils.getIntOr("gameMode", json, 0),
-			JsonUtils.getBooleanOr("hardcore", json, false),
+			settings.hardcore(),
 			JsonUtils.getBooleanOr("forceGameMode", json, false),
 			JsonUtils.getStringOr("slotName", json, ""),
 			JsonUtils.getStringOr("version", json, ""),

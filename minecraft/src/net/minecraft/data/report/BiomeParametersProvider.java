@@ -27,20 +27,20 @@ import org.slf4j.Logger;
 public class BiomeParametersProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Path path;
-	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 	private static final MapCodec<RegistryKey<Biome>> BIOME_KEY_CODEC = RegistryKey.createCodec(RegistryKeys.BIOME).fieldOf("biome");
 	private static final Codec<MultiNoiseUtil.Entries<RegistryKey<Biome>>> BIOME_ENTRY_CODEC = MultiNoiseUtil.Entries.createCodec(BIOME_KEY_CODEC)
 		.fieldOf("biomes")
 		.codec();
 
-	public BiomeParametersProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+	public BiomeParametersProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
 		this.path = output.resolvePath(DataOutput.OutputType.REPORTS).resolve("biome_parameters");
-		this.registryLookupFuture = registryLookupFuture;
+		this.registriesFuture = registriesFuture;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		return this.registryLookupFuture
+		return this.registriesFuture
 			.thenCompose(
 				registries -> {
 					DynamicOps<JsonElement> dynamicOps = registries.getOps(JsonOps.INSTANCE);

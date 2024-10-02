@@ -21,8 +21,7 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.FleeTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.GoToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
@@ -30,7 +29,8 @@ import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TemptTask;
-import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
+import net.minecraft.entity.ai.brain.task.TickCooldownTask;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.item.ItemStack;
@@ -91,12 +91,12 @@ public class SnifferBrain {
 	}
 
 	private static void addCoreActivities(Brain<SnifferEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new FleeTask<SnifferEntity>(2.0F) {
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask<>(0.8F), new FleeTask<SnifferEntity>(2.0F) {
 			protected void run(ServerWorld serverWorld, SnifferEntity snifferEntity, long l) {
 				SnifferBrain.stopDiggingOrSniffing(snifferEntity);
 				super.run(serverWorld, snifferEntity, l);
 			}
-		}, new MoveToTargetTask(500, 700), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
+		}, new MoveToTargetTask(500, 700), new TickCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
 	}
 
 	private static void addSniffActivities(Brain<SnifferEntity> brain) {
@@ -141,13 +141,13 @@ public class SnifferBrain {
 						super.run(serverWorld, pathAwareEntity, l);
 					}
 				}),
-				Pair.of(2, new LookAroundTask(45, 90)),
+				Pair.of(2, new UpdateLookControlTask(45, 90)),
 				Pair.of(3, new SnifferBrain.FeelHappyTask(40, 100)),
 				Pair.of(
 					4,
 					new RandomTask<>(
 						ImmutableList.of(
-							Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 2),
+							Pair.of(GoToLookTargetTask.create(1.0F, 3), 2),
 							Pair.of(new SnifferBrain.ScentingTask(40, 80), 1),
 							Pair.of(new SnifferBrain.SniffingTask(40, 80), 1),
 							Pair.of(LookAtMobTask.create(EntityType.PLAYER, 6.0F), 1),

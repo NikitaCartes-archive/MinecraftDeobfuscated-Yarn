@@ -86,6 +86,7 @@ public class Models {
 	public static final Model TEMPLATE_RAIL_RAISED_NE = block("template_rail_raised_ne", "_raised_ne", TextureKey.RAIL);
 	public static final Model TEMPLATE_RAIL_RAISED_SW = block("template_rail_raised_sw", "_raised_sw", TextureKey.RAIL);
 	public static final Model CARPET = block("carpet", TextureKey.WOOL);
+	public static final Model MOSSY_CARPET_SIDE = block("mossy_carpet_side", TextureKey.SIDE);
 	public static final Model FLOWERBED_1 = block("flowerbed_1", "_1", TextureKey.FLOWERBED, TextureKey.STEM);
 	public static final Model FLOWERBED_2 = block("flowerbed_2", "_2", TextureKey.FLOWERBED, TextureKey.STEM);
 	public static final Model FLOWERBED_3 = block("flowerbed_3", "_3", TextureKey.FLOWERBED, TextureKey.STEM);

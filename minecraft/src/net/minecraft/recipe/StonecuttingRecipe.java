@@ -1,21 +1,39 @@
 package net.minecraft.recipe;
 
-import net.minecraft.block.Blocks;
+import java.util.List;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.world.World;
+import net.minecraft.item.Items;
+import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.StonecutterRecipeDisplay;
 
-public class StonecuttingRecipe extends CuttingRecipe {
+public class StonecuttingRecipe extends SingleStackRecipe {
 	public StonecuttingRecipe(String group, Ingredient ingredient, ItemStack result) {
-		super(RecipeType.STONECUTTING, RecipeSerializer.STONECUTTING, group, ingredient, result);
-	}
-
-	public boolean matches(SingleStackRecipeInput singleStackRecipeInput, World world) {
-		return this.ingredient.test(singleStackRecipeInput.item());
+		super(group, ingredient, result);
 	}
 
 	@Override
-	public ItemStack createIcon() {
-		return new ItemStack(Blocks.STONECUTTER);
+	public RecipeType<StonecuttingRecipe> getType() {
+		return RecipeType.STONECUTTING;
+	}
+
+	@Override
+	public RecipeSerializer<StonecuttingRecipe> getSerializer() {
+		return RecipeSerializer.STONECUTTING;
+	}
+
+	@Override
+	public List<RecipeDisplay> getDisplays() {
+		return List.of(new StonecutterRecipeDisplay(this.createResultDisplay(), new SlotDisplay.ItemSlotDisplay(Items.STONECUTTER)));
+	}
+
+	public SlotDisplay createResultDisplay() {
+		return new SlotDisplay.StackSlotDisplay(this.result());
+	}
+
+	@Override
+	public RecipeBookGroup getRecipeBookTab() {
+		return RecipeBookGroup.STONECUTTER;
 	}
 }

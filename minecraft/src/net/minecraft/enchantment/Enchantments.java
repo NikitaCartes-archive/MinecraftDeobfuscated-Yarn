@@ -12,8 +12,8 @@ import net.minecraft.enchantment.effect.AttributeEnchantmentEffect;
 import net.minecraft.enchantment.effect.DamageImmunityEnchantmentEffect;
 import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
 import net.minecraft.enchantment.effect.entity.ApplyMobEffectEnchantmentEffect;
+import net.minecraft.enchantment.effect.entity.ChangeItemDamageEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.DamageEntityEnchantmentEffect;
-import net.minecraft.enchantment.effect.entity.DamageItemEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.ExplodeEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.IgniteEnchantmentEffect;
 import net.minecraft.enchantment.effect.entity.PlaySoundEnchantmentEffect;
@@ -339,7 +339,7 @@ public class Enchantments {
 						new DamageEntityEnchantmentEffect(
 							EnchantmentLevelBasedValue.constant(1.0F), EnchantmentLevelBasedValue.constant(5.0F), registryEntryLookup.getOrThrow(DamageTypes.THORNS)
 						),
-						new DamageItemEnchantmentEffect(EnchantmentLevelBasedValue.constant(2.0F))
+						new ChangeItemDamageEnchantmentEffect(EnchantmentLevelBasedValue.constant(2.0F))
 					),
 					RandomChanceLootCondition.builder(EnchantmentLevelLootNumberProvider.create(EnchantmentLevelBasedValue.linear(0.15F)))
 				)
@@ -510,7 +510,7 @@ public class Enchantments {
 				)
 				.addEffect(
 					EnchantmentEffectComponentTypes.LOCATION_CHANGED,
-					new DamageItemEnchantmentEffect(EnchantmentLevelBasedValue.constant(1.0F)),
+					new ChangeItemDamageEnchantmentEffect(EnchantmentLevelBasedValue.constant(1.0F)),
 					AllOfLootCondition.builder(
 						RandomChanceLootCondition.builder(EnchantmentLevelLootNumberProvider.create(EnchantmentLevelBasedValue.constant(0.04F))),
 						EntityPropertiesLootCondition.builder(

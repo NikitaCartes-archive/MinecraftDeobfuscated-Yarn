@@ -53,7 +53,7 @@ public class MultiNoiseBiomeSourceParameterList {
 		return (Map<MultiNoiseBiomeSourceParameterList.Preset, MultiNoiseUtil.Entries<RegistryKey<Biome>>>)MultiNoiseBiomeSourceParameterList.Preset.BY_IDENTIFIER
 			.values()
 			.stream()
-			.collect(Collectors.toMap(preset -> preset, preset -> preset.biomeSourceFunction().apply(registryKey -> registryKey)));
+			.collect(Collectors.toMap(preset -> preset, preset -> preset.biomeSourceFunction().apply(biomeKey -> biomeKey)));
 	}
 
 	public static record Preset(Identifier id, MultiNoiseBiomeSourceParameterList.Preset.BiomeSourceFunction biomeSourceFunction) {
@@ -78,30 +78,40 @@ public class MultiNoiseBiomeSourceParameterList {
 			Identifier.ofVanilla("overworld"), new MultiNoiseBiomeSourceParameterList.Preset.BiomeSourceFunction() {
 				@Override
 				public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
-					return MultiNoiseBiomeSourceParameterList.Preset.getOverworldEntries(function);
+					return MultiNoiseBiomeSourceParameterList.Preset.getOverworldEntries(function, VanillaBiomeParameters.EnabledFeatures.NONE);
+				}
+			}
+		);
+		public static final MultiNoiseBiomeSourceParameterList.Preset OVERWORLD_WINTER_DROP = new MultiNoiseBiomeSourceParameterList.Preset(
+			Identifier.ofVanilla("overworld_winter_drop"), new MultiNoiseBiomeSourceParameterList.Preset.BiomeSourceFunction() {
+				@Override
+				public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
+					return MultiNoiseBiomeSourceParameterList.Preset.getOverworldEntries(function, VanillaBiomeParameters.EnabledFeatures.WINTER_DROP);
 				}
 			}
 		);
 		static final Map<Identifier, MultiNoiseBiomeSourceParameterList.Preset> BY_IDENTIFIER = (Map<Identifier, MultiNoiseBiomeSourceParameterList.Preset>)Stream.of(
-				NETHER, OVERWORLD
+				NETHER, OVERWORLD, OVERWORLD_WINTER_DROP
 			)
 			.collect(Collectors.toMap(MultiNoiseBiomeSourceParameterList.Preset::id, preset -> preset));
 		public static final Codec<MultiNoiseBiomeSourceParameterList.Preset> CODEC = Identifier.CODEC
 			.flatXmap(
-				identifier -> (DataResult)Optional.ofNullable((MultiNoiseBiomeSourceParameterList.Preset)BY_IDENTIFIER.get(identifier))
+				id -> (DataResult)Optional.ofNullable((MultiNoiseBiomeSourceParameterList.Preset)BY_IDENTIFIER.get(id))
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error(() -> "Unknown preset: " + identifier)),
+						.orElseGet(() -> DataResult.error(() -> "Unknown preset: " + id)),
 				preset -> DataResult.success(preset.id)
 			);
 
-		static <T> MultiNoiseUtil.Entries<T> getOverworldEntries(Function<RegistryKey<Biome>, T> biomeEntryGetter) {
+		static <T> MultiNoiseUtil.Entries<T> getOverworldEntries(
+			Function<RegistryKey<Biome>, T> biomeEntryGetter, VanillaBiomeParameters.EnabledFeatures enabledFeatures
+		) {
 			Builder<Pair<MultiNoiseUtil.NoiseHypercube, T>> builder = ImmutableList.builder();
-			new VanillaBiomeParameters().writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeEntryGetter)));
+			new VanillaBiomeParameters(enabledFeatures).writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeEntryGetter)));
 			return new MultiNoiseUtil.Entries<>(builder.build());
 		}
 
 		public Stream<RegistryKey<Biome>> biomeStream() {
-			return this.biomeSourceFunction.apply(registryKey -> registryKey).getEntries().stream().map(Pair::getSecond).distinct();
+			return this.biomeSourceFunction.apply(biomeKey -> biomeKey).getEntries().stream().map(Pair::getSecond).distinct();
 		}
 
 		@FunctionalInterface

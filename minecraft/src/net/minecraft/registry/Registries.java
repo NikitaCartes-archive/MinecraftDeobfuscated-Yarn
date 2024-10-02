@@ -68,6 +68,10 @@ import net.minecraft.predicate.item.ItemSubPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.RecipeDisplayBootstrap;
+import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SlotDisplays;
 import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.scoreboard.number.NumberFormatType;
 import net.minecraft.scoreboard.number.NumberFormatTypes;
@@ -255,6 +259,8 @@ public class Registries {
 	public static final Registry<ConsumeEffect.Type<?>> CONSUME_EFFECT_TYPE = create(
 		RegistryKeys.CONSUME_EFFECT_TYPE, registry -> ConsumeEffect.Type.APPLY_EFFECTS
 	);
+	public static final Registry<RecipeDisplay.Serializer<?>> RECIPE_DISPLAY = create(RegistryKeys.RECIPE_DISPLAY, RecipeDisplayBootstrap::registerAndGetDefault);
+	public static final Registry<SlotDisplay.Serializer<?>> SLOT_DISPLAY = create(RegistryKeys.SLOT_DISPLAY, SlotDisplays::registerAndGetDefault);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {
@@ -318,7 +324,7 @@ public class Registries {
 	}
 
 	public static <T> RegistryEntryLookup<T> createEntryLookup(Registry<T> registry) {
-		return ((MutableRegistry)registry).createMutableEntryLookup();
+		return ((MutableRegistry)registry).createMutableRegistryLookup();
 	}
 
 	private static void resetTagEntries(Registry<?> registry) {

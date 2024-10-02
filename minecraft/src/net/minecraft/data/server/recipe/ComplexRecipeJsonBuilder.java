@@ -3,6 +3,8 @@ package net.minecraft.data.server.recipe;
 import java.util.function.Function;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class ComplexRecipeJsonBuilder {
@@ -17,10 +19,10 @@ public class ComplexRecipeJsonBuilder {
 	}
 
 	public void offerTo(RecipeExporter exporter, String id) {
-		this.offerTo(exporter, Identifier.of(id));
+		this.offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, Identifier.of(id)));
 	}
 
-	public void offerTo(RecipeExporter exporter, Identifier id) {
-		exporter.accept(id, (Recipe<?>)this.recipeFactory.apply(CraftingRecipeCategory.MISC), null);
+	public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey) {
+		exporter.accept(recipeKey, (Recipe<?>)this.recipeFactory.apply(CraftingRecipeCategory.MISC), null);
 	}
 }

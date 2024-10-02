@@ -6,10 +6,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
@@ -30,7 +34,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<ShapelessRecipe> getSerializer() {
 		return RecipeSerializer.SHAPELESS;
 	}
 
@@ -42,11 +46,6 @@ public class ShapelessRecipe implements CraftingRecipe {
 	@Override
 	public CraftingRecipeCategory getCategory() {
 		return this.category;
-	}
-
-	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-		return this.result;
 	}
 
 	@Override
@@ -73,8 +72,14 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= this.ingredients.size();
+	public List<RecipeDisplay> getDisplays() {
+		return List.of(
+			new ShapelessCraftingRecipeDisplay(
+				this.ingredients.stream().map(Ingredient::toDisplay).toList(),
+				new SlotDisplay.StackSlotDisplay(this.result),
+				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+			)
+		);
 	}
 
 	public static class Serializer implements RecipeSerializer<ShapelessRecipe> {

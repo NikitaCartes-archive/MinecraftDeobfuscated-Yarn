@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -70,6 +71,7 @@ public class RavagerEntity extends RaiderEntity {
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector.add(3, new FleeEntityGoal(this, CreakingEntity.class, 8.0F, 1.0, 1.2));
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.4));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));

@@ -121,7 +121,7 @@ public class CamelEntity extends AbstractHorseEntity {
 
 	@Override
 	protected Brain.Profile<CamelEntity> createBrainProfile() {
-		return CamelBrain.createProfile();
+		return CamelBrain.createBrainProfile();
 	}
 
 	@Override

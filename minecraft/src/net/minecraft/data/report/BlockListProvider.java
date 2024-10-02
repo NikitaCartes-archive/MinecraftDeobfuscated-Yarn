@@ -21,17 +21,17 @@ import net.minecraft.util.Util;
 
 public class BlockListProvider implements DataProvider {
 	private final DataOutput output;
-	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 
-	public BlockListProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+	public BlockListProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
 		this.output = output;
-		this.registryLookupFuture = registryLookupFuture;
+		this.registriesFuture = registriesFuture;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
 		Path path = this.output.resolvePath(DataOutput.OutputType.REPORTS).resolve("blocks.json");
-		return this.registryLookupFuture
+		return this.registriesFuture
 			.thenCompose(
 				registries -> {
 					JsonObject jsonObject = new JsonObject();

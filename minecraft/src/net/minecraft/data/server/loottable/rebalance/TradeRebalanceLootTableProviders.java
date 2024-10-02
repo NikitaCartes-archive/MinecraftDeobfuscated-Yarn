@@ -9,9 +9,9 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.RegistryWrapper;
 
 public class TradeRebalanceLootTableProviders {
-	public static LootTableProvider createTradeRebalanceProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+	public static LootTableProvider createTradeRebalanceProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
 		return new LootTableProvider(
-			output, Set.of(), List.of(new LootTableProvider.LootTypeGenerator(TradeRebalanceChestLootTableGenerator::new, LootContextTypes.CHEST)), registryLookupFuture
+			output, Set.of(), List.of(new LootTableProvider.LootTypeGenerator(TradeRebalanceChestLootTableGenerator::new, LootContextTypes.CHEST)), registriesFuture
 		);
 	}
 }

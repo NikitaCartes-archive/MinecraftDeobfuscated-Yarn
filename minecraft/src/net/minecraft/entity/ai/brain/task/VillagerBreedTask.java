@@ -37,7 +37,7 @@ public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F, 2);
+		TargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F, 2);
 		serverWorld.sendEntityStatus(passiveEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
 		serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
 		int i = 275 + villagerEntity.getRandom().nextInt(50);
@@ -47,7 +47,7 @@ public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
-			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F, 2);
+			TargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F, 2);
 			if (l >= this.breedEndTime) {
 				villagerEntity.eatForBreeding();
 				villagerEntity2.eatForBreeding();
@@ -85,7 +85,7 @@ public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 			.filter(passiveEntity -> passiveEntity.getType() == EntityType.VILLAGER);
 		return optional.isEmpty()
 			? false
-			: LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER)
+			: TargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER)
 				&& villager.isReadyToBreed()
 				&& ((PassiveEntity)optional.get()).isReadyToBreed();
 	}

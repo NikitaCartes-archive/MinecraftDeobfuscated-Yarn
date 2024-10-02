@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -124,7 +125,7 @@ public abstract class RecipeBookScreen<T extends AbstractRecipeScreenHandler> ex
 	}
 
 	@Override
-	public RecipeBookWidget getRecipeBookWidget() {
-		return this.recipeBook;
+	public void onCraftFailed(RecipeDisplay display) {
+		this.recipeBook.onCraftFailed(display);
 	}
 }

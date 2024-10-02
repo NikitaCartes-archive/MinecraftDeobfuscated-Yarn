@@ -294,24 +294,28 @@ public class UpgradeData {
 			Blocks.CHERRY_SIGN,
 			Blocks.JUNGLE_SIGN,
 			Blocks.DARK_OAK_SIGN,
+			Blocks.PALE_OAK_SIGN,
 			Blocks.OAK_WALL_SIGN,
 			Blocks.SPRUCE_WALL_SIGN,
 			Blocks.BIRCH_WALL_SIGN,
 			Blocks.ACACIA_WALL_SIGN,
 			Blocks.JUNGLE_WALL_SIGN,
 			Blocks.DARK_OAK_WALL_SIGN,
+			Blocks.PALE_OAK_WALL_SIGN,
 			Blocks.OAK_HANGING_SIGN,
 			Blocks.SPRUCE_HANGING_SIGN,
 			Blocks.BIRCH_HANGING_SIGN,
 			Blocks.ACACIA_HANGING_SIGN,
 			Blocks.JUNGLE_HANGING_SIGN,
 			Blocks.DARK_OAK_HANGING_SIGN,
+			Blocks.PALE_OAK_HANGING_SIGN,
 			Blocks.OAK_WALL_HANGING_SIGN,
 			Blocks.SPRUCE_WALL_HANGING_SIGN,
 			Blocks.BIRCH_WALL_HANGING_SIGN,
 			Blocks.ACACIA_WALL_HANGING_SIGN,
 			Blocks.JUNGLE_WALL_HANGING_SIGN,
-			Blocks.DARK_OAK_WALL_HANGING_SIGN
+			Blocks.DARK_OAK_WALL_HANGING_SIGN,
+			Blocks.PALE_OAK_WALL_HANGING_SIGN
 		) {
 			@Override
 			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {
@@ -351,7 +355,15 @@ public class UpgradeData {
 			}
 		},
 		LEAVES(
-			true, Blocks.ACACIA_LEAVES, Blocks.CHERRY_LEAVES, Blocks.BIRCH_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES
+			true,
+			Blocks.ACACIA_LEAVES,
+			Blocks.CHERRY_LEAVES,
+			Blocks.BIRCH_LEAVES,
+			Blocks.PALE_OAK_LEAVES,
+			Blocks.DARK_OAK_LEAVES,
+			Blocks.JUNGLE_LEAVES,
+			Blocks.OAK_LEAVES,
+			Blocks.SPRUCE_LEAVES
 		) {
 			private final ThreadLocal<List<ObjectSet<BlockPos>>> distanceToPositions = ThreadLocal.withInitial(() -> Lists.newArrayListWithCapacity(7));
 

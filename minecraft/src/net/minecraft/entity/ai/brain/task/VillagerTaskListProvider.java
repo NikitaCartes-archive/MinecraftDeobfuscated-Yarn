@@ -25,9 +25,9 @@ public class VillagerTaskListProvider {
 
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float speed) {
 		return ImmutableList.of(
-			Pair.of(0, new StayAboveWaterTask(0.8F)),
+			Pair.of(0, new StayAboveWaterTask<>(0.8F)),
 			Pair.of(0, OpenDoorsTask.create()),
-			Pair.of(0, new LookAroundTask(45, 90)),
+			Pair.of(0, new UpdateLookControlTask(45, 90)),
 			Pair.of(0, new PanicTask()),
 			Pair.of(0, WakeUpTask.create()),
 			Pair.of(0, HideWhenBellRingsTask.create()),
@@ -37,19 +37,19 @@ public class VillagerTaskListProvider {
 			Pair.of(1, new MoveToTargetTask()),
 			Pair.of(2, WorkStationCompetitionTask.create()),
 			Pair.of(3, new FollowCustomerTask(speed)),
-			Pair.of(5, WalkToNearestVisibleWantedItemTask.create(speed, false, 4)),
+			Pair.of(5, WalkTowardsNearestVisibleWantedItemTask.create(speed, false, 4)),
 			Pair.of(
 				6,
 				FindPointOfInterestTask.create(profession.acquirableWorkstation(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())
 			),
-			Pair.of(7, new WalkTowardJobSiteTask(speed)),
+			Pair.of(7, new WalkTowardsJobSiteTask(speed)),
 			Pair.of(8, TakeJobSiteTask.create(speed)),
 			Pair.of(10, FindPointOfInterestTask.create(poiType -> poiType.matchesKey(PointOfInterestTypes.HOME), MemoryModuleType.HOME, false, Optional.of((byte)14))),
 			Pair.of(
 				10,
 				FindPointOfInterestTask.create(poiType -> poiType.matchesKey(PointOfInterestTypes.MEETING), MemoryModuleType.MEETING_POINT, true, Optional.of((byte)14))
 			),
-			Pair.of(10, GoToWorkTask.create()),
+			Pair.of(10, UpdateJobSiteTask.create()),
 			Pair.of(10, LoseJobOnSiteLossTask.create())
 		);
 	}
@@ -69,8 +69,8 @@ public class VillagerTaskListProvider {
 				new RandomTask<>(
 					ImmutableList.of(
 						Pair.of(villagerWorkTask, 7),
-						Pair.of(GoToIfNearbyTask.create(MemoryModuleType.JOB_SITE, 0.4F, 4), 2),
-						Pair.of(GoToNearbyPositionTask.create(MemoryModuleType.JOB_SITE, 0.4F, 1, 10), 5),
+						Pair.of(GoAroundTask.create(MemoryModuleType.JOB_SITE, 0.4F, 4), 2),
+						Pair.of(GoToPosTask.create(MemoryModuleType.JOB_SITE, 0.4F, 1, 10), 5),
 						Pair.of(GoToSecondaryPositionTask.create(MemoryModuleType.SECONDARY_JOB_SITE, speed, 1, 6, MemoryModuleType.JOB_SITE), 5),
 						Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5),
 						Pair.of(new BoneMealTask(), profession == VillagerProfession.FARMER ? 4 : 7)
@@ -97,8 +97,8 @@ public class VillagerTaskListProvider {
 					ImmutableList.of(
 						Pair.of(FindEntityTask.create(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, speed, 2), 2),
 						Pair.of(FindEntityTask.create(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, speed, 2), 1),
-						Pair.of(FindWalkTargetTask.create(speed), 1),
-						Pair.of(GoTowardsLookTargetTask.create(speed, 2), 1),
+						Pair.of(GoToPointOfInterestTask.create(speed), 1),
+						Pair.of(GoToLookTargetTask.create(speed, 2), 1),
 						Pair.of(new JumpInBedTask(speed), 2),
 						Pair.of(new WaitTask(20, 40), 2)
 					)
@@ -118,9 +118,9 @@ public class VillagerTaskListProvider {
 				new RandomTask<>(
 					ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT),
 					ImmutableList.of(
-						Pair.of(WalkHomeTask.create(speed), 1),
-						Pair.of(WanderIndoorsTask.create(speed), 4),
-						Pair.of(GoToPointOfInterestTask.create(speed, 4), 2),
+						Pair.of(GoToHomeTask.create(speed), 1),
+						Pair.of(GoIndoorsTask.create(speed), 4),
+						Pair.of(GoToCloserPointOfInterestTask.create(speed, 4), 2),
 						Pair.of(new WaitTask(20, 40), 2)
 					)
 				)
@@ -133,8 +133,7 @@ public class VillagerTaskListProvider {
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createMeetTasks(VillagerProfession profession, float speed) {
 		return ImmutableList.of(
 			Pair.of(
-				2,
-				Tasks.pickRandomly(ImmutableList.of(Pair.of(GoToIfNearbyTask.create(MemoryModuleType.MEETING_POINT, 0.4F, 40), 2), Pair.of(MeetVillagerTask.create(), 2)))
+				2, Tasks.pickRandomly(ImmutableList.of(Pair.of(GoAroundTask.create(MemoryModuleType.MEETING_POINT, 0.4F, 40), 2), Pair.of(MeetVillagerTask.create(), 2)))
 			),
 			Pair.of(10, new HoldTradeOffersTask(400, 1600)),
 			Pair.of(10, FindInteractionTargetTask.create(EntityType.PLAYER, 4)),
@@ -167,8 +166,8 @@ public class VillagerTaskListProvider {
 							FindEntityTask.create(EntityType.VILLAGER, 8, PassiveEntity::isReadyToBreed, PassiveEntity::isReadyToBreed, MemoryModuleType.BREED_TARGET, speed, 2), 1
 						),
 						Pair.of(FindEntityTask.create(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, speed, 2), 1),
-						Pair.of(FindWalkTargetTask.create(speed), 1),
-						Pair.of(GoTowardsLookTargetTask.create(speed, 2), 1),
+						Pair.of(GoToPointOfInterestTask.create(speed), 1),
+						Pair.of(GoToLookTargetTask.create(speed, 2), 1),
 						Pair.of(new JumpInBedTask(speed), 1),
 						Pair.of(new WaitTask(30, 60), 1)
 					)
@@ -208,7 +207,7 @@ public class VillagerTaskListProvider {
 			Pair.of(0, StopPanickingTask.create()),
 			Pair.of(1, GoToRememberedPositionTask.createEntityBased(MemoryModuleType.NEAREST_HOSTILE, f, 6, false)),
 			Pair.of(1, GoToRememberedPositionTask.createEntityBased(MemoryModuleType.HURT_BY_ENTITY, f, 6, false)),
-			Pair.of(3, FindWalkTargetTask.create(f, 2, 2)),
+			Pair.of(3, GoToPointOfInterestTask.create(f, 2, 2)),
 			createBusyFollowTask()
 		);
 	}
@@ -221,7 +220,7 @@ public class VillagerTaskListProvider {
 				Tasks.pickRandomly(
 					ImmutableList.of(
 						Pair.of(VillagerWalkTowardsTask.create(MemoryModuleType.MEETING_POINT, speed * 1.5F, 2, 150, 200), 6),
-						Pair.of(FindWalkTargetTask.create(speed * 1.5F), 2)
+						Pair.of(GoToPointOfInterestTask.create(speed * 1.5F), 2)
 					)
 				)
 			),
@@ -236,7 +235,7 @@ public class VillagerTaskListProvider {
 				0,
 				TaskTriggerer.runIf(
 					TaskTriggerer.predicate(VillagerTaskListProvider::wonRaid),
-					Tasks.pickRandomly(ImmutableList.of(Pair.of(SeekSkyTask.create(speed), 5), Pair.of(FindWalkTargetTask.create(speed * 1.1F), 2)))
+					Tasks.pickRandomly(ImmutableList.of(Pair.of(SeekSkyTask.create(speed), 5), Pair.of(GoToPointOfInterestTask.create(speed * 1.1F), 2)))
 				)
 			),
 			Pair.of(0, new CelebrateRaidWinTask(600, 600)),

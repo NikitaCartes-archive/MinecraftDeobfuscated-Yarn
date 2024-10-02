@@ -8,6 +8,7 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.item.ModelTransformationMode;
 
 @Environment(EnvType.CLIENT)
 public class ModelTransformation {

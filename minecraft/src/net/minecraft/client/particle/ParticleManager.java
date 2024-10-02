@@ -191,6 +191,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerBlockLeakFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle::createDrippingDripstoneLava);
 		this.registerBlockLeakFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle::createFallingDripstoneLava);
 		this.registerFactory(ParticleTypes.VIBRATION, VibrationParticle.Factory::new);
+		this.registerFactory(ParticleTypes.TRAIL, TrailParticle.Factory::new);
 		this.registerFactory(ParticleTypes.GLOW_SQUID_INK, SquidInkParticle.GlowSquidInkFactory::new);
 		this.registerFactory(ParticleTypes.GLOW, GlowParticle.GlowFactory::new);
 		this.registerFactory(ParticleTypes.WAX_ON, GlowParticle.WaxOnFactory::new);
@@ -207,6 +208,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.RAID_OMEN, SpellParticle.DefaultFactory::new);
 		this.registerFactory(ParticleTypes.TRIAL_OMEN, SpellParticle.DefaultFactory::new);
 		this.registerFactory(ParticleTypes.OMINOUS_SPAWNING, OminousSpawningParticle.Factory::new);
+		this.registerFactory(ParticleTypes.BLOCK_CRUMBLE, new BlockDustParticle.CrumbleFactory());
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

@@ -21,7 +21,7 @@ public abstract class BuiltinBiomes {
 		biomeRegisterable.register(BiomeKeys.FOREST, OverworldBiomeCreator.createNormalForest(registryEntryLookup, registryEntryLookup2, false, false, false));
 		biomeRegisterable.register(BiomeKeys.FLOWER_FOREST, OverworldBiomeCreator.createNormalForest(registryEntryLookup, registryEntryLookup2, false, false, true));
 		biomeRegisterable.register(BiomeKeys.BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(registryEntryLookup, registryEntryLookup2, true, false, false));
-		biomeRegisterable.register(BiomeKeys.DARK_FOREST, OverworldBiomeCreator.createDarkForest(registryEntryLookup, registryEntryLookup2));
+		biomeRegisterable.register(BiomeKeys.DARK_FOREST, OverworldBiomeCreator.createDenseForest(registryEntryLookup, registryEntryLookup2, false));
 		biomeRegisterable.register(
 			BiomeKeys.OLD_GROWTH_BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(registryEntryLookup, registryEntryLookup2, true, true, false)
 		);

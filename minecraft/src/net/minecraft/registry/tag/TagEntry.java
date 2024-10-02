@@ -65,7 +65,7 @@ public class TagEntry {
 
 			collection.forEach(idConsumer);
 		} else {
-			T object = valueGetter.direct(this.id);
+			T object = valueGetter.direct(this.id, this.required);
 			if (object == null) {
 				return !this.required;
 			}
@@ -108,7 +108,7 @@ public class TagEntry {
 
 	public interface ValueGetter<T> {
 		@Nullable
-		T direct(Identifier id);
+		T direct(Identifier id, boolean required);
 
 		@Nullable
 		Collection<T> tag(Identifier id);

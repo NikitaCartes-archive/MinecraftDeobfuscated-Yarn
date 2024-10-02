@@ -7,10 +7,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -42,7 +46,7 @@ public class TransmuteRecipe implements CraftingRecipe {
 		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 			if (!itemStack.isEmpty()) {
-				if (!bl && this.input.test(itemStack)) {
+				if (!bl && this.input.test(itemStack) && itemStack.getItem() != this.result.value()) {
 					bl = true;
 				} else {
 					if (bl2 || !this.material.test(itemStack)) {
@@ -62,7 +66,7 @@ public class TransmuteRecipe implements CraftingRecipe {
 
 		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
-			if (!itemStack2.isEmpty() && this.input.test(itemStack2)) {
+			if (!itemStack2.isEmpty() && this.input.test(itemStack2) && itemStack2.getItem() != this.result.value()) {
 				itemStack = itemStack2;
 			}
 		}
@@ -71,17 +75,18 @@ public class TransmuteRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= 2;
+	public List<RecipeDisplay> getDisplays() {
+		return List.of(
+			new ShapelessCraftingRecipeDisplay(
+				List.of(this.input.toDisplay(), this.material.toDisplay()),
+				new SlotDisplay.ItemSlotDisplay(this.result),
+				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+			)
+		);
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-		return new ItemStack(this.result);
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<TransmuteRecipe> getSerializer() {
 		return RecipeSerializer.CRAFTING_TRANSMUTE;
 	}
 

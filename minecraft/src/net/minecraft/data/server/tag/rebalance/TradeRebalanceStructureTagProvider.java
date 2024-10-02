@@ -10,8 +10,8 @@ import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class TradeRebalanceStructureTagProvider extends TagProvider<Structure> {
-	public TradeRebalanceStructureTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.STRUCTURE, registryLookupFuture);
+	public TradeRebalanceStructureTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.STRUCTURE, registriesFuture);
 	}
 
 	@Override

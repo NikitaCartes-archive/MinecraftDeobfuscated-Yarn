@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import java.util.Arrays;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -105,5 +106,9 @@ public enum GameMode implements StringIdentifiable {
 	@Nullable
 	public static GameMode getOrNull(int id) {
 		return id == -1 ? null : byId(id);
+	}
+
+	public static boolean isValid(int id) {
+		return Arrays.stream(values()).anyMatch(gameMode -> gameMode.id == id);
 	}
 }

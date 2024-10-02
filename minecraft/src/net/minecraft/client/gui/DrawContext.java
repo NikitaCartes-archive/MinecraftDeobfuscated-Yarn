@@ -26,7 +26,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.GuiAtlasManager;
 import net.minecraft.client.texture.Scaling;
 import net.minecraft.client.texture.Sprite;
@@ -35,6 +34,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.HoverEvent;
@@ -714,38 +714,16 @@ public class DrawContext {
 		}
 	}
 
-	public void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y) {
-		this.drawItemInSlot(textRenderer, stack, x, y, null);
+	public void drawStackOverlay(TextRenderer textRenderer, ItemStack stack, int x, int y) {
+		this.drawStackOverlay(textRenderer, stack, x, y, null);
 	}
 
-	public void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String countOverride) {
+	public void drawStackOverlay(TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String stackCountText) {
 		if (!stack.isEmpty()) {
 			this.matrices.push();
-			if (stack.getCount() != 1 || countOverride != null) {
-				String string = countOverride == null ? String.valueOf(stack.getCount()) : countOverride;
-				this.matrices.translate(0.0F, 0.0F, 200.0F);
-				this.drawText(textRenderer, string, x + 19 - 2 - textRenderer.getWidth(string), y + 6 + 3, 16777215, true);
-			}
-
-			if (stack.isItemBarVisible()) {
-				int i = stack.getItemBarStep();
-				int j = stack.getItemBarColor();
-				int k = x + 2;
-				int l = y + 13;
-				this.fill(RenderLayer.getGuiOverlay(), k, l, k + 13, l + 2, Colors.BLACK);
-				this.fill(RenderLayer.getGuiOverlay(), k, l, k + i, l + 1, ColorHelper.fullAlpha(j));
-			}
-
-			ClientPlayerEntity clientPlayerEntity = this.client.player;
-			float f = clientPlayerEntity == null
-				? 0.0F
-				: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack, this.client.getRenderTickCounter().getTickDelta(true));
-			if (f > 0.0F) {
-				int k = y + MathHelper.floor(16.0F * (1.0F - f));
-				int l = k + MathHelper.ceil(16.0F * f);
-				this.fill(RenderLayer.getGuiOverlay(), x, k, x + 16, l, Integer.MAX_VALUE);
-			}
-
+			this.drawItemBar(stack, x, y);
+			this.drawStackCount(textRenderer, stack, x, y, stackCountText);
+			this.drawCooldownProgress(stack, x, y);
 			this.matrices.pop();
 		}
 	}
@@ -836,6 +814,35 @@ public class DrawContext {
 			}
 
 			this.matrices.pop();
+		}
+	}
+
+	private void drawItemBar(ItemStack stack, int x, int y) {
+		if (stack.isItemBarVisible()) {
+			int i = x + 2;
+			int j = y + 13;
+			this.fill(RenderLayer.getGui(), i, j, i + 13, j + 2, 200, Colors.BLACK);
+			this.fill(RenderLayer.getGui(), i, j, i + stack.getItemBarStep(), j + 1, 200, ColorHelper.fullAlpha(stack.getItemBarColor()));
+		}
+	}
+
+	private void drawStackCount(TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String stackCountText) {
+		if (stack.getCount() != 1 || stackCountText != null) {
+			String string = stackCountText == null ? String.valueOf(stack.getCount()) : stackCountText;
+			this.matrices.translate(0.0F, 0.0F, 200.0F);
+			this.drawText(textRenderer, string, x + 19 - 2 - textRenderer.getWidth(string), y + 6 + 3, Colors.WHITE, true);
+		}
+	}
+
+	private void drawCooldownProgress(ItemStack stack, int x, int y) {
+		ClientPlayerEntity clientPlayerEntity = this.client.player;
+		float f = clientPlayerEntity == null
+			? 0.0F
+			: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack, this.client.getRenderTickCounter().getTickDelta(true));
+		if (f > 0.0F) {
+			int i = y + MathHelper.floor(16.0F * (1.0F - f));
+			int j = i + MathHelper.ceil(16.0F * f);
+			this.fill(RenderLayer.getGui(), x, i, x + 16, j, 200, Integer.MAX_VALUE);
 		}
 	}
 

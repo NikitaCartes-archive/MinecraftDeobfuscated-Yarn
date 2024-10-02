@@ -46,7 +46,8 @@ public class AccessibilityOptionsScreen extends GameOptionsScreen {
 			gameOptions.getPanoramaSpeed(),
 			gameOptions.getHideSplashTexts(),
 			gameOptions.getNarratorHotkey(),
-			gameOptions.getRotateWithMinecart()
+			gameOptions.getRotateWithMinecart(),
+			gameOptions.getHighContrastBlockOutline()
 		};
 	}
 

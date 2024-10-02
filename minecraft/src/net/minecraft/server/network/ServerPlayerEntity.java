@@ -100,6 +100,7 @@ import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRotationS2CPaket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
@@ -113,6 +114,7 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.ParticlesMode;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
@@ -220,7 +222,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private Entity cameraEntity;
 	private boolean inTeleportationState;
 	public boolean seenCredits;
-	private final ServerRecipeBook recipeBook = new ServerRecipeBook();
+	private final ServerRecipeBook recipeBook;
 	@Nullable
 	private Vec3d levitationStartPos;
 	private int levitationStartTick;
@@ -334,6 +336,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
 		this.textStream = server.createFilterer(this);
 		this.interactionManager = server.getPlayerInteractionManager(this);
+		this.recipeBook = new ServerRecipeBook((key, adder) -> server.getRecipeManager().forEachRecipeDisplay(key, adder));
 		this.server = server;
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
@@ -427,7 +430,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		this.seenCredits = nbt.getBoolean("seenCredits");
 		if (nbt.contains("recipeBook", NbtElement.COMPOUND_TYPE)) {
-			this.recipeBook.readNbt(nbt.getCompound("recipeBook"), this.server.getRecipeManager());
+			this.recipeBook.readNbt(nbt.getCompound("recipeBook"), recipeKey -> this.server.getRecipeManager().get(recipeKey).isPresent());
 		}
 
 		if (this.isSleeping()) {
@@ -512,32 +515,34 @@ public class ServerPlayerEntity extends PlayerEntity {
 			Entity entity = EntityType.loadEntityWithPassengers(
 				nbtCompound.getCompound("Entity"), serverWorld, SpawnReason.LOAD, entityx -> !serverWorld.tryLoadEntity(entityx) ? null : entityx
 			);
-			if (entity != null) {
-				UUID uUID;
-				if (nbtCompound.containsUuid("Attach")) {
-					uUID = nbtCompound.getUuid("Attach");
-				} else {
-					uUID = null;
-				}
+			if (entity == null) {
+				return;
+			}
 
-				if (entity.getUuid().equals(uUID)) {
-					this.startRiding(entity, true);
-				} else {
-					for (Entity entity2 : entity.getPassengersDeep()) {
-						if (entity2.getUuid().equals(uUID)) {
-							this.startRiding(entity2, true);
-							break;
-						}
+			UUID uUID;
+			if (nbtCompound.containsUuid("Attach")) {
+				uUID = nbtCompound.getUuid("Attach");
+			} else {
+				uUID = null;
+			}
+
+			if (entity.getUuid().equals(uUID)) {
+				this.startRiding(entity, true);
+			} else {
+				for (Entity entity2 : entity.getPassengersDeep()) {
+					if (entity2.getUuid().equals(uUID)) {
+						this.startRiding(entity2, true);
+						break;
 					}
 				}
+			}
 
-				if (!this.hasVehicle()) {
-					LOGGER.warn("Couldn't reattach entity to player");
-					entity.discard();
+			if (!this.hasVehicle()) {
+				LOGGER.warn("Couldn't reattach entity to player");
+				entity.discard();
 
-					for (Entity entity2x : entity.getPassengersDeep()) {
-						entity2x.discard();
-					}
+				for (Entity entity2x : entity.getPassengersDeep()) {
+					entity2x.discard();
 				}
 			}
 		}
@@ -1037,7 +1042,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Nullable
-	public PlayerEntity teleportTo(TeleportTarget teleportTarget) {
+	public ServerPlayerEntity teleportTo(TeleportTarget teleportTarget) {
 		if (this.isRemoved()) {
 			return null;
 		} else {
@@ -1048,11 +1053,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 			ServerWorld serverWorld = teleportTarget.world();
 			ServerWorld serverWorld2 = this.getServerWorld();
 			RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
-			this.stopRiding();
+			if (!teleportTarget.asPassenger()) {
+				this.stopRiding();
+			}
+
 			if (serverWorld.getRegistryKey() == registryKey) {
 				this.networkHandler.requestTeleport(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
 				this.networkHandler.syncWithPlayerPosition();
-				teleportTarget.postDimensionTransition().onTransition(this);
+				teleportTarget.postTeleportTransition().onTransition(this);
 				return this;
 			} else {
 				this.inTeleportationState = true;
@@ -1082,13 +1090,18 @@ public class ServerPlayerEntity extends PlayerEntity {
 				playerManager.sendWorldInfo(this, serverWorld);
 				playerManager.sendPlayerStatus(this);
 				playerManager.sendStatusEffects(this);
-				teleportTarget.postDimensionTransition().onTransition(this);
+				teleportTarget.postTeleportTransition().onTransition(this);
 				this.syncedExperience = -1;
 				this.syncedHealth = -1.0F;
 				this.syncedFoodLevel = -1;
 				return this;
 			}
 		}
+	}
+
+	@Override
+	public void rotate(float yaw, float pitch) {
+		this.networkHandler.sendPacket(new PlayerRotationS2CPaket(yaw, pitch));
 	}
 
 	private void worldChanged(ServerWorld origin) {
@@ -1436,9 +1449,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void unlockRecipes(List<Identifier> recipes) {
+	public void unlockRecipes(List<RegistryKey<Recipe<?>>> recipes) {
 		List<RecipeEntry<?>> list = (List<RecipeEntry<?>>)recipes.stream()
-			.flatMap(recipe -> this.server.getRecipeManager().get(recipe).stream())
+			.flatMap(recipeKey -> this.server.getRecipeManager().get(recipeKey).stream())
 			.collect(Collectors.toList());
 		this.unlockRecipes(list);
 	}

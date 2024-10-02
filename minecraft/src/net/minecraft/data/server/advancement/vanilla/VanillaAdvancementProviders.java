@@ -7,10 +7,10 @@ import net.minecraft.data.server.advancement.AdvancementProvider;
 import net.minecraft.registry.RegistryWrapper;
 
 public class VanillaAdvancementProviders {
-	public static AdvancementProvider createVanillaProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+	public static AdvancementProvider createVanillaProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
 		return new AdvancementProvider(
 			output,
-			registryLookupFuture,
+			registriesFuture,
 			List.of(
 				new VanillaEndTabAdvancementGenerator(),
 				new VanillaHusbandryTabAdvancementGenerator(),

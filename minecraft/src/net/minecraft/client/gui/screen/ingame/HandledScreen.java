@@ -218,7 +218,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 232.0F);
 		context.drawItem(stack, x, y);
-		context.drawItemInSlot(this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
+		context.drawStackOverlay(this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
 		context.getMatrices().pop();
 	}
 
@@ -284,7 +284,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				context.drawItem(itemStack, i, j, k);
 			}
 
-			context.drawItemInSlot(this.textRenderer, itemStack, i, j, string);
+			context.drawStackOverlay(this.textRenderer, itemStack, i, j, string);
 		}
 
 		context.getMatrices().pop();

@@ -76,11 +76,25 @@ public class ColorHelper {
 	}
 
 	public static int scaleRgb(int argb, float scale) {
-		return getArgb(getAlpha(argb), (int)((float)getRed(argb) * scale), (int)((float)getGreen(argb) * scale), (int)((float)getBlue(argb) * scale));
+		return scaleRgb(argb, scale, scale, scale);
+	}
+
+	public static int scaleRgb(int argb, float redScale, float greenScale, float blueScale) {
+		return getArgb(
+			getAlpha(argb),
+			Math.clamp((long)((int)((float)getRed(argb) * redScale)), 0, 255),
+			Math.clamp((long)((int)((float)getGreen(argb) * greenScale)), 0, 255),
+			Math.clamp((long)((int)((float)getBlue(argb) * blueScale)), 0, 255)
+		);
 	}
 
 	public static int scaleRgb(int argb, int scale) {
-		return getArgb(getAlpha(argb), getRed(argb) * scale / 255, getGreen(argb) * scale / 255, getBlue(argb) * scale / 255);
+		return getArgb(
+			getAlpha(argb),
+			Math.clamp((long)getRed(argb) * (long)scale / 255L, 0, 255),
+			Math.clamp((long)getGreen(argb) * (long)scale / 255L, 0, 255),
+			Math.clamp((long)getBlue(argb) * (long)scale / 255L, 0, 255)
+		);
 	}
 
 	public static int grayscale(int argb) {

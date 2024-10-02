@@ -487,8 +487,9 @@ public class GuardianEntity extends HostileEntity {
 		}
 
 		@Override
-		public boolean method_18303(@Nullable LivingEntity target, ServerWorld world) {
-			return (target instanceof PlayerEntity || target instanceof SquidEntity || target instanceof AxolotlEntity) && target.squaredDistanceTo(this.owner) > 9.0;
+		public boolean test(@Nullable LivingEntity livingEntity, ServerWorld serverWorld) {
+			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity || livingEntity instanceof AxolotlEntity)
+				&& livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}
 }

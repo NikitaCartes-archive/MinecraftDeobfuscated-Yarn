@@ -4,10 +4,10 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
 
 public interface RecipeExporter {
-	void accept(Identifier recipeId, Recipe<?> recipe, @Nullable AdvancementEntry advancement);
+	void accept(RegistryKey<Recipe<?>> key, Recipe<?> recipe, @Nullable AdvancementEntry advancement);
 
 	Advancement.Builder getAdvancementBuilder();
 

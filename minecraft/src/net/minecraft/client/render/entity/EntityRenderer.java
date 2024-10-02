@@ -214,16 +214,15 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
 			matrices.multiply(this.dispatcher.getRotation());
 			matrices.scale(0.025F, -0.025F, 0.025F);
 			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-			float f = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
-			int j = (int)(f * 255.0F) << 24;
 			TextRenderer textRenderer = this.getTextRenderer();
-			float g = (float)(-textRenderer.getWidth(text) / 2);
+			float f = (float)(-textRenderer.getWidth(text)) / 2.0F;
+			int j = (int)(MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F) * 255.0F) << 24;
 			textRenderer.draw(
-				text, g, (float)i, -2130706433, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
+				text, f, (float)i, -2130706433, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
 			);
 			if (bl) {
 				textRenderer.draw(
-					text, g, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.applyEmission(light, 2)
+					text, f, (float)i, Colors.WHITE, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, LightmapTextureManager.applyEmission(light, 2)
 				);
 			}
 

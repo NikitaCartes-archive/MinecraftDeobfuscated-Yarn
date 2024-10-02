@@ -124,5 +124,9 @@ public interface StringIdentifiable {
 		public E byId(@Nullable String id, E fallback) {
 			return (E)Objects.requireNonNullElse(this.byId(id), fallback);
 		}
+
+		public E byId(@Nullable String id, Supplier<? extends E> fallbackSupplier) {
+			return (E)Objects.requireNonNullElseGet(this.byId(id), fallbackSupplier);
+		}
 	}
 }

@@ -10,8 +10,8 @@ import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
 
 public class VanillaWorldPresetTagProvider extends TagProvider<WorldPreset> {
-	public VanillaWorldPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.WORLD_PRESET, registryLookupFuture);
+	public VanillaWorldPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.WORLD_PRESET, registriesFuture);
 	}
 
 	@Override

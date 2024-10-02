@@ -87,6 +87,7 @@ public class EntityRenderers {
 		register(EntityType.ACACIA_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.ACACIA_BOAT));
 		register(EntityType.CHERRY_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.CHERRY_BOAT));
 		register(EntityType.DARK_OAK_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.DARK_OAK_BOAT));
+		register(EntityType.PALE_OAK_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.PALE_OAK_BOAT));
 		register(EntityType.MANGROVE_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.MANGROVE_BOAT));
 		register(EntityType.BAMBOO_RAFT, context -> new RaftEntityRenderer(context, EntityModelLayers.BAMBOO_BOAT));
 		register(EntityType.BOGGED, BoggedEntityRenderer::new);
@@ -102,6 +103,7 @@ public class EntityRenderers {
 		register(EntityType.ACACIA_CHEST_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.ACACIA_CHEST_BOAT));
 		register(EntityType.CHERRY_CHEST_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.CHERRY_CHEST_BOAT));
 		register(EntityType.DARK_OAK_CHEST_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.DARK_OAK_CHEST_BOAT));
+		register(EntityType.PALE_OAK_CHEST_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.PALE_OAK_CHEST_BOAT));
 		register(EntityType.MANGROVE_CHEST_BOAT, context -> new BoatEntityRenderer(context, EntityModelLayers.MANGROVE_CHEST_BOAT));
 		register(EntityType.BAMBOO_CHEST_RAFT, context -> new RaftEntityRenderer(context, EntityModelLayers.BAMBOO_CHEST_BOAT));
 		register(EntityType.CHEST_MINECART, context -> new MinecartEntityRenderer(context, EntityModelLayers.CHEST_MINECART));
@@ -109,6 +111,8 @@ public class EntityRenderers {
 		register(EntityType.COD, CodEntityRenderer::new);
 		register(EntityType.COMMAND_BLOCK_MINECART, context -> new MinecartEntityRenderer(context, EntityModelLayers.COMMAND_BLOCK_MINECART));
 		register(EntityType.COW, CowEntityRenderer::new);
+		register(EntityType.CREAKING, CreakingEntityRenderer::new);
+		register(EntityType.CREAKING_TRANSIENT, CreakingEntityRenderer::new);
 		register(EntityType.CREEPER, CreeperEntityRenderer::new);
 		register(EntityType.DOLPHIN, DolphinEntityRenderer::new);
 		register(EntityType.DONKEY, context -> new AbstractDonkeyEntityRenderer<>(context, 0.87F, EntityModelLayers.DONKEY, EntityModelLayers.DONKEY_BABY, false));

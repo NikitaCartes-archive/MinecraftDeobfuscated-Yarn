@@ -67,6 +67,9 @@ public final class SaplingGenerator {
 	public static final SaplingGenerator DARK_OAK = new SaplingGenerator(
 		"dark_oak", Optional.of(TreeConfiguredFeatures.DARK_OAK), Optional.empty(), Optional.empty()
 	);
+	public static final SaplingGenerator PALE_OAK = new SaplingGenerator(
+		"pale_oak", Optional.of(TreeConfiguredFeatures.PALE_OAK), Optional.empty(), Optional.empty()
+	);
 	private final String id;
 	private final float rareChance;
 	private final Optional<RegistryKey<ConfiguredFeature<?, ?>>> megaVariant;

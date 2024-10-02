@@ -54,7 +54,9 @@ public class FunctionLoader implements ResourceReloader {
 	);
 	private static final ResourceFinder FINDER = new ResourceFinder(RegistryKeys.getPath(FUNCTION_REGISTRY_KEY), ".mcfunction");
 	private volatile Map<Identifier, CommandFunction<ServerCommandSource>> functions = ImmutableMap.of();
-	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(this::get, RegistryKeys.getTagPath(FUNCTION_REGISTRY_KEY));
+	private final TagGroupLoader<CommandFunction<ServerCommandSource>> tagLoader = new TagGroupLoader<>(
+		(id, required) -> this.get(id), RegistryKeys.getTagPath(FUNCTION_REGISTRY_KEY)
+	);
 	private volatile Map<Identifier, List<CommandFunction<ServerCommandSource>>> tags = Map.of();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;

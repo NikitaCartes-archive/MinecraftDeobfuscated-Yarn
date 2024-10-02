@@ -384,6 +384,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		try {
 			realmsClient.updateSlot(this.server.id, this.server.activeSlot, options);
 			this.server.slots.put(this.server.activeSlot, options);
+			if (realmsWorldOptions.gameMode != options.gameMode || realmsWorldOptions.hardcore != options.hardcore) {
+				RealmsMainScreen.resetServerList();
+			}
 		} catch (RealmsServiceException var5) {
 			LOGGER.error("Couldn't save slot settings", (Throwable)var5);
 			this.client.setScreen(new RealmsGenericErrorScreen(var5, this));

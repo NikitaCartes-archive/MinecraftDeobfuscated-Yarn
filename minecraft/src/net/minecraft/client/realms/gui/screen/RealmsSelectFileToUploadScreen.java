@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -176,9 +176,10 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class WorldSelectionList extends RealmsObjectSelectionList<RealmsSelectFileToUploadScreen.WorldListEntry> {
+	class WorldSelectionList extends AlwaysSelectedEntryListWidget<RealmsSelectFileToUploadScreen.WorldListEntry> {
 		public WorldSelectionList() {
 			super(
+				MinecraftClient.getInstance(),
 				RealmsSelectFileToUploadScreen.this.width,
 				RealmsSelectFileToUploadScreen.this.height - 40 - RealmsSelectFileToUploadScreen.row(0),
 				RealmsSelectFileToUploadScreen.row(0),
@@ -190,17 +191,17 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			this.addEntry(RealmsSelectFileToUploadScreen.this.new WorldListEntry(summary));
 		}
 
-		@Override
-		public int getMaxPosition() {
-			return RealmsSelectFileToUploadScreen.this.levelList.size() * 36;
-		}
-
 		public void setSelected(@Nullable RealmsSelectFileToUploadScreen.WorldListEntry worldListEntry) {
 			super.setSelected(worldListEntry);
 			RealmsSelectFileToUploadScreen.this.selectedWorld = this.children().indexOf(worldListEntry);
 			RealmsSelectFileToUploadScreen.this.uploadButton.active = RealmsSelectFileToUploadScreen.this.selectedWorld >= 0
 				&& RealmsSelectFileToUploadScreen.this.selectedWorld < this.getEntryCount()
 				&& !((LevelSummary)RealmsSelectFileToUploadScreen.this.levelList.get(RealmsSelectFileToUploadScreen.this.selectedWorld)).isHardcore();
+		}
+
+		@Override
+		public int getRowWidth() {
+			return (int)((double)this.width * 0.6);
 		}
 	}
 }

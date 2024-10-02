@@ -90,6 +90,10 @@ public class TagPacketSerializer {
 			return this.contents.isEmpty();
 		}
 
+		public int size() {
+			return this.contents.size();
+		}
+
 		public <T> TagGroupLoader.RegistryTags<T> toRegistryTags(Registry<T> registry) {
 			return TagPacketSerializer.toRegistryTags(registry, this);
 		}

@@ -52,13 +52,20 @@ public record ArmorMaterial(
 			);
 	}
 
-	public Item.Settings applyBodyArmorSettings(Item.Settings settings, SoundEvent equipSound, RegistryEntryList<EntityType<?>> allowedEntities) {
+	public Item.Settings applyBodyArmorSettings(
+		Item.Settings settings, SoundEvent equipSound, boolean damageOnHurt, RegistryEntryList<EntityType<?>> allowedEntities
+	) {
 		return settings.maxDamage(EquipmentType.BODY.getMaxDamage(this.durability))
 			.attributeModifiers(this.createAttributeModifiers(EquipmentType.BODY))
 			.repairable(this.repairIngredient)
 			.component(
 				DataComponentTypes.EQUIPPABLE,
-				EquippableComponent.builder(EquipmentSlot.BODY).equipSound(RegistryEntry.of(equipSound)).model(this.modelId).allowedEntities(allowedEntities).build()
+				EquippableComponent.builder(EquipmentSlot.BODY)
+					.equipSound(RegistryEntry.of(equipSound))
+					.model(this.modelId)
+					.allowedEntities(allowedEntities)
+					.damageOnHurt(damageOnHurt)
+					.build()
 			);
 	}
 

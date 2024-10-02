@@ -64,6 +64,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -565,6 +566,12 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	 * add custom logic there.
 	 */
 	public void onRemoved() {
+	}
+
+	/**
+	 * Called when the entity is about to be removed.
+	 */
+	public void onRemove(Entity.RemovalReason reason) {
 	}
 
 	public void setPose(EntityPose pose) {
@@ -2000,7 +2007,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 		this.setPrevPosition(this.pos);
 	}
 
-	protected void updatePrevAngles() {
+	public void updatePrevAngles() {
 		this.setPrevAngles(this.getYaw(), this.getPitch());
 	}
 
@@ -2764,9 +2771,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	public boolean startRiding(Entity entity, boolean force) {
 		if (entity == this.vehicle) {
 			return false;
-		} else if (!entity.couldAcceptPassenger()) {
-			return false;
-		} else {
+		} else if (entity.couldAcceptPassenger() && entity.type.isSaveable()) {
 			for (Entity entity2 = entity; entity2.vehicle != null; entity2 = entity2.vehicle) {
 				if (entity2.vehicle == this) {
 					return false;
@@ -2788,6 +2793,8 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 			} else {
 				return false;
 			}
+		} else {
+			return false;
 		}
 	}
 
@@ -2929,6 +2936,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	 */
 	protected boolean couldAcceptPassenger() {
 		return true;
+	}
+
+	public void resetLerp() {
 	}
 
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
@@ -3900,49 +3910,100 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	public Entity teleportTo(TeleportTarget teleportTarget) {
 		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved()) {
 			ServerWorld serverWorld2 = teleportTarget.world();
-			List<Entity> list = this.getPassengerList();
-			this.detach();
-			List<Entity> list2 = new ArrayList();
-
-			for (Entity entity : list) {
-				float f = entity.getYaw() - this.getYaw();
-				float g = entity.getPitch() - this.getPitch();
-				float h = teleportTarget.yaw() + (teleportTarget.relatives().contains(PositionFlag.Y_ROT) ? 0.0F : f);
-				float i = teleportTarget.pitch() + (teleportTarget.relatives().contains(PositionFlag.X_ROT) ? 0.0F : g);
-				Entity entity2 = entity.teleportTo(teleportTarget.withRotation(h, i));
-				if (entity2 != null) {
-					list2.add(entity2);
-				}
+			boolean bl = serverWorld2.getRegistryKey() != serverWorld.getRegistryKey();
+			if (!teleportTarget.asPassenger()) {
+				this.stopRiding();
 			}
 
-			Profiler profiler = Profilers.get();
-			profiler.push("changeDimension");
-			Entity entityx = serverWorld2.getRegistryKey() == serverWorld.getRegistryKey() ? this : this.getType().create(serverWorld2, SpawnReason.DIMENSION_TRAVEL);
-			if (entityx != null) {
-				if (this != entityx) {
-					entityx.copyFrom(this);
-					this.removeFromDimension();
-				}
-
-				entityx.setPosition(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
-				if (this != entityx) {
-					serverWorld2.onDimensionChanged(entityx);
-				}
-
-				for (Entity entity3 : list2) {
-					entity3.startRiding(entityx, true);
-				}
-
-				serverWorld.resetIdleTimeout();
-				serverWorld2.resetIdleTimeout();
-				teleportTarget.postDimensionTransition().onTransition(entityx);
+			if (bl) {
+				return this.teleportCrossDimension(serverWorld2, teleportTarget);
 			}
 
-			profiler.pop();
-			return entityx;
+			return this.teleportSameDimension(serverWorld, teleportTarget);
 		}
 
 		return null;
+	}
+
+	private Entity teleportSameDimension(ServerWorld world, TeleportTarget teleportTarget) {
+		for (Entity entity : this.getPassengerList()) {
+			entity.teleportTo(this.getPassengerTeleportTarget(teleportTarget, entity));
+		}
+
+		Profiler profiler = Profilers.get();
+		profiler.push("teleportSameDimension");
+		this.setPosition(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
+		if (!teleportTarget.asPassenger()) {
+			this.sendTeleportPacket(teleportTarget);
+		}
+
+		teleportTarget.postTeleportTransition().onTransition(this);
+		profiler.pop();
+		return this;
+	}
+
+	private Entity teleportCrossDimension(ServerWorld world, TeleportTarget teleportTarget) {
+		List<Entity> list = this.getPassengerList();
+		List<Entity> list2 = new ArrayList(list.size());
+		this.removeAllPassengers();
+
+		for (Entity entity : list) {
+			Entity entity2 = entity.teleportTo(this.getPassengerTeleportTarget(teleportTarget, entity));
+			if (entity2 != null) {
+				list2.add(entity2);
+			}
+		}
+
+		Profiler profiler = Profilers.get();
+		profiler.push("teleportCrossDimension");
+		Entity entityx = this.getType().create(world, SpawnReason.DIMENSION_TRAVEL);
+		if (entityx == null) {
+			profiler.pop();
+			return null;
+		} else {
+			entityx.copyFrom(this);
+			this.removeFromDimension();
+			entityx.setPosition(PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives());
+			world.onDimensionChanged(entityx);
+
+			for (Entity entity3 : list2) {
+				entity3.startRiding(entityx, true);
+			}
+
+			world.resetIdleTimeout();
+			teleportTarget.postTeleportTransition().onTransition(entityx);
+			profiler.pop();
+			return entityx;
+		}
+	}
+
+	private TeleportTarget getPassengerTeleportTarget(TeleportTarget teleportTarget, Entity passenger) {
+		float f = teleportTarget.yaw() + (teleportTarget.relatives().contains(PositionFlag.Y_ROT) ? 0.0F : passenger.getYaw() - this.getYaw());
+		float g = teleportTarget.pitch() + (teleportTarget.relatives().contains(PositionFlag.X_ROT) ? 0.0F : passenger.getPitch() - this.getPitch());
+		Vec3d vec3d = passenger.getPos().subtract(this.getPos());
+		Vec3d vec3d2 = teleportTarget.position()
+			.add(
+				teleportTarget.relatives().contains(PositionFlag.X) ? 0.0 : vec3d.getX(),
+				teleportTarget.relatives().contains(PositionFlag.Y) ? 0.0 : vec3d.getY(),
+				teleportTarget.relatives().contains(PositionFlag.Z) ? 0.0 : vec3d.getZ()
+			);
+		return teleportTarget.withPosition(vec3d2).withRotation(f, g).asPassenger();
+	}
+
+	private void sendTeleportPacket(TeleportTarget teleportTarget) {
+		Entity entity = this.getControllingPassenger();
+
+		for (Entity entity2 : this.getPassengersDeep()) {
+			if (entity2 instanceof ServerPlayerEntity) {
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
+				if (entity != null && serverPlayerEntity.getId() == entity.getId()) {
+					serverPlayerEntity.networkHandler
+						.sendPacket(EntityPositionS2CPacket.create(this.getId(), PlayerPosition.fromTeleportTarget(teleportTarget), teleportTarget.relatives(), this.onGround));
+				} else {
+					serverPlayerEntity.networkHandler.sendPacket(EntityPositionS2CPacket.create(this.getId(), PlayerPosition.fromEntity(this), Set.of(), this.onGround));
+				}
+			}
+		}
 	}
 
 	public void setPosition(PlayerPosition pos, Set<PositionFlag> flags) {
@@ -3956,6 +4017,13 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 		this.resetPosition();
 		this.setVelocity(playerPosition2.deltaMovement());
 		this.collidedBlocks.clear();
+	}
+
+	public void rotate(float yaw, float pitch) {
+		this.setYaw(yaw);
+		this.setHeadYaw(yaw);
+		this.setPitch(pitch);
+		this.updatePrevAngles();
 	}
 
 	public void addPortalChunkTicketAt(BlockPos pos) {
@@ -5306,6 +5374,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 
 		this.getPassengerList().forEach(Entity::stopRiding);
 		this.changeListener.remove(reason);
+		this.onRemove(reason);
 	}
 
 	/**

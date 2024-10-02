@@ -200,6 +200,10 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		} else {
 			this.inGroundTime = 0;
 			Vec3d vec3d3 = this.getPos();
+			if (this.isTouchingWater()) {
+				this.spawnBubbleParticles(vec3d3);
+			}
+
 			if (this.isCritical()) {
 				for (int i = 0; i < 4; i++) {
 					this.getWorld()
@@ -270,19 +274,21 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	private void applyDrag() {
 		Vec3d vec3d = this.getVelocity();
-		Vec3d vec3d2 = this.getPos();
 		float f = 0.99F;
 		if (this.isTouchingWater()) {
-			for (int i = 0; i < 4; i++) {
-				float g = 0.25F;
-				this.getWorld()
-					.addParticle(ParticleTypes.BUBBLE, vec3d2.x - vec3d.x * 0.25, vec3d2.y - vec3d.y * 0.25, vec3d2.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
-			}
-
 			f = this.getDragInWater();
 		}
 
 		this.setVelocity(vec3d.multiply((double)f));
+	}
+
+	private void spawnBubbleParticles(Vec3d pos) {
+		Vec3d vec3d = this.getVelocity();
+
+		for (int i = 0; i < 4; i++) {
+			float f = 0.25F;
+			this.getWorld().addParticle(ParticleTypes.BUBBLE, pos.x - vec3d.x * 0.25, pos.y - vec3d.y * 0.25, pos.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+		}
 	}
 
 	@Override

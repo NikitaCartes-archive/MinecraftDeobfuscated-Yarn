@@ -69,7 +69,9 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
@@ -1507,7 +1509,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void onRecipeCrafted(RecipeEntry<?> recipe, List<ItemStack> ingredients) {
 	}
 
-	public void unlockRecipes(List<Identifier> recipes) {
+	public void unlockRecipes(List<RegistryKey<Recipe<?>>> recipes) {
 	}
 
 	public int lockRecipes(Collection<RecipeEntry<?>> recipes) {

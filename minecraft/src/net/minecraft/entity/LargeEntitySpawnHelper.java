@@ -8,6 +8,7 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -85,6 +86,9 @@ public class LargeEntitySpawnHelper {
 				? (aboveState.isAir() || aboveState.isLiquid()) && (state.isSolid() || state.isOf(Blocks.POWDER_SNOW))
 				: false;
 		LargeEntitySpawnHelper.Requirements WARDEN = (world, pos, state, abovePos, aboveState) -> aboveState.getCollisionShape(world, abovePos).isEmpty()
+				&& Block.isFaceFullSquare(state.getCollisionShape(world, pos), Direction.UP);
+		LargeEntitySpawnHelper.Requirements CREAKING = (world, pos, state, abovePos, aboveState) -> aboveState.getCollisionShape(world, abovePos).isEmpty()
+				&& !state.isIn(BlockTags.LEAVES)
 				&& Block.isFaceFullSquare(state.getCollisionShape(world, pos), Direction.UP);
 
 		boolean canSpawnOn(ServerWorld world, BlockPos pos, BlockState state, BlockPos abovePos, BlockState aboveState);

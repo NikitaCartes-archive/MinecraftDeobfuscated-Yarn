@@ -16,9 +16,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		if (!this.fits(craftingRecipeInput.getWidth(), craftingRecipeInput.getHeight())) {
-			return false;
-		} else {
+		if (craftingRecipeInput.getWidth() == 3 && craftingRecipeInput.getHeight() == 3) {
 			for (int i = 0; i < craftingRecipeInput.size(); i++) {
 				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
 				switch (i) {
@@ -41,6 +39,8 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 			}
 
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -55,12 +55,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width == 3 && height == 3;
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<CraftingDecoratedPotRecipe> getSerializer() {
 		return RecipeSerializer.CRAFTING_DECORATED_POT;
 	}
 }

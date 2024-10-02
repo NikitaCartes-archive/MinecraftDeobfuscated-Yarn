@@ -11,14 +11,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
+import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -38,6 +42,7 @@ import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Clearable;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -198,6 +203,31 @@ public class StructureTemplate {
 
 	public List<StructureTemplate.StructureBlockInfo> getInfosForBlock(BlockPos pos, StructurePlacementData placementData, Block block) {
 		return this.getInfosForBlock(pos, placementData, block, true);
+	}
+
+	public List<StructureTemplate.JigsawBlockInfo> getJigsawInfos(BlockPos pos, BlockRotation rotation) {
+		if (this.blockInfoLists.isEmpty()) {
+			return new ArrayList();
+		} else {
+			StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(rotation);
+			List<StructureTemplate.JigsawBlockInfo> list = structurePlacementData.getRandomBlockInfos(this.blockInfoLists, pos).getOrCreateJigsawBlockInfos();
+			List<StructureTemplate.JigsawBlockInfo> list2 = new ArrayList(list.size());
+
+			for (StructureTemplate.JigsawBlockInfo jigsawBlockInfo : list) {
+				StructureTemplate.StructureBlockInfo structureBlockInfo = jigsawBlockInfo.info;
+				list2.add(
+					jigsawBlockInfo.withInfo(
+						new StructureTemplate.StructureBlockInfo(
+							transform(structurePlacementData, structureBlockInfo.pos()).add(pos),
+							structureBlockInfo.state.rotate(structurePlacementData.getRotation()),
+							structureBlockInfo.nbt
+						)
+					)
+				);
+			}
+
+			return list2;
+		}
 	}
 
 	public ObjectArrayList<StructureTemplate.StructureBlockInfo> getInfosForBlock(
@@ -741,6 +771,59 @@ public class StructureTemplate {
 		return nbtList;
 	}
 
+	public static JigsawBlockEntity.Joint readJoint(NbtCompound nbt, BlockState state) {
+		return (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.CODEC
+			.byId(
+				nbt.getString("joint"),
+				(Supplier)(() -> JigsawBlock.getFacing(state).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE)
+			);
+	}
+
+	public static record JigsawBlockInfo(
+		StructureTemplate.StructureBlockInfo info,
+		JigsawBlockEntity.Joint jointType,
+		Identifier name,
+		Identifier pool,
+		Identifier target,
+		int placementPriority,
+		int selectionPriority
+	) {
+
+		public static StructureTemplate.JigsawBlockInfo of(StructureTemplate.StructureBlockInfo structureBlockInfo) {
+			NbtCompound nbtCompound = (NbtCompound)Objects.requireNonNull(structureBlockInfo.nbt(), () -> structureBlockInfo + " nbt was null");
+			return new StructureTemplate.JigsawBlockInfo(
+				structureBlockInfo,
+				StructureTemplate.readJoint(nbtCompound, structureBlockInfo.state()),
+				Identifier.of(nbtCompound.getString("name")),
+				Identifier.of(nbtCompound.getString("pool")),
+				Identifier.of(nbtCompound.getString("target")),
+				nbtCompound.getInt("placement_priority"),
+				nbtCompound.getInt("selection_priority")
+			);
+		}
+
+		public String toString() {
+			return String.format(
+				Locale.ROOT,
+				"<JigsawBlockInfo | %s | %s | name: %s | pool: %s | target: %s | placement: %d | selection: %d | %s>",
+				this.info.pos,
+				this.info.state,
+				this.name,
+				this.pool,
+				this.target,
+				this.placementPriority,
+				this.selectionPriority,
+				this.info.nbt
+			);
+		}
+
+		public StructureTemplate.JigsawBlockInfo withInfo(StructureTemplate.StructureBlockInfo structureBlockInfo) {
+			return new StructureTemplate.JigsawBlockInfo(
+				structureBlockInfo, this.jointType, this.name, this.pool, this.target, this.placementPriority, this.selectionPriority
+			);
+		}
+	}
+
 	static class Palette implements Iterable<BlockState> {
 		public static final BlockState AIR = Blocks.AIR.getDefaultState();
 		private final IdList<BlockState> ids = new IdList<>(16);
@@ -774,9 +857,19 @@ public class StructureTemplate {
 	public static final class PalettedBlockInfoList {
 		private final List<StructureTemplate.StructureBlockInfo> infos;
 		private final Map<Block, List<StructureTemplate.StructureBlockInfo>> blockToInfos = Maps.<Block, List<StructureTemplate.StructureBlockInfo>>newHashMap();
+		@Nullable
+		private List<StructureTemplate.JigsawBlockInfo> jigsawBlockInfos;
 
 		PalettedBlockInfoList(List<StructureTemplate.StructureBlockInfo> infos) {
 			this.infos = infos;
+		}
+
+		public List<StructureTemplate.JigsawBlockInfo> getOrCreateJigsawBlockInfos() {
+			if (this.jigsawBlockInfos == null) {
+				this.jigsawBlockInfos = this.getAllOf(Blocks.JIGSAW).stream().map(StructureTemplate.JigsawBlockInfo::of).toList();
+			}
+
+			return this.jigsawBlockInfos;
 		}
 
 		public List<StructureTemplate.StructureBlockInfo> getAll() {

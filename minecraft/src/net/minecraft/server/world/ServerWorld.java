@@ -76,7 +76,7 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.BrewingRecipeRegistry;
-import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -1402,8 +1402,7 @@ public class ServerWorld extends World implements EntityLookupView, StructureWor
 			);
 	}
 
-	@Override
-	public RecipeManager getRecipeManager() {
+	public ServerRecipeManager getRecipeManager() {
 		return this.server.getRecipeManager();
 	}
 

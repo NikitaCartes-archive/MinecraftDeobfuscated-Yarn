@@ -26,9 +26,12 @@ import net.minecraft.data.report.PacketReportProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.server.DynamicRegistriesProvider;
 import net.minecraft.data.server.advancement.vanilla.VanillaAdvancementProviders;
+import net.minecraft.data.server.advancement.winterdrop.WinterDropAdvancementProviders;
 import net.minecraft.data.server.loottable.rebalance.TradeRebalanceLootTableProviders;
 import net.minecraft.data.server.loottable.vanilla.VanillaLootTableProviders;
+import net.minecraft.data.server.loottable.winterdrop.WinterDropLootTableProviders;
 import net.minecraft.data.server.recipe.VanillaRecipeGenerator;
+import net.minecraft.data.server.recipe.WinterDropRecipeGenerator;
 import net.minecraft.data.server.tag.TagProvider;
 import net.minecraft.data.server.tag.rebalance.TradeRebalanceEnchantmentTagProvider;
 import net.minecraft.data.server.tag.rebalance.TradeRebalanceStructureTagProvider;
@@ -48,6 +51,10 @@ import net.minecraft.data.server.tag.vanilla.VanillaPaintingVariantTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaPointOfInterestTypeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaStructureTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaWorldPresetTagProvider;
+import net.minecraft.data.server.tag.winterdrop.WinterDropBiomeTagProvider;
+import net.minecraft.data.server.tag.winterdrop.WinterDropBlockTagProvider;
+import net.minecraft.data.server.tag.winterdrop.WinterDropEntityTypeTagProvider;
+import net.minecraft.data.server.tag.winterdrop.WinterDropItemTagProvider;
 import net.minecraft.data.validate.StructureValidatorProvider;
 import net.minecraft.item.Item;
 import net.minecraft.obfuscate.DontObfuscate;
@@ -55,6 +62,7 @@ import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.TradeRebalanceBuiltinRegistries;
+import net.minecraft.registry.WinterDropBuiltinRegistries;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
@@ -103,10 +111,9 @@ public class Main {
 	}
 
 	private static <T extends DataProvider> DataProvider.Factory<T> toFactory(
-		BiFunction<DataOutput, CompletableFuture<RegistryWrapper.WrapperLookup>, T> baseFactory,
-		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture
+		BiFunction<DataOutput, CompletableFuture<RegistryWrapper.WrapperLookup>, T> baseFactory, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture
 	) {
-		return output -> (T)baseFactory.apply(output, registryLookupFuture);
+		return output -> (T)baseFactory.apply(output, registriesFuture);
 	}
 
 	public static DataGenerator create(
@@ -180,6 +187,18 @@ public class Main {
 					outputx, Text.translatable("dataPack.minecart_improvements.description"), FeatureSet.of(FeatureFlags.MINECART_IMPROVEMENTS)
 				)
 		);
+		CompletableFuture<RegistryBuilder.FullPatchesRegistriesPair> completableFuture2x = WinterDropBuiltinRegistries.validate(completableFuture);
+		completableFuture3 = completableFuture2x.thenApply(RegistryBuilder.FullPatchesRegistriesPair::full);
+		pack4 = dataGenerator.createVanillaSubPack(includeServer, "winter_drop");
+		pack4.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture2x.thenApply(RegistryBuilder.FullPatchesRegistriesPair::patches)));
+		pack4.addProvider(toFactory(WinterDropRecipeGenerator.Provider::new, completableFuture3));
+		TagProvider<Block> tagProvider6 = pack4.addProvider(outout -> new WinterDropBlockTagProvider(outout, completableFuture3, tagProvider.getTagLookupFuture()));
+		pack4.addProvider(outputx -> new WinterDropItemTagProvider(outputx, completableFuture3, tagProvider2.getTagLookupFuture(), tagProvider6.getTagLookupFuture()));
+		pack4.addProvider(outputx -> new WinterDropBiomeTagProvider(outputx, completableFuture3, tagProvider3.getTagLookupFuture()));
+		pack4.addProvider(toFactory(WinterDropLootTableProviders::createWinterDropProvider, completableFuture3));
+		pack4.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.winter_drop.description"), FeatureSet.of(FeatureFlags.WINTER_DROP)));
+		pack4.addProvider(toFactory(WinterDropEntityTypeTagProvider::new, completableFuture3));
+		pack4.addProvider(toFactory(WinterDropAdvancementProviders::createWinterDropProvider, completableFuture3));
 		return dataGenerator;
 	}
 }

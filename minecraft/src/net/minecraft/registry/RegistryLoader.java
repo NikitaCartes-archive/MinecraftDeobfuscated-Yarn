@@ -178,7 +178,7 @@ public class RegistryLoader {
 	}
 
 	private static <T> RegistryOps.RegistryInfo<T> createInfo(MutableRegistry<T> registry) {
-		return new RegistryOps.RegistryInfo<>(registry, registry.createMutableEntryLookup(), registry.getLifecycle());
+		return new RegistryOps.RegistryInfo<>(registry, registry.createMutableRegistryLookup(), registry.getLifecycle());
 	}
 
 	private static <T> RegistryOps.RegistryInfo<T> createInfo(RegistryWrapper.Impl<T> registry) {

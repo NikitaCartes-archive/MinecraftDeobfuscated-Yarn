@@ -36,6 +36,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardEntry;
@@ -217,7 +218,7 @@ public class InGameHud {
 			} else {
 				this.spyglassScale = 0.5F;
 				ItemStack itemStack = this.client.player.getInventory().getArmorStack(3);
-				if (itemStack.isOf(Blocks.CARVED_PUMPKIN.asItem())) {
+				if (itemStack.isIn(ItemTags.GAZE_DISGUISE_EQUIPMENT)) {
 					this.renderOverlay(context, PUMPKIN_BLUR, 1.0F);
 				}
 			}
@@ -1099,7 +1100,7 @@ public class InGameHud {
 				context.getMatrices().pop();
 			}
 
-			context.drawItemInSlot(this.client.textRenderer, stack, x, y);
+			context.drawStackOverlay(this.client.textRenderer, stack, x, y);
 		}
 	}
 

@@ -3,10 +3,8 @@ package net.minecraft.structure.pool;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.block.JigsawBlock;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -159,20 +157,13 @@ public class StructurePoolBasedGenerator {
 	private static Optional<BlockPos> findStartingJigsawPos(
 		StructurePoolElement pool, Identifier id, BlockPos pos, BlockRotation rotation, StructureTemplateManager structureManager, ChunkRandom random
 	) {
-		List<StructureTemplate.StructureBlockInfo> list = pool.getStructureBlockInfos(structureManager, pos, rotation, random);
-		Optional<BlockPos> optional = Optional.empty();
-
-		for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
-			Identifier identifier = Identifier.tryParse(
-				((NbtCompound)Objects.requireNonNull(structureBlockInfo.nbt(), () -> structureBlockInfo + " nbt was null")).getString("name")
-			);
-			if (id.equals(identifier)) {
-				optional = Optional.of(structureBlockInfo.pos());
-				break;
+		for (StructureTemplate.JigsawBlockInfo jigsawBlockInfo : pool.getStructureBlockInfos(structureManager, pos, rotation, random)) {
+			if (id.equals(jigsawBlockInfo.name())) {
+				return Optional.of(jigsawBlockInfo.info().pos());
 			}
 		}
 
-		return optional;
+		return Optional.empty();
 	}
 
 	private static void generate(
@@ -303,16 +294,17 @@ public class StructurePoolBasedGenerator {
 			BlockBox blockBox = piece.getBoundingBox();
 			int i = blockBox.getMinY();
 
-			label134:
-			for (StructureTemplate.StructureBlockInfo structureBlockInfo : structurePoolElement.getStructureBlockInfos(
+			label129:
+			for (StructureTemplate.JigsawBlockInfo jigsawBlockInfo : structurePoolElement.getStructureBlockInfos(
 				this.structureTemplateManager, blockPos, blockRotation, this.random
 			)) {
+				StructureTemplate.StructureBlockInfo structureBlockInfo = jigsawBlockInfo.info();
 				Direction direction = JigsawBlock.getFacing(structureBlockInfo.state());
 				BlockPos blockPos2 = structureBlockInfo.pos();
 				BlockPos blockPos3 = blockPos2.offset(direction);
 				int j = blockPos2.getY() - i;
 				int k = Integer.MIN_VALUE;
-				RegistryKey<StructurePool> registryKey = lookupPool(structureBlockInfo, aliasLookup);
+				RegistryKey<StructurePool> registryKey = lookupPool(jigsawBlockInfo, aliasLookup);
 				Optional<? extends RegistryEntry<StructurePool>> optional = this.registry.getOptional(registryKey);
 				if (optional.isEmpty()) {
 					StructurePoolBasedGenerator.LOGGER.warn("Empty or non-existent pool: {}", registryKey.getValue());
@@ -343,7 +335,7 @@ public class StructurePoolBasedGenerator {
 							}
 
 							list.addAll(registryEntry2.value().getElementIndicesInRandomOrder(this.random));
-							int l = structureBlockInfo.nbt() != null ? structureBlockInfo.nbt().getInt("placement_priority") : 0;
+							int l = jigsawBlockInfo.placementPriority();
 
 							for (StructurePoolElement structurePoolElement2 : list) {
 								if (structurePoolElement2 == EmptyPoolElement.INSTANCE) {
@@ -351,17 +343,18 @@ public class StructurePoolBasedGenerator {
 								}
 
 								for (BlockRotation blockRotation2 : BlockRotation.randomRotationOrder(this.random)) {
-									List<StructureTemplate.StructureBlockInfo> list2 = structurePoolElement2.getStructureBlockInfos(
+									List<StructureTemplate.JigsawBlockInfo> list2 = structurePoolElement2.getStructureBlockInfos(
 										this.structureTemplateManager, BlockPos.ORIGIN, blockRotation2, this.random
 									);
 									BlockBox blockBox2 = structurePoolElement2.getBoundingBox(this.structureTemplateManager, BlockPos.ORIGIN, blockRotation2);
 									int m;
 									if (modifyBoundingBox && blockBox2.getBlockCountY() <= 16) {
-										m = list2.stream().mapToInt(structureBlockInfox -> {
+										m = list2.stream().mapToInt(jigsawInfo -> {
+											StructureTemplate.StructureBlockInfo structureBlockInfox = jigsawInfo.info();
 											if (!blockBox2.contains(structureBlockInfox.pos().offset(JigsawBlock.getFacing(structureBlockInfox.state())))) {
 												return 0;
 											} else {
-												RegistryKey<StructurePool> registryKeyx = lookupPool(structureBlockInfox, aliasLookup);
+												RegistryKey<StructurePool> registryKeyx = lookupPool(jigsawInfo, aliasLookup);
 												Optional<? extends RegistryEntry<StructurePool>> optionalx = this.registry.getOptional(registryKeyx);
 												Optional<RegistryEntry<StructurePool>> optional2 = optionalx.map(entry -> ((StructurePool)entry.value()).getFallback());
 												int ix = (Integer)optionalx.map(entry -> ((StructurePool)entry.value()).getHighestY(this.structureTemplateManager)).orElse(0);
@@ -373,9 +366,9 @@ public class StructurePoolBasedGenerator {
 										m = 0;
 									}
 
-									for (StructureTemplate.StructureBlockInfo structureBlockInfo2 : list2) {
-										if (JigsawBlock.attachmentMatches(structureBlockInfo, structureBlockInfo2)) {
-											BlockPos blockPos4 = structureBlockInfo2.pos();
+									for (StructureTemplate.JigsawBlockInfo jigsawBlockInfo2 : list2) {
+										if (JigsawBlock.attachmentMatches(jigsawBlockInfo, jigsawBlockInfo2)) {
+											BlockPos blockPos4 = jigsawBlockInfo2.info().pos();
 											BlockPos blockPos5 = blockPos3.subtract(blockPos4);
 											BlockBox blockBox3 = structurePoolElement2.getBoundingBox(this.structureTemplateManager, blockPos5, blockRotation2);
 											int n = blockBox3.getMinY();
@@ -437,7 +430,7 @@ public class StructurePoolBasedGenerator {
 													);
 													this.structurePieces.enqueue(shapedPoolStructurePiece, l);
 												}
-												continue label134;
+												continue label129;
 											}
 										}
 									}
@@ -449,10 +442,8 @@ public class StructurePoolBasedGenerator {
 			}
 		}
 
-		private static RegistryKey<StructurePool> lookupPool(StructureTemplate.StructureBlockInfo structureBlockInfo, StructurePoolAliasLookup aliasLookup) {
-			NbtCompound nbtCompound = (NbtCompound)Objects.requireNonNull(structureBlockInfo.nbt(), () -> structureBlockInfo + " nbt was null");
-			RegistryKey<StructurePool> registryKey = StructurePools.of(nbtCompound.getString("pool"));
-			return aliasLookup.lookup(registryKey);
+		private static RegistryKey<StructurePool> lookupPool(StructureTemplate.JigsawBlockInfo jigsawInfo, StructurePoolAliasLookup aliasLookup) {
+			return aliasLookup.lookup(StructurePools.of(jigsawInfo.pool()));
 		}
 	}
 }

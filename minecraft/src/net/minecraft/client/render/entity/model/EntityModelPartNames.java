@@ -229,6 +229,10 @@ public class EntityModelPartNames {
 	 */
 	public static final String BODY = "body";
 	/**
+	 * The key of an upper body model part, whose value is {@value}.
+	 */
+	public static final String UPPER_BODY = "upper_body";
+	/**
 	 * The key of a hat rim model part, whose value is {@value}.
 	 */
 	public static final String HAT_RIM = "hat_rim";

@@ -15,6 +15,6 @@ public class EmptyGlyphRenderer extends GlyphRenderer {
 	}
 
 	@Override
-	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
+	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, int color, int light) {
 	}
 }

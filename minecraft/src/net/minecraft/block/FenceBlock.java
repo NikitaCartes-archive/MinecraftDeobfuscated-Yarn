@@ -111,7 +111,7 @@ public class FenceBlock extends HorizontalConnectingBlock {
 			tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return direction.getAxis().getType() == Direction.Type.HORIZONTAL
+		return direction.getAxis().isHorizontal()
 			? state.with(
 				(Property)FACING_PROPERTIES.get(direction),
 				Boolean.valueOf(this.canConnect(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction.getOpposite()), direction.getOpposite()))

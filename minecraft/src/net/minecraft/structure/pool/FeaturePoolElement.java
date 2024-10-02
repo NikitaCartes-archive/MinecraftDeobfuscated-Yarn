@@ -1,6 +1,5 @@
 package net.minecraft.structure.pool;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
@@ -54,16 +53,16 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
+	public List<StructureTemplate.JigsawBlockInfo> getStructureBlockInfos(
 		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
 	) {
-		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
-		list.add(
-			new StructureTemplate.StructureBlockInfo(
-				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, Orientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.nbt
+		return List.of(
+			StructureTemplate.JigsawBlockInfo.of(
+				new StructureTemplate.StructureBlockInfo(
+					pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, Orientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.nbt
+				)
 			)
 		);
-		return list;
 	}
 
 	@Override

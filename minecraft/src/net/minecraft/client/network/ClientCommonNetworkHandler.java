@@ -288,6 +288,7 @@ public abstract class ClientCommonNetworkHandler implements ClientCommonPacketLi
 
 	@Override
 	public void addCustomCrashReportInfo(CrashReport report, CrashReportSection section) {
+		section.add("Is Local", (CrashCallable<String>)(() -> String.valueOf(this.connection.isLocal())));
 		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<none>"));
 		section.add("Server brand", (CrashCallable<String>)(() -> this.brand));
 		if (!this.customReportDetails.isEmpty()) {

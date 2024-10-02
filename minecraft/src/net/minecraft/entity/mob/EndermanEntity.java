@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.DoubleSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -212,17 +213,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	boolean isPlayerStaring(PlayerEntity player) {
-		ItemStack itemStack = player.getInventory().armor.get(3);
-		if (itemStack.isOf(Blocks.CARVED_PUMPKIN.asItem())) {
-			return false;
-		} else {
-			Vec3d vec3d = player.getRotationVec(1.0F).normalize();
-			Vec3d vec3d2 = new Vec3d(this.getX() - player.getX(), this.getEyeY() - player.getEyeY(), this.getZ() - player.getZ());
-			double d = vec3d2.length();
-			vec3d2 = vec3d2.normalize();
-			double e = vec3d.dotProduct(vec3d2);
-			return e > 1.0 - 0.025 / d ? player.canSee(this) : false;
-		}
+		return this.isEntityLookingAtMe(player, 0.025, true, false, LivingEntity.NOT_WEARING_GAZE_DISGUISE_PREDICATE, new DoubleSupplier[]{this::getEyeY});
 	}
 
 	@Override
@@ -573,7 +564,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		@Override
 		public boolean shouldContinue() {
 			if (this.targetPlayer != null) {
-				if (!this.angerPredicate.method_18303(this.targetPlayer, getServerWorld(this.enderman))) {
+				if (!this.angerPredicate.test(this.targetPlayer, getServerWorld(this.enderman))) {
 					return false;
 				} else {
 					this.enderman.lookAtEntity(this.targetPlayer, 10.0F, 10.0F);

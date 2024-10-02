@@ -17,6 +17,11 @@ public class MultiNoiseBiomeSourceParameterLists {
 		registry.register(OVERWORLD, new MultiNoiseBiomeSourceParameterList(MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD, registryEntryLookup));
 	}
 
+	public static void bootstrapWinterDrop(Registerable<MultiNoiseBiomeSourceParameterList> registry) {
+		RegistryEntryLookup<Biome> registryEntryLookup = registry.getRegistryLookup(RegistryKeys.BIOME);
+		registry.register(OVERWORLD, new MultiNoiseBiomeSourceParameterList(MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD_WINTER_DROP, registryEntryLookup));
+	}
+
 	private static RegistryKey<MultiNoiseBiomeSourceParameterList> of(String id) {
 		return RegistryKey.of(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, Identifier.ofVanilla(id));
 	}

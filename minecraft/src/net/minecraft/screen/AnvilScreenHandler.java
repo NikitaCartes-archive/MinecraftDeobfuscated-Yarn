@@ -52,13 +52,12 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	}
 
 	public AnvilScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.ANVIL, syncId, inventory, context);
+		super(ScreenHandlerType.ANVIL, syncId, inventory, context, getForgingSlotsManager());
 		this.addProperty(this.levelCost);
 	}
 
-	@Override
-	protected ForgingSlotsManager getForgingSlotsManager() {
-		return ForgingSlotsManager.create().input(0, 27, 47, stack -> true).input(1, 76, 47, stack -> true).output(2, 134, 47).build();
+	private static ForgingSlotsManager getForgingSlotsManager() {
+		return ForgingSlotsManager.builder().input(0, 27, 47, stack -> true).input(1, 76, 47, stack -> true).output(2, 134, 47).build();
 	}
 
 	@Override

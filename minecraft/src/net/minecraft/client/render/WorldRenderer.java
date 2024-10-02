@@ -60,6 +60,7 @@ import net.minecraft.particle.ParticlesMode;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
@@ -360,7 +361,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			profiler.push("section_occlusion_graph");
-			this.chunkRenderingDataPreparer.updateSectionOcculusionGraph(bl, camera, frustum, this.builtChunks, this.world.getChunkManager().getActiveSections());
+			this.chunkRenderingDataPreparer.updateSectionOcclusionGraph(bl, camera, frustum, this.builtChunks, this.world.getChunkManager().getActiveSections());
 			profiler.pop();
 			double g = Math.floor((double)(camera.getPitch() / 2.0F));
 			double h = Math.floor((double)(camera.getYaw() / 2.0F));
@@ -855,7 +856,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	private void renderBlockDamage(MatrixStack matrices, Camera camera, VertexConsumerProvider.Immediate immediate) {
+	private void renderBlockDamage(MatrixStack matrices, Camera camera, VertexConsumerProvider.Immediate vertexConsumers) {
 		Vec3d vec3d = camera.getPos();
 		double d = vec3d.getX();
 		double e = vec3d.getY();
@@ -871,7 +872,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
 					MatrixStack.Entry entry2 = matrices.peek();
 					VertexConsumer vertexConsumer = new OverlayVertexConsumer(
-						immediate.getBuffer((RenderLayer)ModelBaker.BLOCK_DESTRUCTION_RENDER_LAYERS.get(i)), entry2, 1.0F
+						vertexConsumers.getBuffer((RenderLayer)ModelBaker.BLOCK_DESTRUCTION_RENDER_LAYERS.get(i)), entry2, 1.0F
 					);
 					this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos), blockPos, this.world, matrices, vertexConsumer);
 					matrices.pop();
@@ -880,20 +881,27 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	private void renderTargetBlockOutline(Camera camera, VertexConsumerProvider.Immediate vertexConsumers, MatrixStack matrices, boolean bl) {
+	private void renderTargetBlockOutline(Camera camera, VertexConsumerProvider.Immediate vertexConsumers, MatrixStack matrices, boolean translucent) {
 		if (this.client.crosshairTarget instanceof BlockHitResult blockHitResult) {
 			if (blockHitResult.getType() != HitResult.Type.MISS) {
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				BlockState blockState = this.world.getBlockState(blockPos);
 				if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
-					boolean bl2 = RenderLayers.getBlockLayer(blockState).isTranslucent();
-					if (bl2 != bl) {
+					boolean bl = RenderLayers.getBlockLayer(blockState).isTranslucent();
+					if (bl != translucent) {
 						return;
 					}
 
-					VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 					Vec3d vec3d = camera.getPos();
-					this.drawBlockOutline(matrices, vertexConsumer, camera.getFocusedEntity(), vec3d.x, vec3d.y, vec3d.z, blockPos, blockState);
+					Boolean boolean_ = this.client.options.getHighContrastBlockOutline().getValue();
+					if (boolean_) {
+						VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getSecondaryBlockOutline());
+						this.drawBlockOutline(matrices, vertexConsumer, camera.getFocusedEntity(), vec3d.x, vec3d.y, vec3d.z, blockPos, blockState, -16777216);
+					}
+
+					VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
+					int i = boolean_ ? Colors.CYAN : ColorHelper.withAlpha(102, Colors.BLACK);
+					this.drawBlockOutline(matrices, vertexConsumer, camera.getFocusedEntity(), vec3d.x, vec3d.y, vec3d.z, blockPos, blockState, i);
 					vertexConsumers.drawCurrentLayer();
 				}
 			}
@@ -1137,7 +1145,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	private void drawBlockOutline(
-		MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double cameraX, double cameraY, double cameraZ, BlockPos pos, BlockState state
+		MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double cameraX, double cameraY, double cameraZ, BlockPos pos, BlockState state, int color
 	) {
 		VertexRendering.drawOutline(
 			matrices,
@@ -1146,10 +1154,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			(double)pos.getX() - cameraX,
 			(double)pos.getY() - cameraY,
 			(double)pos.getZ() - cameraZ,
-			0.0F,
-			0.0F,
-			0.0F,
-			0.4F
+			color
 		);
 	}
 

@@ -167,6 +167,7 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.ACACIA_BOAT, new BoatDispenserBehavior(EntityType.ACACIA_BOAT));
 		DispenserBlock.registerBehavior(Items.CHERRY_BOAT, new BoatDispenserBehavior(EntityType.CHERRY_BOAT));
 		DispenserBlock.registerBehavior(Items.MANGROVE_BOAT, new BoatDispenserBehavior(EntityType.MANGROVE_BOAT));
+		DispenserBlock.registerBehavior(Items.PALE_OAK_BOAT, new BoatDispenserBehavior(EntityType.PALE_OAK_BOAT));
 		DispenserBlock.registerBehavior(Items.BAMBOO_RAFT, new BoatDispenserBehavior(EntityType.BAMBOO_RAFT));
 		DispenserBlock.registerBehavior(Items.OAK_CHEST_BOAT, new BoatDispenserBehavior(EntityType.OAK_CHEST_BOAT));
 		DispenserBlock.registerBehavior(Items.SPRUCE_CHEST_BOAT, new BoatDispenserBehavior(EntityType.SPRUCE_CHEST_BOAT));
@@ -176,6 +177,7 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.ACACIA_CHEST_BOAT, new BoatDispenserBehavior(EntityType.ACACIA_CHEST_BOAT));
 		DispenserBlock.registerBehavior(Items.CHERRY_CHEST_BOAT, new BoatDispenserBehavior(EntityType.CHERRY_CHEST_BOAT));
 		DispenserBlock.registerBehavior(Items.MANGROVE_CHEST_BOAT, new BoatDispenserBehavior(EntityType.MANGROVE_CHEST_BOAT));
+		DispenserBlock.registerBehavior(Items.PALE_OAK_CHEST_BOAT, new BoatDispenserBehavior(EntityType.PALE_OAK_CHEST_BOAT));
 		DispenserBlock.registerBehavior(Items.BAMBOO_CHEST_RAFT, new BoatDispenserBehavior(EntityType.BAMBOO_CHEST_RAFT));
 		DispenserBehavior dispenserBehavior = new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();

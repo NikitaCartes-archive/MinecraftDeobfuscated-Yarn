@@ -58,16 +58,20 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 	}
 
-	public int getRowWidth() {
-		return 220;
-	}
-
 	/**
 	 * {@return the selected entry of this entry list, or {@code null} if there is none}
 	 */
 	@Nullable
 	public E getSelectedOrNull() {
 		return this.selected;
+	}
+
+	public void setSelected(int index) {
+		if (index == -1) {
+			this.setSelected(null);
+		} else if (this.getEntryCount() != 0) {
+			this.setSelected(this.getEntry(index));
+		}
 	}
 
 	public void setSelected(@Nullable E entry) {
@@ -93,7 +97,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.selected = null;
 	}
 
-	protected void replaceEntries(Collection<E> newEntries) {
+	public void replaceEntries(Collection<E> newEntries) {
 		this.clearEntries();
 		this.children.addAll(newEntries);
 	}
@@ -463,12 +467,16 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.getBorderBoxLeft() + this.getRowWidth();
 	}
 
-	protected int getRowTop(int index) {
+	public int getRowTop(int index) {
 		return this.getY() + 4 - (int)this.getScrollAmount() + index * this.itemHeight + this.headerHeight;
 	}
 
-	protected int getRowBottom(int index) {
+	public int getRowBottom(int index) {
 		return this.getRowTop(index) + this.itemHeight;
+	}
+
+	public int getRowWidth() {
+		return 220;
 	}
 
 	@Override

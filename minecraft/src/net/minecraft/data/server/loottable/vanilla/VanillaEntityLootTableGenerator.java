@@ -1024,6 +1024,8 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 				)
 		);
+		this.register(EntityType.CREAKING, LootTable.builder());
+		this.register(EntityType.CREAKING_TRANSIENT, LootTable.builder());
 		this.register(
 			EntityType.ZOMBIE,
 			LootTable.builder()

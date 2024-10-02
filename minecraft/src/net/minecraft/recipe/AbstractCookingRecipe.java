@@ -1,85 +1,109 @@
 package net.minecraft.recipe;
 
-import javax.annotation.Nullable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.world.World;
+import net.minecraft.recipe.display.FurnaceRecipeDisplay;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 
-public abstract class AbstractCookingRecipe implements Recipe<SingleStackRecipeInput> {
-	protected final RecipeType<?> type;
-	protected final CookingRecipeCategory category;
-	protected final String group;
-	protected final Ingredient ingredient;
-	protected final ItemStack result;
-	protected final float experience;
-	protected final int cookingTime;
-	@Nullable
-	private IngredientPlacement ingredientPlacement;
+public abstract class AbstractCookingRecipe extends SingleStackRecipe {
+	private final CookingRecipeCategory category;
+	private final float experience;
+	private final int cookingTime;
 
-	public AbstractCookingRecipe(
-		RecipeType<?> type, String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime
-	) {
-		this.type = type;
+	public AbstractCookingRecipe(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
+		super(group, ingredient, result);
 		this.category = category;
-		this.group = group;
-		this.ingredient = ingredient;
-		this.result = result;
 		this.experience = experience;
 		this.cookingTime = cookingTime;
 	}
 
-	public boolean matches(SingleStackRecipeInput singleStackRecipeInput, World world) {
-		return this.ingredient.test(singleStackRecipeInput.item());
-	}
-
-	public ItemStack craft(SingleStackRecipeInput singleStackRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
-		return this.result.copy();
-	}
+	@Override
+	public abstract RecipeSerializer<? extends AbstractCookingRecipe> getSerializer();
 
 	@Override
-	public boolean fits(int width, int height) {
-		return true;
-	}
-
-	@Override
-	public IngredientPlacement getIngredientPlacement() {
-		if (this.ingredientPlacement == null) {
-			this.ingredientPlacement = IngredientPlacement.forSingleSlot(this.ingredient);
-		}
-
-		return this.ingredientPlacement;
-	}
+	public abstract RecipeType<? extends AbstractCookingRecipe> getType();
 
 	public float getExperience() {
 		return this.experience;
-	}
-
-	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-		return this.result;
-	}
-
-	@Override
-	public String getGroup() {
-		return this.group;
 	}
 
 	public int getCookingTime() {
 		return this.cookingTime;
 	}
 
-	@Override
-	public RecipeType<?> getType() {
-		return this.type;
-	}
-
 	public CookingRecipeCategory getCategory() {
 		return this.category;
 	}
 
+	protected abstract Item getCookerItem();
+
+	@Override
+	public List<RecipeDisplay> getDisplays() {
+		return List.of(
+			new FurnaceRecipeDisplay(
+				this.ingredient().toDisplay(),
+				SlotDisplay.AnyFuelSlotDisplay.INSTANCE,
+				new SlotDisplay.StackSlotDisplay(this.result()),
+				new SlotDisplay.ItemSlotDisplay(this.getCookerItem())
+			)
+		);
+	}
+
+	@FunctionalInterface
 	public interface RecipeFactory<T extends AbstractCookingRecipe> {
 		T create(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime);
+	}
+
+	public static class Serializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
+		private final MapCodec<T> codec;
+		private final PacketCodec<RegistryByteBuf, T> packetCodec;
+
+		public Serializer(AbstractCookingRecipe.RecipeFactory<T> factory, int defaultCookingTime) {
+			this.codec = RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							Codec.STRING.optionalFieldOf("group", "").forGetter(SingleStackRecipe::getGroup),
+							CookingRecipeCategory.CODEC.fieldOf("category").orElse(CookingRecipeCategory.MISC).forGetter(AbstractCookingRecipe::getCategory),
+							Ingredient.CODEC.fieldOf("ingredient").forGetter(SingleStackRecipe::ingredient),
+							ItemStack.VALIDATED_UNCOUNTED_CODEC.fieldOf("result").forGetter(SingleStackRecipe::result),
+							Codec.FLOAT.fieldOf("experience").orElse(0.0F).forGetter(AbstractCookingRecipe::getExperience),
+							Codec.INT.fieldOf("cookingtime").orElse(defaultCookingTime).forGetter(AbstractCookingRecipe::getCookingTime)
+						)
+						.apply(instance, factory::create)
+			);
+			this.packetCodec = PacketCodec.tuple(
+				PacketCodecs.STRING,
+				SingleStackRecipe::getGroup,
+				CookingRecipeCategory.PACKET_CODEC,
+				AbstractCookingRecipe::getCategory,
+				Ingredient.PACKET_CODEC,
+				SingleStackRecipe::ingredient,
+				ItemStack.PACKET_CODEC,
+				SingleStackRecipe::result,
+				PacketCodecs.FLOAT,
+				AbstractCookingRecipe::getExperience,
+				PacketCodecs.INTEGER,
+				AbstractCookingRecipe::getCookingTime,
+				factory::create
+			);
+		}
+
+		@Override
+		public MapCodec<T> codec() {
+			return this.codec;
+		}
+
+		@Override
+		public PacketCodec<RegistryByteBuf, T> packetCodec() {
+			return this.packetCodec;
+		}
 	}
 }

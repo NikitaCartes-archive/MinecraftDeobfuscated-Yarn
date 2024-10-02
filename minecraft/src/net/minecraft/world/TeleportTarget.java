@@ -20,8 +20,9 @@ public record TeleportTarget(
 	float yaw,
 	float pitch,
 	boolean missingRespawnBlock,
+	boolean asPassenger,
 	Set<PositionFlag> relatives,
-	TeleportTarget.PostDimensionTransition postDimensionTransition
+	TeleportTarget.PostDimensionTransition postTeleportTransition
 ) {
 	public static final TeleportTarget.PostDimensionTransition NO_OP = entity -> {
 	};
@@ -35,11 +36,11 @@ public record TeleportTarget(
 	public TeleportTarget(
 		ServerWorld world, Vec3d pos, Vec3d velocity, float yaw, float pitch, Set<PositionFlag> flags, TeleportTarget.PostDimensionTransition postDimensionTransition
 	) {
-		this(world, pos, velocity, yaw, pitch, false, flags, postDimensionTransition);
+		this(world, pos, velocity, yaw, pitch, false, false, flags, postDimensionTransition);
 	}
 
 	public TeleportTarget(ServerWorld world, Entity entity, TeleportTarget.PostDimensionTransition postDimensionTransition) {
-		this(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, false, Set.of(), postDimensionTransition);
+		this(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, false, false, Set.of(), postDimensionTransition);
 	}
 
 	private static void sendTravelThroughPortalPacket(Entity entity) {
@@ -53,7 +54,7 @@ public record TeleportTarget(
 	}
 
 	public static TeleportTarget missingSpawnBlock(ServerWorld world, Entity entity, TeleportTarget.PostDimensionTransition postDimensionTransition) {
-		return new TeleportTarget(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, true, Set.of(), postDimensionTransition);
+		return new TeleportTarget(world, getWorldSpawnPos(world, entity), Vec3d.ZERO, 0.0F, 0.0F, true, false, Set.of(), postDimensionTransition);
 	}
 
 	private static Vec3d getWorldSpawnPos(ServerWorld world, Entity entity) {
@@ -62,7 +63,27 @@ public record TeleportTarget(
 
 	public TeleportTarget withRotation(float yaw, float pitch) {
 		return new TeleportTarget(
-			this.world(), this.position(), this.velocity(), yaw, pitch, this.missingRespawnBlock(), this.relatives(), this.postDimensionTransition()
+			this.world(), this.position(), this.velocity(), yaw, pitch, this.missingRespawnBlock(), this.asPassenger(), this.relatives(), this.postTeleportTransition()
+		);
+	}
+
+	public TeleportTarget withPosition(Vec3d position) {
+		return new TeleportTarget(
+			this.world(),
+			position,
+			this.velocity(),
+			this.yaw(),
+			this.pitch(),
+			this.missingRespawnBlock(),
+			this.asPassenger(),
+			this.relatives(),
+			this.postTeleportTransition()
+		);
+	}
+
+	public TeleportTarget asPassenger() {
+		return new TeleportTarget(
+			this.world(), this.position(), this.velocity(), this.yaw(), this.pitch(), this.missingRespawnBlock(), true, this.relatives(), this.postTeleportTransition()
 		);
 	}
 

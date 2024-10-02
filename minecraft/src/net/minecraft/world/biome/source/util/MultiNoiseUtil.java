@@ -153,6 +153,7 @@ public class MultiNoiseUtil {
 	}
 
 	static class FittestPositionFinder {
+		private static final long field_54705 = 2048L;
 		MultiNoiseUtil.FittestPositionFinder.Result bestResult;
 
 		FittestPositionFinder(List<MultiNoiseUtil.NoiseHypercube> noises, MultiNoiseUtil.MultiNoiseSampler sampler) {
@@ -185,9 +186,6 @@ public class MultiNoiseUtil {
 		private static MultiNoiseUtil.FittestPositionFinder.Result calculateFitness(
 			List<MultiNoiseUtil.NoiseHypercube> noises, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z
 		) {
-			double d = MathHelper.square(2500.0);
-			int i = 2;
-			long l = (long)((double)MathHelper.square(10000.0F) * Math.pow((double)(MathHelper.square((long)x) + MathHelper.square((long)z)) / d, 2.0));
 			MultiNoiseUtil.NoiseValuePoint noiseValuePoint = sampler.sample(BiomeCoords.fromBlock(x), 0, BiomeCoords.fromBlock(z));
 			MultiNoiseUtil.NoiseValuePoint noiseValuePoint2 = new MultiNoiseUtil.NoiseValuePoint(
 				noiseValuePoint.temperatureNoise(),
@@ -197,13 +195,15 @@ public class MultiNoiseUtil {
 				0L,
 				noiseValuePoint.weirdnessNoise()
 			);
-			long m = Long.MAX_VALUE;
+			long l = Long.MAX_VALUE;
 
 			for (MultiNoiseUtil.NoiseHypercube noiseHypercube : noises) {
-				m = Math.min(m, noiseHypercube.getSquaredDistance(noiseValuePoint2));
+				l = Math.min(l, noiseHypercube.getSquaredDistance(noiseValuePoint2));
 			}
 
-			return new MultiNoiseUtil.FittestPositionFinder.Result(new BlockPos(x, 0, z), l + m);
+			long m = MathHelper.square((long)x) + MathHelper.square((long)z);
+			long n = l * MathHelper.square(2048L) + m;
+			return new MultiNoiseUtil.FittestPositionFinder.Result(new BlockPos(x, 0, z), n);
 		}
 
 		static record Result(BlockPos location, long fitness) {

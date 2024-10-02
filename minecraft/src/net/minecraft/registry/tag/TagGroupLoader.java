@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.SequencedSet;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -38,11 +37,11 @@ import org.slf4j.Logger;
 
 public class TagGroupLoader<T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	final Function<Identifier, Optional<? extends T>> registryGetter;
+	final TagGroupLoader.EntrySupplier<T> entrySupplier;
 	private final String dataType;
 
-	public TagGroupLoader(Function<Identifier, Optional<? extends T>> registryGetter, String dataType) {
-		this.registryGetter = registryGetter;
+	public TagGroupLoader(TagGroupLoader.EntrySupplier<T> entrySupplier, String dataType) {
+		this.entrySupplier = entrySupplier;
 		this.dataType = dataType;
 	}
 
@@ -110,8 +109,8 @@ public class TagGroupLoader<T> {
 		TagEntry.ValueGetter<T> valueGetter = new TagEntry.ValueGetter<T>() {
 			@Nullable
 			@Override
-			public T direct(Identifier id) {
-				return (T)((Optional)TagGroupLoader.this.registryGetter.apply(id)).orElse(null);
+			public T direct(Identifier id, boolean required) {
+				return (T)TagGroupLoader.this.entrySupplier.get(id, required).orElse(null);
 			}
 
 			@Nullable
@@ -149,9 +148,8 @@ public class TagGroupLoader<T> {
 
 	public static <T> void loadInitial(ResourceManager resourceManager, MutableRegistry<T> registry) {
 		RegistryKey<? extends Registry<T>> registryKey = registry.getKey();
-		RegistryEntryLookup<T> registryEntryLookup = registry.createMutableEntryLookup();
 		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(
-			id -> registryEntryLookup.getOptional(RegistryKey.of(registryKey, id)), RegistryKeys.getTagPath(registryKey)
+			TagGroupLoader.EntrySupplier.forInitial(registry), RegistryKeys.getTagPath(registryKey)
 		);
 		tagGroupLoader.buildGroup(tagGroupLoader.loadTags(resourceManager)).forEach((id, entries) -> registry.setEntries(TagKey.of(registryKey, id), entries));
 	}
@@ -166,7 +164,9 @@ public class TagGroupLoader<T> {
 
 	private static <T> Optional<Registry.PendingTagLoad<T>> startReload(ResourceManager resourceManager, Registry<T> registry) {
 		RegistryKey<? extends Registry<T>> registryKey = registry.getKey();
-		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(registry::getEntry, RegistryKeys.getTagPath(registryKey));
+		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(
+			(TagGroupLoader.EntrySupplier<RegistryEntry<T>>)TagGroupLoader.EntrySupplier.forReload(registry), RegistryKeys.getTagPath(registryKey)
+		);
 		TagGroupLoader.RegistryTags<T> registryTags = new TagGroupLoader.RegistryTags<>(
 			registryKey, toTagKeyedMap(registry.getKey(), tagGroupLoader.buildGroup(tagGroupLoader.loadTags(resourceManager)))
 		);
@@ -191,6 +191,19 @@ public class TagGroupLoader<T> {
 		}
 
 		return null;
+	}
+
+	public interface EntrySupplier<T> {
+		Optional<? extends T> get(Identifier id, boolean required);
+
+		static <T> TagGroupLoader.EntrySupplier<? extends RegistryEntry<T>> forReload(Registry<T> registry) {
+			return (id, required) -> registry.getEntry(id);
+		}
+
+		static <T> TagGroupLoader.EntrySupplier<RegistryEntry<T>> forInitial(MutableRegistry<T> registry) {
+			RegistryEntryLookup<T> registryEntryLookup = registry.createMutableRegistryLookup();
+			return (id, required) -> ((RegistryEntryLookup<T>)(required ? registryEntryLookup : registry)).getOptional(RegistryKey.of(registry.getKey(), id));
+		}
 	}
 
 	public static record RegistryTags<T>(RegistryKey<? extends Registry<T>> key, Map<TagKey<T>, List<RegistryEntry<T>>> tags) {

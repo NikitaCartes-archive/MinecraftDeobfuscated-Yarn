@@ -38,23 +38,23 @@ public class LootTableProvider implements DataProvider {
 	private final DataOutput.PathResolver pathResolver;
 	private final Set<RegistryKey<LootTable>> lootTableIds;
 	private final List<LootTableProvider.LootTypeGenerator> lootTypeGenerators;
-	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 
 	public LootTableProvider(
 		DataOutput output,
 		Set<RegistryKey<LootTable>> lootTableIds,
 		List<LootTableProvider.LootTypeGenerator> lootTypeGenerators,
-		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture
+		CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture
 	) {
 		this.pathResolver = output.getResolver(RegistryKeys.LOOT_TABLE);
 		this.lootTypeGenerators = lootTypeGenerators;
 		this.lootTableIds = lootTableIds;
-		this.registryLookupFuture = registryLookupFuture;
+		this.registriesFuture = registriesFuture;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		return this.registryLookupFuture.thenCompose(registries -> this.run(writer, registries));
+		return this.registriesFuture.thenCompose(registries -> this.run(writer, registries));
 	}
 
 	private CompletableFuture<?> run(DataWriter writer, RegistryWrapper.WrapperLookup registries) {

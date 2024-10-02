@@ -1483,15 +1483,15 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 
 	public class WorriableEntityFilter implements TargetPredicate.EntityPredicate {
 		@Override
-		public boolean method_18303(LivingEntity target, ServerWorld world) {
-			if (target instanceof FoxEntity) {
+		public boolean test(LivingEntity livingEntity, ServerWorld serverWorld) {
+			if (livingEntity instanceof FoxEntity) {
 				return false;
-			} else if (target instanceof ChickenEntity || target instanceof RabbitEntity || target instanceof HostileEntity) {
+			} else if (livingEntity instanceof ChickenEntity || livingEntity instanceof RabbitEntity || livingEntity instanceof HostileEntity) {
 				return true;
-			} else if (target instanceof TameableEntity) {
-				return !((TameableEntity)target).isTamed();
-			} else if (!(target instanceof PlayerEntity) || !target.isSpectator() && !((PlayerEntity)target).isCreative()) {
-				return FoxEntity.this.canTrust(target.getUuid()) ? false : !target.isSleeping() && !target.isSneaky();
+			} else if (livingEntity instanceof TameableEntity) {
+				return !((TameableEntity)livingEntity).isTamed();
+			} else if (!(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()) {
+				return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.isSneaky();
 			} else {
 				return false;
 			}

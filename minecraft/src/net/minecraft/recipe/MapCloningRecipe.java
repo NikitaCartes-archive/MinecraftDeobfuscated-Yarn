@@ -66,12 +66,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width >= 3 && height >= 3;
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<MapCloningRecipe> getSerializer() {
 		return RecipeSerializer.MAP_CLONING;
 	}
 }

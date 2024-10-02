@@ -9,7 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.EndermiteEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -140,13 +139,13 @@ public class EnderPearlEntity extends ThrownItemEntity {
 							}
 						}
 
-						PlayerEntity playerEntity = serverPlayerEntity.teleportTo(
+						ServerPlayerEntity serverPlayerEntity2 = serverPlayerEntity.teleportTo(
 							new TeleportTarget(serverWorld, vec3d4, Vec3d.ZERO, 0.0F, 0.0F, PositionFlag.combine(PositionFlag.ROT, PositionFlag.DELTA), TeleportTarget.NO_OP)
 						);
-						if (playerEntity != null) {
-							playerEntity.onLanding();
-							playerEntity.clearCurrentExplosion();
-							playerEntity.damage(serverPlayerEntity.getServerWorld(), this.getDamageSources().enderPearl(), 5.0F);
+						if (serverPlayerEntity2 != null) {
+							serverPlayerEntity2.onLanding();
+							serverPlayerEntity2.clearCurrentExplosion();
+							serverPlayerEntity2.damage(serverPlayerEntity.getServerWorld(), this.getDamageSources().enderPearl(), 5.0F);
 						}
 
 						this.playTeleportSound(serverWorld, vec3d4);
@@ -182,7 +181,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		int i;
 		int j;
 		Entity entity;
-		label26: {
+		label30: {
 			i = ChunkSectionPos.getSectionCoordFloored(this.getPos().getX());
 			j = ChunkSectionPos.getSectionCoordFloored(this.getPos().getZ());
 			entity = this.getOwner();
@@ -190,16 +189,18 @@ public class EnderPearlEntity extends ThrownItemEntity {
 				&& !entity.isAlive()
 				&& serverPlayerEntity.getServerWorld().getGameRules().getBoolean(GameRules.ENDER_PEARLS_VANISH_ON_DEATH)) {
 				this.discard();
-				break label26;
+				break label30;
 			}
 
 			super.tick();
 		}
 
-		BlockPos blockPos = BlockPos.ofFloored(this.getPos());
-		if ((--this.chunkTicketExpiryTicks <= 0L || i != ChunkSectionPos.getSectionCoord(blockPos.getX()) || j != ChunkSectionPos.getSectionCoord(blockPos.getZ()))
-			&& entity instanceof ServerPlayerEntity serverPlayerEntity2) {
-			this.chunkTicketExpiryTicks = serverPlayerEntity2.handleThrownEnderPearl(this);
+		if (this.isAlive()) {
+			BlockPos blockPos = BlockPos.ofFloored(this.getPos());
+			if ((--this.chunkTicketExpiryTicks <= 0L || i != ChunkSectionPos.getSectionCoord(blockPos.getX()) || j != ChunkSectionPos.getSectionCoord(blockPos.getZ()))
+				&& entity instanceof ServerPlayerEntity serverPlayerEntity2) {
+				this.chunkTicketExpiryTicks = serverPlayerEntity2.handleThrownEnderPearl(this);
+			}
 		}
 	}
 
@@ -234,11 +235,11 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	public void remove(Entity.RemovalReason reason) {
+	public void onRemove(Entity.RemovalReason reason) {
 		if (reason != Entity.RemovalReason.UNLOADED_WITH_PLAYER) {
 			this.removeFromOwner();
 		}
 
-		super.remove(reason);
+		super.onRemove(reason);
 	}
 }

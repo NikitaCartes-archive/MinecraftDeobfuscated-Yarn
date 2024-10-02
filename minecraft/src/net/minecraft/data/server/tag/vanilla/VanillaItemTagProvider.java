@@ -483,5 +483,6 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.SHEEP_FOOD).add(Items.WHEAT);
 		this.getOrCreateTagBuilder(ItemTags.GOAT_FOOD).add(Items.WHEAT);
 		this.getOrCreateTagBuilder(ItemTags.MAP_INVISIBILITY_EQUIPMENT).add(Items.CARVED_PUMPKIN);
+		this.getOrCreateTagBuilder(ItemTags.GAZE_DISGUISE_EQUIPMENT).add(Items.CARVED_PUMPKIN);
 	}
 }

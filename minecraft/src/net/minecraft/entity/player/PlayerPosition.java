@@ -2,18 +2,34 @@ package net.minecraft.entity.player;
 
 import java.util.Set;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.TeleportTarget;
 
 public record PlayerPosition(Vec3d position, Vec3d deltaMovement, float yaw, float pitch) {
+	public static final PacketCodec<PacketByteBuf, PlayerPosition> PACKET_CODEC = PacketCodec.tuple(
+		Vec3d.PACKET_CODEC,
+		PlayerPosition::position,
+		Vec3d.PACKET_CODEC,
+		PlayerPosition::deltaMovement,
+		PacketCodecs.FLOAT,
+		PlayerPosition::yaw,
+		PacketCodecs.FLOAT,
+		PlayerPosition::pitch,
+		PlayerPosition::new
+	);
+
 	public static PlayerPosition fromEntity(Entity entity) {
 		return new PlayerPosition(entity.getPos(), entity.getMovement(), entity.getYaw(), entity.getPitch());
 	}
 
-	public static PlayerPosition fromPacket(PlayerPositionLookS2CPacket packet) {
-		return new PlayerPosition(packet.position(), packet.deltaMovement(), packet.yaw(), packet.pitch());
+	public static PlayerPosition fromEntityLerpTarget(Entity entity) {
+		return new PlayerPosition(
+			new Vec3d(entity.getLerpTargetX(), entity.getLerpTargetY(), entity.getLerpTargetZ()), entity.getMovement(), entity.getYaw(), entity.getPitch()
+		);
 	}
 
 	public static PlayerPosition fromTeleportTarget(TeleportTarget teleportTarget) {

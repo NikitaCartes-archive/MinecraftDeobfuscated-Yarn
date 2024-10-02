@@ -27,8 +27,8 @@ public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends Li
 	protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
 		LivingEntity livingEntity = getAttackTarget(mobEntity);
 		return mobEntity.isHolding(Items.CROSSBOW)
-			&& LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity)
-			&& LookTargetUtil.isTargetWithinAttackRange(mobEntity, livingEntity, 0);
+			&& TargetUtil.isVisibleInMemory(mobEntity, livingEntity)
+			&& TargetUtil.isTargetWithinAttackRange(mobEntity, livingEntity, 0);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, E mobEntity, long l) {

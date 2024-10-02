@@ -22,6 +22,7 @@ public abstract class RealmsScreen extends Screen {
 	protected static final int field_33040 = 3368635;
 	protected static final int field_33041 = 7107012;
 	protected static final int field_39676 = 32;
+	protected static final int field_54866 = 8;
 	private final List<RealmsLabel> labels = Lists.<RealmsLabel>newArrayList();
 
 	public RealmsScreen(Text text) {

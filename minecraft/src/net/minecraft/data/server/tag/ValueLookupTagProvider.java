@@ -16,21 +16,21 @@ public abstract class ValueLookupTagProvider<T> extends TagProvider<T> {
 	public ValueLookupTagProvider(
 		DataOutput output,
 		RegistryKey<? extends Registry<T>> registryRef,
-		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
+		CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture,
 		Function<T, RegistryKey<T>> valueToKey
 	) {
-		super(output, registryRef, registryLookupFuture);
+		super(output, registryRef, registriesFuture);
 		this.valueToKey = valueToKey;
 	}
 
 	public ValueLookupTagProvider(
 		DataOutput output,
 		RegistryKey<? extends Registry<T>> registryRef,
-		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
+		CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture,
 		CompletableFuture<TagProvider.TagLookup<T>> parentTagLookupFuture,
 		Function<T, RegistryKey<T>> valueToKey
 	) {
-		super(output, registryRef, registryLookupFuture, parentTagLookupFuture);
+		super(output, registryRef, registriesFuture, parentTagLookupFuture);
 		this.valueToKey = valueToKey;
 	}
 

@@ -52,6 +52,7 @@ public class BlockEntityType<T extends BlockEntity> {
 		Blocks.CHERRY_SIGN,
 		Blocks.JUNGLE_SIGN,
 		Blocks.DARK_OAK_SIGN,
+		Blocks.PALE_OAK_SIGN,
 		Blocks.OAK_WALL_SIGN,
 		Blocks.SPRUCE_WALL_SIGN,
 		Blocks.BIRCH_WALL_SIGN,
@@ -59,6 +60,7 @@ public class BlockEntityType<T extends BlockEntity> {
 		Blocks.CHERRY_WALL_SIGN,
 		Blocks.JUNGLE_WALL_SIGN,
 		Blocks.DARK_OAK_WALL_SIGN,
+		Blocks.PALE_OAK_WALL_SIGN,
 		Blocks.CRIMSON_SIGN,
 		Blocks.CRIMSON_WALL_SIGN,
 		Blocks.WARPED_SIGN,
@@ -78,6 +80,7 @@ public class BlockEntityType<T extends BlockEntity> {
 		Blocks.CHERRY_HANGING_SIGN,
 		Blocks.JUNGLE_HANGING_SIGN,
 		Blocks.DARK_OAK_HANGING_SIGN,
+		Blocks.PALE_OAK_HANGING_SIGN,
 		Blocks.CRIMSON_HANGING_SIGN,
 		Blocks.WARPED_HANGING_SIGN,
 		Blocks.MANGROVE_HANGING_SIGN,
@@ -89,12 +92,14 @@ public class BlockEntityType<T extends BlockEntity> {
 		Blocks.CHERRY_WALL_HANGING_SIGN,
 		Blocks.JUNGLE_WALL_HANGING_SIGN,
 		Blocks.DARK_OAK_WALL_HANGING_SIGN,
+		Blocks.PALE_OAK_WALL_HANGING_SIGN,
 		Blocks.CRIMSON_WALL_HANGING_SIGN,
 		Blocks.WARPED_WALL_HANGING_SIGN,
 		Blocks.MANGROVE_WALL_HANGING_SIGN,
 		Blocks.BAMBOO_WALL_HANGING_SIGN
 	);
 	public static final BlockEntityType<MobSpawnerBlockEntity> MOB_SPAWNER = create("mob_spawner", MobSpawnerBlockEntity::new, Blocks.SPAWNER);
+	public static final BlockEntityType<CreakingHeartBlockEntity> CREAKING_HEART = create("creaking_heart", CreakingHeartBlockEntity::new, Blocks.CREAKING_HEART);
 	public static final BlockEntityType<PistonBlockEntity> PISTON = create("piston", PistonBlockEntity::new, Blocks.MOVING_PISTON);
 	public static final BlockEntityType<BrewingStandBlockEntity> BREWING_STAND = create("brewing_stand", BrewingStandBlockEntity::new, Blocks.BREWING_STAND);
 	public static final BlockEntityType<EnchantingTableBlockEntity> ENCHANTING_TABLE = create(

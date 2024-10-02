@@ -19,19 +19,17 @@ import net.minecraft.util.Identifier;
 public class AdvancementProvider implements DataProvider {
 	private final DataOutput.PathResolver pathResolver;
 	private final List<AdvancementTabGenerator> tabGenerators;
-	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 
-	public AdvancementProvider(
-		DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, List<AdvancementTabGenerator> tabGenerators
-	) {
+	public AdvancementProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture, List<AdvancementTabGenerator> tabGenerators) {
 		this.pathResolver = output.getResolver(RegistryKeys.ADVANCEMENT);
 		this.tabGenerators = tabGenerators;
-		this.registryLookupFuture = registryLookupFuture;
+		this.registriesFuture = registriesFuture;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		return this.registryLookupFuture.thenCompose(registries -> {
+		return this.registriesFuture.thenCompose(registries -> {
 			Set<Identifier> set = new HashSet();
 			List<CompletableFuture<?>> list = new ArrayList();
 			Consumer<AdvancementEntry> consumer = advancement -> {

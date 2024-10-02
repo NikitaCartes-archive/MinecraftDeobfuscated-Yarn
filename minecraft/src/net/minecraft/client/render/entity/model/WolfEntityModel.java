@@ -50,7 +50,7 @@ public class WolfEntityModel extends EntityModel<WolfEntityRenderState> {
 		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.realHead = this.head.getChild("real_head");
 		this.torso = modelPart.getChild(EntityModelPartNames.BODY);
-		this.neck = modelPart.getChild("upper_body");
+		this.neck = modelPart.getChild(EntityModelPartNames.UPPER_BODY);
 		this.rightHindLeg = modelPart.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
 		this.leftHindLeg = modelPart.getChild(EntityModelPartNames.LEFT_HIND_LEG);
 		this.rightFrontLeg = modelPart.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
@@ -83,7 +83,7 @@ public class WolfEntityModel extends EntityModel<WolfEntityRenderState> {
 			ModelTransform.of(0.0F, 14.0F, 2.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"upper_body",
+			EntityModelPartNames.UPPER_BODY,
 			ModelPartBuilder.create().uv(21, 0).cuboid(-3.0F, -3.0F, -3.0F, 8.0F, 6.0F, 7.0F, dilation),
 			ModelTransform.of(-1.0F, 14.0F, -3.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);

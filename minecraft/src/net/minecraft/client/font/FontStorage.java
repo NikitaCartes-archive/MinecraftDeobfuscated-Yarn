@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
@@ -33,6 +34,8 @@ public class FontStorage implements AutoCloseable {
 	private final GlyphContainer<FontStorage.GlyphPair> glyphCache = new GlyphContainer<>(FontStorage.GlyphPair[]::new, FontStorage.GlyphPair[][]::new);
 	private final Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
 	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
+	private final IntFunction<FontStorage.GlyphPair> glyphFinder = this::findGlyph;
+	private final IntFunction<GlyphRenderer> glyphRendererFinder = this::findGlyphRenderer;
 
 	public FontStorage(TextureManager textureManager, Identifier id) {
 		this.textureManager = textureManager;
@@ -142,7 +145,7 @@ public class FontStorage implements AutoCloseable {
 	 * @implNote {@link BuiltinEmptyGlyph#MISSING} is returned for missing code points.
 	 */
 	public Glyph getGlyph(int codePoint, boolean validateAdvance) {
-		return this.glyphCache.computeIfAbsent(codePoint, this::findGlyph).getGlyph(validateAdvance);
+		return this.glyphCache.computeIfAbsent(codePoint, this.glyphFinder).getGlyph(validateAdvance);
 	}
 
 	private GlyphRenderer findGlyphRenderer(int codePoint) {
@@ -157,7 +160,7 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public GlyphRenderer getGlyphRenderer(int codePoint) {
-		return this.glyphRendererCache.computeIfAbsent(codePoint, this::findGlyphRenderer);
+		return this.glyphRendererCache.computeIfAbsent(codePoint, this.glyphRendererFinder);
 	}
 
 	private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {

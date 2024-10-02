@@ -164,7 +164,7 @@ public class CrafterBlock extends BlockWithEntity {
 					itemStack.onCraftByCrafter(world);
 					this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack, state, recipeEntry);
 
-					for (ItemStack itemStack2 : recipeEntry.value().getRemainder(var11)) {
+					for (ItemStack itemStack2 : recipeEntry.value().getRecipeRemainders(var11)) {
 						if (!itemStack2.isEmpty()) {
 							this.transferOrSpawnStack(world, pos, crafterBlockEntity, itemStack2, state, recipeEntry);
 						}
@@ -181,13 +181,11 @@ public class CrafterBlock extends BlockWithEntity {
 		}
 	}
 
-	public static Optional<RecipeEntry<CraftingRecipe>> getCraftingRecipe(World world, CraftingRecipeInput input) {
+	public static Optional<RecipeEntry<CraftingRecipe>> getCraftingRecipe(ServerWorld world, CraftingRecipeInput input) {
 		return recipeCache.getRecipe(world, input);
 	}
 
-	private void transferOrSpawnStack(
-		ServerWorld world, BlockPos pos, CrafterBlockEntity blockEntity, ItemStack stack, BlockState state, RecipeEntry<CraftingRecipe> recipe
-	) {
+	private void transferOrSpawnStack(ServerWorld world, BlockPos pos, CrafterBlockEntity blockEntity, ItemStack stack, BlockState state, RecipeEntry<?> recipe) {
 		Direction direction = ((Orientation)state.get(ORIENTATION)).getFacing();
 		Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
 		ItemStack itemStack = stack.copy();

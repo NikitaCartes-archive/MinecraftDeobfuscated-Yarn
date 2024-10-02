@@ -142,7 +142,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 		}
 
 		drawContext.drawItem(itemStack, x + 4, y + 4, seed);
-		drawContext.drawItemInSlot(textRenderer, itemStack, x + 4, y + 4);
+		drawContext.drawStackOverlay(textRenderer, itemStack, x + 4, y + 4);
 		if (bl) {
 			drawContext.drawGuiTexture(RenderLayer::getGuiTexturedOverlay, BUNDLE_SLOT_HIGHLIGHT_FRONT_TEXTURE, x, y, 24, 24);
 		}

@@ -28,7 +28,7 @@ public class SnowGolemEntityModel extends EntityModel<LivingEntityRenderState> {
 		this.head = modelPart.getChild(EntityModelPartNames.HEAD);
 		this.leftArm = modelPart.getChild(EntityModelPartNames.LEFT_ARM);
 		this.rightArm = modelPart.getChild(EntityModelPartNames.RIGHT_ARM);
-		this.upperBody = modelPart.getChild("upper_body");
+		this.upperBody = modelPart.getChild(EntityModelPartNames.UPPER_BODY);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -45,7 +45,9 @@ public class SnowGolemEntityModel extends EntityModel<LivingEntityRenderState> {
 		modelPartData.addChild(EntityModelPartNames.LEFT_ARM, modelPartBuilder, ModelTransform.of(5.0F, 6.0F, 1.0F, 0.0F, 0.0F, 1.0F));
 		modelPartData.addChild(EntityModelPartNames.RIGHT_ARM, modelPartBuilder, ModelTransform.of(-5.0F, 6.0F, -1.0F, 0.0F, (float) Math.PI, -1.0F));
 		modelPartData.addChild(
-			"upper_body", ModelPartBuilder.create().uv(0, 16).cuboid(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, dilation), ModelTransform.pivot(0.0F, 13.0F, 0.0F)
+			EntityModelPartNames.UPPER_BODY,
+			ModelPartBuilder.create().uv(0, 16).cuboid(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, dilation),
+			ModelTransform.pivot(0.0F, 13.0F, 0.0F)
 		);
 		modelPartData.addChild(
 			"lower_body", ModelPartBuilder.create().uv(0, 36).cuboid(-6.0F, -12.0F, -6.0F, 12.0F, 12.0F, 12.0F, dilation), ModelTransform.pivot(0.0F, 24.0F, 0.0F)

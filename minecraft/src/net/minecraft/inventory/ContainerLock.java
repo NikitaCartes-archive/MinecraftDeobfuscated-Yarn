@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryWrapper;
 
 public record ContainerLock(ItemPredicate predicate) {
 	/**
@@ -30,9 +31,9 @@ public record ContainerLock(ItemPredicate predicate) {
 	/**
 	 * Inserts the key string of this lock into the {@code Lock} key of the NBT compound.
 	 */
-	public void writeNbt(NbtCompound nbt) {
+	public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		if (this != EMPTY) {
-			DataResult<NbtElement> dataResult = CODEC.encode(this, NbtOps.INSTANCE, new NbtCompound());
+			DataResult<NbtElement> dataResult = CODEC.encode(this, registries.getOps(NbtOps.INSTANCE), new NbtCompound());
 			dataResult.result().ifPresent(lock -> nbt.put("lock", lock));
 		}
 	}
@@ -42,9 +43,9 @@ public record ContainerLock(ItemPredicate predicate) {
 	 * <p>
 	 * If the {@code Lock} key is not present, returns an empty lock.
 	 */
-	public static ContainerLock fromNbt(NbtCompound nbt) {
+	public static ContainerLock fromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		if (nbt.contains("lock", NbtElement.COMPOUND_TYPE)) {
-			DataResult<Pair<ContainerLock, NbtElement>> dataResult = CODEC.decode(NbtOps.INSTANCE, nbt.get("lock"));
+			DataResult<Pair<ContainerLock, NbtElement>> dataResult = CODEC.decode(registries.getOps(NbtOps.INSTANCE), nbt.get("lock"));
 			if (dataResult.isSuccess()) {
 				return dataResult.getOrThrow().getFirst();
 			}

@@ -1,20 +1,13 @@
 package net.minecraft.client.gui.screen.recipebook;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.SequencedSet;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ButtonTextures;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.FuelRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.IngredientPlacement;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeFinder;
-import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.recipe.display.FurnaceRecipeDisplay;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
@@ -29,11 +22,9 @@ public class AbstractFurnaceRecipeBookWidget extends RecipeBookWidget<AbstractFu
 		Identifier.ofVanilla("recipe_book/furnace_filter_disabled_highlighted")
 	);
 	private final Text toggleCraftableButtonText;
-	@Nullable
-	private List<ItemStack> fuels;
 
-	public AbstractFurnaceRecipeBookWidget(AbstractFurnaceScreenHandler screenHandler, Text toggleCraftableButtonText) {
-		super(screenHandler);
+	public AbstractFurnaceRecipeBookWidget(AbstractFurnaceScreenHandler screenHandler, Text toggleCraftableButtonText, List<RecipeBookWidget.Tab> tabs) {
+		super(screenHandler, tabs);
 		this.toggleCraftableButtonText = toggleCraftableButtonText;
 	}
 
@@ -51,35 +42,15 @@ public class AbstractFurnaceRecipeBookWidget extends RecipeBookWidget<AbstractFu
 	}
 
 	@Override
-	protected void showGhostRecipe(GhostRecipe ghostRecipe, RecipeEntry<?> entry) {
-		ClientWorld clientWorld = this.client.world;
-		ItemStack itemStack = entry.value().getResult(clientWorld.getRegistryManager());
-		Slot slot = this.craftingScreenHandler.getOutputSlot();
-		ghostRecipe.put(itemStack, slot);
-		List<Optional<IngredientPlacement.PlacementSlot>> list = entry.value().getIngredientPlacement().getPlacementSlots();
-		if (!list.isEmpty()) {
-			((Optional)list.getFirst()).ifPresent(slotx -> {
-				Slot slot2x = this.craftingScreenHandler.slots.get(0);
-				ghostRecipe.put(slotx.possibleItems(), slot2x);
-			});
-		}
-
-		Slot slot2 = this.craftingScreenHandler.slots.get(1);
-		if (slot2.getStack().isEmpty()) {
-			if (list.size() > 1) {
-				((Optional)list.get(1)).ifPresent(slotx -> ghostRecipe.put(slotx.possibleItems(), slot2));
-			} else {
-				if (this.fuels == null) {
-					this.fuels = this.getAllowedFuels(clientWorld.getFuelRegistry()).stream().map(ItemStack::new).toList();
-				}
-
-				ghostRecipe.put(this.fuels, slot2);
+	protected void showGhostRecipe(GhostRecipe ghostRecipe, RecipeDisplay display, SlotDisplay.Context context) {
+		ghostRecipe.addResults(this.craftingScreenHandler.getOutputSlot(), context, display.result());
+		if (display instanceof FurnaceRecipeDisplay furnaceRecipeDisplay) {
+			ghostRecipe.addInputs(this.craftingScreenHandler.slots.get(0), context, furnaceRecipeDisplay.ingredient());
+			Slot slot = this.craftingScreenHandler.slots.get(1);
+			if (slot.getStack().isEmpty()) {
+				ghostRecipe.addInputs(slot, context, furnaceRecipeDisplay.fuel());
 			}
 		}
-	}
-
-	private SequencedSet<Item> getAllowedFuels(FuelRegistry fuelRegistry) {
-		return fuelRegistry.getFuelItems();
 	}
 
 	@Override
@@ -88,7 +59,7 @@ public class AbstractFurnaceRecipeBookWidget extends RecipeBookWidget<AbstractFu
 	}
 
 	@Override
-	protected void populateRecipes(RecipeResultCollection recipeResultCollection, RecipeFinder recipeFinder, RecipeBook recipeBook) {
-		recipeResultCollection.populateRecipes(recipeFinder, 1, 1, recipeBook);
+	protected void populateRecipes(RecipeResultCollection recipeResultCollection, RecipeFinder recipeFinder) {
+		recipeResultCollection.populateRecipes(recipeFinder, display -> display instanceof FurnaceRecipeDisplay);
 	}
 }

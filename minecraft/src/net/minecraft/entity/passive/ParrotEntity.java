@@ -107,6 +107,8 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 		map.put(EntityType.WITHER, SoundEvents.ENTITY_PARROT_IMITATE_WITHER);
 		map.put(EntityType.WITHER_SKELETON, SoundEvents.ENTITY_PARROT_IMITATE_WITHER_SKELETON);
 		map.put(EntityType.ZOGLIN, SoundEvents.ENTITY_PARROT_IMITATE_ZOGLIN);
+		map.put(EntityType.CREAKING, SoundEvents.ENTITY_PARROT_IMITATE_CREAKING);
+		map.put(EntityType.CREAKING_TRANSIENT, SoundEvents.ENTITY_PARROT_IMITATE_CREAKING);
 		map.put(EntityType.ZOMBIE, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE);
 		map.put(EntityType.ZOMBIE_VILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_VILLAGER);
 	});

@@ -371,7 +371,7 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 	}
 
 	@Override
-	public RegistryEntryLookup<T> createMutableEntryLookup() {
+	public RegistryEntryLookup<T> createMutableRegistryLookup() {
 		this.assertNotFrozen();
 		return new RegistryEntryLookup<T>() {
 			@Override
@@ -433,6 +433,11 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 				@Override
 				public RegistryKey<? extends Registry<? extends T>> getKey() {
 					return SimpleRegistry.this.getKey();
+				}
+
+				@Override
+				public int size() {
+					return map.size();
 				}
 
 				@Override

@@ -14,6 +14,7 @@ import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.BoggedEntity;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
+import net.minecraft.entity.mob.CreakingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.ElderGuardianEntity;
@@ -166,6 +167,8 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.WITHER_SKELETON, AbstractSkeletonEntity.createAbstractSkeletonAttributes().build())
 		.put(EntityType.WOLF, WolfEntity.createWolfAttributes().build())
 		.put(EntityType.ZOGLIN, ZoglinEntity.createZoglinAttributes().build())
+		.put(EntityType.CREAKING, CreakingEntity.createCreakingAttributes().build())
+		.put(EntityType.CREAKING_TRANSIENT, CreakingEntity.createCreakingAttributes().build())
 		.put(EntityType.ZOMBIE, ZombieEntity.createZombieAttributes().build())
 		.put(EntityType.ZOMBIE_HORSE, ZombieHorseEntity.createZombieHorseAttributes().build())
 		.put(EntityType.ZOMBIE_VILLAGER, ZombieEntity.createZombieAttributes().build())

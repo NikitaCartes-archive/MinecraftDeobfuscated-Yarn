@@ -12,9 +12,7 @@ import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.MissingSprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.joml.Vector3f;
@@ -35,13 +33,7 @@ public class MissingModel {
 
 		ModelElement modelElement = new ModelElement(new Vector3f(0.0F, 0.0F, 0.0F), new Vector3f(16.0F, 16.0F, 16.0F), map);
 		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(
-			null,
-			List.of(modelElement),
-			Map.of("particle", Either.left(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId()))),
-			null,
-			null,
-			ModelTransformation.NONE,
-			List.of()
+			null, List.of(modelElement), Map.of("particle", Either.left(JsonUnbakedModel.MISSING_SPRITE)), null, null, ModelTransformation.NONE, List.of()
 		);
 		jsonUnbakedModel.id = "missingno";
 		return jsonUnbakedModel;

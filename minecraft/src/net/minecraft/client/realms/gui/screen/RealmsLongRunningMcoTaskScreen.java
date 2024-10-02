@@ -10,10 +10,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.LoadingWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.realms.RepeatedNarrator;
 import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandler;
-import net.minecraft.client.realms.gui.RealmsLoadingWidget;
 import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
@@ -30,7 +30,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	private final DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical();
 	private volatile Text title;
 	@Nullable
-	private RealmsLoadingWidget loading;
+	private LoadingWidget loading;
 
 	public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask... tasks) {
 		super(NarratorManager.EMPTY);
@@ -80,7 +80,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.layout.getMainPositioner().alignHorizontalCenter();
-		this.loading = new RealmsLoadingWidget(this.textRenderer, this.title);
+		this.loading = new LoadingWidget(this.textRenderer, this.title);
 		this.layout.add(this.loading, positioner -> positioner.marginBottom(30));
 		this.layout.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).build());
 		this.layout.forEachChild(child -> {

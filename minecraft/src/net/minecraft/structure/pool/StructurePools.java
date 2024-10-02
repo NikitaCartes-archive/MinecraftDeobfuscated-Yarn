@@ -17,12 +17,16 @@ import net.minecraft.util.Identifier;
 public class StructurePools {
 	public static final RegistryKey<StructurePool> EMPTY = ofVanilla("empty");
 
+	public static RegistryKey<StructurePool> of(Identifier id) {
+		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, id);
+	}
+
 	public static RegistryKey<StructurePool> ofVanilla(String id) {
-		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.ofVanilla(id));
+		return of(Identifier.ofVanilla(id));
 	}
 
 	public static RegistryKey<StructurePool> of(String id) {
-		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.of(id));
+		return of(Identifier.of(id));
 	}
 
 	public static void register(Registerable<StructurePool> structurePoolsRegisterable, String id, StructurePool pool) {

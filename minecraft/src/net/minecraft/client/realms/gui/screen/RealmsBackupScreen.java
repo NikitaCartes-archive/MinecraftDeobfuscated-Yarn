@@ -100,31 +100,32 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 	private void startBackupFetcher() {
 		(new Thread("Realms-fetch-backups") {
-			public void run() {
-				RealmsClient realmsClient = RealmsClient.create();
+				public void run() {
+					RealmsClient realmsClient = RealmsClient.create();
 
-				try {
-					List<Backup> list = realmsClient.backupsFor(RealmsBackupScreen.this.serverData.id).backups;
-					RealmsBackupScreen.this.client.execute(() -> {
-						RealmsBackupScreen.this.backups = list;
-						RealmsBackupScreen.this.noBackups = RealmsBackupScreen.this.backups.isEmpty();
-						if (!RealmsBackupScreen.this.noBackups && RealmsBackupScreen.this.downloadButton != null) {
-							RealmsBackupScreen.this.downloadButton.active = true;
-						}
+					try {
+						List<Backup> list = realmsClient.backupsFor(RealmsBackupScreen.this.serverData.id).backups;
+						RealmsBackupScreen.this.client
+							.execute(
+								() -> {
+									RealmsBackupScreen.this.backups = list;
+									RealmsBackupScreen.this.noBackups = RealmsBackupScreen.this.backups.isEmpty();
+									if (!RealmsBackupScreen.this.noBackups && RealmsBackupScreen.this.downloadButton != null) {
+										RealmsBackupScreen.this.downloadButton.active = true;
+									}
 
-						if (RealmsBackupScreen.this.selectionList != null) {
-							RealmsBackupScreen.this.selectionList.children().clear();
-
-							for (Backup backup : RealmsBackupScreen.this.backups) {
-								RealmsBackupScreen.this.selectionList.addEntry(backup);
-							}
-						}
-					});
-				} catch (RealmsServiceException var3) {
-					RealmsBackupScreen.LOGGER.error("Couldn't request backups", (Throwable)var3);
+									if (RealmsBackupScreen.this.selectionList != null) {
+										RealmsBackupScreen.this.selectionList
+											.replaceEntries(RealmsBackupScreen.this.backups.stream().map(backup -> RealmsBackupScreen.this.new BackupObjectSelectionListEntry(backup)).toList());
+									}
+								}
+							);
+					} catch (RealmsServiceException var3) {
+						RealmsBackupScreen.LOGGER.error("Couldn't request backups", (Throwable)var3);
+					}
 				}
-			}
-		}).start();
+			})
+			.start();
 	}
 
 	@Override
@@ -138,7 +139,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 				RealmsPopups.createInfoPopup(
 					this,
 					Text.translatable("mco.configure.world.restore.download.question.line1"),
-					popupScreen -> this.client
+					button -> this.client
 							.setScreen(
 								new RealmsLongRunningMcoTaskScreen(
 									this.parent.getNewScreen(),
@@ -169,15 +170,6 @@ public class RealmsBackupScreen extends RealmsScreen {
 				RealmsBackupScreen.this.layout.getHeaderHeight(),
 				36
 			);
-		}
-
-		public void addEntry(Backup backup) {
-			this.addEntry(RealmsBackupScreen.this.new BackupObjectSelectionListEntry(backup));
-		}
-
-		@Override
-		public int getMaxPosition() {
-			return this.getEntryCount() * 36 + this.headerHeight;
 		}
 
 		@Override

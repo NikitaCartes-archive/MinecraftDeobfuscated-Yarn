@@ -9,8 +9,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.EntityTypeTags;
 
 public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityType<?>> {
-	public VanillaEntityTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.ENTITY_TYPE, registryLookupFuture, entityType -> entityType.getRegistryEntry().registryKey());
+	public VanillaEntityTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.ENTITY_TYPE, registriesFuture, entityType -> entityType.getRegistryEntry().registryKey());
 	}
 
 	@Override

@@ -68,7 +68,7 @@ import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundCategory;
@@ -203,28 +203,26 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void tick() {
 		this.itemDropCooldown.tick();
-		if (this.getWorld().isPosLoaded(this.getBlockX(), this.getBlockZ())) {
-			super.tick();
-			this.sendSneakingPacket();
-			if (!this.lastPlayerInput.equals(this.input.playerInput)) {
-				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.input.playerInput));
-				this.lastPlayerInput = this.input.playerInput;
-			}
+		super.tick();
+		this.sendSneakingPacket();
+		if (!this.lastPlayerInput.equals(this.input.playerInput)) {
+			this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.input.playerInput));
+			this.lastPlayerInput = this.input.playerInput;
+		}
 
-			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround(), this.horizontalCollision));
-				Entity entity = this.getRootVehicle();
-				if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
-					this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
-					this.sendSprintingPacket();
-				}
-			} else {
-				this.sendMovementPackets();
+		if (this.hasVehicle()) {
+			this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround(), this.horizontalCollision));
+			Entity entity = this.getRootVehicle();
+			if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
+				this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
+				this.sendSprintingPacket();
 			}
+		} else {
+			this.sendMovementPackets();
+		}
 
-			for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
-				clientPlayerTickable.tick();
-			}
+		for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
+			clientPlayerTickable.tick();
 		}
 	}
 
@@ -391,10 +389,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.recipeBook;
 	}
 
-	public void onRecipeDisplayed(RecipeEntry<?> recipe) {
-		if (this.recipeBook.shouldDisplay(recipe)) {
-			this.recipeBook.onRecipeDisplayed(recipe);
-			this.networkHandler.sendPacket(new RecipeBookDataC2SPacket(recipe));
+	public void onRecipeDisplayed(NetworkRecipeId recipeId) {
+		if (this.recipeBook.isHighlighted(recipeId)) {
+			this.recipeBook.unmarkHighlighted(recipeId);
+			this.networkHandler.sendPacket(new RecipeBookDataC2SPacket(recipeId));
 		}
 	}
 

@@ -180,6 +180,19 @@ public class ItemGroups {
 					entries.add(Items.CHERRY_TRAPDOOR);
 					entries.add(Items.CHERRY_PRESSURE_PLATE);
 					entries.add(Items.CHERRY_BUTTON);
+					entries.add(Items.PALE_OAK_LOG);
+					entries.add(Items.PALE_OAK_WOOD);
+					entries.add(Items.STRIPPED_PALE_OAK_LOG);
+					entries.add(Items.STRIPPED_PALE_OAK_WOOD);
+					entries.add(Items.PALE_OAK_PLANKS);
+					entries.add(Items.PALE_OAK_STAIRS);
+					entries.add(Items.PALE_OAK_SLAB);
+					entries.add(Items.PALE_OAK_FENCE);
+					entries.add(Items.PALE_OAK_FENCE_GATE);
+					entries.add(Items.PALE_OAK_DOOR);
+					entries.add(Items.PALE_OAK_TRAPDOOR);
+					entries.add(Items.PALE_OAK_PRESSURE_PLATE);
+					entries.add(Items.PALE_OAK_BUTTON);
 					entries.add(Items.BAMBOO_BLOCK);
 					entries.add(Items.STRIPPED_BAMBOO_BLOCK);
 					entries.add(Items.BAMBOO_PLANKS);
@@ -718,6 +731,9 @@ public class ItemGroups {
 					entries.add(Items.SNOW);
 					entries.add(Items.MOSS_BLOCK);
 					entries.add(Items.MOSS_CARPET);
+					entries.add(Items.PALE_MOSS_BLOCK);
+					entries.add(Items.PALE_MOSS_CARPET);
+					entries.add(Items.PALE_HANGING_MOSS);
 					entries.add(Items.STONE);
 					entries.add(Items.DEEPSLATE);
 					entries.add(Items.GRANITE);
@@ -780,6 +796,7 @@ public class ItemGroups {
 					entries.add(Items.MANGROVE_ROOTS);
 					entries.add(Items.MUDDY_MANGROVE_ROOTS);
 					entries.add(Items.CHERRY_LOG);
+					entries.add(Items.PALE_OAK_LOG);
 					entries.add(Items.MUSHROOM_STEM);
 					entries.add(Items.CRIMSON_STEM);
 					entries.add(Items.WARPED_STEM);
@@ -791,6 +808,7 @@ public class ItemGroups {
 					entries.add(Items.DARK_OAK_LEAVES);
 					entries.add(Items.MANGROVE_LEAVES);
 					entries.add(Items.CHERRY_LEAVES);
+					entries.add(Items.PALE_OAK_LEAVES);
 					entries.add(Items.AZALEA_LEAVES);
 					entries.add(Items.FLOWERING_AZALEA_LEAVES);
 					entries.add(Items.BROWN_MUSHROOM_BLOCK);
@@ -806,6 +824,7 @@ public class ItemGroups {
 					entries.add(Items.DARK_OAK_SAPLING);
 					entries.add(Items.MANGROVE_PROPAGULE);
 					entries.add(Items.CHERRY_SAPLING);
+					entries.add(Items.PALE_OAK_SAPLING);
 					entries.add(Items.AZALEA);
 					entries.add(Items.FLOWERING_AZALEA);
 					entries.add(Items.BROWN_MUSHROOM);
@@ -1028,6 +1047,8 @@ public class ItemGroups {
 						entries.add(Items.MANGROVE_HANGING_SIGN);
 						entries.add(Items.CHERRY_SIGN);
 						entries.add(Items.CHERRY_HANGING_SIGN);
+						entries.add(Items.PALE_OAK_SIGN);
+						entries.add(Items.PALE_OAK_HANGING_SIGN);
 						entries.add(Items.BAMBOO_SIGN);
 						entries.add(Items.BAMBOO_HANGING_SIGN);
 						entries.add(Items.CRIMSON_SIGN);
@@ -1335,6 +1356,8 @@ public class ItemGroups {
 						entries.add(Items.MANGROVE_CHEST_BOAT);
 						entries.add(Items.CHERRY_BOAT);
 						entries.add(Items.CHERRY_CHEST_BOAT);
+						entries.add(Items.PALE_OAK_BOAT);
+						entries.add(Items.PALE_OAK_CHEST_BOAT);
 						entries.add(Items.BAMBOO_RAFT);
 						entries.add(Items.BAMBOO_CHEST_RAFT);
 						entries.add(Items.RAIL);
@@ -1674,6 +1697,7 @@ public class ItemGroups {
 				.entries((displayContext, entries) -> {
 					entries.add(Items.SPAWNER);
 					entries.add(Items.TRIAL_SPAWNER);
+					entries.add(Items.CREAKING_HEART);
 					entries.add(Items.ALLAY_SPAWN_EGG);
 					entries.add(Items.ARMADILLO_SPAWN_EGG);
 					entries.add(Items.AXOLOTL_SPAWN_EGG);
@@ -1688,6 +1712,7 @@ public class ItemGroups {
 					entries.add(Items.CHICKEN_SPAWN_EGG);
 					entries.add(Items.COD_SPAWN_EGG);
 					entries.add(Items.COW_SPAWN_EGG);
+					entries.add(Items.CREAKING_SPAWN_EGG);
 					entries.add(Items.CREEPER_SPAWN_EGG);
 					entries.add(Items.DOLPHIN_SPAWN_EGG);
 					entries.add(Items.DONKEY_SPAWN_EGG);

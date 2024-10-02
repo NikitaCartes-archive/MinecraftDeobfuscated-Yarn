@@ -90,7 +90,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	private static final int OVERWORLD_MAX_Y = 320;
 	private static final int OVERWORLD_MIN_Y = -64;
 	private static final int OVERWORLD_BEDROCK_LAYER_HEIGHT = 5;
-	protected static final List<EntityType<?>> MONSTERS = Arrays.asList(
+	public static final List<EntityType<?>> MONSTERS = Arrays.asList(
 		EntityType.BLAZE,
 		EntityType.BOGGED,
 		EntityType.BREEZE,
@@ -666,7 +666,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"pot_crafted_using_only_sherds",
 				RecipeCraftedCriterion.Conditions.create(
-					Identifier.ofVanilla("decorated_pot"),
+					RegistryKey.of(RegistryKeys.RECIPE, Identifier.ofVanilla("decorated_pot")),
 					List.of(
 						ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.DECORATED_POT_SHERDS),
 						ItemPredicate.Builder.create().tag(registryEntryLookup2, ItemTags.DECORATED_POT_SHERDS),
@@ -872,7 +872,10 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				true,
 				false
 			)
-			.criterion("crafter_crafted_crafter", RecipeCraftedCriterion.Conditions.createCrafterRecipeCrafted(Identifier.ofVanilla("crafter")))
+			.criterion(
+				"crafter_crafted_crafter",
+				RecipeCraftedCriterion.Conditions.createCrafterRecipeCrafted(RegistryKey.of(RegistryKeys.RECIPE, Identifier.ofVanilla("crafter")))
+			)
 			.build(exporter, "adventure/crafters_crafting_crafters");
 		Advancement.Builder.create()
 			.parent(advancementEntry13)
@@ -926,9 +929,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	}
 
 	public static AdvancementEntry createKillMobAdvancements(
-		AdvancementEntry parent, Consumer<AdvancementEntry> exporter, RegistryEntryLookup<EntityType<?>> registryEntryLookup, List<EntityType<?>> list
+		AdvancementEntry parent, Consumer<AdvancementEntry> exporter, RegistryEntryLookup<EntityType<?>> entityTypeRegistry, List<EntityType<?>> entityTypes
 	) {
-		AdvancementEntry advancementEntry = requireListedMobsKilled(Advancement.Builder.create(), registryEntryLookup, list)
+		AdvancementEntry advancementEntry = requireListedMobsKilled(Advancement.Builder.create(), entityTypeRegistry, entityTypes)
 			.parent(parent)
 			.display(
 				Items.IRON_SWORD,
@@ -942,7 +945,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
 			.build(exporter, "adventure/kill_a_mob");
-		requireListedMobsKilled(Advancement.Builder.create(), registryEntryLookup, list)
+		requireListedMobsKilled(Advancement.Builder.create(), entityTypeRegistry, entityTypes)
 			.parent(advancementEntry)
 			.display(
 				Items.DIAMOND_SWORD,
@@ -959,25 +962,25 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		return advancementEntry;
 	}
 
-	private static AdvancementCriterion<ItemCriterion.Conditions> requirePlacedBlockReadByComparator(RegistryEntryLookup<Block> registryEntryLookup, Block block) {
-		LootCondition.Builder[] builders = (LootCondition.Builder[])ComparatorBlock.FACING.getValues().stream().map(direction -> {
-			StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, direction);
-			BlockPredicate.Builder builder2 = BlockPredicate.Builder.create().blocks(registryEntryLookup, Blocks.COMPARATOR).state(builder);
-			return LocationCheckLootCondition.builder(LocationPredicate.Builder.create().block(builder2), new BlockPos(direction.getOpposite().getVector()));
+	private static AdvancementCriterion<ItemCriterion.Conditions> requirePlacedBlockReadByComparator(RegistryEntryLookup<Block> blockRegistry, Block block) {
+		LootCondition.Builder[] builders = (LootCondition.Builder[])ComparatorBlock.FACING.getValues().stream().map(facing -> {
+			StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing);
+			BlockPredicate.Builder builder2 = BlockPredicate.Builder.create().blocks(blockRegistry, Blocks.COMPARATOR).state(builder);
+			return LocationCheckLootCondition.builder(LocationPredicate.Builder.create().block(builder2), new BlockPos(facing.getOpposite().getVector()));
 		}).toArray(LootCondition.Builder[]::new);
 		return ItemCriterion.Conditions.createPlacedBlock(BlockStatePropertyLootCondition.builder(block), AnyOfLootCondition.builder(builders));
 	}
 
-	private static AdvancementCriterion<ItemCriterion.Conditions> requirePlacedComparatorReadingBlock(RegistryEntryLookup<Block> registryEntryLookup, Block block) {
+	private static AdvancementCriterion<ItemCriterion.Conditions> requirePlacedComparatorReadingBlock(RegistryEntryLookup<Block> blockRegistry, Block block) {
 		LootCondition.Builder[] builders = (LootCondition.Builder[])ComparatorBlock.FACING
 			.getValues()
 			.stream()
 			.map(
-				direction -> {
-					StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, direction);
+				facing -> {
+					StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing);
 					BlockStatePropertyLootCondition.Builder builder2 = new BlockStatePropertyLootCondition.Builder(Blocks.COMPARATOR).properties(builder);
 					LootCondition.Builder builder3 = LocationCheckLootCondition.builder(
-						LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(registryEntryLookup, block)), new BlockPos(direction.getVector())
+						LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(blockRegistry, block)), new BlockPos(facing.getVector())
 					);
 					return AllOfLootCondition.builder(builder2, builder3);
 				}
@@ -1012,7 +1015,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	private static Advancement.Builder requireSalvagedSherd(RegistryEntryLookup<Item> registryEntryLookup, Advancement.Builder builder) {
+	private static Advancement.Builder requireSalvagedSherd(RegistryEntryLookup<Item> itemRegistry, Advancement.Builder builder) {
 		List<Pair<String, AdvancementCriterion<PlayerGeneratesContainerLootCriterion.Conditions>>> list = List.of(
 			Pair.of("desert_pyramid", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_PYRAMID_ARCHAEOLOGY)),
 			Pair.of("desert_well", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_WELL_ARCHAEOLOGY)),
@@ -1023,14 +1026,12 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		);
 		list.forEach(pair -> builder.criterion((String)pair.getFirst(), (AdvancementCriterion<?>)pair.getSecond()));
 		String string = "has_sherd";
-		builder.criterion(
-			"has_sherd", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(registryEntryLookup, ItemTags.DECORATED_POT_SHERDS))
-		);
+		builder.criterion("has_sherd", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(itemRegistry, ItemTags.DECORATED_POT_SHERDS)));
 		builder.requirements(new AdvancementRequirements(List.of(list.stream().map(Pair::getFirst).toList(), List.of("has_sherd"))));
 		return builder;
 	}
 
-	protected static void buildAdventuringTime(
+	public static void buildAdventuringTime(
 		RegistryWrapper.WrapperLookup registries,
 		Consumer<AdvancementEntry> exporter,
 		AdvancementEntry parent,
@@ -1053,12 +1054,12 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 	}
 
 	private static Advancement.Builder requireListedMobsKilled(
-		Advancement.Builder builder, RegistryEntryLookup<EntityType<?>> registryEntryLookup, List<EntityType<?>> list
+		Advancement.Builder builder, RegistryEntryLookup<EntityType<?>> entityTypeRegistry, List<EntityType<?>> entityTypes
 	) {
-		list.forEach(
+		entityTypes.forEach(
 			entityType -> builder.criterion(
 					Registries.ENTITY_TYPE.getId(entityType).toString(),
-					OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(registryEntryLookup, entityType))
+					OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityTypeRegistry, entityType))
 				)
 		);
 		return builder;

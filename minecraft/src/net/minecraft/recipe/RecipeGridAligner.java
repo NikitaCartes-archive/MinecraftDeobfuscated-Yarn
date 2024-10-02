@@ -4,47 +4,48 @@ import java.util.Iterator;
 import net.minecraft.util.math.MathHelper;
 
 public interface RecipeGridAligner {
-	static <T> void alignRecipeToGrid(int width, int height, RecipeEntry<?> recipe, Iterable<T> inputs, RecipeGridAligner.Filler<T> filler) {
-		int i = width;
-		int j = height;
-		if (recipe.value() instanceof ShapedRecipe shapedRecipe) {
-			i = shapedRecipe.getWidth();
-			j = shapedRecipe.getHeight();
+	static <T> void alignRecipeToGrid(int width, int height, Recipe<?> recipe, Iterable<T> slots, RecipeGridAligner.Filler<T> filter) {
+		if (recipe instanceof ShapedRecipe shapedRecipe) {
+			alignRecipeToGrid(width, height, shapedRecipe.getWidth(), shapedRecipe.getHeight(), slots, filter);
+		} else {
+			alignRecipeToGrid(width, height, width, height, slots, filter);
 		}
+	}
 
-		Iterator<T> iterator = inputs.iterator();
-		int k = 0;
+	static <T> void alignRecipeToGrid(int width, int height, int recipeWidth, int recipeHeight, Iterable<T> slots, RecipeGridAligner.Filler<T> filter) {
+		Iterator<T> iterator = slots.iterator();
+		int i = 0;
 
-		for (int l = 0; l < height; l++) {
-			boolean bl = (float)j < (float)height / 2.0F;
-			int m = MathHelper.floor((float)height / 2.0F - (float)j / 2.0F);
-			if (bl && m > l) {
-				k += width;
-				l++;
+		for (int j = 0; j < height; j++) {
+			boolean bl = (float)recipeHeight < (float)height / 2.0F;
+			int k = MathHelper.floor((float)height / 2.0F - (float)recipeHeight / 2.0F);
+			if (bl && k > j) {
+				i += width;
+				j++;
 			}
 
-			for (int n = 0; n < width; n++) {
+			for (int l = 0; l < width; l++) {
 				if (!iterator.hasNext()) {
 					return;
 				}
 
-				bl = (float)i < (float)width / 2.0F;
-				m = MathHelper.floor((float)width / 2.0F - (float)i / 2.0F);
-				int o = i;
-				boolean bl2 = n < i;
+				bl = (float)recipeWidth < (float)width / 2.0F;
+				k = MathHelper.floor((float)width / 2.0F - (float)recipeWidth / 2.0F);
+				int m = recipeWidth;
+				boolean bl2 = l < recipeWidth;
 				if (bl) {
-					o = m + i;
-					bl2 = m <= n && n < m + i;
+					m = k + recipeWidth;
+					bl2 = k <= l && l < k + recipeWidth;
 				}
 
 				if (bl2) {
-					filler.addItemToSlot((T)iterator.next(), k, n, l);
-				} else if (o == n) {
-					k += width - n;
+					filter.addItemToSlot((T)iterator.next(), i, l, j);
+				} else if (m == l) {
+					i += width - l;
 					break;
 				}
 
-				k++;
+				i++;
 			}
 		}
 	}

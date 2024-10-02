@@ -12,11 +12,12 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.CuttingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.SingleStackRecipe;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
 
 public class StonecuttingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RecipeCategory category;
@@ -26,10 +27,10 @@ public class StonecuttingRecipeJsonBuilder implements CraftingRecipeJsonBuilder 
 	private final Map<String, AdvancementCriterion<?>> criteria = new LinkedHashMap();
 	@Nullable
 	private String group;
-	private final CuttingRecipe.RecipeFactory<?> recipeFactory;
+	private final SingleStackRecipe.RecipeFactory<?> recipeFactory;
 
 	public StonecuttingRecipeJsonBuilder(
-		RecipeCategory category, CuttingRecipe.RecipeFactory<?> recipeFactory, Ingredient input, ItemConvertible output, int count
+		RecipeCategory category, SingleStackRecipe.RecipeFactory<?> recipeFactory, Ingredient input, ItemConvertible output, int count
 	) {
 		this.category = category;
 		this.recipeFactory = recipeFactory;
@@ -62,21 +63,21 @@ public class StonecuttingRecipeJsonBuilder implements CraftingRecipeJsonBuilder 
 	}
 
 	@Override
-	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-		this.validate(recipeId);
+	public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey) {
+		this.validate(recipeKey);
 		Advancement.Builder builder = exporter.getAdvancementBuilder()
-			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
-			.rewards(AdvancementRewards.Builder.recipe(recipeId))
+			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeKey))
+			.rewards(AdvancementRewards.Builder.recipe(recipeKey))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.criteria.forEach(builder::criterion);
-		CuttingRecipe cuttingRecipe = this.recipeFactory
+		SingleStackRecipe singleStackRecipe = this.recipeFactory
 			.create((String)Objects.requireNonNullElse(this.group, ""), this.input, new ItemStack(this.output, this.count));
-		exporter.accept(recipeId, cuttingRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
+		exporter.accept(recipeKey, singleStackRecipe, builder.build(recipeKey.getValue().withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 
-	private void validate(Identifier recipeId) {
+	private void validate(RegistryKey<Recipe<?>> recipeKey) {
 		if (this.criteria.isEmpty()) {
-			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
+			throw new IllegalStateException("No way of obtaining recipe " + recipeKey.getValue());
 		}
 	}
 }

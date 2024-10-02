@@ -1,56 +1,31 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.entity.Entity;
+import java.util.Set;
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
-public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, EntityPositionS2CPacket> CODEC = Packet.createCodec(
-		EntityPositionS2CPacket::write, EntityPositionS2CPacket::new
+public record EntityPositionS2CPacket(int entityId, PlayerPosition change, Set<PositionFlag> relatives, boolean onGround)
+	implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, EntityPositionS2CPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.VAR_INT,
+		EntityPositionS2CPacket::entityId,
+		PlayerPosition.PACKET_CODEC,
+		EntityPositionS2CPacket::change,
+		PositionFlag.PACKET_CODEC,
+		EntityPositionS2CPacket::relatives,
+		PacketCodecs.BOOL,
+		EntityPositionS2CPacket::onGround,
+		EntityPositionS2CPacket::new
 	);
-	private final int entityId;
-	private final double x;
-	private final double y;
-	private final double z;
-	private final byte yaw;
-	private final byte pitch;
-	private final boolean onGround;
 
-	public EntityPositionS2CPacket(Entity entity) {
-		this.entityId = entity.getId();
-		Vec3d vec3d = entity.getSyncedPos();
-		this.x = vec3d.x;
-		this.y = vec3d.y;
-		this.z = vec3d.z;
-		this.yaw = MathHelper.packDegrees(entity.getYaw());
-		this.pitch = MathHelper.packDegrees(entity.getPitch());
-		this.onGround = entity.isOnGround();
-	}
-
-	private EntityPositionS2CPacket(PacketByteBuf buf) {
-		this.entityId = buf.readVarInt();
-		this.x = buf.readDouble();
-		this.y = buf.readDouble();
-		this.z = buf.readDouble();
-		this.yaw = buf.readByte();
-		this.pitch = buf.readByte();
-		this.onGround = buf.readBoolean();
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeVarInt(this.entityId);
-		buf.writeDouble(this.x);
-		buf.writeDouble(this.y);
-		buf.writeDouble(this.z);
-		buf.writeByte(this.yaw);
-		buf.writeByte(this.pitch);
-		buf.writeBoolean(this.onGround);
+	public static EntityPositionS2CPacket create(int entityId, PlayerPosition change, Set<PositionFlag> relatives, boolean onGround) {
+		return new EntityPositionS2CPacket(entityId, change, relatives, onGround);
 	}
 
 	@Override
@@ -60,33 +35,5 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntityPosition(this);
-	}
-
-	public int getEntityId() {
-		return this.entityId;
-	}
-
-	public double getX() {
-		return this.x;
-	}
-
-	public double getY() {
-		return this.y;
-	}
-
-	public double getZ() {
-		return this.z;
-	}
-
-	public float getYaw() {
-		return MathHelper.unpackDegrees(this.yaw);
-	}
-
-	public float getPitch() {
-		return MathHelper.unpackDegrees(this.pitch);
-	}
-
-	public boolean isOnGround() {
-		return this.onGround;
 	}
 }

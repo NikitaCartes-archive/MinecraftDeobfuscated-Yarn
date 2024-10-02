@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
@@ -22,7 +23,6 @@ import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
@@ -247,13 +247,14 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class WorldTemplateObjectSelectionList extends RealmsObjectSelectionList<RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry> {
+	class WorldTemplateObjectSelectionList extends AlwaysSelectedEntryListWidget<RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionListEntry> {
 		public WorldTemplateObjectSelectionList(final RealmsSelectWorldTemplateScreen screen) {
 			this(screen, Collections.emptyList());
 		}
 
 		public WorldTemplateObjectSelectionList(final Iterable<WorldTemplate> realmsSelectWorldTemplateScreen, final Iterable templates) {
 			super(
+				MinecraftClient.getInstance(),
 				realmsSelectWorldTemplateScreen.width,
 				realmsSelectWorldTemplateScreen.height - 33 - realmsSelectWorldTemplateScreen.getTemplateListTop(),
 				realmsSelectWorldTemplateScreen.getTemplateListTop(),
@@ -281,11 +282,6 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			super.setSelected(worldTemplateObjectSelectionListEntry);
 			this.field_20093.selectedTemplate = worldTemplateObjectSelectionListEntry == null ? null : worldTemplateObjectSelectionListEntry.mTemplate;
 			this.field_20093.updateButtonStates();
-		}
-
-		@Override
-		public int getMaxPosition() {
-			return this.getEntryCount() * 46;
 		}
 
 		@Override

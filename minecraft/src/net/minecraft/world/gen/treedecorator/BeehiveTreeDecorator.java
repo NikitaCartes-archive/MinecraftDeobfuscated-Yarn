@@ -2,7 +2,6 @@ package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,6 +10,7 @@ import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -49,7 +49,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 				.flatMap(pos -> Stream.of(GENERATE_DIRECTIONS).map(pos::offset))
 				.collect(Collectors.toList());
 			if (!list3.isEmpty()) {
-				Collections.shuffle(list3);
+				Util.shuffle(list3, random);
 				Optional<BlockPos> optional = list3.stream().filter(pos -> generator.isAir(pos) && generator.isAir(pos.offset(BEE_NEST_FACE))).findFirst();
 				if (!optional.isEmpty()) {
 					generator.replace((BlockPos)optional.get(), Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, BEE_NEST_FACE));

@@ -1,10 +1,12 @@
 package net.minecraft.client.gui.screen.ingame;
 
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenPos;
 import net.minecraft.client.gui.screen.recipebook.AbstractFurnaceRecipeBookWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
@@ -25,9 +27,10 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		Text toggleCraftableButtonText,
 		Identifier background,
 		Identifier litProgressTexture,
-		Identifier burnProgressTexture
+		Identifier burnProgressTexture,
+		List<RecipeBookWidget.Tab> recipeBookTabs
 	) {
-		super(handler, new AbstractFurnaceRecipeBookWidget(handler, toggleCraftableButtonText), playerInventory, title);
+		super(handler, new AbstractFurnaceRecipeBookWidget(handler, toggleCraftableButtonText, recipeBookTabs), playerInventory, title);
 		this.background = background;
 		this.litProgressTexture = litProgressTexture;
 		this.burnProgressTexture = burnProgressTexture;

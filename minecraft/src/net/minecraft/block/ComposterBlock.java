@@ -76,6 +76,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.OAK_LEAVES);
 		registerCompostableItem(0.3F, Items.SPRUCE_LEAVES);
 		registerCompostableItem(0.3F, Items.DARK_OAK_LEAVES);
+		registerCompostableItem(0.3F, Items.PALE_OAK_LEAVES);
 		registerCompostableItem(0.3F, Items.ACACIA_LEAVES);
 		registerCompostableItem(0.3F, Items.CHERRY_LEAVES);
 		registerCompostableItem(0.3F, Items.BIRCH_LEAVES);
@@ -88,6 +89,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.ACACIA_SAPLING);
 		registerCompostableItem(0.3F, Items.CHERRY_SAPLING);
 		registerCompostableItem(0.3F, Items.DARK_OAK_SAPLING);
+		registerCompostableItem(0.3F, Items.PALE_OAK_SAPLING);
 		registerCompostableItem(0.3F, Items.MANGROVE_PROPAGULE);
 		registerCompostableItem(0.3F, Items.BEETROOT_SEEDS);
 		registerCompostableItem(0.3F, Items.DRIED_KELP);
@@ -100,6 +102,8 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.GLOW_BERRIES);
 		registerCompostableItem(0.3F, Items.WHEAT_SEEDS);
 		registerCompostableItem(0.3F, Items.MOSS_CARPET);
+		registerCompostableItem(0.3F, Items.PALE_MOSS_CARPET);
+		registerCompostableItem(0.3F, Items.PALE_HANGING_MOSS);
 		registerCompostableItem(0.3F, Items.PINK_PETALS);
 		registerCompostableItem(0.3F, Items.SMALL_DRIPLEAF);
 		registerCompostableItem(0.3F, Items.HANGING_ROOTS);
@@ -159,6 +163,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.65F, Items.SPORE_BLOSSOM);
 		registerCompostableItem(0.65F, Items.AZALEA);
 		registerCompostableItem(0.65F, Items.MOSS_BLOCK);
+		registerCompostableItem(0.65F, Items.PALE_MOSS_BLOCK);
 		registerCompostableItem(0.65F, Items.BIG_DRIPLEAF);
 		registerCompostableItem(0.85F, Items.HAY_BLOCK);
 		registerCompostableItem(0.85F, Items.BROWN_MUSHROOM_BLOCK);

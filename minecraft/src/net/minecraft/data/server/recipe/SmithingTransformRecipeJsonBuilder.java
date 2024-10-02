@@ -11,8 +11,11 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.SmithingTransformRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class SmithingTransformRecipeJsonBuilder {
@@ -41,25 +44,25 @@ public class SmithingTransformRecipeJsonBuilder {
 	}
 
 	public void offerTo(RecipeExporter exporter, String recipeId) {
-		this.offerTo(exporter, Identifier.of(recipeId));
+		this.offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, Identifier.of(recipeId)));
 	}
 
-	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-		this.validate(recipeId);
+	public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey) {
+		this.validate(recipeKey);
 		Advancement.Builder builder = exporter.getAdvancementBuilder()
-			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
-			.rewards(AdvancementRewards.Builder.recipe(recipeId))
+			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeKey))
+			.rewards(AdvancementRewards.Builder.recipe(recipeKey))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.criteria.forEach(builder::criterion);
 		SmithingTransformRecipe smithingTransformRecipe = new SmithingTransformRecipe(
 			Optional.of(this.template), Optional.of(this.base), Optional.of(this.addition), new ItemStack(this.result)
 		);
-		exporter.accept(recipeId, smithingTransformRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
+		exporter.accept(recipeKey, smithingTransformRecipe, builder.build(recipeKey.getValue().withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 
-	private void validate(Identifier recipeId) {
+	private void validate(RegistryKey<Recipe<?>> recipeKey) {
 		if (this.criteria.isEmpty()) {
-			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
+			throw new IllegalStateException("No way of obtaining recipe " + recipeKey.getValue());
 		}
 	}
 }

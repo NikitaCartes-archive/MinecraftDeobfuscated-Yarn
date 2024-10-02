@@ -1,7 +1,7 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -9,17 +9,21 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipePropertySet;
+import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.recipe.display.CuttingRecipeDisplay;
+import net.minecraft.registry.RegistryKey;
 
-public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListener> {
+public record SynchronizeRecipesS2CPacket(
+	Map<RegistryKey<RecipePropertySet>, RecipePropertySet> itemSets, CuttingRecipeDisplay.Grouping<StonecuttingRecipe> stonecutterRecipes
+) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, SynchronizeRecipesS2CPacket> CODEC = PacketCodec.tuple(
-		RecipeEntry.PACKET_CODEC.collect(PacketCodecs.toList()), packet -> packet.recipes, SynchronizeRecipesS2CPacket::new
+		PacketCodecs.map(HashMap::new, RegistryKey.createPacketCodec(RecipePropertySet.REGISTRY), RecipePropertySet.PACKET_CODEC),
+		SynchronizeRecipesS2CPacket::itemSets,
+		CuttingRecipeDisplay.Grouping.codec(),
+		SynchronizeRecipesS2CPacket::stonecutterRecipes,
+		SynchronizeRecipesS2CPacket::new
 	);
-	private final List<RecipeEntry<?>> recipes;
-
-	public SynchronizeRecipesS2CPacket(Collection<RecipeEntry<?>> recipes) {
-		this.recipes = List.copyOf(recipes);
-	}
 
 	@Override
 	public PacketType<SynchronizeRecipesS2CPacket> getPacketId() {
@@ -28,9 +32,5 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSynchronizeRecipes(this);
-	}
-
-	public List<RecipeEntry<?>> getRecipes() {
-		return this.recipes;
 	}
 }

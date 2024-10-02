@@ -121,6 +121,7 @@ public class CommandManager {
 		RecipeCommand.register(this.dispatcher);
 		ReturnCommand.register(this.dispatcher);
 		RideCommand.register(this.dispatcher);
+		RotateCommand.register(this.dispatcher);
 		SayCommand.register(this.dispatcher);
 		ScheduleCommand.register(this.dispatcher);
 		ScoreboardCommand.register(this.dispatcher, commandRegistryAccess);

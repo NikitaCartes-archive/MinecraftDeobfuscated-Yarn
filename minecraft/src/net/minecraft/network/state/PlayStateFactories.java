@@ -87,7 +87,6 @@ import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleDelimiterS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChangeUnlockedRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
@@ -117,6 +116,7 @@ import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionSyncS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -152,9 +152,13 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRotationS2CPaket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookAddS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookRemoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookSettingsS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -292,6 +296,7 @@ public class PlayStateFactories {
 				.add(CommonPackets.DISCONNECT, DisconnectS2CPacket.CODEC)
 				.add(PlayPackets.DISGUISED_CHAT, ProfilelessChatMessageS2CPacket.CODEC)
 				.add(PlayPackets.ENTITY_EVENT, EntityStatusS2CPacket.CODEC)
+				.add(PlayPackets.ENTITY_POSITION_SYNC, EntityPositionSyncS2CPacket.CODEC)
 				.add(PlayPackets.EXPLODE, ExplosionS2CPacket.CODEC)
 				.add(PlayPackets.FORGET_LEVEL_CHUNK, UnloadChunkS2CPacket.CODEC)
 				.add(PlayPackets.GAME_EVENT, GameStateChangeS2CPacket.CODEC)
@@ -326,7 +331,10 @@ public class PlayStateFactories {
 				.add(PlayPackets.PLAYER_INFO_UPDATE, PlayerListS2CPacket.CODEC)
 				.add(PlayPackets.PLAYER_LOOK_AT, LookAtS2CPacket.CODEC)
 				.add(PlayPackets.PLAYER_POSITION, PlayerPositionLookS2CPacket.CODEC)
-				.add(PlayPackets.RECIPE, ChangeUnlockedRecipesS2CPacket.CODEC)
+				.add(PlayPackets.PLAYER_ROTATION, PlayerRotationS2CPaket.CODEC)
+				.add(PlayPackets.RECIPE_BOOK_ADD, RecipeBookAddS2CPacket.CODEC)
+				.add(PlayPackets.RECIPE_BOOK_REMOVE, RecipeBookRemoveS2CPacket.CODEC)
+				.add(PlayPackets.RECIPE_BOOK_SETTINGS, RecipeBookSettingsS2CPacket.CODEC)
 				.add(PlayPackets.REMOVE_ENTITIES, EntitiesDestroyS2CPacket.CODEC)
 				.add(PlayPackets.REMOVE_MOB_EFFECT, RemoveEntityStatusEffectS2CPacket.CODEC)
 				.add(PlayPackets.RESET_SCORE, ScoreboardScoreResetS2CPacket.CODEC)

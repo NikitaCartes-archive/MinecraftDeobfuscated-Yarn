@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryWrapper;
@@ -32,7 +32,7 @@ public class DataPackContents {
 	private static final CompletableFuture<Unit> COMPLETED_UNIT = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private final ReloadableRegistries.Lookup reloadableRegistries;
 	private final CommandManager commandManager;
-	private final RecipeManager recipeManager;
+	private final ServerRecipeManager recipeManager;
 	private final ServerAdvancementLoader serverAdvancementLoader;
 	private final FunctionLoader functionLoader;
 	private final List<Registry.PendingTagLoad<?>> pendingTagLoads;
@@ -47,7 +47,7 @@ public class DataPackContents {
 	) {
 		this.reloadableRegistries = new ReloadableRegistries.Lookup(dynamicRegistries.getCombinedRegistryManager());
 		this.pendingTagLoads = pendingTagLoads;
-		this.recipeManager = new RecipeManager(registries);
+		this.recipeManager = new ServerRecipeManager(registries);
 		this.commandManager = new CommandManager(environment, CommandRegistryAccess.of(registries, enabledFeatures));
 		this.serverAdvancementLoader = new ServerAdvancementLoader(registries);
 		this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
@@ -70,7 +70,7 @@ public class DataPackContents {
 	/**
 	 * @see MinecraftServer#getRecipeManager
 	 */
-	public RecipeManager getRecipeManager() {
+	public ServerRecipeManager getRecipeManager() {
 		return this.recipeManager;
 	}
 

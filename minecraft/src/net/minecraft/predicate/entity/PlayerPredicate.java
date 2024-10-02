@@ -24,11 +24,14 @@ import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
@@ -45,7 +48,7 @@ public record PlayerPredicate(
 	NumberRange.IntRange experienceLevel,
 	GameModeList gameMode,
 	List<PlayerPredicate.StatMatcher<?>> stats,
-	Object2BooleanMap<Identifier> recipes,
+	Object2BooleanMap<RegistryKey<Recipe<?>>> recipes,
 	Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements,
 	Optional<EntityPredicate> lookingAt,
 	Optional<InputPredicate> input
@@ -56,7 +59,9 @@ public record PlayerPredicate(
 					NumberRange.IntRange.CODEC.optionalFieldOf("level", NumberRange.IntRange.ANY).forGetter(PlayerPredicate::experienceLevel),
 					GameModeList.CODEC.optionalFieldOf("gamemode", GameModeList.ALL).forGetter(PlayerPredicate::gameMode),
 					PlayerPredicate.StatMatcher.CODEC.listOf().optionalFieldOf("stats", List.of()).forGetter(PlayerPredicate::stats),
-					Codecs.object2BooleanMap(Identifier.CODEC).optionalFieldOf("recipes", Object2BooleanMaps.emptyMap()).forGetter(PlayerPredicate::recipes),
+					Codecs.object2BooleanMap(RegistryKey.createCodec(RegistryKeys.RECIPE))
+						.optionalFieldOf("recipes", Object2BooleanMaps.emptyMap())
+						.forGetter(PlayerPredicate::recipes),
 					Codec.unboundedMap(Identifier.CODEC, PlayerPredicate.AdvancementPredicate.CODEC)
 						.optionalFieldOf("advancements", Map.of())
 						.forGetter(PlayerPredicate::advancements),
@@ -83,10 +88,10 @@ public record PlayerPredicate(
 				}
 			}
 
-			RecipeBook recipeBook = serverPlayerEntity.getRecipeBook();
+			ServerRecipeBook serverRecipeBook = serverPlayerEntity.getRecipeBook();
 
-			for (Entry<Identifier> entry : this.recipes.object2BooleanEntrySet()) {
-				if (recipeBook.contains((Identifier)entry.getKey()) != entry.getBooleanValue()) {
+			for (Entry<RegistryKey<Recipe<?>>> entry : this.recipes.object2BooleanEntrySet()) {
+				if (serverRecipeBook.isUnlocked((RegistryKey<Recipe<?>>)entry.getKey()) != entry.getBooleanValue()) {
 					return false;
 				}
 			}
@@ -164,7 +169,7 @@ public record PlayerPredicate(
 		private NumberRange.IntRange experienceLevel = NumberRange.IntRange.ANY;
 		private GameModeList gameMode = GameModeList.ALL;
 		private final ImmutableList.Builder<PlayerPredicate.StatMatcher<?>> stats = ImmutableList.builder();
-		private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<>();
+		private final Object2BooleanMap<RegistryKey<Recipe<?>>> recipes = new Object2BooleanOpenHashMap<>();
 		private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements = Maps.<Identifier, PlayerPredicate.AdvancementPredicate>newHashMap();
 		private Optional<EntityPredicate> lookingAt = Optional.empty();
 		private Optional<InputPredicate> input = Optional.empty();
@@ -183,8 +188,8 @@ public record PlayerPredicate(
 			return this;
 		}
 
-		public PlayerPredicate.Builder recipe(Identifier id, boolean unlocked) {
-			this.recipes.put(id, unlocked);
+		public PlayerPredicate.Builder recipe(RegistryKey<Recipe<?>> recipeKey, boolean unlocked) {
+			this.recipes.put(recipeKey, unlocked);
 			return this;
 		}
 

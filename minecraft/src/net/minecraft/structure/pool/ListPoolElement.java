@@ -51,7 +51,7 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
+	public List<StructureTemplate.JigsawBlockInfo> getStructureBlockInfos(
 		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
 	) {
 		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureTemplateManager, pos, rotation, random);

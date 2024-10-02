@@ -102,21 +102,23 @@ public class InputSlotFiller<R extends Recipe<?>> {
 			if (finder.isCraftable(recipe.value(), j, list::add)) {
 				this.returnInputs();
 				int k = j;
-				RecipeGridAligner.alignRecipeToGrid(this.width, this.height, recipe, recipe.value().getIngredientPlacement().getPlacementSlots(), (slotx, index, x, y) -> {
-					if (!slotx.isEmpty()) {
-						Slot slot2 = (Slot)this.inputSlots.get(index);
-						int jx = ((IngredientPlacement.PlacementSlot)slotx.get()).placerOutputPosition();
-						int kx = k;
+				RecipeGridAligner.alignRecipeToGrid(
+					this.width, this.height, recipe.value(), recipe.value().getIngredientPlacement().getPlacementSlots(), (slotx, index, x, y) -> {
+						if (!slotx.isEmpty()) {
+							Slot slot2 = (Slot)this.inputSlots.get(index);
+							int jx = ((IngredientPlacement.PlacementSlot)slotx.get()).placerOutputPosition();
+							int kx = k;
 
-						while (kx > 0) {
-							RegistryEntry<Item> registryEntry = (RegistryEntry<Item>)list.get(jx);
-							kx = this.fillInputSlot(slot2, registryEntry, kx);
-							if (kx == -1) {
-								return;
+							while (kx > 0) {
+								RegistryEntry<Item> registryEntry = (RegistryEntry<Item>)list.get(jx);
+								kx = this.fillInputSlot(slot2, registryEntry, kx);
+								if (kx == -1) {
+									return;
+								}
 							}
 						}
 					}
-				});
+				);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.PaleMossCarpetBlock;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
@@ -26,6 +27,8 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 				}
 
 				TallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
+			} else if (blockState.getBlock() instanceof PaleMossCarpetBlock) {
+				PaleMossCarpetBlock.placeAt(structureWorldAccess, blockPos, structureWorldAccess.getRandom(), 2);
 			} else {
 				structureWorldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
 			}

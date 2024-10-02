@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
-import net.minecraft.entity.ai.brain.task.LookTargetUtil;
+import net.minecraft.entity.ai.brain.task.TargetUtil;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +30,7 @@ public class WanderAroundPointOfInterestGoal extends WanderAroundGoal {
 		ServerWorld serverWorld = (ServerWorld)this.mob.getWorld();
 		BlockPos blockPos = this.mob.getBlockPos();
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
-		ChunkSectionPos chunkSectionPos2 = LookTargetUtil.getPosClosestToOccupiedPointOfInterest(serverWorld, chunkSectionPos, 2);
+		ChunkSectionPos chunkSectionPos2 = TargetUtil.getPosClosestToOccupiedPointOfInterest(serverWorld, chunkSectionPos, 2);
 		return chunkSectionPos2 != chunkSectionPos
 			? NoPenaltyTargeting.findTo(this.mob, 10, 7, Vec3d.ofBottomCenter(chunkSectionPos2.getCenterPos()), (float) (Math.PI / 2))
 			: null;

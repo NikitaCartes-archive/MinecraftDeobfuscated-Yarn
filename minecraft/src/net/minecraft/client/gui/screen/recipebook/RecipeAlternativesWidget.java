@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,8 +15,14 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.NetworkRecipeId;
+import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.recipe.display.FurnaceRecipeDisplay;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -34,7 +40,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	private int buttonY;
 	private RecipeResultCollection resultCollection;
 	@Nullable
-	private RecipeEntry<?> lastClickedRecipe;
+	private NetworkRecipeId lastClickedRecipe;
 	final CurrentIndexProvider currentIndexProvider;
 	private final boolean furnace;
 
@@ -44,11 +50,20 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	}
 
 	public void showAlternativesForResult(
-		RecipeResultCollection resultCollection, boolean filteringCraftable, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta
+		RecipeResultCollection resultCollection,
+		SlotDisplay.Context context,
+		boolean filteringCraftable,
+		int buttonX,
+		int buttonY,
+		int areaCenterX,
+		int areaCenterY,
+		float delta
 	) {
 		this.resultCollection = resultCollection;
-		List<RecipeEntry<?>> list = resultCollection.filter(RecipeResultCollection.RecipeFilterMode.CRAFTABLE);
-		List<RecipeEntry<?>> list2 = filteringCraftable ? Collections.emptyList() : resultCollection.filter(RecipeResultCollection.RecipeFilterMode.NOT_CRAFTABLE);
+		List<RecipeDisplayEntry> list = resultCollection.filter(RecipeResultCollection.RecipeFilterMode.CRAFTABLE);
+		List<RecipeDisplayEntry> list2 = filteringCraftable
+			? Collections.emptyList()
+			: resultCollection.filter(RecipeResultCollection.RecipeFilterMode.NOT_CRAFTABLE);
 		int i = list.size();
 		int j = i + list2.size();
 		int k = j <= 16 ? 4 : 5;
@@ -78,13 +93,15 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 		for (int p = 0; p < j; p++) {
 			boolean bl = p < i;
-			RecipeEntry<?> recipeEntry = bl ? (RecipeEntry)list.get(p) : (RecipeEntry)list2.get(p - i);
+			RecipeDisplayEntry recipeDisplayEntry = bl ? (RecipeDisplayEntry)list.get(p) : (RecipeDisplayEntry)list2.get(p - i);
 			int q = this.buttonX + 4 + 25 * (p % k);
 			int r = this.buttonY + 5 + 25 * (p / k);
 			if (this.furnace) {
-				this.alternativeButtons.add(new RecipeAlternativesWidget.FurnaceAlternativeButtonWidget(q, r, recipeEntry, bl));
+				this.alternativeButtons
+					.add(new RecipeAlternativesWidget.FurnaceAlternativeButtonWidget(q, r, recipeDisplayEntry.id(), recipeDisplayEntry.display(), context, bl));
 			} else {
-				this.alternativeButtons.add(new RecipeAlternativesWidget.CraftingAlternativeButtonWidget(q, r, recipeEntry, bl));
+				this.alternativeButtons
+					.add(new RecipeAlternativesWidget.CraftingAlternativeButtonWidget(q, r, recipeDisplayEntry.id(), recipeDisplayEntry.display(), context, bl));
 			}
 		}
 
@@ -96,7 +113,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 	}
 
 	@Nullable
-	public RecipeEntry<?> getLastClickedRecipe() {
+	public NetworkRecipeId getLastClickedRecipe() {
 		return this.lastClickedRecipe;
 	}
 
@@ -107,7 +124,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		} else {
 			for (RecipeAlternativesWidget.AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
 				if (alternativeButtonWidget.mouseClicked(mouseX, mouseY, button)) {
-					this.lastClickedRecipe = alternativeButtonWidget.recipe;
+					this.lastClickedRecipe = alternativeButtonWidget.recipeId;
 					return true;
 				}
 			}
@@ -159,20 +176,20 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 	@Environment(EnvType.CLIENT)
 	abstract class AlternativeButtonWidget extends ClickableWidget {
-		final RecipeEntry<?> recipe;
+		final NetworkRecipeId recipeId;
 		private final boolean craftable;
 		private final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> inputSlots;
 
 		public AlternativeButtonWidget(
 			final int x,
 			final int y,
-			final RecipeEntry<?> recipe,
+			final NetworkRecipeId recipeId,
 			final boolean craftable,
 			final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> inputSlots
 		) {
 			super(x, y, 24, 24, ScreenTexts.EMPTY);
 			this.inputSlots = inputSlots;
-			this.recipe = recipe;
+			this.recipeId = recipeId;
 			this.craftable = craftable;
 		}
 
@@ -229,20 +246,43 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		private static final Identifier CRAFTING_OVERLAY_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/crafting_overlay_highlighted");
 		private static final Identifier CRAFTING_OVERLAY_DISABLED = Identifier.ofVanilla("recipe_book/crafting_overlay_disabled");
 		private static final Identifier CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/crafting_overlay_disabled_highlighted");
+		private static final int field_54828 = 3;
+		private static final int field_54829 = 3;
 
-		public CraftingAlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> entry, final boolean craftable) {
-			super(x, y, entry, craftable, collectInputSlots(entry));
+		public CraftingAlternativeButtonWidget(
+			final int x, final int y, final NetworkRecipeId recipeId, final RecipeDisplay display, final SlotDisplay.Context context, final boolean craftable
+		) {
+			super(x, y, recipeId, craftable, collectInputSlots(display, context));
 		}
 
-		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> collectInputSlots(RecipeEntry<?> recipe) {
+		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> collectInputSlots(RecipeDisplay display, SlotDisplay.Context context) {
 			List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> list = new ArrayList();
-			RecipeGridAligner.alignRecipeToGrid(
-				3,
-				3,
-				recipe,
-				recipe.value().getIngredientPlacement().getPlacementSlots(),
-				(slot, index, x, y) -> slot.ifPresent(slot2 -> list.add(slot(x, y, slot2.possibleItems())))
-			);
+			Objects.requireNonNull(display);
+			switch (display) {
+				case ShapedCraftingRecipeDisplay shapedCraftingRecipeDisplay:
+					RecipeGridAligner.alignRecipeToGrid(
+						3, 3, shapedCraftingRecipeDisplay.width(), shapedCraftingRecipeDisplay.height(), shapedCraftingRecipeDisplay.ingredients(), (slot, index, x, y) -> {
+							List<ItemStack> list2x = slot.getStacks(context);
+							if (!list2x.isEmpty()) {
+								list.add(slot(x, y, list2x));
+							}
+						}
+					);
+					break;
+				case ShapelessCraftingRecipeDisplay shapelessCraftingRecipeDisplay:
+					label19: {
+						List<SlotDisplay> list2 = shapelessCraftingRecipeDisplay.ingredients();
+
+						for (int i = 0; i < list2.size(); i++) {
+							List<ItemStack> list3 = ((SlotDisplay)list2.get(i)).getStacks(context);
+							if (!list3.isEmpty()) {
+								list.add(slot(i % 3, i / 3, list3));
+							}
+						}
+						break label19;
+					}
+			}
+
 			return list;
 		}
 
@@ -263,14 +303,21 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		private static final Identifier FURNACE_OVERLAY_DISABLED = Identifier.ofVanilla("recipe_book/furnace_overlay_disabled");
 		private static final Identifier FURNACE_OVERLAY_DISABLED_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/furnace_overlay_disabled_highlighted");
 
-		public FurnaceAlternativeButtonWidget(final int x, final int y, final RecipeEntry<?> entry, final boolean craftable) {
-			super(x, y, entry, craftable, alignRecipe(entry));
+		public FurnaceAlternativeButtonWidget(
+			final int x, final int y, final NetworkRecipeId recipeId, final RecipeDisplay display, final SlotDisplay.Context context, final boolean craftable
+		) {
+			super(x, y, recipeId, craftable, alignRecipe(display, context));
 		}
 
-		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> alignRecipe(RecipeEntry<?> entry) {
-			return (List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>)((Optional)entry.value().getIngredientPlacement().getPlacementSlots().getFirst())
-				.map(placementSlot -> List.of(slot(1, 1, placementSlot.possibleItems())))
-				.orElse(List.of());
+		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> alignRecipe(RecipeDisplay display, SlotDisplay.Context context) {
+			if (display instanceof FurnaceRecipeDisplay furnaceRecipeDisplay) {
+				List<ItemStack> list = furnaceRecipeDisplay.ingredient().getStacks(context);
+				if (!list.isEmpty()) {
+					return List.of(slot(1, 1, list));
+				}
+			}
+
+			return List.of();
 		}
 
 		@Override

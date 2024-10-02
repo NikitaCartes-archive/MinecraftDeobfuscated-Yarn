@@ -12,6 +12,7 @@ import net.minecraft.item.tooltip.BundleTooltipData;
 import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -145,9 +146,9 @@ public class BundleItem extends Item {
 		}
 	}
 
-	private void dropContentsOnUse(PlayerEntity player, ItemStack stack) {
+	private void dropContentsOnUse(World world, PlayerEntity player, ItemStack stack) {
 		if (this.dropFirstBundledStack(stack, player)) {
-			playDropContentsSound(player);
+			playDropContentsSound(world, player);
 			player.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 	}
@@ -232,7 +233,7 @@ public class BundleItem extends Item {
 			int i = this.getMaxUseTime(stack, user);
 			boolean bl = remainingUseTicks == i;
 			if (bl || remainingUseTicks < i - 10 && remainingUseTicks % 2 == 0) {
-				this.dropContentsOnUse(playerEntity, stack);
+				this.dropContentsOnUse(world, playerEntity, stack);
 			}
 		}
 	}
@@ -291,8 +292,10 @@ public class BundleItem extends Item {
 		entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT_FAIL, 1.0F, 1.0F);
 	}
 
-	private static void playDropContentsSound(Entity entity) {
-		entity.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+	private static void playDropContentsSound(World world, Entity entity) {
+		world.playSound(
+			null, entity.getBlockPos(), SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, SoundCategory.PLAYERS, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F
+		);
 	}
 
 	private void onContentChanged(PlayerEntity user) {

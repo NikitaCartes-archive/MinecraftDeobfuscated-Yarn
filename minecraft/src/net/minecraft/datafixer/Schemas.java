@@ -313,6 +313,8 @@ import net.minecraft.datafixer.schema.Schema3825;
 import net.minecraft.datafixer.schema.Schema3938;
 import net.minecraft.datafixer.schema.Schema4059;
 import net.minecraft.datafixer.schema.Schema4067;
+import net.minecraft.datafixer.schema.Schema4070;
+import net.minecraft.datafixer.schema.Schema4071;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1339,6 +1341,11 @@ public class Schemas {
 		Schema schema234 = builder.addSchema(4068, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new LockComponentPredicateFix(schema234));
 		builder.addFixer(new ContainerBlockEntityLockPredicateFix(schema234));
+		Schema schema235 = builder.addSchema(4070, Schema4070::new);
+		builder.addFixer(new ChoiceTypesFix(schema235, "Added Pale Oak Boat and Pale Oak Chest Boat", TypeReferences.ENTITY));
+		Schema schema236 = builder.addSchema(4071, Schema4071::new);
+		builder.addFixer(new ChoiceTypesFix(schema236, "Added Creaking", TypeReferences.ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema236, "Added Creaking Heart", TypeReferences.BLOCK_ENTITY));
 	}
 
 	private static UnaryOperator<String> replacingRaw(Map<String, String> replacements) {

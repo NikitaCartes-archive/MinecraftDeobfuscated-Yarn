@@ -54,7 +54,7 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 		AnimalEntity animalEntity2 = (AnimalEntity)this.findBreedTarget(animalEntity).get();
 		animalEntity.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity2);
 		animalEntity2.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity);
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.approachDistance);
+		TargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.approachDistance);
 		int i = 60 + animalEntity.getRandom().nextInt(50);
 		this.breedTime = l + (long)i;
 	}
@@ -66,7 +66,7 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 			AnimalEntity animalEntity2 = this.getBreedTarget(animalEntity);
 			return animalEntity2.isAlive()
 				&& animalEntity.canBreedWith(animalEntity2)
-				&& LookTargetUtil.canSee(animalEntity.getBrain(), animalEntity2)
+				&& TargetUtil.canSee(animalEntity.getBrain(), animalEntity2)
 				&& l <= this.breedTime
 				&& !animalEntity.isPanicking()
 				&& !animalEntity2.isPanicking();
@@ -75,7 +75,7 @@ public class BreedTask extends MultiTickTask<AnimalEntity> {
 
 	protected void keepRunning(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
 		AnimalEntity animalEntity2 = this.getBreedTarget(animalEntity);
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.approachDistance);
+		TargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed, this.approachDistance);
 		if (animalEntity.isInRange(animalEntity2, 3.0)) {
 			if (l >= this.breedTime) {
 				animalEntity.breed(serverWorld, animalEntity2);

@@ -1,6 +1,6 @@
 package net.minecraft.client.toast;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,7 +8,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -19,14 +20,13 @@ public class RecipeToast implements Toast {
 	private static final long DEFAULT_DURATION_MS = 5000L;
 	private static final Text TITLE = Text.translatable("recipe.toast.title");
 	private static final Text DESCRIPTION = Text.translatable("recipe.toast.description");
-	private final List<RecipeToast.DisplayItems> displayItems = Lists.<RecipeToast.DisplayItems>newArrayList();
+	private final List<RecipeToast.DisplayItems> displayItems = new ArrayList();
 	private long startTime;
 	private boolean justUpdated;
 	private Toast.Visibility visibility = Toast.Visibility.HIDE;
 	private int currentItemsDisplayed;
 
-	public RecipeToast(ItemStack categoryItem, ItemStack unlockedItem) {
-		this.displayItems.add(new RecipeToast.DisplayItems(categoryItem, unlockedItem));
+	private RecipeToast() {
 	}
 
 	@Override
@@ -70,15 +70,17 @@ public class RecipeToast implements Toast {
 		this.justUpdated = true;
 	}
 
-	public static void show(ToastManager manager, RecipeEntry<?> recipe) {
-		RecipeToast recipeToast = manager.getToast(RecipeToast.class, TYPE);
-		ItemStack itemStack = recipe.value().createIcon();
-		ItemStack itemStack2 = recipe.value().getResult(manager.getClient().world.getRegistryManager());
+	public static void show(ToastManager toastManager, RecipeDisplay display) {
+		RecipeToast recipeToast = toastManager.getToast(RecipeToast.class, TYPE);
 		if (recipeToast == null) {
-			manager.add(new RecipeToast(itemStack, itemStack2));
-		} else {
-			recipeToast.addRecipes(itemStack, itemStack2);
+			recipeToast = new RecipeToast();
+			toastManager.add(recipeToast);
 		}
+
+		SlotDisplay.Context context = SlotDisplay.Context.create(toastManager.getClient().world);
+		ItemStack itemStack = display.craftingStation().getFirst(context);
+		ItemStack itemStack2 = display.result().getFirst(context);
+		recipeToast.addRecipes(itemStack, itemStack2);
 	}
 
 	@Environment(EnvType.CLIENT)

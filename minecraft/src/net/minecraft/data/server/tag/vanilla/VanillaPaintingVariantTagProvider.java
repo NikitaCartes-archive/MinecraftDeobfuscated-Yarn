@@ -10,8 +10,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.PaintingVariantTags;
 
 public class VanillaPaintingVariantTagProvider extends TagProvider<PaintingVariant> {
-	public VanillaPaintingVariantTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.PAINTING_VARIANT, registryLookupFuture);
+	public VanillaPaintingVariantTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.PAINTING_VARIANT, registriesFuture);
 	}
 
 	@Override

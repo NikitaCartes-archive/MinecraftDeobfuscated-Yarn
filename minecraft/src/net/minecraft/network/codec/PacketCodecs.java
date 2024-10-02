@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -139,6 +140,9 @@ public interface PacketCodecs {
 			VarInts.write(byteBuf, integer);
 		}
 	};
+	PacketCodec<ByteBuf, OptionalInt> OPTIONAL_INT = VAR_INT.xmap(
+		value -> value == 0 ? OptionalInt.empty() : OptionalInt.of(value - 1), value -> value.isPresent() ? value.getAsInt() + 1 : 0
+	);
 	/**
 	 * A codec for a long value.
 	 * 
@@ -370,11 +374,11 @@ public interface PacketCodecs {
 				return PacketByteBuf.readByteArray(buf, maxLength);
 			}
 
-			public void encode(ByteBuf byteBuf, byte[] bs) {
-				if (bs.length > maxLength) {
-					throw new EncoderException("ByteArray with size " + bs.length + " is bigger than allowed " + maxLength);
+			public void encode(ByteBuf buf, byte[] value) {
+				if (value.length > maxLength) {
+					throw new EncoderException("ByteArray with size " + value.length + " is bigger than allowed " + maxLength);
 				} else {
-					PacketByteBuf.writeByteArray(byteBuf, bs);
+					PacketByteBuf.writeByteArray(buf, value);
 				}
 			}
 		};

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
@@ -16,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -89,5 +91,16 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	public static Ingredient fromTag(RegistryEntryList<Item> tag) {
 		return new Ingredient(tag);
+	}
+
+	public SlotDisplay toDisplay() {
+		return this.entries
+			.getStorage()
+			.map(
+				SlotDisplay.TagSlotDisplay::new,
+				displays -> new SlotDisplay.CompositeSlotDisplay(
+						(List<SlotDisplay>)displays.stream().map(SlotDisplay.ItemSlotDisplay::new).collect(Collectors.toUnmodifiableList())
+					)
+			);
 	}
 }

@@ -15,8 +15,10 @@ import net.minecraft.item.equipment.trim.ArmorTrimPattern;
 import net.minecraft.item.equipment.trim.ArmorTrimPatterns;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SmithingRecipeDisplay;
 import net.minecraft.recipe.input.SmithingRecipeInput;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 
@@ -54,34 +56,22 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-		ItemStack itemStack = new ItemStack(Items.IRON_CHESTPLATE);
-		Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional = registries.getOrThrow(RegistryKeys.TRIM_PATTERN).streamEntries().findFirst();
-		Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional2 = registries.getOrThrow(RegistryKeys.TRIM_MATERIAL).getOptional(ArmorTrimMaterials.REDSTONE);
-		if (optional.isPresent() && optional2.isPresent()) {
-			itemStack.set(DataComponentTypes.TRIM, new ArmorTrim((RegistryEntry<ArmorTrimMaterial>)optional2.get(), (RegistryEntry<ArmorTrimPattern>)optional.get()));
-		}
-
-		return itemStack;
+	public Optional<Ingredient> template() {
+		return this.template;
 	}
 
 	@Override
-	public boolean testTemplate(ItemStack stack) {
-		return Ingredient.matches(this.template, stack);
+	public Optional<Ingredient> base() {
+		return this.base;
 	}
 
 	@Override
-	public boolean testBase(ItemStack stack) {
-		return Ingredient.matches(this.base, stack);
+	public Optional<Ingredient> addition() {
+		return this.addition;
 	}
 
 	@Override
-	public boolean testAddition(ItemStack stack) {
-		return Ingredient.matches(this.addition, stack);
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<SmithingTrimRecipe> getSerializer() {
 		return RecipeSerializer.SMITHING_TRIM;
 	}
 
@@ -92,6 +82,11 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 		}
 
 		return this.ingredientPlacement;
+	}
+
+	@Override
+	public List<RecipeDisplay> getDisplays() {
+		return List.of(new SmithingRecipeDisplay(SlotDisplay.SmithingTrimSlotDisplay.INSTANCE, new SlotDisplay.ItemSlotDisplay(Items.SMITHING_TABLE)));
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingTrimRecipe> {

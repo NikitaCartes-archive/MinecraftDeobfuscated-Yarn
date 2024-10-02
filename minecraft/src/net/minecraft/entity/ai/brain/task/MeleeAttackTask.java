@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
+import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LivingTargetCache;
@@ -10,7 +11,11 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.util.Hand;
 
 public class MeleeAttackTask {
-	public static SingleTickTask<MobEntity> create(int cooldown) {
+	public static <T extends MobEntity> SingleTickTask<T> create(int cooldown) {
+		return create(target -> true, cooldown);
+	}
+
+	public static <T extends MobEntity> SingleTickTask<T> create(Predicate<T> targetPredicate, int cooldown) {
 		return TaskTriggerer.task(
 			context -> context.group(
 						context.queryMemoryOptional(MemoryModuleType.LOOK_TARGET),
@@ -22,7 +27,8 @@ public class MeleeAttackTask {
 						context,
 						(lookTarget, attackTarget, attackCoolingDown, visibleMobs) -> (world, entity, time) -> {
 								LivingEntity livingEntity = context.getValue(attackTarget);
-								if (!isHoldingUsableRangedWeapon(entity)
+								if (targetPredicate.test(entity)
+									&& !isHoldingUsableRangedWeapon(entity)
 									&& entity.isInAttackRange(livingEntity)
 									&& context.<LivingTargetCache>getValue(visibleMobs).contains(livingEntity)) {
 									lookTarget.remember(new EntityLookTarget(livingEntity, true));

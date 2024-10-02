@@ -21,5 +21,5 @@ public interface MutableRegistry<T> extends Registry<T> {
 	 */
 	boolean isEmpty();
 
-	RegistryEntryLookup<T> createMutableEntryLookup();
+	RegistryEntryLookup<T> createMutableRegistryLookup();
 }

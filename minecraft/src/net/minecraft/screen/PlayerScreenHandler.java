@@ -9,9 +9,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.book.RecipeBookType;
 import net.minecraft.screen.slot.ArmorSlot;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 
 public class PlayerScreenHandler extends AbstractCraftingScreenHandler {
@@ -86,7 +87,9 @@ public class PlayerScreenHandler extends AbstractCraftingScreenHandler {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingScreenHandler.updateResult(this, this.owner.getWorld(), this.owner, this.craftingInventory, this.craftingResultInventory, null);
+		if (this.owner.getWorld() instanceof ServerWorld serverWorld) {
+			CraftingScreenHandler.updateResult(this, serverWorld, this.owner, this.craftingInventory, this.craftingResultInventory, null);
+		}
 	}
 
 	@Override
@@ -185,8 +188,8 @@ public class PlayerScreenHandler extends AbstractCraftingScreenHandler {
 	}
 
 	@Override
-	public RecipeBookCategory getCategory() {
-		return RecipeBookCategory.CRAFTING;
+	public RecipeBookType getCategory() {
+		return RecipeBookType.CRAFTING;
 	}
 
 	@Override

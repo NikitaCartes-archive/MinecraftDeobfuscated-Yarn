@@ -6,9 +6,9 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -25,13 +25,12 @@ public class RecipeCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									CommandManager.argument("recipe", IdentifierArgumentType.identifier())
-										.suggests(SuggestionProviders.ALL_RECIPES)
+									CommandManager.argument("recipe", RegistryKeyArgumentType.registryKey(RegistryKeys.RECIPE))
 										.executes(
 											context -> executeGive(
 													context.getSource(),
 													EntityArgumentType.getPlayers(context, "targets"),
-													Collections.singleton(IdentifierArgumentType.getRecipeArgument(context, "recipe"))
+													Collections.singleton(RegistryKeyArgumentType.getRecipeEntry(context, "recipe"))
 												)
 										)
 								)
@@ -50,13 +49,12 @@ public class RecipeCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									CommandManager.argument("recipe", IdentifierArgumentType.identifier())
-										.suggests(SuggestionProviders.ALL_RECIPES)
+									CommandManager.argument("recipe", RegistryKeyArgumentType.registryKey(RegistryKeys.RECIPE))
 										.executes(
 											context -> executeTake(
 													context.getSource(),
 													EntityArgumentType.getPlayers(context, "targets"),
-													Collections.singleton(IdentifierArgumentType.getRecipeArgument(context, "recipe"))
+													Collections.singleton(RegistryKeyArgumentType.getRecipeEntry(context, "recipe"))
 												)
 										)
 								)

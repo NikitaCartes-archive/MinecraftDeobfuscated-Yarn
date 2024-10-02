@@ -69,12 +69,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= 2;
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<ArmorDyeRecipe> getSerializer() {
 		return RecipeSerializer.ARMOR_DYE;
 	}
 }

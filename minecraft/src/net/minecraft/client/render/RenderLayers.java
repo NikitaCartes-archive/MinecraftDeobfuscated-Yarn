@@ -34,6 +34,7 @@ public class RenderLayers {
 		map.put(Blocks.CHERRY_LEAVES, renderLayer2);
 		map.put(Blocks.BIRCH_LEAVES, renderLayer2);
 		map.put(Blocks.DARK_OAK_LEAVES, renderLayer2);
+		map.put(Blocks.PALE_OAK_LEAVES, renderLayer2);
 		map.put(Blocks.AZALEA_LEAVES, renderLayer2);
 		map.put(Blocks.FLOWERING_AZALEA_LEAVES, renderLayer2);
 		map.put(Blocks.MANGROVE_ROOTS, renderLayer2);
@@ -46,6 +47,7 @@ public class RenderLayers {
 		map.put(Blocks.ACACIA_SAPLING, renderLayer3);
 		map.put(Blocks.CHERRY_SAPLING, renderLayer3);
 		map.put(Blocks.DARK_OAK_SAPLING, renderLayer3);
+		map.put(Blocks.PALE_OAK_SAPLING, renderLayer3);
 		map.put(Blocks.GLASS, renderLayer3);
 		map.put(Blocks.WHITE_BED, renderLayer3);
 		map.put(Blocks.ORANGE_BED, renderLayer3);
@@ -113,6 +115,7 @@ public class RenderLayers {
 		map.put(Blocks.ACACIA_TRAPDOOR, renderLayer3);
 		map.put(Blocks.CHERRY_TRAPDOOR, renderLayer3);
 		map.put(Blocks.DARK_OAK_TRAPDOOR, renderLayer3);
+		map.put(Blocks.PALE_OAK_TRAPDOOR, renderLayer3);
 		map.put(Blocks.CRIMSON_TRAPDOOR, renderLayer3);
 		map.put(Blocks.WARPED_TRAPDOOR, renderLayer3);
 		map.put(Blocks.MANGROVE_TRAPDOOR, renderLayer3);
@@ -130,6 +133,8 @@ public class RenderLayers {
 		map.put(Blocks.PUMPKIN_STEM, renderLayer3);
 		map.put(Blocks.MELON_STEM, renderLayer3);
 		map.put(Blocks.VINE, renderLayer3);
+		map.put(Blocks.PALE_MOSS_CARPET, renderLayer3);
+		map.put(Blocks.PALE_HANGING_MOSS, renderLayer3);
 		map.put(Blocks.GLOW_LICHEN, renderLayer3);
 		map.put(Blocks.LILY_PAD, renderLayer3);
 		map.put(Blocks.NETHER_WART, renderLayer3);
@@ -144,6 +149,7 @@ public class RenderLayers {
 		map.put(Blocks.POTTED_ACACIA_SAPLING, renderLayer3);
 		map.put(Blocks.POTTED_CHERRY_SAPLING, renderLayer3);
 		map.put(Blocks.POTTED_DARK_OAK_SAPLING, renderLayer3);
+		map.put(Blocks.POTTED_PALE_OAK_SAPLING, renderLayer3);
 		map.put(Blocks.POTTED_MANGROVE_PROPAGULE, renderLayer3);
 		map.put(Blocks.POTTED_FERN, renderLayer3);
 		map.put(Blocks.POTTED_DANDELION, renderLayer3);
@@ -183,6 +189,7 @@ public class RenderLayers {
 		map.put(Blocks.ACACIA_DOOR, renderLayer3);
 		map.put(Blocks.CHERRY_DOOR, renderLayer3);
 		map.put(Blocks.DARK_OAK_DOOR, renderLayer3);
+		map.put(Blocks.PALE_OAK_DOOR, renderLayer3);
 		map.put(Blocks.MANGROVE_DOOR, renderLayer3);
 		map.put(Blocks.BAMBOO_DOOR, renderLayer3);
 		map.put(Blocks.COPPER_DOOR, renderLayer3);

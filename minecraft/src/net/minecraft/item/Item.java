@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import java.util.List;
@@ -433,16 +434,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	/**
 	 * Gets the remainder item that should be left behind when this item is used as a crafting ingredient.
 	 */
-	@Nullable
-	public final Item getRecipeRemainder() {
-		return this.recipeRemainder;
-	}
-
-	/**
-	 * Checks if this item has a remainder item that is left behind when used as a crafting ingredient.
-	 */
-	public boolean hasRecipeRemainder() {
-		return this.recipeRemainder != null;
+	public final ItemStack getRecipeRemainder() {
+		return this.recipeRemainder == null ? ItemStack.EMPTY : new ItemStack(this.recipeRemainder);
 	}
 
 	/**
@@ -522,6 +515,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	/**
 	 * Gets the translation key of this item.
 	 */
+	@VisibleForTesting
 	public final String getTranslationKey() {
 		return this.translationKey;
 	}

@@ -20,20 +20,20 @@ import net.minecraft.entity.ai.brain.task.CroakTask;
 import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.FrogEatEntityTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
+import net.minecraft.entity.ai.brain.task.GoToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LayFrogSpawnTask;
 import net.minecraft.entity.ai.brain.task.LeapingChargeTask;
 import net.minecraft.entity.ai.brain.task.LongJumpTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
-import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
+import net.minecraft.entity.ai.brain.task.TargetUtil;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
-import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
+import net.minecraft.entity.ai.brain.task.TickCooldownTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLandTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsWaterTask;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
@@ -83,10 +83,10 @@ public class FrogBrain {
 			0,
 			ImmutableList.of(
 				new FleeTask<>(2.0F),
-				new LookAroundTask(45, 90),
+				new UpdateLookControlTask(45, 90),
 				new MoveToTargetTask(),
-				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
-				new TemptationCooldownTask(MemoryModuleType.LONG_JUMP_COOLING_DOWN)
+				new TickCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
+				new TickCooldownTask(MemoryModuleType.LONG_JUMP_COOLING_DOWN)
 			)
 		);
 	}
@@ -111,7 +111,7 @@ public class FrogBrain {
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
 						ImmutableList.of(
 							Pair.of(StrollTask.create(1.0F), 1),
-							Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 1),
+							Pair.of(GoToLookTargetTask.create(1.0F, 3), 1),
 							Pair.of(new CroakTask(), 3),
 							Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 2)
 						)
@@ -147,7 +147,7 @@ public class FrogBrain {
 						ImmutableList.of(
 							Pair.of(StrollTask.createDynamicRadius(0.75F), 1),
 							Pair.of(StrollTask.create(1.0F, true), 1),
-							Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 1),
+							Pair.of(GoToLookTargetTask.create(1.0F, 3), 1),
 							Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5)
 						)
 					)
@@ -177,7 +177,7 @@ public class FrogBrain {
 					new RandomTask<>(
 						ImmutableList.of(
 							Pair.of(StrollTask.create(1.0F), 2),
-							Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 1),
+							Pair.of(GoToLookTargetTask.create(1.0F, 3), 1),
 							Pair.of(new CroakTask(), 2),
 							Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 1)
 						)
@@ -242,7 +242,7 @@ public class FrogBrain {
 	}
 
 	private static boolean isNotBreeding(FrogEntity frog) {
-		return !LookTargetUtil.hasBreedTarget(frog);
+		return !TargetUtil.hasBreedTarget(frog);
 	}
 
 	public static void updateActivities(FrogEntity frog) {

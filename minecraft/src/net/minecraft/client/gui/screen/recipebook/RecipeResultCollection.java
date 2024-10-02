@@ -1,45 +1,41 @@
 package net.minecraft.client.gui.screen.recipebook;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.NetworkRecipeId;
+import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.RecipeFinder;
-import net.minecraft.recipe.book.RecipeBook;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 
 @Environment(EnvType.CLIENT)
 public class RecipeResultCollection {
-	private final DynamicRegistryManager registryManager;
-	private final List<RecipeEntry<?>> recipes;
+	private final List<RecipeDisplayEntry> entries;
 	private final boolean singleOutput;
-	private final Set<RecipeEntry<?>> craftableRecipes = Sets.<RecipeEntry<?>>newHashSet();
-	private final Set<RecipeEntry<?>> fittingRecipes = Sets.<RecipeEntry<?>>newHashSet();
-	private final Set<RecipeEntry<?>> unlockedRecipes = Sets.<RecipeEntry<?>>newHashSet();
+	private final Set<NetworkRecipeId> craftableRecipes = new HashSet();
+	private final Set<NetworkRecipeId> displayableRecipes = new HashSet();
 
-	public RecipeResultCollection(DynamicRegistryManager registryManager, List<RecipeEntry<?>> recipes) {
-		this.registryManager = registryManager;
-		this.recipes = ImmutableList.copyOf(recipes);
-		if (recipes.size() <= 1) {
+	public RecipeResultCollection(List<RecipeDisplayEntry> entries) {
+		this.entries = entries;
+		if (entries.size() <= 1) {
 			this.singleOutput = true;
 		} else {
-			this.singleOutput = shouldHaveSingleOutput(registryManager, recipes);
+			this.singleOutput = shouldHaveSingleOutput(this.entries);
 		}
 	}
 
-	private static boolean shouldHaveSingleOutput(DynamicRegistryManager registryManager, List<RecipeEntry<?>> recipes) {
+	private static boolean shouldHaveSingleOutput(List<RecipeDisplayEntry> recipes) {
 		int i = recipes.size();
-		ItemStack itemStack = ((RecipeEntry)recipes.get(0)).value().getResult(registryManager);
+		SlotDisplay slotDisplay = ((RecipeDisplayEntry)recipes.getFirst()).display().result();
 
 		for (int j = 1; j < i; j++) {
-			ItemStack itemStack2 = ((RecipeEntry)recipes.get(j)).value().getResult(registryManager);
-			if (!ItemStack.areItemsAndComponentsEqual(itemStack, itemStack2)) {
+			SlotDisplay slotDisplay2 = ((RecipeDisplayEntry)recipes.get(j)).display().result();
+			if (!slotDisplay2.equals(slotDisplay)) {
 				return false;
 			}
 		}
@@ -47,66 +43,50 @@ public class RecipeResultCollection {
 		return true;
 	}
 
-	public DynamicRegistryManager getRegistryManager() {
-		return this.registryManager;
-	}
-
-	public boolean isInitialized() {
-		return !this.unlockedRecipes.isEmpty();
-	}
-
-	public void initialize(RecipeBook recipeBook) {
-		for (RecipeEntry<?> recipeEntry : this.recipes) {
-			if (recipeBook.contains(recipeEntry)) {
-				this.unlockedRecipes.add(recipeEntry);
-			}
-		}
-	}
-
-	public void populateRecipes(RecipeFinder finder, int width, int height, RecipeBook recipeBook) {
-		for (RecipeEntry<?> recipeEntry : this.recipes) {
-			boolean bl = recipeEntry.value().fits(width, height) && recipeBook.contains(recipeEntry);
+	public void populateRecipes(RecipeFinder finder, Predicate<RecipeDisplay> displayablePredicate) {
+		for (RecipeDisplayEntry recipeDisplayEntry : this.entries) {
+			boolean bl = displayablePredicate.test(recipeDisplayEntry.display());
 			if (bl) {
-				this.fittingRecipes.add(recipeEntry);
+				this.displayableRecipes.add(recipeDisplayEntry.id());
 			} else {
-				this.fittingRecipes.remove(recipeEntry);
+				this.displayableRecipes.remove(recipeDisplayEntry.id());
 			}
 
-			if (bl && finder.isCraftable(recipeEntry.value(), null)) {
-				this.craftableRecipes.add(recipeEntry);
+			if (bl && recipeDisplayEntry.isCraftable(finder)) {
+				this.craftableRecipes.add(recipeDisplayEntry.id());
 			} else {
-				this.craftableRecipes.remove(recipeEntry);
+				this.craftableRecipes.remove(recipeDisplayEntry.id());
 			}
 		}
 	}
 
-	public boolean isCraftable(RecipeEntry<?> recipe) {
-		return this.craftableRecipes.contains(recipe);
+	public boolean isCraftable(NetworkRecipeId recipeId) {
+		return this.craftableRecipes.contains(recipeId);
 	}
 
 	public boolean hasCraftableRecipes() {
 		return !this.craftableRecipes.isEmpty();
 	}
 
-	public boolean hasFittingRecipes() {
-		return !this.fittingRecipes.isEmpty();
+	public boolean hasDisplayableRecipes() {
+		return !this.displayableRecipes.isEmpty();
 	}
 
-	public List<RecipeEntry<?>> getAllRecipes() {
-		return this.recipes;
+	public List<RecipeDisplayEntry> getAllRecipes() {
+		return this.entries;
 	}
 
-	public List<RecipeEntry<?>> filter(RecipeResultCollection.RecipeFilterMode filterMode) {
-		Predicate<RecipeEntry<?>> predicate = switch (filterMode) {
-			case ANY -> this.fittingRecipes::contains;
+	public List<RecipeDisplayEntry> filter(RecipeResultCollection.RecipeFilterMode filterMode) {
+		Predicate<NetworkRecipeId> predicate = switch (filterMode) {
+			case ANY -> this.displayableRecipes::contains;
 			case CRAFTABLE -> this.craftableRecipes::contains;
-			case NOT_CRAFTABLE -> recipe -> this.fittingRecipes.contains(recipe) && !this.craftableRecipes.contains(recipe);
+			case NOT_CRAFTABLE -> recipeId -> this.displayableRecipes.contains(recipeId) && !this.craftableRecipes.contains(recipeId);
 		};
-		List<RecipeEntry<?>> list = new ArrayList();
+		List<RecipeDisplayEntry> list = new ArrayList();
 
-		for (RecipeEntry<?> recipeEntry : this.recipes) {
-			if (predicate.test(recipeEntry)) {
-				list.add(recipeEntry);
+		for (RecipeDisplayEntry recipeDisplayEntry : this.entries) {
+			if (predicate.test(recipeDisplayEntry.id())) {
+				list.add(recipeDisplayEntry);
 			}
 		}
 

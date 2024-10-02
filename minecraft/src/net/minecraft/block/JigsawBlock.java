@@ -76,15 +76,14 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 		}
 	}
 
-	public static boolean attachmentMatches(StructureTemplate.StructureBlockInfo info1, StructureTemplate.StructureBlockInfo info2) {
-		Direction direction = getFacing(info1.state());
-		Direction direction2 = getFacing(info2.state());
-		Direction direction3 = getRotation(info1.state());
-		Direction direction4 = getRotation(info2.state());
-		JigsawBlockEntity.Joint joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(info1.nbt().getString("joint"))
-			.orElseGet(() -> direction.getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
+	public static boolean attachmentMatches(StructureTemplate.JigsawBlockInfo info1, StructureTemplate.JigsawBlockInfo info2) {
+		Direction direction = getFacing(info1.info().state());
+		Direction direction2 = getFacing(info2.info().state());
+		Direction direction3 = getRotation(info1.info().state());
+		Direction direction4 = getRotation(info2.info().state());
+		JigsawBlockEntity.Joint joint = info1.jointType();
 		boolean bl = joint == JigsawBlockEntity.Joint.ROLLABLE;
-		return direction == direction2.getOpposite() && (bl || direction3 == direction4) && info1.nbt().getString("target").equals(info2.nbt().getString("name"));
+		return direction == direction2.getOpposite() && (bl || direction3 == direction4) && info1.target().equals(info2.name());
 	}
 
 	public static Direction getFacing(BlockState state) {

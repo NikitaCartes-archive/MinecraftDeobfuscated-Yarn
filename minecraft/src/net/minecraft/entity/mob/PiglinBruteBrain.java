@@ -14,18 +14,18 @@ import net.minecraft.entity.ai.brain.task.FindEntityTask;
 import net.minecraft.entity.ai.brain.task.FindInteractionTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAngryAtTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.GoToIfNearbyTask;
-import net.minecraft.entity.ai.brain.task.GoToNearbyPositionTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.GoAroundTask;
+import net.minecraft.entity.ai.brain.task.GoToPosTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobTask;
-import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.OpenDoorsTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
+import net.minecraft.entity.ai.brain.task.TargetUtil;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.GlobalPos;
@@ -58,7 +58,7 @@ public class PiglinBruteBrain {
 
 	private static void addCoreActivities(PiglinBruteEntity piglinBrute, Brain<PiglinBruteEntity> brain) {
 		brain.setTaskList(
-			Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new MoveToTargetTask(), OpenDoorsTask.create(), ForgetAngryAtTargetTask.create())
+			Activity.CORE, 0, ImmutableList.of(new UpdateLookControlTask(45, 90), new MoveToTargetTask(), OpenDoorsTask.create(), ForgetAngryAtTargetTask.create())
 		);
 	}
 
@@ -80,9 +80,7 @@ public class PiglinBruteBrain {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				ForgetAttackTargetTask.<MobEntity>create((world, target) -> !isTarget(world, piglinBrute, target)),
-				RangedApproachTask.create(1.0F),
-				MeleeAttackTask.create(20)
+				ForgetAttackTargetTask.create((world, target) -> !isTarget(world, piglinBrute, target)), RangedApproachTask.create(1.0F), MeleeAttackTask.create(20)
 			),
 			MemoryModuleType.ATTACK_TARGET
 		);
@@ -106,8 +104,8 @@ public class PiglinBruteBrain {
 				Pair.of(StrollTask.create(0.6F), 2),
 				Pair.of(FindEntityTask.create(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2),
 				Pair.of(FindEntityTask.create(EntityType.PIGLIN_BRUTE, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2),
-				Pair.of(GoToNearbyPositionTask.create(MemoryModuleType.HOME, 0.6F, 2, 100), 2),
-				Pair.of(GoToIfNearbyTask.create(MemoryModuleType.HOME, 0.6F, 5), 2),
+				Pair.of(GoToPosTask.create(MemoryModuleType.HOME, 0.6F, 2, 100), 2),
+				Pair.of(GoAroundTask.create(MemoryModuleType.HOME, 0.6F, 5), 2),
 				Pair.of(new WaitTask(30, 60), 1)
 			)
 		);
@@ -130,7 +128,7 @@ public class PiglinBruteBrain {
 	}
 
 	private static Optional<? extends LivingEntity> getTarget(ServerWorld world, AbstractPiglinEntity piglin) {
-		Optional<LivingEntity> optional = LookTargetUtil.getEntity(piglin, MemoryModuleType.ANGRY_AT);
+		Optional<LivingEntity> optional = TargetUtil.getEntity(piglin, MemoryModuleType.ANGRY_AT);
 		if (optional.isPresent() && Sensor.testAttackableTargetPredicateIgnoreVisibility(world, piglin, (LivingEntity)optional.get())) {
 			return optional;
 		} else {

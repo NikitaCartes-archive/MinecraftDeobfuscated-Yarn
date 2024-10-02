@@ -7,6 +7,8 @@ import net.minecraft.registry.Registry;
 public class TreeDecoratorType<P extends TreeDecorator> {
 	public static final TreeDecoratorType<TrunkVineTreeDecorator> TRUNK_VINE = register("trunk_vine", TrunkVineTreeDecorator.CODEC);
 	public static final TreeDecoratorType<LeavesVineTreeDecorator> LEAVE_VINE = register("leave_vine", LeavesVineTreeDecorator.CODEC);
+	public static final TreeDecoratorType<PaleMossTreeDecorator> PALE_MOSS = register("pale_moss", PaleMossTreeDecorator.CODEC);
+	public static final TreeDecoratorType<CreakingHeartTreeDecorator> CREAKING_HEART = register("creaking_heart", CreakingHeartTreeDecorator.CODEC);
 	public static final TreeDecoratorType<CocoaBeansTreeDecorator> COCOA = register("cocoa", CocoaBeansTreeDecorator.CODEC);
 	public static final TreeDecoratorType<BeehiveTreeDecorator> BEEHIVE = register("beehive", BeehiveTreeDecorator.CODEC);
 	public static final TreeDecoratorType<AlterGroundTreeDecorator> ALTER_GROUND = register("alter_ground", AlterGroundTreeDecorator.CODEC);

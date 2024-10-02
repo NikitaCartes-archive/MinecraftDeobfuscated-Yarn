@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -8,8 +7,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.recipe.display.CuttingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -72,16 +72,16 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 			int i = this.x + 52;
 			int j = this.y + 14;
 			int k = this.scrollOffset + 12;
-			List<RecipeEntry<StonecuttingRecipe>> list = this.handler.getAvailableRecipes();
+			CuttingRecipeDisplay.Grouping<StonecuttingRecipe> grouping = this.handler.getAvailableRecipes();
 
-			for (int l = this.scrollOffset; l < k && l < this.handler.getAvailableRecipeCount(); l++) {
+			for (int l = this.scrollOffset; l < k && l < grouping.size(); l++) {
 				int m = l - this.scrollOffset;
 				int n = i + m % 4 * 16;
 				int o = j + m / 4 * 18 + 2;
 				if (x >= n && x < n + 16 && y >= o && y < o + 18) {
-					drawContext.drawItemTooltip(
-						this.textRenderer, ((StonecuttingRecipe)((RecipeEntry)list.get(l)).value()).getResult(this.client.world.getRegistryManager()), x, y
-					);
+					SlotDisplay.Context context = SlotDisplay.Context.create(this.client.world);
+					SlotDisplay slotDisplay = ((CuttingRecipeDisplay.GroupEntry)grouping.entries().get(l)).recipe().optionDisplay();
+					drawContext.drawItemTooltip(this.textRenderer, slotDisplay.getFirst(context), x, y);
 				}
 			}
 		}
@@ -107,14 +107,16 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	}
 
 	private void renderRecipeIcons(DrawContext context, int x, int y, int scrollOffset) {
-		List<RecipeEntry<StonecuttingRecipe>> list = this.handler.getAvailableRecipes();
+		CuttingRecipeDisplay.Grouping<StonecuttingRecipe> grouping = this.handler.getAvailableRecipes();
+		SlotDisplay.Context context2 = SlotDisplay.Context.create(this.client.world);
 
-		for (int i = this.scrollOffset; i < scrollOffset && i < this.handler.getAvailableRecipeCount(); i++) {
+		for (int i = this.scrollOffset; i < scrollOffset && i < grouping.size(); i++) {
 			int j = i - this.scrollOffset;
 			int k = x + j % 4 * 16;
 			int l = j / 4;
 			int m = y + l * 18 + 2;
-			context.drawItem(((StonecuttingRecipe)((RecipeEntry)list.get(i)).value()).getResult(this.client.world.getRegistryManager()), k, m);
+			SlotDisplay slotDisplay = ((CuttingRecipeDisplay.GroupEntry)grouping.entries().get(i)).recipe().optionDisplay();
+			context.drawItem(slotDisplay.getFirst(context2), k, m);
 		}
 	}
 

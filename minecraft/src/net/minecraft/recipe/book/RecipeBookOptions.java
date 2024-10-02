@@ -1,115 +1,124 @@
 package net.minecraft.recipe.book;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Util;
+import net.minecraft.network.codec.PacketCodec;
 
 public final class RecipeBookOptions {
-	private static final Map<RecipeBookCategory, Pair<String, String>> CATEGORY_OPTION_NAMES = ImmutableMap.of(
-		RecipeBookCategory.CRAFTING,
+	public static final PacketCodec<PacketByteBuf, RecipeBookOptions> PACKET_CODEC = PacketCodec.of(RecipeBookOptions::toPacket, RecipeBookOptions::fromPacket);
+	private static final Map<RecipeBookType, Pair<String, String>> CATEGORY_OPTION_NAMES = ImmutableMap.of(
+		RecipeBookType.CRAFTING,
 		Pair.of("isGuiOpen", "isFilteringCraftable"),
-		RecipeBookCategory.FURNACE,
+		RecipeBookType.FURNACE,
 		Pair.of("isFurnaceGuiOpen", "isFurnaceFilteringCraftable"),
-		RecipeBookCategory.BLAST_FURNACE,
+		RecipeBookType.BLAST_FURNACE,
 		Pair.of("isBlastingFurnaceGuiOpen", "isBlastingFurnaceFilteringCraftable"),
-		RecipeBookCategory.SMOKER,
+		RecipeBookType.SMOKER,
 		Pair.of("isSmokerGuiOpen", "isSmokerFilteringCraftable")
 	);
-	private final Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> categoryOptions;
+	private final Map<RecipeBookType, RecipeBookOptions.CategoryOption> categoryOptions;
 
-	private RecipeBookOptions(Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> categoryOptions) {
+	private RecipeBookOptions(Map<RecipeBookType, RecipeBookOptions.CategoryOption> categoryOptions) {
 		this.categoryOptions = categoryOptions;
 	}
 
 	public RecipeBookOptions() {
-		this(Util.make(Maps.newEnumMap(RecipeBookCategory.class), categoryOptions -> {
-			for (RecipeBookCategory recipeBookCategory : RecipeBookCategory.values()) {
-				categoryOptions.put(recipeBookCategory, new RecipeBookOptions.CategoryOption(false, false));
+		this(new EnumMap(RecipeBookType.class));
+	}
+
+	private RecipeBookOptions.CategoryOption getOption(RecipeBookType category) {
+		return (RecipeBookOptions.CategoryOption)this.categoryOptions.getOrDefault(category, RecipeBookOptions.CategoryOption.DEFAULT);
+	}
+
+	private void apply(RecipeBookType category, UnaryOperator<RecipeBookOptions.CategoryOption> modifier) {
+		this.categoryOptions.compute(category, (key, value) -> {
+			if (value == null) {
+				value = RecipeBookOptions.CategoryOption.DEFAULT;
 			}
-		}));
+
+			value = (RecipeBookOptions.CategoryOption)modifier.apply(value);
+			if (value.equals(RecipeBookOptions.CategoryOption.DEFAULT)) {
+				value = null;
+			}
+
+			return value;
+		});
 	}
 
-	public boolean isGuiOpen(RecipeBookCategory category) {
-		return ((RecipeBookOptions.CategoryOption)this.categoryOptions.get(category)).guiOpen;
+	public boolean isGuiOpen(RecipeBookType category) {
+		return this.getOption(category).guiOpen;
 	}
 
-	public void setGuiOpen(RecipeBookCategory category, boolean open) {
-		((RecipeBookOptions.CategoryOption)this.categoryOptions.get(category)).guiOpen = open;
+	public void setGuiOpen(RecipeBookType category, boolean open) {
+		this.apply(category, option -> option.withGuiOpen(open));
 	}
 
-	public boolean isFilteringCraftable(RecipeBookCategory category) {
-		return ((RecipeBookOptions.CategoryOption)this.categoryOptions.get(category)).filteringCraftable;
+	public boolean isFilteringCraftable(RecipeBookType category) {
+		return this.getOption(category).filteringCraftable;
 	}
 
-	public void setFilteringCraftable(RecipeBookCategory category, boolean filtering) {
-		((RecipeBookOptions.CategoryOption)this.categoryOptions.get(category)).filteringCraftable = filtering;
+	public void setFilteringCraftable(RecipeBookType category, boolean filtering) {
+		this.apply(category, option -> option.withFilteringCraftable(filtering));
 	}
 
-	public static RecipeBookOptions fromPacket(PacketByteBuf buf) {
-		Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
+	private static RecipeBookOptions fromPacket(PacketByteBuf buf) {
+		Map<RecipeBookType, RecipeBookOptions.CategoryOption> map = new EnumMap(RecipeBookType.class);
 
-		for (RecipeBookCategory recipeBookCategory : RecipeBookCategory.values()) {
+		for (RecipeBookType recipeBookType : RecipeBookType.values()) {
 			boolean bl = buf.readBoolean();
 			boolean bl2 = buf.readBoolean();
-			map.put(recipeBookCategory, new RecipeBookOptions.CategoryOption(bl, bl2));
+			if (bl || bl2) {
+				map.put(recipeBookType, new RecipeBookOptions.CategoryOption(bl, bl2));
+			}
 		}
 
 		return new RecipeBookOptions(map);
 	}
 
-	public void toPacket(PacketByteBuf buf) {
-		for (RecipeBookCategory recipeBookCategory : RecipeBookCategory.values()) {
-			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions.get(recipeBookCategory);
-			if (categoryOption == null) {
-				buf.writeBoolean(false);
-				buf.writeBoolean(false);
-			} else {
-				buf.writeBoolean(categoryOption.guiOpen);
-				buf.writeBoolean(categoryOption.filteringCraftable);
-			}
+	private void toPacket(PacketByteBuf buf) {
+		for (RecipeBookType recipeBookType : RecipeBookType.values()) {
+			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions
+				.getOrDefault(recipeBookType, RecipeBookOptions.CategoryOption.DEFAULT);
+			buf.writeBoolean(categoryOption.guiOpen);
+			buf.writeBoolean(categoryOption.filteringCraftable);
 		}
 	}
 
 	public static RecipeBookOptions fromNbt(NbtCompound nbt) {
-		Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
+		Map<RecipeBookType, RecipeBookOptions.CategoryOption> map = new EnumMap(RecipeBookType.class);
 		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
 			boolean bl = nbt.getBoolean((String)pair.getFirst());
 			boolean bl2 = nbt.getBoolean((String)pair.getSecond());
-			map.put(category, new RecipeBookOptions.CategoryOption(bl, bl2));
+			if (bl || bl2) {
+				map.put(category, new RecipeBookOptions.CategoryOption(bl, bl2));
+			}
 		});
 		return new RecipeBookOptions(map);
 	}
 
 	public void writeNbt(NbtCompound nbt) {
-		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
-			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions.get(category);
-			nbt.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
-			nbt.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
-		});
+		CATEGORY_OPTION_NAMES.forEach(
+			(category, pair) -> {
+				RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions
+					.getOrDefault(category, RecipeBookOptions.CategoryOption.DEFAULT);
+				nbt.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
+				nbt.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
+			}
+		);
 	}
 
 	public RecipeBookOptions copy() {
-		Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
-
-		for (RecipeBookCategory recipeBookCategory : RecipeBookCategory.values()) {
-			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions.get(recipeBookCategory);
-			map.put(recipeBookCategory, categoryOption.copy());
-		}
-
-		return new RecipeBookOptions(map);
+		return new RecipeBookOptions(new EnumMap(this.categoryOptions));
 	}
 
 	public void copyFrom(RecipeBookOptions other) {
 		this.categoryOptions.clear();
-
-		for (RecipeBookCategory recipeBookCategory : RecipeBookCategory.values()) {
-			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)other.categoryOptions.get(recipeBookCategory);
-			this.categoryOptions.put(recipeBookCategory, categoryOption.copy());
-		}
+		this.categoryOptions.putAll(other.categoryOptions);
 	}
 
 	public boolean equals(Object o) {
@@ -120,36 +129,19 @@ public final class RecipeBookOptions {
 		return this.categoryOptions.hashCode();
 	}
 
-	static final class CategoryOption {
-		boolean guiOpen;
-		boolean filteringCraftable;
-
-		public CategoryOption(boolean guiOpen, boolean filteringCraftable) {
-			this.guiOpen = guiOpen;
-			this.filteringCraftable = filteringCraftable;
-		}
-
-		public RecipeBookOptions.CategoryOption copy() {
-			return new RecipeBookOptions.CategoryOption(this.guiOpen, this.filteringCraftable);
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			} else {
-				return !(o instanceof RecipeBookOptions.CategoryOption categoryOption)
-					? false
-					: this.guiOpen == categoryOption.guiOpen && this.filteringCraftable == categoryOption.filteringCraftable;
-			}
-		}
-
-		public int hashCode() {
-			int i = this.guiOpen ? 1 : 0;
-			return 31 * i + (this.filteringCraftable ? 1 : 0);
-		}
+	static record CategoryOption(boolean guiOpen, boolean filteringCraftable) {
+		public static final RecipeBookOptions.CategoryOption DEFAULT = new RecipeBookOptions.CategoryOption(false, false);
 
 		public String toString() {
 			return "[open=" + this.guiOpen + ", filtering=" + this.filteringCraftable + "]";
+		}
+
+		public RecipeBookOptions.CategoryOption withGuiOpen(boolean guiOpen) {
+			return new RecipeBookOptions.CategoryOption(guiOpen, this.filteringCraftable);
+		}
+
+		public RecipeBookOptions.CategoryOption withFilteringCraftable(boolean filteringCraftable) {
+			return new RecipeBookOptions.CategoryOption(this.guiOpen, filteringCraftable);
 		}
 	}
 }

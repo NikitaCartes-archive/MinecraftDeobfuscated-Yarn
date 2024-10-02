@@ -17,9 +17,9 @@ public class VehicleMoveC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final float pitch;
 
 	public VehicleMoveC2SPacket(Entity entity) {
-		this.x = entity.getX();
-		this.y = entity.getY();
-		this.z = entity.getZ();
+		this.x = entity.getLerpTargetX();
+		this.y = entity.getLerpTargetY();
+		this.z = entity.getLerpTargetZ();
 		this.yaw = entity.getYaw();
 		this.pitch = entity.getPitch();
 	}

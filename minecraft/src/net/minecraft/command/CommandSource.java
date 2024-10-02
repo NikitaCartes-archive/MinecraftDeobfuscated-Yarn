@@ -38,8 +38,6 @@ public interface CommandSource {
 
 	Stream<Identifier> getSoundIds();
 
-	Stream<Identifier> getRecipeIds();
-
 	CompletableFuture<Suggestions> getCompletions(CommandContext<?> context);
 
 	default Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {

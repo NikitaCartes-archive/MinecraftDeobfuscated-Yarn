@@ -10,8 +10,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BannerPatternTags;
 
 public class VanillaBannerPatternTagProvider extends TagProvider<BannerPattern> {
-	public VanillaBannerPatternTagProvider(DataOutput dataGenerator, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(dataGenerator, RegistryKeys.BANNER_PATTERN, registryLookupFuture);
+	public VanillaBannerPatternTagProvider(DataOutput dataGenerator, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(dataGenerator, RegistryKeys.BANNER_PATTERN, registriesFuture);
 	}
 
 	@Override

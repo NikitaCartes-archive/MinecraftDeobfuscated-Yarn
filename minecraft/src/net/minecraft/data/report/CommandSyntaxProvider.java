@@ -13,17 +13,17 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public class CommandSyntaxProvider implements DataProvider {
 	private final DataOutput output;
-	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 
-	public CommandSyntaxProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+	public CommandSyntaxProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
 		this.output = output;
-		this.registryLookupFuture = registryLookupFuture;
+		this.registriesFuture = registriesFuture;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
 		Path path = this.output.resolvePath(DataOutput.OutputType.REPORTS).resolve("commands.json");
-		return this.registryLookupFuture
+		return this.registriesFuture
 			.thenCompose(
 				registries -> {
 					CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(

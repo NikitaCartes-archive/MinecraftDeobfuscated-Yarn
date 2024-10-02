@@ -228,6 +228,8 @@ public class RealmsCreateWorldScreen extends RealmsScreen {
 		if (template != null) {
 			this.runTasks(new ResettingWorldTemplateTask(template, this.serverData.id, this.taskTitle, this.callback));
 		}
+
+		RealmsMainScreen.resetServerList();
 	}
 
 	private void runTasks(LongRunningTask task) {

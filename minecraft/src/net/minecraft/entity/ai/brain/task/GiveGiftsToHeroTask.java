@@ -73,7 +73,7 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 		this.startTime = l;
 		PlayerEntity playerEntity = (PlayerEntity)this.getNearestPlayerIfHero(villagerEntity).get();
 		villagerEntity.getBrain().remember(MemoryModuleType.INTERACTION_TARGET, playerEntity);
-		LookTargetUtil.lookAt(villagerEntity, playerEntity);
+		TargetUtil.lookAt(villagerEntity, playerEntity);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -82,14 +82,14 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		PlayerEntity playerEntity = (PlayerEntity)this.getNearestPlayerIfHero(villagerEntity).get();
-		LookTargetUtil.lookAt(villagerEntity, playerEntity);
+		TargetUtil.lookAt(villagerEntity, playerEntity);
 		if (this.isCloseEnough(villagerEntity, playerEntity)) {
 			if (l - this.startTime > 20L) {
 				this.giveGifts(serverWorld, villagerEntity, playerEntity);
 				this.done = true;
 			}
 		} else {
-			LookTargetUtil.walkTowards(villagerEntity, playerEntity, 0.5F, 5);
+			TargetUtil.walkTowards(villagerEntity, playerEntity, 0.5F, 5);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 	}
 
 	private void giveGifts(ServerWorld world, VillagerEntity villager, LivingEntity recipient) {
-		villager.forEachGiftedItem(world, getGiftLootTable(villager), (worldx, stack) -> LookTargetUtil.give(villager, stack, recipient.getPos()));
+		villager.forEachGiftedItem(world, getGiftLootTable(villager), (worldx, stack) -> TargetUtil.give(villager, stack, recipient.getPos()));
 	}
 
 	private static RegistryKey<LootTable> getGiftLootTable(VillagerEntity villager) {

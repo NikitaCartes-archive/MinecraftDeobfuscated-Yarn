@@ -75,12 +75,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= 2;
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<ShieldDecorationRecipe> getSerializer() {
 		return RecipeSerializer.SHIELD_DECORATION;
 	}
 }

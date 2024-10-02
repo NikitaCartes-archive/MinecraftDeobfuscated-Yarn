@@ -10,8 +10,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.InstrumentTags;
 
 public class VanillaInstrumentTagProvider extends TagProvider<Instrument> {
-	public VanillaInstrumentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.INSTRUMENT, registryLookupFuture);
+	public VanillaInstrumentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.INSTRUMENT, registriesFuture);
 	}
 
 	@Override

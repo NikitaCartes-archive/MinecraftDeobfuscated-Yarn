@@ -27,7 +27,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.brain.task.LookTargetUtil;
+import net.minecraft.entity.ai.brain.task.TargetUtil;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -332,7 +332,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 			this.swingHand(Hand.MAIN_HAND);
 
 			for (ItemStack itemStack4 : this.getInventory().clearToList()) {
-				LookTargetUtil.give(this, itemStack4, this.getPos());
+				TargetUtil.give(this, itemStack4, this.getPos());
 			}
 
 			this.getBrain().forget(MemoryModuleType.LIKED_PLAYER);

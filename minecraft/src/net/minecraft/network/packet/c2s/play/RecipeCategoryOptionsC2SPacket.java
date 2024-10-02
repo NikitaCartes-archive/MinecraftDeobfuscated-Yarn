@@ -6,24 +6,24 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.book.RecipeBookType;
 
 public class RecipeCategoryOptionsC2SPacket implements Packet<ServerPlayPacketListener> {
 	public static final PacketCodec<PacketByteBuf, RecipeCategoryOptionsC2SPacket> CODEC = Packet.createCodec(
 		RecipeCategoryOptionsC2SPacket::write, RecipeCategoryOptionsC2SPacket::new
 	);
-	private final RecipeBookCategory category;
+	private final RecipeBookType category;
 	private final boolean guiOpen;
 	private final boolean filteringCraftable;
 
-	public RecipeCategoryOptionsC2SPacket(RecipeBookCategory category, boolean guiOpen, boolean filteringCraftable) {
+	public RecipeCategoryOptionsC2SPacket(RecipeBookType category, boolean guiOpen, boolean filteringCraftable) {
 		this.category = category;
 		this.guiOpen = guiOpen;
 		this.filteringCraftable = filteringCraftable;
 	}
 
 	private RecipeCategoryOptionsC2SPacket(PacketByteBuf buf) {
-		this.category = buf.readEnumConstant(RecipeBookCategory.class);
+		this.category = buf.readEnumConstant(RecipeBookType.class);
 		this.guiOpen = buf.readBoolean();
 		this.filteringCraftable = buf.readBoolean();
 	}
@@ -43,7 +43,7 @@ public class RecipeCategoryOptionsC2SPacket implements Packet<ServerPlayPacketLi
 		serverPlayPacketListener.onRecipeCategoryOptions(this);
 	}
 
-	public RecipeBookCategory getCategory() {
+	public RecipeBookType getCategory() {
 		return this.category;
 	}
 

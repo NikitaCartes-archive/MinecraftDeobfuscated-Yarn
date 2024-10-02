@@ -10,8 +10,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
 
 public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
-	public VanillaDamageTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> maxChainedNeighborUpdates) {
-		super(output, RegistryKeys.DAMAGE_TYPE, maxChainedNeighborUpdates);
+	public VanillaDamageTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.DAMAGE_TYPE, registriesFuture);
 	}
 
 	@Override

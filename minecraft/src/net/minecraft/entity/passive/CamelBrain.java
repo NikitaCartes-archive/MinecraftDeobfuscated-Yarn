@@ -14,20 +14,20 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.FleeTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
+import net.minecraft.entity.ai.brain.task.GoToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
-import net.minecraft.entity.ai.brain.task.RandomLookAroundTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
-import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
+import net.minecraft.entity.ai.brain.task.TickCooldownTask;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
+import net.minecraft.entity.ai.brain.task.WalkTowardsClosestAdultTask;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -64,7 +64,7 @@ public class CamelBrain {
 	protected static void initialize(CamelEntity camel, Random random) {
 	}
 
-	public static Brain.Profile<CamelEntity> createProfile() {
+	public static Brain.Profile<CamelEntity> createBrainProfile() {
 		return Brain.createProfile(MEMORY_MODULES, SENSORS);
 	}
 
@@ -82,12 +82,12 @@ public class CamelBrain {
 			Activity.CORE,
 			0,
 			ImmutableList.of(
-				new StayAboveWaterTask(0.8F),
+				new StayAboveWaterTask<>(0.8F),
 				new CamelBrain.CamelWalkTask(4.0F),
-				new LookAroundTask(45, 90),
+				new UpdateLookControlTask(45, 90),
 				new MoveToTargetTask(),
-				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
-				new TemptationCooldownTask(MemoryModuleType.GAZE_COOLDOWN_TICKS)
+				new TickCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
+				new TickCooldownTask(MemoryModuleType.GAZE_COOLDOWN_TICKS)
 			)
 		);
 	}
@@ -103,18 +103,18 @@ public class CamelBrain {
 					new RandomTask<>(
 						ImmutableList.of(
 							Pair.of(new TemptTask(entity -> 2.5F, entity -> entity.isBaby() ? 2.5 : 3.5), 1),
-							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, 2.5F)), 1)
+							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), WalkTowardsClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, 2.5F)), 1)
 						)
 					)
 				),
-				Pair.of(3, new RandomLookAroundTask(UniformIntProvider.create(150, 250), 30.0F, 0.0F, 0.0F)),
+				Pair.of(3, new LookAroundTask(UniformIntProvider.create(150, 250), 30.0F, 0.0F, 0.0F)),
 				Pair.of(
 					4,
 					new RandomTask<>(
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
 						ImmutableList.of(
 							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), StrollTask.create(2.0F)), 1),
-							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), GoTowardsLookTargetTask.create(2.0F, 3)), 1),
+							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), GoToLookTargetTask.create(2.0F, 3)), 1),
 							Pair.of(new CamelBrain.SitOrStandTask(20), 1),
 							Pair.of(new WaitTask(30, 60), 1)
 						)

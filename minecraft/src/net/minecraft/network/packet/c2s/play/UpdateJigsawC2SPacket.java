@@ -47,7 +47,7 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.target = buf.readIdentifier();
 		this.pool = buf.readIdentifier();
 		this.finalState = buf.readString();
-		this.jointType = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(buf.readString()).orElse(JigsawBlockEntity.Joint.ALIGNED);
+		this.jointType = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.CODEC.byId(buf.readString(), JigsawBlockEntity.Joint.ALIGNED);
 		this.selectionPriority = buf.readVarInt();
 		this.placementPriority = buf.readVarInt();
 	}

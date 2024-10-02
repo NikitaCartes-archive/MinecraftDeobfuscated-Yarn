@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +16,8 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlacedAdvancement;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.RegistryKeyArgumentType;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -26,10 +26,6 @@ public class AdvancementCommand {
 	private static final Dynamic2CommandExceptionType CRITERION_NOT_FOUND_EXCEPTION = new Dynamic2CommandExceptionType(
 		(advancement, criterion) -> Text.stringifiedTranslatable("commands.advancement.criterionNotFound", advancement, criterion)
 	);
-	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
-		Collection<AdvancementEntry> collection = context.getSource().getServer().getAdvancementLoader().getAdvancements();
-		return CommandSource.suggestIdentifiers(collection.stream().map(AdvancementEntry::id), builder);
-	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -42,21 +38,20 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.ONLY)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.ONLY)
 														)
 												)
 												.then(
 													CommandManager.argument("criterion", StringArgumentType.greedyString())
 														.suggests(
 															(context, builder) -> CommandSource.suggestMatching(
-																	IdentifierArgumentType.getAdvancementArgument(context, "advancement").value().criteria().keySet(), builder
+																	RegistryKeyArgumentType.getAdvancementEntry(context, "advancement").value().criteria().keySet(), builder
 																)
 														)
 														.executes(
@@ -64,7 +59,7 @@ public class AdvancementCommand {
 																	context.getSource(),
 																	EntityArgumentType.getPlayers(context, "targets"),
 																	AdvancementCommand.Operation.GRANT,
-																	IdentifierArgumentType.getAdvancementArgument(context, "advancement"),
+																	RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"),
 																	StringArgumentType.getString(context, "criterion")
 																)
 														)
@@ -74,14 +69,13 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.FROM)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.FROM)
 														)
 												)
 										)
@@ -89,14 +83,13 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.UNTIL)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.UNTIL)
 														)
 												)
 										)
@@ -104,14 +97,13 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.THROUGH)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.THROUGH)
 														)
 												)
 										)
@@ -136,21 +128,20 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.ONLY)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.ONLY)
 														)
 												)
 												.then(
 													CommandManager.argument("criterion", StringArgumentType.greedyString())
 														.suggests(
 															(context, builder) -> CommandSource.suggestMatching(
-																	IdentifierArgumentType.getAdvancementArgument(context, "advancement").value().criteria().keySet(), builder
+																	RegistryKeyArgumentType.getAdvancementEntry(context, "advancement").value().criteria().keySet(), builder
 																)
 														)
 														.executes(
@@ -158,7 +149,7 @@ public class AdvancementCommand {
 																	context.getSource(),
 																	EntityArgumentType.getPlayers(context, "targets"),
 																	AdvancementCommand.Operation.REVOKE,
-																	IdentifierArgumentType.getAdvancementArgument(context, "advancement"),
+																	RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"),
 																	StringArgumentType.getString(context, "criterion")
 																)
 														)
@@ -168,14 +159,13 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.FROM)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.FROM)
 														)
 												)
 										)
@@ -183,14 +173,13 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.UNTIL)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.UNTIL)
 														)
 												)
 										)
@@ -198,14 +187,13 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
-												.suggests(SUGGESTION_PROVIDER)
+											CommandManager.argument("advancement", RegistryKeyArgumentType.registryKey(RegistryKeys.ADVANCEMENT))
 												.executes(
 													context -> executeAdvancement(
 															context.getSource(),
 															EntityArgumentType.getPlayers(context, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(context, IdentifierArgumentType.getAdvancementArgument(context, "advancement"), AdvancementCommand.Selection.THROUGH)
+															select(context, RegistryKeyArgumentType.getAdvancementEntry(context, "advancement"), AdvancementCommand.Selection.THROUGH)
 														)
 												)
 										)

@@ -53,6 +53,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EvokerEntity.LookAtTargetOrWololoTarget());
 		this.goalSelector.add(2, new FleeEntityGoal(this, PlayerEntity.class, 8.0F, 0.6, 1.0));
+		this.goalSelector.add(3, new FleeEntityGoal(this, CreakingEntity.class, 8.0F, 1.0, 1.2));
 		this.goalSelector.add(4, new EvokerEntity.SummonVexGoal());
 		this.goalSelector.add(5, new EvokerEntity.ConjureFangsGoal());
 		this.goalSelector.add(6, new EvokerEntity.WololoGoal());

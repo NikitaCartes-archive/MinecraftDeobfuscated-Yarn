@@ -10,8 +10,8 @@ import net.minecraft.world.gen.FlatLevelGeneratorPreset;
 import net.minecraft.world.gen.FlatLevelGeneratorPresets;
 
 public class VanillaFlatLevelGeneratorPresetTagProvider extends TagProvider<FlatLevelGeneratorPreset> {
-	public VanillaFlatLevelGeneratorPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, registryLookupFuture);
+	public VanillaFlatLevelGeneratorPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, registriesFuture);
 	}
 
 	@Override

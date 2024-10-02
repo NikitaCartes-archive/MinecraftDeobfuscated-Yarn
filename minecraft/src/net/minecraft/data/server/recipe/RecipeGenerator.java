@@ -45,6 +45,7 @@ import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
@@ -146,12 +147,12 @@ public abstract class RecipeGenerator {
 			.offerTo(this.exporter, getItemPath(result) + "_smithing");
 	}
 
-	protected void offerSmithingTrimRecipe(Item input, Identifier recipeId) {
+	protected void offerSmithingTrimRecipe(Item input, RegistryKey<Recipe<?>> registryKey) {
 		SmithingTrimRecipeJsonBuilder.create(
 				Ingredient.ofItem(input), this.ingredientFromTag(ItemTags.TRIMMABLE_ARMOR), this.ingredientFromTag(ItemTags.TRIM_MATERIALS), RecipeCategory.MISC
 			)
 			.criterion("has_smithing_trim_template", this.conditionsFromItem(input))
-			.offerTo(this.exporter, recipeId);
+			.offerTo(this.exporter, registryKey);
 	}
 
 	protected void offer2x2CompactingRecipe(RecipeCategory category, ItemConvertible output, ItemConvertible input) {
@@ -515,7 +516,7 @@ public abstract class RecipeGenerator {
 			.input(compactItem)
 			.group(reverseGroup)
 			.criterion(hasItem(compactItem), this.conditionsFromItem(compactItem))
-			.offerTo(this.exporter, Identifier.of(reverseId));
+			.offerTo(this.exporter, RegistryKey.of(RegistryKeys.RECIPE, Identifier.of(reverseId)));
 		this.createShaped(compactingCategory, compactItem)
 			.input('#', baseItem)
 			.pattern("###")
@@ -523,7 +524,7 @@ public abstract class RecipeGenerator {
 			.pattern("###")
 			.group(compactingGroup)
 			.criterion(hasItem(baseItem), this.conditionsFromItem(baseItem))
-			.offerTo(this.exporter, Identifier.of(compactingId));
+			.offerTo(this.exporter, RegistryKey.of(RegistryKeys.RECIPE, Identifier.of(compactingId)));
 	}
 
 	protected void offerSmithingTemplateCopyingRecipe(ItemConvertible template, ItemConvertible resource) {
@@ -756,29 +757,29 @@ public abstract class RecipeGenerator {
 
 	protected abstract static class RecipeProvider implements DataProvider {
 		private final DataOutput output;
-		private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+		private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 
-		protected RecipeProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		protected RecipeProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
 			this.output = output;
-			this.registryLookupFuture = registryLookupFuture;
+			this.registriesFuture = registriesFuture;
 		}
 
 		@Override
 		public final CompletableFuture<?> run(DataWriter writer) {
-			return this.registryLookupFuture
+			return this.registriesFuture
 				.thenCompose(
-					wrapperLookup -> {
+					registries -> {
 						final DataOutput.PathResolver pathResolver = this.output.getResolver(RegistryKeys.RECIPE);
 						final DataOutput.PathResolver pathResolver2 = this.output.getResolver(RegistryKeys.ADVANCEMENT);
-						final Set<Identifier> set = Sets.<Identifier>newHashSet();
+						final Set<RegistryKey<Recipe<?>>> set = Sets.<RegistryKey<Recipe<?>>>newHashSet();
 						final List<CompletableFuture<?>> list = new ArrayList();
 						RecipeExporter recipeExporter = new RecipeExporter() {
 							@Override
-							public void accept(Identifier recipeId, Recipe<?> recipe, @Nullable AdvancementEntry advancement) {
-								if (!set.add(recipeId)) {
-									throw new IllegalStateException("Duplicate recipe " + recipeId);
+							public void accept(RegistryKey<Recipe<?>> key, Recipe<?> recipe, @Nullable AdvancementEntry advancement) {
+								if (!set.add(key)) {
+									throw new IllegalStateException("Duplicate recipe " + key);
 								} else {
-									this.addRecipe(recipeId, recipe);
+									this.addRecipe(key, recipe);
 									if (advancement != null) {
 										this.addRecipeAdvancement(advancement);
 									}
@@ -798,17 +799,17 @@ public abstract class RecipeGenerator {
 								this.addRecipeAdvancement(advancementEntry);
 							}
 
-							private void addRecipe(Identifier id, Recipe<?> recipe) {
-								list.add(DataProvider.writeCodecToPath(writer, wrapperLookup, Recipe.CODEC, recipe, pathResolver.resolveJson(id)));
+							private void addRecipe(RegistryKey<Recipe<?>> key, Recipe<?> recipe) {
+								list.add(DataProvider.writeCodecToPath(writer, registries, Recipe.CODEC, recipe, pathResolver.resolveJson(key.getValue())));
 							}
 
 							private void addRecipeAdvancement(AdvancementEntry advancementEntry) {
 								list.add(
-									DataProvider.writeCodecToPath(writer, wrapperLookup, Advancement.CODEC, advancementEntry.value(), pathResolver2.resolveJson(advancementEntry.id()))
+									DataProvider.writeCodecToPath(writer, registries, Advancement.CODEC, advancementEntry.value(), pathResolver2.resolveJson(advancementEntry.id()))
 								);
 							}
 						};
-						this.getRecipeGenerator(wrapperLookup, recipeExporter).generate();
+						this.getRecipeGenerator(registries, recipeExporter).generate();
 						return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new));
 					}
 				);

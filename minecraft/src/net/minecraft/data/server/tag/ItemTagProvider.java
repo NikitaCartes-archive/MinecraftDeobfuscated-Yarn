@@ -17,21 +17,19 @@ public abstract class ItemTagProvider extends ValueLookupTagProvider<Item> {
 	private final Map<TagKey<Block>, TagKey<Item>> blockTagsToCopy = new HashMap();
 
 	public ItemTagProvider(
-		DataOutput output,
-		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
-		CompletableFuture<TagProvider.TagLookup<Block>> blockTagLookupFuture
+		DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture, CompletableFuture<TagProvider.TagLookup<Block>> blockTagLookupFuture
 	) {
-		super(output, RegistryKeys.ITEM, registryLookupFuture, item -> item.getRegistryEntry().registryKey());
+		super(output, RegistryKeys.ITEM, registriesFuture, item -> item.getRegistryEntry().registryKey());
 		this.blockTags = blockTagLookupFuture;
 	}
 
 	public ItemTagProvider(
 		DataOutput output,
-		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
+		CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture,
 		CompletableFuture<TagProvider.TagLookup<Item>> parentTagLookupFuture,
 		CompletableFuture<TagProvider.TagLookup<Block>> blockTagLookupFuture
 	) {
-		super(output, RegistryKeys.ITEM, registryLookupFuture, parentTagLookupFuture, item -> item.getRegistryEntry().registryKey());
+		super(output, RegistryKeys.ITEM, registriesFuture, parentTagLookupFuture, item -> item.getRegistryEntry().registryKey());
 		this.blockTags = blockTagLookupFuture;
 	}
 
@@ -40,8 +38,8 @@ public abstract class ItemTagProvider extends ValueLookupTagProvider<Item> {
 	}
 
 	@Override
-	protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
-		return super.getRegistryLookupFuture().thenCombine(this.blockTags, (registries, blockTags) -> {
+	protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistriesFuture() {
+		return super.getRegistriesFuture().thenCombine(this.blockTags, (registries, blockTags) -> {
 			this.blockTagsToCopy.forEach((blockTag, itemTag) -> {
 				TagBuilder tagBuilder = this.getTagBuilder(itemTag);
 				Optional<TagBuilder> optional = (Optional<TagBuilder>)blockTags.apply(blockTag);

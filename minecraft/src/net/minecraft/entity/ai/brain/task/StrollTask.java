@@ -59,7 +59,7 @@ public class StrollTask {
 
 		for (int[] is : RADII) {
 			if (vec3d == null) {
-				vec3d2 = LookTargetUtil.find(entity, is[0], is[1]);
+				vec3d2 = TargetUtil.find(entity, is[0], is[1]);
 			} else {
 				vec3d2 = entity.getPos().add(entity.getPos().relativize(vec3d).normalize().multiply((double)is[0], (double)is[1], (double)is[0]));
 			}

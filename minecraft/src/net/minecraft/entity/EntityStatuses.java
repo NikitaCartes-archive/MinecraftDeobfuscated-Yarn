@@ -59,4 +59,5 @@ public class EntityStatuses {
 	public static final byte START_DIGGING = 63;
 	public static final byte PEEKING = 64;
 	public static final byte BREAK_BODY = 65;
+	public static final byte INVULNERABLE_CREAKING_HIT = 66;
 }

@@ -423,6 +423,16 @@ public enum Direction implements StringIdentifiable {
 			public double choose(double x, double y, double z) {
 				return x;
 			}
+
+			@Override
+			public Direction getPositiveDirection() {
+				return Direction.EAST;
+			}
+
+			@Override
+			public Direction getNegativeDirection() {
+				return Direction.WEST;
+			}
 		},
 		Y("y") {
 			@Override
@@ -434,6 +444,16 @@ public enum Direction implements StringIdentifiable {
 			public double choose(double x, double y, double z) {
 				return y;
 			}
+
+			@Override
+			public Direction getPositiveDirection() {
+				return Direction.UP;
+			}
+
+			@Override
+			public Direction getNegativeDirection() {
+				return Direction.DOWN;
+			}
 		},
 		Z("z") {
 			@Override
@@ -444,6 +464,16 @@ public enum Direction implements StringIdentifiable {
 			@Override
 			public double choose(double x, double y, double z) {
 				return z;
+			}
+
+			@Override
+			public Direction getPositiveDirection() {
+				return Direction.SOUTH;
+			}
+
+			@Override
+			public Direction getNegativeDirection() {
+				return Direction.NORTH;
 			}
 		};
 
@@ -470,6 +500,14 @@ public enum Direction implements StringIdentifiable {
 
 		public boolean isHorizontal() {
 			return this == X || this == Z;
+		}
+
+		public abstract Direction getPositiveDirection();
+
+		public abstract Direction getNegativeDirection();
+
+		public Direction[] getDirections() {
+			return new Direction[]{this.getPositiveDirection(), this.getNegativeDirection()};
 		}
 
 		public String toString() {

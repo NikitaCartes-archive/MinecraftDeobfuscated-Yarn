@@ -1,6 +1,5 @@
 package net.minecraft.screen;
 
-import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,26 +14,28 @@ import net.minecraft.screen.slot.Slot;
 public abstract class ForgingScreenHandler extends ScreenHandler {
 	private static final int field_41901 = 9;
 	private static final int field_41902 = 3;
+	private static final int field_54595 = 0;
 	protected final ScreenHandlerContext context;
 	protected final PlayerEntity player;
 	protected final Inventory input;
-	private final List<Integer> inputSlotIndices;
 	protected final CraftingResultInventory output = new CraftingResultInventory();
 	private final int resultSlotIndex;
 
-	protected abstract boolean canTakeOutput(PlayerEntity player, boolean present);
+	protected boolean canTakeOutput(PlayerEntity player, boolean present) {
+		return true;
+	}
 
 	protected abstract void onTakeOutput(PlayerEntity player, ItemStack stack);
 
 	protected abstract boolean canUse(BlockState state);
 
-	public ForgingScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
+	public ForgingScreenHandler(
+		@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context, ForgingSlotsManager forgingSlotsManager
+	) {
 		super(type, syncId);
 		this.context = context;
 		this.player = playerInventory.player;
-		ForgingSlotsManager forgingSlotsManager = this.getForgingSlotsManager();
 		this.input = this.createInputInventory(forgingSlotsManager.getInputSlotCount());
-		this.inputSlotIndices = forgingSlotsManager.getInputSlotIndices();
 		this.resultSlotIndex = forgingSlotsManager.getResultSlotIndex();
 		this.addInputSlots(forgingSlotsManager);
 		this.addResultSlot(forgingSlotsManager);
@@ -74,8 +75,6 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 	}
 
 	public abstract void updateResult();
-
-	protected abstract ForgingSlotsManager getForgingSlotsManager();
 
 	private SimpleInventory createInputInventory(int size) {
 		return new SimpleInventory(size) {
@@ -121,13 +120,12 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 				}
 
 				slot2.onQuickTransfer(itemStack2, itemStack);
-			} else if (this.inputSlotIndices.contains(slot)) {
+			} else if (slot >= 0 && slot < this.getResultSlotIndex()) {
 				if (!this.insertItem(itemStack2, i, j, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (this.isValidIngredient(itemStack2) && slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerHotbarEndIndex()) {
-				int k = this.getSlotFor(itemStack);
-				if (!this.insertItem(itemStack2, k, this.getResultSlotIndex(), false)) {
+				if (!this.insertItem(itemStack2, 0, this.getResultSlotIndex(), false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerInventoryEndIndex()) {
@@ -158,10 +156,6 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 
 	protected boolean isValidIngredient(ItemStack stack) {
 		return true;
-	}
-
-	public int getSlotFor(ItemStack stack) {
-		return this.input.isEmpty() ? 0 : (Integer)this.inputSlotIndices.get(0);
 	}
 
 	public int getResultSlotIndex() {

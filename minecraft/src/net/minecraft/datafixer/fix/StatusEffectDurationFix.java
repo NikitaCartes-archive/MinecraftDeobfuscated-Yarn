@@ -39,12 +39,11 @@ public class StatusEffectDurationFix extends DataFix {
 				"EffectDurationPlayer", schema.getType(TypeReferences.PLAYER), playerTyped -> playerTyped.update(DSL.remainderFinder(), this::fixEntityStatusEffects)
 			),
 			this.fixTypeEverywhereTyped("EffectDurationItem", type, itemStackTyped -> {
-				Optional<Pair<String, String>> optional = itemStackTyped.getOptional(opticFinder);
-				if (optional.filter(POTION_ITEM_IDS::contains).isPresent()) {
-					Optional<? extends Typed<?>> optional2 = itemStackTyped.getOptionalTyped(opticFinder2);
-					if (optional2.isPresent()) {
-						Dynamic<?> dynamic = ((Typed)optional2.get()).get(DSL.remainderFinder());
-						Typed<?> typed = ((Typed)optional2.get()).set(DSL.remainderFinder(), dynamic.update("CustomPotionEffects", this::fixPotionEffects));
+				if (itemStackTyped.getOptional(opticFinder).filter(pair -> POTION_ITEM_IDS.contains(pair.getSecond())).isPresent()) {
+					Optional<? extends Typed<?>> optional = itemStackTyped.getOptionalTyped(opticFinder2);
+					if (optional.isPresent()) {
+						Dynamic<?> dynamic = ((Typed)optional.get()).get(DSL.remainderFinder());
+						Typed<?> typed = ((Typed)optional.get()).set(DSL.remainderFinder(), dynamic.update("CustomPotionEffects", this::fixPotionEffects));
 						return itemStackTyped.set(opticFinder2, typed);
 					}
 				}

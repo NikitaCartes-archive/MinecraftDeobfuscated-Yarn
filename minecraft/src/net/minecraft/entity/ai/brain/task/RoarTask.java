@@ -37,7 +37,7 @@ public class RoarTask extends MultiTickTask<WardenEntity> {
 		brain.remember(MemoryModuleType.ROAR_SOUND_DELAY, Unit.INSTANCE, 25L);
 		brain.forget(MemoryModuleType.WALK_TARGET);
 		LivingEntity livingEntity = (LivingEntity)wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ROAR_TARGET).get();
-		LookTargetUtil.lookAt(wardenEntity, livingEntity);
+		TargetUtil.lookAt(wardenEntity, livingEntity);
 		wardenEntity.setPose(EntityPose.ROARING);
 		wardenEntity.increaseAngerAt(livingEntity, 20, false);
 	}

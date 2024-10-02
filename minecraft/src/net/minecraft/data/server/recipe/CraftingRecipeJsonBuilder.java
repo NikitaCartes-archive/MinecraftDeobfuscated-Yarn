@@ -4,9 +4,12 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public interface CraftingRecipeJsonBuilder {
@@ -18,10 +21,10 @@ public interface CraftingRecipeJsonBuilder {
 
 	Item getOutputItem();
 
-	void offerTo(RecipeExporter exporter, Identifier recipeId);
+	void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey);
 
 	default void offerTo(RecipeExporter exporter) {
-		this.offerTo(exporter, getItemId(this.getOutputItem()));
+		this.offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, getItemId(this.getOutputItem())));
 	}
 
 	default void offerTo(RecipeExporter exporter, String recipePath) {
@@ -30,7 +33,7 @@ public interface CraftingRecipeJsonBuilder {
 		if (identifier2.equals(identifier)) {
 			throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");
 		} else {
-			this.offerTo(exporter, identifier2);
+			this.offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, identifier2));
 		}
 	}
 

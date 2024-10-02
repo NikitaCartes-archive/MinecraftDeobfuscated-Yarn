@@ -49,8 +49,11 @@ import net.minecraft.item.Instrument;
 import net.minecraft.item.equipment.trim.ArmorTrim;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
@@ -206,7 +209,9 @@ public class DataComponentTypes {
 	public static final ComponentType<JukeboxPlayableComponent> JUKEBOX_PLAYABLE = register(
 		"jukebox_playable", builder -> builder.codec(JukeboxPlayableComponent.CODEC).packetCodec(JukeboxPlayableComponent.PACKET_CODEC)
 	);
-	public static final ComponentType<List<Identifier>> RECIPES = register("recipes", builder -> builder.codec(Identifier.CODEC.listOf()).cache());
+	public static final ComponentType<List<RegistryKey<Recipe<?>>>> RECIPES = register(
+		"recipes", builder -> builder.codec(RegistryKey.createCodec(RegistryKeys.RECIPE).listOf()).cache()
+	);
 	public static final ComponentType<LodestoneTrackerComponent> LODESTONE_TRACKER = register(
 		"lodestone_tracker", builder -> builder.codec(LodestoneTrackerComponent.CODEC).packetCodec(LodestoneTrackerComponent.PACKET_CODEC).cache()
 	);

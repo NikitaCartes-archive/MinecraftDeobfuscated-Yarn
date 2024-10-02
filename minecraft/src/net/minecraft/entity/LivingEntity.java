@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
@@ -181,6 +182,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public static final float BABY_SCALE_FACTOR = 0.5F;
 	public static final float field_47756 = 0.5F;
 	public static final String ATTRIBUTES_NBT_KEY = "attributes";
+	public static final Predicate<LivingEntity> NOT_WEARING_GAZE_DISGUISE_PREDICATE = entity -> {
+		if (entity instanceof PlayerEntity playerEntity) {
+			ItemStack itemStack = playerEntity.getEquippedStack(EquipmentSlot.HEAD);
+			return !itemStack.isIn(ItemTags.GAZE_DISGUISE_EQUIPMENT);
+		} else {
+			return true;
+		}
+	};
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.<RegistryEntry<StatusEffect>, StatusEffectInstance>newHashMap();
@@ -1683,6 +1692,30 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return !this.isRemoved() && this.getHealth() > 0.0F;
 	}
 
+	public boolean isEntityLookingAtMe(
+		LivingEntity entity, double d, boolean bl, boolean visualShape, Predicate<LivingEntity> predicate, DoubleSupplier... entityYChecks
+	) {
+		if (!predicate.test(entity)) {
+			return false;
+		} else {
+			Vec3d vec3d = entity.getRotationVec(1.0F).normalize();
+
+			for (DoubleSupplier doubleSupplier : entityYChecks) {
+				Vec3d vec3d2 = new Vec3d(this.getX() - entity.getX(), doubleSupplier.getAsDouble() - entity.getEyeY(), this.getZ() - entity.getZ());
+				double e = vec3d2.length();
+				vec3d2 = vec3d2.normalize();
+				double f = vec3d.dotProduct(vec3d2);
+				if (f > 1.0 - d / (bl ? e : 1.0)) {
+					return entity.canSee(
+						this, visualShape ? RaycastContext.ShapeType.VISUAL : RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, doubleSupplier
+					);
+				}
+			}
+
+			return false;
+		}
+	}
+
 	@Override
 	public int getSafeFallDistance() {
 		return this.getSafeFallDistance(0.0F);
@@ -2794,11 +2827,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.jumpingCooldown--;
 		}
 
-		if (this.isLogicalSideForUpdatingMovement()) {
-			this.bodyTrackingIncrements = 0;
-			this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
-		}
-
 		if (this.bodyTrackingIncrements > 0) {
 			this.lerpPosAndRotation(this.bodyTrackingIncrements, this.serverX, this.serverY, this.serverZ, this.serverYaw, this.serverPitch);
 			this.bodyTrackingIncrements--;
@@ -2882,10 +2910,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.onLanding();
 		}
 
-		label115: {
+		label112: {
 			if (this.getControllingPassenger() instanceof PlayerEntity playerEntity && this.isAlive()) {
 				this.travelControlled(playerEntity, vec3d2);
-				break label115;
+				break label112;
 			}
 
 			this.travel(vec3d2);
@@ -3052,6 +3080,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
+	public void resetLerp() {
+		this.bodyTrackingIncrements = 0;
+	}
+
+	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.serverX = x;
 		this.serverY = y;
@@ -3116,15 +3149,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public boolean canSee(Entity entity) {
+		return this.canSee(entity, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity::getEyeY);
+	}
+
+	public boolean canSee(Entity entity, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling, DoubleSupplier entityY) {
 		if (entity.getWorld() != this.getWorld()) {
 			return false;
 		} else {
 			Vec3d vec3d = new Vec3d(this.getX(), this.getEyeY(), this.getZ());
-			Vec3d vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
+			Vec3d vec3d2 = new Vec3d(entity.getX(), entityY.getAsDouble(), entity.getZ());
 			return vec3d2.distanceTo(vec3d) > 128.0
 				? false
-				: this.getWorld().raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)).getType()
-					== HitResult.Type.MISS;
+				: this.getWorld().raycast(new RaycastContext(vec3d, vec3d2, shapeType, fluidHandling, this)).getType() == HitResult.Type.MISS;
 		}
 	}
 

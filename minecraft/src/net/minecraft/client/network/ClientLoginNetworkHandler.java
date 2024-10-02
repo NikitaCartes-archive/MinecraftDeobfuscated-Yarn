@@ -251,6 +251,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	public void addCustomCrashReportInfo(CrashReport report, CrashReportSection section) {
 		section.add("Server type", (CrashCallable<String>)(() -> this.serverInfo != null ? this.serverInfo.getServerType().toString() : "<unknown>"));
 		section.add("Login phase", (CrashCallable<String>)(() -> ((ClientLoginNetworkHandler.State)this.state.get()).toString()));
+		section.add("Is Local", (CrashCallable<String>)(() -> String.valueOf(this.connection.isLocal())));
 	}
 
 	@Environment(EnvType.CLIENT)

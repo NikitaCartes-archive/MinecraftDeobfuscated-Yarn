@@ -24,6 +24,7 @@ public final class ItemTags {
 	public static final TagKey<Item> LOGS_THAT_BURN = of("logs_that_burn");
 	public static final TagKey<Item> LOGS = of("logs");
 	public static final TagKey<Item> DARK_OAK_LOGS = of("dark_oak_logs");
+	public static final TagKey<Item> PALE_OAK_LOGS = of("pale_oak_logs");
 	public static final TagKey<Item> OAK_LOGS = of("oak_logs");
 	public static final TagKey<Item> BIRCH_LOGS = of("birch_logs");
 	public static final TagKey<Item> ACACIA_LOGS = of("acacia_logs");
@@ -174,6 +175,7 @@ public final class ItemTags {
 	public static final TagKey<Item> VANISHING_ENCHANTABLE = of("enchantable/vanishing");
 	public static final TagKey<Item> MACE_ENCHANTABLE = of("enchantable/mace");
 	public static final TagKey<Item> MAP_INVISIBILITY_EQUIPMENT = of("map_invisibility_equipment");
+	public static final TagKey<Item> GAZE_DISGUISE_EQUIPMENT = of("gaze_disguise_equipment");
 
 	private ItemTags() {
 	}

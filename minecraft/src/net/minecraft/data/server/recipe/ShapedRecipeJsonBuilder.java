@@ -17,11 +17,12 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RawShapedRecipe;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 
 public class ShapedRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RegistryEntryLookup<Item> registryLookup;
@@ -99,11 +100,11 @@ public class ShapedRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	}
 
 	@Override
-	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-		RawShapedRecipe rawShapedRecipe = this.validate(recipeId);
+	public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey) {
+		RawShapedRecipe rawShapedRecipe = this.validate(recipeKey);
 		Advancement.Builder builder = exporter.getAdvancementBuilder()
-			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
-			.rewards(AdvancementRewards.Builder.recipe(recipeId))
+			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeKey))
+			.rewards(AdvancementRewards.Builder.recipe(recipeKey))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.criteria.forEach(builder::criterion);
 		ShapedRecipe shapedRecipe = new ShapedRecipe(
@@ -113,12 +114,12 @@ public class ShapedRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 			new ItemStack(this.output, this.count),
 			this.showNotification
 		);
-		exporter.accept(recipeId, shapedRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
+		exporter.accept(recipeKey, shapedRecipe, builder.build(recipeKey.getValue().withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 
-	private RawShapedRecipe validate(Identifier recipeId) {
+	private RawShapedRecipe validate(RegistryKey<Recipe<?>> recipeKey) {
 		if (this.criteria.isEmpty()) {
-			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
+			throw new IllegalStateException("No way of obtaining recipe " + recipeKey.getValue());
 		} else {
 			return RawShapedRecipe.create(this.inputs, this.pattern);
 		}

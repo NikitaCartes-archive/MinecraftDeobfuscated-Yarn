@@ -1,6 +1,7 @@
 package net.minecraft.state.property;
 
 import java.util.function.Predicate;
+import net.minecraft.block.CreakingHeartBlock;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BedPart;
@@ -105,6 +106,10 @@ public class Properties {
 	 * A property that specifies if a block is lit.
 	 */
 	public static final BooleanProperty LIT = BooleanProperty.of("lit");
+	/**
+	 * A property that specifies if a hanging moss block is the tip.
+	 */
+	public static final BooleanProperty TIP = BooleanProperty.of("tip");
 	/**
 	 * A property that specifies if a repeater is locked.
 	 */
@@ -528,6 +533,10 @@ public class Properties {
 	 * A property that specifies the state of a vault.
 	 */
 	public static final EnumProperty<VaultState> VAULT_STATE = EnumProperty.of("vault_state", VaultState.class);
+	/**
+	 * A property that specifies the state of a creaking heart.
+	 */
+	public static final EnumProperty<CreakingHeartBlock.Creaking> CREAKING = EnumProperty.of("creaking", CreakingHeartBlock.Creaking.class);
 	/**
 	 * A property that specifies whether a trial spawner or vault is ominous.
 	 */

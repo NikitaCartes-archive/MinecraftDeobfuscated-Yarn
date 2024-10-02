@@ -1,19 +1,21 @@
 package net.minecraft.screen;
 
 import java.util.List;
-import java.util.OptionalInt;
-import javax.annotation.Nullable;
+import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipePropertySet;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmithingRecipe;
 import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
@@ -28,26 +30,34 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	private static final int OUTPUT_X = 98;
 	public static final int SLOT_Y = 48;
 	private final World world;
-	@Nullable
-	private RecipeEntry<SmithingRecipe> currentRecipe;
-	private final List<RecipeEntry<SmithingRecipe>> recipes;
+	private final RecipePropertySet basePropertySet;
+	private final RecipePropertySet templatePropertySet;
+	private final RecipePropertySet additionPropertySet;
 
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory) {
 		this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
 	}
 
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-		super(ScreenHandlerType.SMITHING, syncId, playerInventory, context);
-		this.world = playerInventory.player.getWorld();
-		this.recipes = this.world.getRecipeManager().listAllOfType(RecipeType.SMITHING);
+		this(syncId, playerInventory, context, playerInventory.player.getWorld());
 	}
 
-	@Override
-	protected ForgingSlotsManager getForgingSlotsManager() {
-		return ForgingSlotsManager.create()
-			.input(0, 8, 48, stack -> this.recipes.stream().anyMatch(recipe -> ((SmithingRecipe)recipe.value()).testTemplate(stack)))
-			.input(1, 26, 48, stack -> this.recipes.stream().anyMatch(recipe -> ((SmithingRecipe)recipe.value()).testBase(stack)))
-			.input(2, 44, 48, stack -> this.recipes.stream().anyMatch(recipe -> ((SmithingRecipe)recipe.value()).testAddition(stack)))
+	private SmithingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context, World world) {
+		super(ScreenHandlerType.SMITHING, syncId, playerInventory, context, createForgingSlotsManager(world.getRecipeManager()));
+		this.world = world;
+		this.basePropertySet = world.getRecipeManager().getPropertySet(RecipePropertySet.SMITHING_BASE);
+		this.templatePropertySet = world.getRecipeManager().getPropertySet(RecipePropertySet.SMITHING_TEMPLATE);
+		this.additionPropertySet = world.getRecipeManager().getPropertySet(RecipePropertySet.SMITHING_ADDITION);
+	}
+
+	private static ForgingSlotsManager createForgingSlotsManager(RecipeManager recipeManager) {
+		RecipePropertySet recipePropertySet = recipeManager.getPropertySet(RecipePropertySet.SMITHING_BASE);
+		RecipePropertySet recipePropertySet2 = recipeManager.getPropertySet(RecipePropertySet.SMITHING_TEMPLATE);
+		RecipePropertySet recipePropertySet3 = recipeManager.getPropertySet(RecipePropertySet.SMITHING_ADDITION);
+		return ForgingSlotsManager.builder()
+			.input(0, 8, 48, recipePropertySet2::canUse)
+			.input(1, 26, 48, recipePropertySet::canUse)
+			.input(2, 44, 48, recipePropertySet3::canUse)
 			.output(3, 98, 48)
 			.build();
 	}
@@ -55,11 +65,6 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	@Override
 	protected boolean canUse(BlockState state) {
 		return state.isOf(Blocks.SMITHING_TABLE);
-	}
-
-	@Override
-	protected boolean canTakeOutput(PlayerEntity player, boolean present) {
-		return this.currentRecipe != null && this.currentRecipe.value().matches(this.createRecipeInput(), this.world);
 	}
 
 	@Override
@@ -91,33 +96,21 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	@Override
 	public void updateResult() {
 		SmithingRecipeInput smithingRecipeInput = this.createRecipeInput();
-		List<RecipeEntry<SmithingRecipe>> list = this.world.getRecipeManager().getAllMatches(RecipeType.SMITHING, smithingRecipeInput, this.world);
-		if (list.isEmpty()) {
+		Optional<RecipeEntry<SmithingRecipe>> optional;
+		if (this.world instanceof ServerWorld serverWorld) {
+			optional = serverWorld.getRecipeManager().getFirstMatch(RecipeType.SMITHING, smithingRecipeInput, serverWorld);
+		} else {
+			optional = Optional.empty();
+		}
+
+		optional.ifPresentOrElse(recipe -> {
+			ItemStack itemStack = ((SmithingRecipe)recipe.value()).craft(smithingRecipeInput, this.world.getRegistryManager());
+			this.output.setLastRecipe(recipe);
+			this.output.setStack(0, itemStack);
+		}, () -> {
+			this.output.setLastRecipe(null);
 			this.output.setStack(0, ItemStack.EMPTY);
-		} else {
-			RecipeEntry<SmithingRecipe> recipeEntry = (RecipeEntry<SmithingRecipe>)list.get(0);
-			ItemStack itemStack = recipeEntry.value().craft(smithingRecipeInput, this.world.getRegistryManager());
-			if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
-				this.currentRecipe = recipeEntry;
-				this.output.setLastRecipe(recipeEntry);
-				this.output.setStack(0, itemStack);
-			}
-		}
-	}
-
-	@Override
-	public int getSlotFor(ItemStack stack) {
-		return this.getQuickMoveSlot(stack).orElse(0);
-	}
-
-	private static OptionalInt getQuickMoveSlot(SmithingRecipe recipe, ItemStack stack) {
-		if (recipe.testTemplate(stack)) {
-			return OptionalInt.of(0);
-		} else if (recipe.testBase(stack)) {
-			return OptionalInt.of(1);
-		} else {
-			return recipe.testAddition(stack) ? OptionalInt.of(2) : OptionalInt.empty();
-		}
+		});
 	}
 
 	@Override
@@ -127,14 +120,10 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	public boolean isValidIngredient(ItemStack stack) {
-		return this.getQuickMoveSlot(stack).isPresent();
-	}
-
-	private OptionalInt getQuickMoveSlot(ItemStack stack) {
-		return this.recipes
-			.stream()
-			.flatMapToInt(recipe -> getQuickMoveSlot((SmithingRecipe)recipe.value(), stack).stream())
-			.filter(slot -> !this.getSlot(slot).hasStack())
-			.findFirst();
+		if (this.templatePropertySet.canUse(stack) && !this.getSlot(0).hasStack()) {
+			return true;
+		} else {
+			return this.basePropertySet.canUse(stack) && !this.getSlot(1).hasStack() ? true : this.additionPropertySet.canUse(stack) && !this.getSlot(2).hasStack();
+		}
 	}
 }

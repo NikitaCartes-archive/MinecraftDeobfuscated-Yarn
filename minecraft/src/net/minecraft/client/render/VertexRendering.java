@@ -13,29 +13,14 @@ import org.joml.Vector3f;
 @Environment(EnvType.CLIENT)
 public class VertexRendering {
 	public static void drawOutline(
-		MatrixStack matrices,
-		VertexConsumer vertexConsumers,
-		VoxelShape shape,
-		double offsetX,
-		double offsetY,
-		double offsetZ,
-		float red,
-		float green,
-		float blue,
-		float alpha
+		MatrixStack matrices, VertexConsumer vertexConsumers, VoxelShape shape, double offsetX, double offsetY, double offsetZ, int color
 	) {
 		MatrixStack.Entry entry = matrices.peek();
-		shape.forEachEdge(
-			(minX, minY, minZ, maxX, maxY, maxZ) -> {
-				Vector3f vector3f = new Vector3f((float)(maxX - minX), (float)(maxY - minY), (float)(maxZ - minZ)).normalize();
-				vertexConsumers.vertex(entry, (float)(minX + offsetX), (float)(minY + offsetY), (float)(minZ + offsetZ))
-					.color(red, green, blue, alpha)
-					.normal(entry, vector3f);
-				vertexConsumers.vertex(entry, (float)(maxX + offsetX), (float)(maxY + offsetY), (float)(maxZ + offsetZ))
-					.color(red, green, blue, alpha)
-					.normal(entry, vector3f);
-			}
-		);
+		shape.forEachEdge((x1, y1, z1, x2, y2, z2) -> {
+			Vector3f vector3f = new Vector3f((float)(x2 - x1), (float)(y2 - y1), (float)(z2 - z1)).normalize();
+			vertexConsumers.vertex(entry, (float)(x1 + offsetX), (float)(y1 + offsetY), (float)(z1 + offsetZ)).color(color).normal(entry, vector3f);
+			vertexConsumers.vertex(entry, (float)(x2 + offsetX), (float)(y2 + offsetY), (float)(z2 + offsetZ)).color(color).normal(entry, vector3f);
+		});
 	}
 
 	public static void drawBox(MatrixStack matrices, VertexConsumer vertexConsumers, Box box, float red, float green, float blue, float alpha) {

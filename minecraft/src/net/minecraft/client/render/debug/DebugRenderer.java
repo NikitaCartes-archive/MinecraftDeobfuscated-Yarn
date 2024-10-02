@@ -20,6 +20,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
@@ -283,22 +284,32 @@ public class DebugRenderer {
 		double offsetX,
 		double offsetY,
 		double offsetZ,
-		float r,
-		float g,
-		float b,
-		float a,
+		float red,
+		float green,
+		float blue,
+		float alpha,
 		boolean bl
 	) {
 		List<Box> list = shape.getBoundingBoxes();
 		if (!list.isEmpty()) {
 			int i = bl ? list.size() : list.size() * 8;
-			VertexRendering.drawOutline(matrices, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), offsetX, offsetY, offsetZ, r, g, b, a);
+			VertexRendering.drawOutline(
+				matrices, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), offsetX, offsetY, offsetZ, ColorHelper.fromFloats(alpha, red, green, blue)
+			);
 
 			for (int j = 1; j < list.size(); j++) {
 				Box box = (Box)list.get(j);
 				float f = (float)j / (float)i;
-				Vec3d vec3d = shiftHue(r, g, b, f);
-				VertexRendering.drawOutline(matrices, vertexConsumer, VoxelShapes.cuboid(box), offsetX, offsetY, offsetZ, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z, a);
+				Vec3d vec3d = shiftHue(red, green, blue, f);
+				VertexRendering.drawOutline(
+					matrices,
+					vertexConsumer,
+					VoxelShapes.cuboid(box),
+					offsetX,
+					offsetY,
+					offsetZ,
+					ColorHelper.fromFloats(alpha, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z)
+				);
 			}
 		}
 	}

@@ -310,6 +310,11 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	}
 
 	@Override
+	public void resetLerp() {
+		this.controller.resetLerp();
+	}
+
+	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.controller.setPos(x, y, z, yaw, pitch, interpolationSteps);
 	}

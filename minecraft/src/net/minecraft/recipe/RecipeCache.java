@@ -6,18 +6,18 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
 
 public class RecipeCache {
 	private final RecipeCache.CachedRecipe[] cache;
-	private WeakReference<RecipeManager> recipeManagerRef = new WeakReference(null);
+	private WeakReference<ServerRecipeManager> recipeManagerRef = new WeakReference(null);
 
 	public RecipeCache(int size) {
 		this.cache = new RecipeCache.CachedRecipe[size];
 	}
 
-	public Optional<RecipeEntry<CraftingRecipe>> getRecipe(World world, CraftingRecipeInput input) {
+	public Optional<RecipeEntry<CraftingRecipe>> getRecipe(ServerWorld world, CraftingRecipeInput input) {
 		if (input.isEmpty()) {
 			return Optional.empty();
 		} else {
@@ -35,15 +35,15 @@ public class RecipeCache {
 		}
 	}
 
-	private void validateRecipeManager(World world) {
-		RecipeManager recipeManager = world.getRecipeManager();
-		if (recipeManager != this.recipeManagerRef.get()) {
-			this.recipeManagerRef = new WeakReference(recipeManager);
+	private void validateRecipeManager(ServerWorld world) {
+		ServerRecipeManager serverRecipeManager = world.getRecipeManager();
+		if (serverRecipeManager != this.recipeManagerRef.get()) {
+			this.recipeManagerRef = new WeakReference(serverRecipeManager);
 			Arrays.fill(this.cache, null);
 		}
 	}
 
-	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(CraftingRecipeInput input, World world) {
+	private Optional<RecipeEntry<CraftingRecipe>> getAndCacheRecipe(CraftingRecipeInput input, ServerWorld world) {
 		Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, input, world);
 		this.cache(input, (RecipeEntry<CraftingRecipe>)optional.orElse(null));
 		return optional;

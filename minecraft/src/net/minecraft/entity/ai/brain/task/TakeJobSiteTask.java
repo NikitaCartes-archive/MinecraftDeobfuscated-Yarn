@@ -49,7 +49,7 @@ public class TakeJobSiteTask {
 												lookTarget.forget();
 												potentialJobSite.forget();
 												if (villager.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE).isEmpty()) {
-													LookTargetUtil.walkTowards(villager, blockPos, speed, 1);
+													TargetUtil.walkTowards(villager, blockPos, speed, 1);
 													villager.getBrain().remember(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.create(world.getRegistryKey(), blockPos));
 													DebugInfoSender.sendPointOfInterest(world, blockPos);
 												}

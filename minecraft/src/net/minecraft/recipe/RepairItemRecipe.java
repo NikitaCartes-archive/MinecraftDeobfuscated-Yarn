@@ -88,12 +88,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= 2;
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<RepairItemRecipe> getSerializer() {
 		return RecipeSerializer.REPAIR_ITEM;
 	}
 }

@@ -12,11 +12,15 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -55,6 +59,9 @@ public class VegetationConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FLOWER_CHERRY = ConfiguredFeatures.of("flower_cherry");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FOREST_FLOWERS = ConfiguredFeatures.of("forest_flowers");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> DARK_FOREST_VEGETATION = ConfiguredFeatures.of("dark_forest_vegetation");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PALE_GARDEN_VEGETATION = ConfiguredFeatures.of("pale_garden_vegetation");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PALE_MOSS_VEGETATION = ConfiguredFeatures.of("pale_moss_vegetation");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PALE_MOSS_PATCH_BONEMEAL = ConfiguredFeatures.of("pale_moss_patch_bonemeal");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> TREES_FLOWER_FOREST = ConfiguredFeatures.of("trees_flower_forest");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> MEADOW_TREES = ConfiguredFeatures.of("meadow_trees");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> TREES_TAIGA = ConfiguredFeatures.of("trees_taiga");
@@ -86,30 +93,32 @@ public class VegetationConfiguredFeatures {
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry5 = registryEntryLookup.getOrThrow(PATCH_GRASS_JUNGLE);
 		RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
 		RegistryEntry<PlacedFeature> registryEntry6 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.DARK_OAK_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry7 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.BIRCH_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry8 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry9 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.BIRCH_BEES_002);
-		RegistryEntry<PlacedFeature> registryEntry10 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_BEES_002);
-		RegistryEntry<PlacedFeature> registryEntry11 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_BEES);
-		RegistryEntry<PlacedFeature> registryEntry12 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.PINE_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry13 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SPRUCE_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry14 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.PINE_ON_SNOW);
-		RegistryEntry<PlacedFeature> registryEntry15 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.ACACIA_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry16 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SUPER_BIRCH_BEES_0002);
-		RegistryEntry<PlacedFeature> registryEntry17 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.BIRCH_BEES_0002);
-		RegistryEntry<PlacedFeature> registryEntry18 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_BEES_0002);
-		RegistryEntry<PlacedFeature> registryEntry19 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.JUNGLE_BUSH);
-		RegistryEntry<PlacedFeature> registryEntry20 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MEGA_SPRUCE_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry21 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MEGA_PINE_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry22 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MEGA_JUNGLE_TREE_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry23 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.TALL_MANGROVE_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry24 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.OAK_CHECKED);
-		RegistryEntry<PlacedFeature> registryEntry25 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.OAK_BEES_002);
-		RegistryEntry<PlacedFeature> registryEntry26 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SUPER_BIRCH_BEES);
-		RegistryEntry<PlacedFeature> registryEntry27 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SPRUCE_ON_SNOW);
-		RegistryEntry<PlacedFeature> registryEntry28 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.OAK_BEES_0002);
-		RegistryEntry<PlacedFeature> registryEntry29 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.JUNGLE_TREE);
-		RegistryEntry<PlacedFeature> registryEntry30 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MANGROVE_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry7 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.PALE_OAK_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry8 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.PALE_OAK_CREAKING_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry9 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.BIRCH_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry10 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry11 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.BIRCH_BEES_002);
+		RegistryEntry<PlacedFeature> registryEntry12 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_BEES_002);
+		RegistryEntry<PlacedFeature> registryEntry13 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_BEES);
+		RegistryEntry<PlacedFeature> registryEntry14 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.PINE_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry15 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SPRUCE_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry16 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.PINE_ON_SNOW);
+		RegistryEntry<PlacedFeature> registryEntry17 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.ACACIA_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry18 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SUPER_BIRCH_BEES_0002);
+		RegistryEntry<PlacedFeature> registryEntry19 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.BIRCH_BEES_0002);
+		RegistryEntry<PlacedFeature> registryEntry20 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_BEES_0002);
+		RegistryEntry<PlacedFeature> registryEntry21 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.JUNGLE_BUSH);
+		RegistryEntry<PlacedFeature> registryEntry22 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MEGA_SPRUCE_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry23 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MEGA_PINE_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry24 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MEGA_JUNGLE_TREE_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry25 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.TALL_MANGROVE_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry26 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.OAK_CHECKED);
+		RegistryEntry<PlacedFeature> registryEntry27 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.OAK_BEES_002);
+		RegistryEntry<PlacedFeature> registryEntry28 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SUPER_BIRCH_BEES);
+		RegistryEntry<PlacedFeature> registryEntry29 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.SPRUCE_ON_SNOW);
+		RegistryEntry<PlacedFeature> registryEntry30 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.OAK_BEES_0002);
+		RegistryEntry<PlacedFeature> registryEntry31 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.JUNGLE_TREE);
+		RegistryEntry<PlacedFeature> registryEntry32 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.MANGROVE_CHECKED);
 		ConfiguredFeatures.register(featureRegisterable, BAMBOO_NO_PODZOL, Feature.BAMBOO, new ProbabilityConfig(0.0F));
 		ConfiguredFeatures.register(featureRegisterable, BAMBOO_SOME_PODZOL, Feature.BAMBOO, new ProbabilityConfig(0.2F));
 		ConfiguredFeatures.register(featureRegisterable, VINES, Feature.VINES);
@@ -418,56 +427,92 @@ public class VegetationConfiguredFeatures {
 					new RandomFeatureEntry(PlacedFeatures.createEntry(registryEntry), 0.025F),
 					new RandomFeatureEntry(PlacedFeatures.createEntry(registryEntry2), 0.05F),
 					new RandomFeatureEntry(registryEntry6, 0.6666667F),
-					new RandomFeatureEntry(registryEntry7, 0.2F),
-					new RandomFeatureEntry(registryEntry8, 0.1F)
+					new RandomFeatureEntry(registryEntry9, 0.2F),
+					new RandomFeatureEntry(registryEntry10, 0.1F)
 				),
-				registryEntry24
+				registryEntry26
+			)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PALE_GARDEN_VEGETATION,
+			Feature.RANDOM_SELECTOR,
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry8, 0.2F), new RandomFeatureEntry(registryEntry7, 0.8F)), registryEntry7)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PALE_MOSS_VEGETATION,
+			Feature.SIMPLE_BLOCK,
+			new SimpleBlockFeatureConfig(
+				new WeightedBlockStateProvider(
+					DataPool.<BlockState>builder()
+						.add(Blocks.PALE_MOSS_CARPET.getDefaultState(), 25)
+						.add(Blocks.SHORT_GRASS.getDefaultState(), 50)
+						.add(Blocks.TALL_GRASS.getDefaultState(), 10)
+				)
+			)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PALE_MOSS_PATCH_BONEMEAL,
+			Feature.VEGETATION_PATCH,
+			new VegetationPatchFeatureConfig(
+				BlockTags.MOSS_REPLACEABLE,
+				BlockStateProvider.of(Blocks.PALE_MOSS_BLOCK),
+				PlacedFeatures.createEntry(registryEntryLookup.getOrThrow(PALE_MOSS_VEGETATION)),
+				VerticalSurfaceType.FLOOR,
+				ConstantIntProvider.create(1),
+				0.0F,
+				5,
+				0.6F,
+				UniformIntProvider.create(1, 2),
+				0.75F
 			)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			TREES_FLOWER_FOREST,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry9, 0.2F), new RandomFeatureEntry(registryEntry10, 0.1F)), registryEntry25)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry11, 0.2F), new RandomFeatureEntry(registryEntry12, 0.1F)), registryEntry27)
 		);
 		ConfiguredFeatures.register(
-			featureRegisterable, MEADOW_TREES, Feature.RANDOM_SELECTOR, new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry11, 0.5F)), registryEntry26)
+			featureRegisterable, MEADOW_TREES, Feature.RANDOM_SELECTOR, new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry13, 0.5F)), registryEntry28)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			TREES_TAIGA,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry12, 0.33333334F)), registryEntry13)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry14, 0.33333334F)), registryEntry15)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			TREES_GROVE,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry14, 0.33333334F)), registryEntry27)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry16, 0.33333334F)), registryEntry29)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			TREES_SAVANNA,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry15, 0.8F)), registryEntry24)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry17, 0.8F)), registryEntry26)
 		);
 		ConfiguredFeatures.register(
-			featureRegisterable, BIRCH_TALL, Feature.RANDOM_SELECTOR, new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry16, 0.5F)), registryEntry17)
+			featureRegisterable, BIRCH_TALL, Feature.RANDOM_SELECTOR, new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry18, 0.5F)), registryEntry19)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			TREES_WINDSWEPT_HILLS,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry13, 0.666F), new RandomFeatureEntry(registryEntry8, 0.1F)), registryEntry24)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry15, 0.666F), new RandomFeatureEntry(registryEntry10, 0.1F)), registryEntry26)
 		);
 		ConfiguredFeatures.register(
-			featureRegisterable, TREES_WATER, Feature.RANDOM_SELECTOR, new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry8, 0.1F)), registryEntry24)
+			featureRegisterable, TREES_WATER, Feature.RANDOM_SELECTOR, new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry10, 0.1F)), registryEntry26)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			TREES_BIRCH_AND_OAK,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry17, 0.2F), new RandomFeatureEntry(registryEntry18, 0.1F)), registryEntry28)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry19, 0.2F), new RandomFeatureEntry(registryEntry20, 0.1F)), registryEntry30)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
@@ -479,13 +524,13 @@ public class VegetationConfiguredFeatures {
 			featureRegisterable,
 			TREES_SPARSE_JUNGLE,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry8, 0.1F), new RandomFeatureEntry(registryEntry19, 0.5F)), registryEntry29)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry10, 0.1F), new RandomFeatureEntry(registryEntry21, 0.5F)), registryEntry31)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			TREES_OLD_GROWTH_SPRUCE_TAIGA,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry20, 0.33333334F), new RandomFeatureEntry(registryEntry12, 0.33333334F)), registryEntry13)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry22, 0.33333334F), new RandomFeatureEntry(registryEntry14, 0.33333334F)), registryEntry15)
 		);
 		ConfiguredFeatures.register(
 			featureRegisterable,
@@ -493,11 +538,11 @@ public class VegetationConfiguredFeatures {
 			Feature.RANDOM_SELECTOR,
 			new RandomFeatureConfig(
 				List.of(
-					new RandomFeatureEntry(registryEntry20, 0.025641026F),
-					new RandomFeatureEntry(registryEntry21, 0.30769232F),
-					new RandomFeatureEntry(registryEntry12, 0.33333334F)
+					new RandomFeatureEntry(registryEntry22, 0.025641026F),
+					new RandomFeatureEntry(registryEntry23, 0.30769232F),
+					new RandomFeatureEntry(registryEntry14, 0.33333334F)
 				),
-				registryEntry13
+				registryEntry15
 			)
 		);
 		ConfiguredFeatures.register(
@@ -505,8 +550,8 @@ public class VegetationConfiguredFeatures {
 			TREES_JUNGLE,
 			Feature.RANDOM_SELECTOR,
 			new RandomFeatureConfig(
-				List.of(new RandomFeatureEntry(registryEntry8, 0.1F), new RandomFeatureEntry(registryEntry19, 0.5F), new RandomFeatureEntry(registryEntry22, 0.33333334F)),
-				registryEntry29
+				List.of(new RandomFeatureEntry(registryEntry10, 0.1F), new RandomFeatureEntry(registryEntry21, 0.5F), new RandomFeatureEntry(registryEntry24, 0.33333334F)),
+				registryEntry31
 			)
 		);
 		ConfiguredFeatures.register(
@@ -514,7 +559,7 @@ public class VegetationConfiguredFeatures {
 			BAMBOO_VEGETATION,
 			Feature.RANDOM_SELECTOR,
 			new RandomFeatureConfig(
-				List.of(new RandomFeatureEntry(registryEntry8, 0.05F), new RandomFeatureEntry(registryEntry19, 0.15F), new RandomFeatureEntry(registryEntry22, 0.7F)),
+				List.of(new RandomFeatureEntry(registryEntry10, 0.05F), new RandomFeatureEntry(registryEntry21, 0.15F), new RandomFeatureEntry(registryEntry24, 0.7F)),
 				PlacedFeatures.createEntry(registryEntry5)
 			)
 		);
@@ -528,7 +573,7 @@ public class VegetationConfiguredFeatures {
 			featureRegisterable,
 			MANGROVE_VEGETATION,
 			Feature.RANDOM_SELECTOR,
-			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry23, 0.85F)), registryEntry30)
+			new RandomFeatureConfig(List.of(new RandomFeatureEntry(registryEntry25, 0.85F)), registryEntry32)
 		);
 	}
 }

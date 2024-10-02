@@ -8,9 +8,13 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
@@ -37,7 +41,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<? extends ShapedRecipe> getSerializer() {
 		return RecipeSerializer.SHAPED;
 	}
 
@@ -49,11 +53,6 @@ public class ShapedRecipe implements CraftingRecipe {
 	@Override
 	public CraftingRecipeCategory getCategory() {
 		return this.category;
-	}
-
-	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-		return this.result;
 	}
 
 	@VisibleForTesting
@@ -75,17 +74,12 @@ public class ShapedRecipe implements CraftingRecipe {
 		return this.showNotification;
 	}
 
-	@Override
-	public boolean fits(int width, int height) {
-		return width >= this.raw.getWidth() && height >= this.raw.getHeight();
-	}
-
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
 		return this.raw.matches(craftingRecipeInput);
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
-		return this.getResult(wrapperLookup).copy();
+		return this.result.copy();
 	}
 
 	public int getWidth() {
@@ -94,6 +88,23 @@ public class ShapedRecipe implements CraftingRecipe {
 
 	public int getHeight() {
 		return this.raw.getHeight();
+	}
+
+	@Override
+	public List<RecipeDisplay> getDisplays() {
+		return List.of(
+			new ShapedCraftingRecipeDisplay(
+				this.raw.getWidth(),
+				this.raw.getHeight(),
+				this.raw
+					.getIngredients()
+					.stream()
+					.map(ingredient -> (SlotDisplay)ingredient.map(Ingredient::toDisplay).orElse(SlotDisplay.EmptySlotDisplay.INSTANCE))
+					.toList(),
+				new SlotDisplay.StackSlotDisplay(this.result),
+				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+			)
+		);
 	}
 
 	public static class Serializer implements RecipeSerializer<ShapedRecipe> {

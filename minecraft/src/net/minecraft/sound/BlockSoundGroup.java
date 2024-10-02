@@ -940,6 +940,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_VAULT_HIT,
 		SoundEvents.BLOCK_VAULT_FALL
 	);
+	public static final BlockSoundGroup CREAKING_HEART = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CREAKING_HEART_BREAK,
+		SoundEvents.BLOCK_CREAKING_HEART_STEP,
+		SoundEvents.BLOCK_CREAKING_HEART_PLACE,
+		SoundEvents.BLOCK_CREAKING_HEART_HIT,
+		SoundEvents.BLOCK_CREAKING_HEART_FALL
+	);
 	public static final BlockSoundGroup HEAVY_CORE = new BlockSoundGroup(
 		1.0F,
 		1.0F,

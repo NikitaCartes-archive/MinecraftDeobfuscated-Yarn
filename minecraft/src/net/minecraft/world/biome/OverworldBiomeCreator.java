@@ -548,19 +548,35 @@ public class OverworldBiomeCreator {
 		return createBiome(true, f, snowy ? 0.4F : 0.8F, snowy ? 4020182 : 4159204, 329011, null, null, builder, lookupBackedBuilder, DEFAULT_MUSIC);
 	}
 
-	public static Biome createDarkForest(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
+	public static Biome createDenseForest(
+		RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup, boolean paleGarden
+	) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
-		DefaultBiomeFeatures.addFarmAnimals(builder);
+		if (!paleGarden) {
+			DefaultBiomeFeatures.addFarmAnimals(builder);
+		}
+
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
 		addBasicFeatures(lookupBackedBuilder);
-		lookupBackedBuilder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.DARK_FOREST_VEGETATION);
-		DefaultBiomeFeatures.addForestFlowers(lookupBackedBuilder);
+		lookupBackedBuilder.feature(
+			GenerationStep.Feature.VEGETAL_DECORATION, paleGarden ? VegetationPlacedFeatures.PALE_GARDEN_VEGETATION : VegetationPlacedFeatures.DARK_FOREST_VEGETATION
+		);
+		if (!paleGarden) {
+			DefaultBiomeFeatures.addForestFlowers(lookupBackedBuilder);
+		}
+
 		DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultDisks(lookupBackedBuilder);
-		DefaultBiomeFeatures.addDefaultFlowers(lookupBackedBuilder);
+		if (!paleGarden) {
+			DefaultBiomeFeatures.addDefaultFlowers(lookupBackedBuilder);
+		}
+
 		DefaultBiomeFeatures.addForestGrass(lookupBackedBuilder);
-		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
+		if (!paleGarden) {
+			DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
+		}
+
 		DefaultBiomeFeatures.addDefaultVegetation(lookupBackedBuilder);
 		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_FOREST);
 		return new Biome.Builder()
@@ -568,15 +584,26 @@ public class OverworldBiomeCreator {
 			.temperature(0.7F)
 			.downfall(0.8F)
 			.effects(
-				new BiomeEffects.Builder()
-					.waterColor(4159204)
-					.waterFogColor(329011)
-					.fogColor(12638463)
-					.skyColor(getSkyColor(0.7F))
-					.grassColorModifier(BiomeEffects.GrassColorModifier.DARK_FOREST)
-					.moodSound(BiomeMoodSound.CAVE)
-					.music(musicSound)
-					.build()
+				paleGarden
+					? new BiomeEffects.Builder()
+						.waterColor(7768221)
+						.waterFogColor(5597568)
+						.fogColor(8484720)
+						.skyColor(12171705)
+						.grassColor(7832178)
+						.foliageColor(8883574)
+						.moodSound(BiomeMoodSound.CAVE)
+						.music(musicSound)
+						.build()
+					: new BiomeEffects.Builder()
+						.waterColor(4159204)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(0.7F))
+						.grassColorModifier(BiomeEffects.GrassColorModifier.DARK_FOREST)
+						.moodSound(BiomeMoodSound.CAVE)
+						.music(musicSound)
+						.build()
 			)
 			.spawnSettings(builder.build())
 			.generationSettings(lookupBackedBuilder.build())

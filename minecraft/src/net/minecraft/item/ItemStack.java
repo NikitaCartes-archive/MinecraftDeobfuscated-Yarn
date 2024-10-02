@@ -618,7 +618,7 @@ public final class ItemStack implements ComponentHolder {
 	 */
 	public void damage(int amount, ServerWorld world, @Nullable ServerPlayerEntity player, Consumer<Item> breakCallback) {
 		int i = this.calculateDamage(amount, world, player);
-		if (i > 0) {
+		if (i != 0) {
 			this.onDurabilityChange(this.getDamage() + i, player, breakCallback);
 		}
 	}
@@ -649,7 +649,7 @@ public final class ItemStack implements ComponentHolder {
 	public void damage(int amount, PlayerEntity player) {
 		if (player instanceof ServerPlayerEntity serverPlayerEntity) {
 			int i = this.calculateDamage(amount, serverPlayerEntity.getServerWorld(), serverPlayerEntity);
-			if (i <= 0) {
+			if (i == 0) {
 				return;
 			}
 

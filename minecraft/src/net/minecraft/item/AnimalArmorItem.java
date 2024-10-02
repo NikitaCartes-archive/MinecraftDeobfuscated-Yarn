@@ -14,8 +14,8 @@ public class AnimalArmorItem extends Item {
 		this.type = type;
 	}
 
-	public AnimalArmorItem(ArmorMaterial material, AnimalArmorItem.Type type, SoundEvent equipSound, Item.Settings settings) {
-		super(material.applyBodyArmorSettings(settings, equipSound, type.allowedEntities));
+	public AnimalArmorItem(ArmorMaterial material, AnimalArmorItem.Type type, SoundEvent equipSound, boolean damageOnHurt, Item.Settings settings) {
+		super(material.applyBodyArmorSettings(settings, equipSound, damageOnHurt, type.allowedEntities));
 		this.type = type;
 	}
 

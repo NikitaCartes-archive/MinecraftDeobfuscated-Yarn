@@ -151,7 +151,7 @@ public class TextRenderer {
 		OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light
 	) {
 		int i = tweakTransparency(outlineColor);
-		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumers, 0.0F, 0.0F, i, false, matrix, TextRenderer.TextLayerType.NORMAL, light);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumers, 0.0F, 0.0F, i, false, matrix, TextRenderer.TextLayerType.NORMAL, light);
 
 		for (int j = -1; j <= 1; j++) {
 			for (int k = -1; k <= 1; k++) {
@@ -173,10 +173,10 @@ public class TextRenderer {
 		}
 
 		TextRenderer.Drawer drawer2 = new TextRenderer.Drawer(
-			vertexConsumers, x, y, tweakTransparency(color), false, matrix, TextRenderer.TextLayerType.POLYGON_OFFSET, light
+			this, vertexConsumers, x, y, tweakTransparency(color), false, matrix, TextRenderer.TextLayerType.POLYGON_OFFSET, light
 		);
 		text.accept(drawer2);
-		drawer2.drawLayer(0, x);
+		drawer2.drawLayer();
 	}
 
 	private static int tweakTransparency(int argb) {
@@ -243,12 +243,12 @@ public class TextRenderer {
 		Matrix4f matrix,
 		VertexConsumerProvider vertexConsumerProvider,
 		TextRenderer.TextLayerType layerType,
-		int underlineColor,
+		int backgroundColor,
 		int light
 	) {
-		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumerProvider, x, y, color, shadow, matrix, layerType, light);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light);
 		TextVisitFactory.visitFormatted(text, Style.EMPTY, drawer);
-		return drawer.drawLayer(underlineColor, x);
+		return drawer.drawLayer();
 	}
 
 	private float drawLayer(
@@ -260,12 +260,12 @@ public class TextRenderer {
 		Matrix4f matrix,
 		VertexConsumerProvider vertexConsumerProvider,
 		TextRenderer.TextLayerType layerType,
-		int underlineColor,
+		int backgroundColor,
 		int light
 	) {
-		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumerProvider, x, y, color, shadow, matrix, layerType, light);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light);
 		text.accept(drawer);
-		return drawer.drawLayer(underlineColor, x);
+		return drawer.drawLayer();
 	}
 
 	void drawGlyph(
@@ -277,15 +277,12 @@ public class TextRenderer {
 		float y,
 		Matrix4f matrix,
 		VertexConsumer vertexConsumer,
-		float red,
-		float green,
-		float blue,
-		float alpha,
+		int color,
 		int light
 	) {
-		glyphRenderer.draw(italic, x, y, matrix, vertexConsumer, red, green, blue, alpha, light);
+		glyphRenderer.draw(italic, x, y, matrix, vertexConsumer, color, light);
 		if (bold) {
-			glyphRenderer.draw(italic, x + weight, y, matrix, vertexConsumer, red, green, blue, alpha, light);
+			glyphRenderer.draw(italic, x + weight, y, matrix, vertexConsumer, color, light);
 		}
 	}
 
@@ -388,10 +385,8 @@ public class TextRenderer {
 		final VertexConsumerProvider vertexConsumers;
 		private final boolean shadow;
 		private final float brightnessMultiplier;
-		private final float red;
-		private final float green;
-		private final float blue;
-		private final float alpha;
+		private final int color;
+		private final int backgroundColor;
 		private final Matrix4f matrix;
 		private final TextRenderer.TextLayerType layerType;
 		private final int light;
@@ -409,6 +404,7 @@ public class TextRenderer {
 		}
 
 		public Drawer(
+			final TextRenderer textRenderer,
 			final VertexConsumerProvider vertexConsumers,
 			final float x,
 			final float y,
@@ -418,15 +414,29 @@ public class TextRenderer {
 			final TextRenderer.TextLayerType layerType,
 			final int light
 		) {
+			this(textRenderer, vertexConsumers, x, y, color, 0, shadow, matrix, layerType, light);
+		}
+
+		public Drawer(
+			final TextRenderer textRenderer,
+			final VertexConsumerProvider vertexConsumers,
+			final float x,
+			final float y,
+			final int color,
+			final int backgroundColor,
+			final boolean shadow,
+			final Matrix4f matrix,
+			final TextRenderer.TextLayerType layerType,
+			final int light
+		) {
+			this.field_24240 = textRenderer;
 			this.vertexConsumers = vertexConsumers;
 			this.x = x;
 			this.y = y;
 			this.shadow = shadow;
 			this.brightnessMultiplier = shadow ? 0.25F : 1.0F;
-			this.red = (float)(color >> 16 & 0xFF) / 255.0F * this.brightnessMultiplier;
-			this.green = (float)(color >> 8 & 0xFF) / 255.0F * this.brightnessMultiplier;
-			this.blue = (float)(color & 0xFF) / 255.0F * this.brightnessMultiplier;
-			this.alpha = (float)(color >> 24 & 0xFF) / 255.0F;
+			this.color = ColorHelper.scaleRgb(color, this.brightnessMultiplier);
+			this.backgroundColor = backgroundColor;
 			this.matrix = matrix;
 			this.layerType = layerType;
 			this.light = light;
@@ -434,58 +444,46 @@ public class TextRenderer {
 
 		@Override
 		public boolean accept(int i, Style style, int j) {
-			FontStorage fontStorage = TextRenderer.this.getFontStorage(style.getFont());
-			Glyph glyph = fontStorage.getGlyph(j, TextRenderer.this.validateAdvance);
+			FontStorage fontStorage = this.field_24240.getFontStorage(style.getFont());
+			Glyph glyph = fontStorage.getGlyph(j, this.field_24240.validateAdvance);
 			GlyphRenderer glyphRenderer = style.isObfuscated() && j != 32 ? fontStorage.getObfuscatedGlyphRenderer(glyph) : fontStorage.getGlyphRenderer(j);
 			boolean bl = style.isBold();
-			float f = this.alpha;
 			TextColor textColor = style.getColor();
-			float g;
-			float h;
-			float l;
-			if (textColor != null) {
-				int k = textColor.getRgb();
-				g = (float)(k >> 16 & 0xFF) / 255.0F * this.brightnessMultiplier;
-				h = (float)(k >> 8 & 0xFF) / 255.0F * this.brightnessMultiplier;
-				l = (float)(k & 0xFF) / 255.0F * this.brightnessMultiplier;
-			} else {
-				g = this.red;
-				h = this.green;
-				l = this.blue;
+			int k = textColor != null
+				? ColorHelper.withAlpha(ColorHelper.getAlpha(this.color), ColorHelper.scaleRgb(textColor.getRgb(), this.brightnessMultiplier))
+				: this.color;
+			float f = glyph.getAdvance(bl);
+			float g = i == 0 ? this.x - 1.0F : this.x;
+			if (this.backgroundColor != 0) {
+				GlyphRenderer.Rectangle rectangle = new GlyphRenderer.Rectangle(g, this.y + 9.0F, this.x + f, this.y - 1.0F, -0.01F, this.backgroundColor);
+				GlyphRenderer glyphRenderer2 = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();
+				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer2.getLayer(this.layerType));
+				glyphRenderer2.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);
 			}
 
 			if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
-				float m = bl ? glyph.getBoldOffset() : 0.0F;
-				float n = this.shadow ? glyph.getShadowOffset() : 0.0F;
+				float h = bl ? glyph.getBoldOffset() : 0.0F;
+				float l = this.shadow ? glyph.getShadowOffset() : 0.0F;
 				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
-				TextRenderer.this.drawGlyph(glyphRenderer, bl, style.isItalic(), m, this.x + n, this.y + n, this.matrix, vertexConsumer, g, h, l, f, this.light);
+				this.field_24240.drawGlyph(glyphRenderer, bl, style.isItalic(), h, this.x + l, this.y + l, this.matrix, vertexConsumer, k, this.light);
 			}
 
-			float m = glyph.getAdvance(bl);
-			float n = this.shadow ? 1.0F : 0.0F;
+			float h = this.shadow ? 1.0F : 0.0F;
 			if (style.isStrikethrough()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 4.5F, this.x + n + m, this.y + n + 4.5F - 1.0F, 0.01F, g, h, l, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(g + h, this.y + h + 4.5F, this.x + h + f, this.y + h + 4.5F - 1.0F, 0.01F, k));
 			}
 
 			if (style.isUnderlined()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 9.0F, this.x + n + m, this.y + n + 9.0F - 1.0F, 0.01F, g, h, l, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(g + h, this.y + h + 9.0F, this.x + h + f, this.y + h + 9.0F - 1.0F, 0.01F, k));
 			}
 
-			this.x += m;
+			this.x += f;
 			return true;
 		}
 
-		public float drawLayer(int underlineColor, float x) {
-			if (underlineColor != 0) {
-				float f = (float)(underlineColor >> 24 & 0xFF) / 255.0F;
-				float g = (float)(underlineColor >> 16 & 0xFF) / 255.0F;
-				float h = (float)(underlineColor >> 8 & 0xFF) / 255.0F;
-				float i = (float)(underlineColor & 0xFF) / 255.0F;
-				this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, 0.01F, g, h, i, f));
-			}
-
+		public float drawLayer() {
 			if (this.rectangles != null) {
-				GlyphRenderer glyphRenderer = TextRenderer.this.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();
+				GlyphRenderer glyphRenderer = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();
 				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
 
 				for (GlyphRenderer.Rectangle rectangle : this.rectangles) {

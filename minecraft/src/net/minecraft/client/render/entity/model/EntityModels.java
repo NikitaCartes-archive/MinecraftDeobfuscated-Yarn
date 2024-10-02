@@ -130,6 +130,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.CONDUIT, ConduitBlockEntityRenderer.getPlainTexturedModelData());
 		builder.put(EntityModelLayers.COW, texturedModelData12);
 		builder.put(EntityModelLayers.COW_BABY, texturedModelData13);
+		builder.put(EntityModelLayers.CREAKING, CreakingEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.CREEPER, CreeperEntityModel.getTexturedModelData(Dilation.NONE));
 		builder.put(EntityModelLayers.CREEPER_ARMOR, CreeperEntityModel.getTexturedModelData(new Dilation(2.0F)));
 		builder.put(EntityModelLayers.CREEPER_HEAD, texturedModelData6);
@@ -350,6 +351,8 @@ public class EntityModels {
 		builder.put(EntityModelLayers.CHERRY_CHEST_BOAT, texturedModelData53);
 		builder.put(EntityModelLayers.DARK_OAK_BOAT, texturedModelData52);
 		builder.put(EntityModelLayers.DARK_OAK_CHEST_BOAT, texturedModelData53);
+		builder.put(EntityModelLayers.PALE_OAK_BOAT, texturedModelData52);
+		builder.put(EntityModelLayers.PALE_OAK_CHEST_BOAT, texturedModelData53);
 		builder.put(EntityModelLayers.MANGROVE_BOAT, texturedModelData52);
 		builder.put(EntityModelLayers.MANGROVE_CHEST_BOAT, texturedModelData53);
 		TexturedModelData texturedModelData54 = SignBlockEntityRenderer.getTexturedModelData(true);

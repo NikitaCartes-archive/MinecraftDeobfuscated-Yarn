@@ -1,21 +1,33 @@
 package net.minecraft.recipe;
 
-import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.book.RecipeBookGroup;
 
 public class CampfireCookingRecipe extends AbstractCookingRecipe {
-	public CampfireCookingRecipe(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
-		super(RecipeType.CAMPFIRE_COOKING, group, category, ingredient, result, experience, cookingTime);
+	public CampfireCookingRecipe(String string, CookingRecipeCategory cookingRecipeCategory, Ingredient ingredient, ItemStack itemStack, float f, int i) {
+		super(string, cookingRecipeCategory, ingredient, itemStack, f, i);
 	}
 
 	@Override
-	public ItemStack createIcon() {
-		return new ItemStack(Blocks.CAMPFIRE);
+	protected Item getCookerItem() {
+		return Items.CAMPFIRE;
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<CampfireCookingRecipe> getSerializer() {
 		return RecipeSerializer.CAMPFIRE_COOKING;
+	}
+
+	@Override
+	public RecipeType<CampfireCookingRecipe> getType() {
+		return RecipeType.CAMPFIRE_COOKING;
+	}
+
+	@Override
+	public RecipeBookGroup getRecipeBookTab() {
+		return RecipeBookGroup.CAMPFIRE;
 	}
 }

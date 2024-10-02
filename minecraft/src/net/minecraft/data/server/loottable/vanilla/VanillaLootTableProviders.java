@@ -9,7 +9,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.RegistryWrapper;
 
 public class VanillaLootTableProviders {
-	public static LootTableProvider createVanillaProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+	public static LootTableProvider createVanillaProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
 		return new LootTableProvider(
 			output,
 			LootTables.getAll(),
@@ -24,7 +24,7 @@ public class VanillaLootTableProviders {
 				new LootTableProvider.LootTypeGenerator(VanillaArchaeologyLootTableGenerator::new, LootContextTypes.ARCHAEOLOGY),
 				new LootTableProvider.LootTypeGenerator(VanillaShearingLootTableGenerator::new, LootContextTypes.SHEARING)
 			),
-			registryLookupFuture
+			registriesFuture
 		);
 	}
 }

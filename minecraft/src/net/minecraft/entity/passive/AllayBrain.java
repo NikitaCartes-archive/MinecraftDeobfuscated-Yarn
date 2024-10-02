@@ -16,17 +16,17 @@ import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GiveInventoryToLookTargetTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.GoToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
-import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
+import net.minecraft.entity.ai.brain.task.TickCooldownTask;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLookTargetTask;
+import net.minecraft.entity.ai.brain.task.WalkTowardsNearestVisibleWantedItemTask;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -62,12 +62,12 @@ public class AllayBrain {
 			Activity.CORE,
 			0,
 			ImmutableList.of(
-				new StayAboveWaterTask(0.8F),
-				new FleeTask<>(2.5F),
-				new LookAroundTask(45, 90),
+				new StayAboveWaterTask<>(0.8F),
+				new FleeTask(2.5F),
+				new UpdateLookControlTask(45, 90),
 				new MoveToTargetTask(),
-				new TemptationCooldownTask(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS),
-				new TemptationCooldownTask(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS)
+				new TickCooldownTask(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS),
+				new TickCooldownTask(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS)
 			)
 		);
 	}
@@ -76,14 +76,14 @@ public class AllayBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, WalkToNearestVisibleWantedItemTask.create(allay -> true, 1.75F, true, 32)),
+				Pair.of(0, WalkTowardsNearestVisibleWantedItemTask.create(allay -> true, 1.75F, true, 32)),
 				Pair.of(1, new GiveInventoryToLookTargetTask<>(AllayBrain::getLookTarget, 2.25F, 20)),
 				Pair.of(2, WalkTowardsLookTargetTask.create(AllayBrain::getLookTarget, Predicate.not(AllayBrain::hasNearestVisibleWantedItem), 4, 16, 2.25F)),
 				Pair.of(3, LookAtMobWithIntervalTask.follow(6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(
 					4,
 					new RandomTask<>(
-						ImmutableList.of(Pair.of(StrollTask.createSolidTargeting(1.0F), 2), Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
+						ImmutableList.of(Pair.of(StrollTask.createSolidTargeting(1.0F), 2), Pair.of(GoToLookTargetTask.create(1.0F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
 					)
 				)
 			),

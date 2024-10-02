@@ -54,6 +54,8 @@ import net.minecraft.predicate.item.ItemSubPredicate;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.scoreboard.number.NumberFormatType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvent;
@@ -196,7 +198,8 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<MapDecorationType>> MAP_DECORATION_TYPE = of("map_decoration_type");
 	public static final RegistryKey<Registry<ComponentType<?>>> ENCHANTMENT_EFFECT_COMPONENT_TYPE = of("enchantment_effect_component_type");
 	public static final RegistryKey<Registry<ConsumeEffect.Type<?>>> CONSUME_EFFECT_TYPE = of("consume_effect_type");
-	public static final RegistryKey<Registry<TrialSpawnerConfig>> TRIAL_SPAWNER = of("trial_spawner");
+	public static final RegistryKey<Registry<RecipeDisplay.Serializer<?>>> RECIPE_DISPLAY = of("recipe_display");
+	public static final RegistryKey<Registry<SlotDisplay.Serializer<?>>> SLOT_DISPLAY = of("slot_display");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");
@@ -220,6 +223,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<MultiNoiseBiomeSourceParameterList>> MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST = of(
 		"worldgen/multi_noise_biome_source_parameter_list"
 	);
+	public static final RegistryKey<Registry<TrialSpawnerConfig>> TRIAL_SPAWNER = of("trial_spawner");
 	public static final RegistryKey<Registry<World>> WORLD = of("dimension");
 	public static final RegistryKey<Registry<DimensionOptions>> DIMENSION = of("dimension");
 	public static final RegistryKey<Registry<LootTable>> LOOT_TABLE = of("loot_table");

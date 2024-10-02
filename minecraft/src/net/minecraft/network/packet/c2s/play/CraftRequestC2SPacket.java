@@ -2,36 +2,23 @@ package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.util.Identifier;
+import net.minecraft.recipe.NetworkRecipeId;
 
-public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, CraftRequestC2SPacket> CODEC = Packet.createCodec(CraftRequestC2SPacket::write, CraftRequestC2SPacket::new);
-	private final int syncId;
-	private final Identifier recipeId;
-	private final boolean craftAll;
-
-	public CraftRequestC2SPacket(int syncId, RecipeEntry<?> recipe, boolean craftAll) {
-		this.syncId = syncId;
-		this.recipeId = recipe.id();
-		this.craftAll = craftAll;
-	}
-
-	private CraftRequestC2SPacket(PacketByteBuf buf) {
-		this.syncId = buf.readSyncId();
-		this.recipeId = buf.readIdentifier();
-		this.craftAll = buf.readBoolean();
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeSyncId(this.syncId);
-		buf.writeIdentifier(this.recipeId);
-		buf.writeBoolean(this.craftAll);
-	}
+public record CraftRequestC2SPacket(int syncId, NetworkRecipeId recipeId, boolean craftAll) implements Packet<ServerPlayPacketListener> {
+	public static final PacketCodec<PacketByteBuf, CraftRequestC2SPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.SYNC_ID,
+		CraftRequestC2SPacket::syncId,
+		NetworkRecipeId.PACKET_CODEC,
+		CraftRequestC2SPacket::recipeId,
+		PacketCodecs.BOOL,
+		CraftRequestC2SPacket::craftAll,
+		CraftRequestC2SPacket::new
+	);
 
 	@Override
 	public PacketType<CraftRequestC2SPacket> getPacketId() {
@@ -40,17 +27,5 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onCraftRequest(this);
-	}
-
-	public int getSyncId() {
-		return this.syncId;
-	}
-
-	public Identifier getRecipeId() {
-		return this.recipeId;
-	}
-
-	public boolean shouldCraftAll() {
-		return this.craftAll;
 	}
 }

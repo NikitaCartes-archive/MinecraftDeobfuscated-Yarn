@@ -70,7 +70,7 @@ public class FrogEatEntityTask extends MultiTickTask<FrogEntity> {
 
 	protected void run(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
 		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get();
-		LookTargetUtil.lookAt(frogEntity, livingEntity);
+		TargetUtil.lookAt(frogEntity, livingEntity);
 		frogEntity.setFrogTarget(livingEntity);
 		frogEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(livingEntity.getPos(), 2.0F, 0));
 		this.moveToTargetTick = 10;

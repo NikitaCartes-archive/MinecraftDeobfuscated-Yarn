@@ -41,6 +41,11 @@ public class DefaultMinecartController extends MinecartController {
 	}
 
 	@Override
+	public void resetLerp() {
+		this.step = 0;
+	}
+
+	@Override
 	public void setPos(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.x = x;
 		this.y = y;
@@ -99,6 +104,7 @@ public class DefaultMinecartController extends MinecartController {
 				this.minecart.moveOffRail(serverWorld);
 			}
 
+			this.minecart.tickBlockCollision();
 			this.minecart.tickBlockCollision();
 			this.setPitch(0.0F);
 			double d = this.minecart.prevX - this.getX();

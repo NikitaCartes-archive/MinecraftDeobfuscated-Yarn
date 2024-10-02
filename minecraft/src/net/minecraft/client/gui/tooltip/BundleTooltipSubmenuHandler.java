@@ -38,8 +38,10 @@ public class BundleTooltipSubmenuHandler implements TooltipSubmenuHandler {
 			int j = vector2i.y == 0 ? -vector2i.x : vector2i.y;
 			if (j != 0) {
 				int k = BundleItem.getSelectedStackIndex(item);
-				k = Scroller.scrollCycling((double)j, k, i);
-				this.sendPacket(item, slotId, k);
+				int l = Scroller.scrollCycling((double)j, k, i);
+				if (k != l) {
+					this.sendPacket(item, slotId, l);
+				}
 			}
 
 			return true;
@@ -53,7 +55,7 @@ public class BundleTooltipSubmenuHandler implements TooltipSubmenuHandler {
 
 	@Override
 	public void onMouseClick(Slot slot, SlotActionType actionType) {
-		if (actionType == SlotActionType.QUICK_MOVE) {
+		if (actionType == SlotActionType.QUICK_MOVE || actionType == SlotActionType.SWAP) {
 			this.reset(slot.getStack(), slot.id);
 		}
 	}

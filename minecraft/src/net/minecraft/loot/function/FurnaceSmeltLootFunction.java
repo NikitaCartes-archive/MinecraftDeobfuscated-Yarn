@@ -34,11 +34,12 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 		if (stack.isEmpty()) {
 			return stack;
 		} else {
+			SingleStackRecipeInput singleStackRecipeInput = new SingleStackRecipeInput(stack);
 			Optional<RecipeEntry<SmeltingRecipe>> optional = context.getWorld()
 				.getRecipeManager()
-				.getFirstMatch(RecipeType.SMELTING, new SingleStackRecipeInput(stack), context.getWorld());
+				.getFirstMatch(RecipeType.SMELTING, singleStackRecipeInput, context.getWorld());
 			if (optional.isPresent()) {
-				ItemStack itemStack = ((SmeltingRecipe)((RecipeEntry)optional.get()).value()).getResult(context.getWorld().getRegistryManager());
+				ItemStack itemStack = ((SmeltingRecipe)((RecipeEntry)optional.get()).value()).craft(singleStackRecipeInput, context.getWorld().getRegistryManager());
 				if (!itemStack.isEmpty()) {
 					return itemStack.copyWithCount(stack.getCount());
 				}

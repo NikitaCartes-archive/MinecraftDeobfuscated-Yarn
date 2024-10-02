@@ -36,6 +36,7 @@ import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
@@ -62,6 +63,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 	private static final char TEXTURE_REFERENCE_INITIAL = '#';
 	public static final String PARTICLE_KEY = "particle";
 	private static final boolean field_42912 = true;
+	public static final SpriteIdentifier MISSING_SPRITE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId());
 	private final List<ModelElement> elements;
 	@Nullable
 	private final JsonUnbakedModel.GuiLight guiLight;
@@ -194,7 +196,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			spriteName = (String)either.right().get();
 			if (list.contains(spriteName)) {
 				LOGGER.warn("Unable to resolve texture due to reference chain {}->{} in {}", Joiner.on("->").join(list), spriteName, this.id);
-				return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId());
+				return MISSING_SPRITE;
 			}
 
 			list.add(spriteName);
@@ -209,7 +211,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 		}
 
-		return Either.left(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, MissingSprite.getMissingSpriteId()));
+		return Either.left(MISSING_SPRITE);
 	}
 
 	static boolean isTextureReference(String reference) {

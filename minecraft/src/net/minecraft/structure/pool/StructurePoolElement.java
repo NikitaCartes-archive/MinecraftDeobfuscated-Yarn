@@ -44,7 +44,7 @@ public abstract class StructurePoolElement {
 
 	public abstract Vec3i getStart(StructureTemplateManager structureTemplateManager, BlockRotation rotation);
 
-	public abstract List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
+	public abstract List<StructureTemplate.JigsawBlockInfo> getStructureBlockInfos(
 		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
 	);
 

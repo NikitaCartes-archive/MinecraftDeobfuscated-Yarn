@@ -19,7 +19,6 @@ import net.minecraft.entity.ai.brain.task.DismountVehicleTask;
 import net.minecraft.entity.ai.brain.task.EmergeTask;
 import net.minecraft.entity.ai.brain.task.FindRoarTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtDisturbanceTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
@@ -34,8 +33,9 @@ import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkTowardsPosTask;
+import net.minecraft.entity.ai.brain.task.WalkTowardsFuzzyPosTask;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
@@ -116,7 +116,9 @@ public class WardenBrain {
 
 	private static void addCoreActivities(Brain<WardenEntity> brain) {
 		brain.setTaskList(
-			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), LookAtDisturbanceTask.create(), new LookAroundTask(45, 90), new MoveToTargetTask())
+			Activity.CORE,
+			0,
+			ImmutableList.of(new StayAboveWaterTask<>(0.8F), LookAtDisturbanceTask.create(), new UpdateLookControlTask(45, 90), new MoveToTargetTask())
 		);
 	}
 
@@ -153,7 +155,7 @@ public class WardenBrain {
 		brain.setTaskList(
 			Activity.INVESTIGATE,
 			5,
-			ImmutableList.of(FindRoarTargetTask.create(WardenEntity::getPrimeSuspect), WalkTowardsPosTask.create(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7F)),
+			ImmutableList.of(FindRoarTargetTask.create(WardenEntity::getPrimeSuspect), WalkTowardsFuzzyPosTask.create(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7F)),
 			MemoryModuleType.DISTURBANCE_LOCATION
 		);
 	}

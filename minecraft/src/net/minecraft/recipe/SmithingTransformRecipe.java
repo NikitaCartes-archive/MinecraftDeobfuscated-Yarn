@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.recipe.display.RecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SmithingRecipeDisplay;
 import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 
@@ -33,27 +37,22 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 	}
 
 	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-		return this.result;
+	public Optional<Ingredient> template() {
+		return this.template;
 	}
 
 	@Override
-	public boolean testTemplate(ItemStack stack) {
-		return Ingredient.matches(this.template, stack);
+	public Optional<Ingredient> base() {
+		return this.base;
 	}
 
 	@Override
-	public boolean testBase(ItemStack stack) {
-		return Ingredient.matches(this.base, stack);
+	public Optional<Ingredient> addition() {
+		return this.addition;
 	}
 
 	@Override
-	public boolean testAddition(ItemStack stack) {
-		return Ingredient.matches(this.addition, stack);
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<SmithingTransformRecipe> getSerializer() {
 		return RecipeSerializer.SMITHING_TRANSFORM;
 	}
 
@@ -64,6 +63,11 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 		}
 
 		return this.ingredientPlacement;
+	}
+
+	@Override
+	public List<RecipeDisplay> getDisplays() {
+		return List.of(new SmithingRecipeDisplay(new SlotDisplay.StackSlotDisplay(this.result), new SlotDisplay.ItemSlotDisplay(Items.SMITHING_TABLE)));
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingTransformRecipe> {

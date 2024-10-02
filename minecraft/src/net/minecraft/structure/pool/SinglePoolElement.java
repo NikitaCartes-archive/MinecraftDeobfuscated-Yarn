@@ -8,7 +8,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,6 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Nullables;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -38,6 +36,10 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SinglePoolElement extends StructurePoolElement {
+	private static final Comparator<StructureTemplate.JigsawBlockInfo> JIGSAW_BLOCK_INFO_COMPARATOR = Comparator.comparingInt(
+			StructureTemplate.JigsawBlockInfo::selectionPriority
+		)
+		.reversed();
 	private static final Codec<Either<Identifier, StructureTemplate>> LOCATION_CODEC = Codec.of(
 		SinglePoolElement::encodeLocation, Identifier.CODEC.map(Either::left)
 	);
@@ -112,21 +114,18 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
+	public List<StructureTemplate.JigsawBlockInfo> getStructureBlockInfos(
 		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
 	) {
-		StructureTemplate structureTemplate = this.getStructure(structureTemplateManager);
-		ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = structureTemplate.getInfosForBlock(
-			pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true
-		);
-		Util.shuffle(objectArrayList, random);
-		sort(objectArrayList);
-		return objectArrayList;
+		List<StructureTemplate.JigsawBlockInfo> list = this.getStructure(structureTemplateManager).getJigsawInfos(pos, rotation);
+		Util.shuffle(list, random);
+		sort(list);
+		return list;
 	}
 
 	@VisibleForTesting
-	static void sort(List<StructureTemplate.StructureBlockInfo> blocks) {
-		blocks.sort(Comparator.comparingInt(block -> Nullables.mapOrElse(block.nbt(), nbt -> nbt.getInt("selection_priority"), 0)).reversed());
+	static void sort(List<StructureTemplate.JigsawBlockInfo> blocks) {
+		blocks.sort(JIGSAW_BLOCK_INFO_COMPARATOR);
 	}
 
 	@Override

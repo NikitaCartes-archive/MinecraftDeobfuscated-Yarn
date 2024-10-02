@@ -115,7 +115,7 @@ public class ChunkRenderingDataPreparer {
 		}
 	}
 
-	public void updateSectionOcculusionGraph(
+	public void updateSectionOcclusionGraph(
 		boolean cullChunks, Camera camera, Frustum frustum, List<ChunkBuilder.BuiltChunk> builtChunk, LongOpenHashSet activeSections
 	) {
 		Vec3d vec3d = camera.getPos();

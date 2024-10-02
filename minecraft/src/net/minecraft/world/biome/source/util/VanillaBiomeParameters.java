@@ -14,6 +14,7 @@ import net.minecraft.util.function.ToFloatFunction;
 import net.minecraft.util.math.Spline;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.WinterDropBuiltinBiomes;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
@@ -33,6 +34,7 @@ public final class VanillaBiomeParameters {
 	public static final float field_35046 = -0.375F;
 	private static final float field_39134 = -0.225F;
 	private static final float field_39135 = 0.9F;
+	private final VanillaBiomeParameters.EnabledFeatures enabledFeatures;
 	private final MultiNoiseUtil.ParameterRange defaultParameter = MultiNoiseUtil.ParameterRange.of(-1.0F, 1.0F);
 	private final MultiNoiseUtil.ParameterRange[] temperatureParameters = new MultiNoiseUtil.ParameterRange[]{
 		MultiNoiseUtil.ParameterRange.of(-1.0F, -0.45F),
@@ -101,6 +103,13 @@ public final class VanillaBiomeParameters {
 		{null, null, null, null, null},
 		{BiomeKeys.ERODED_BADLANDS, BiomeKeys.ERODED_BADLANDS, null, null, null}
 	};
+	private final RegistryKey<Biome>[][] specialNearMountainBiomesWinterDrop = new RegistryKey[][]{
+		{BiomeKeys.ICE_SPIKES, null, null, null, null},
+		{BiomeKeys.CHERRY_GROVE, null, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.OLD_GROWTH_PINE_TAIGA},
+		{BiomeKeys.CHERRY_GROVE, BiomeKeys.CHERRY_GROVE, BiomeKeys.FOREST, BiomeKeys.BIRCH_FOREST, WinterDropBuiltinBiomes.PALE_GARDEN},
+		{null, null, null, null, null},
+		{BiomeKeys.ERODED_BADLANDS, BiomeKeys.ERODED_BADLANDS, null, null, null}
+	};
 	private final RegistryKey<Biome>[][] windsweptBiomes = new RegistryKey[][]{
 		{BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST},
 		{BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST},
@@ -108,6 +117,14 @@ public final class VanillaBiomeParameters {
 		{null, null, null, null, null},
 		{null, null, null, null, null}
 	};
+
+	public VanillaBiomeParameters() {
+		this(VanillaBiomeParameters.EnabledFeatures.NONE);
+	}
+
+	public VanillaBiomeParameters(VanillaBiomeParameters.EnabledFeatures enabledFeatures) {
+		this.enabledFeatures = enabledFeatures;
+	}
 
 	public List<MultiNoiseUtil.NoiseHypercube> getSpawnSuitabilityNoises() {
 		MultiNoiseUtil.ParameterRange parameterRange = MultiNoiseUtil.ParameterRange.of(0.0F);
@@ -1103,7 +1120,9 @@ public final class VanillaBiomeParameters {
 	 */
 	private RegistryKey<Biome> getNearMountainBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (weirdness.max() >= 0L) {
-			RegistryKey<Biome> registryKey = this.specialNearMountainBiomes[temperature][humidity];
+			RegistryKey<Biome> registryKey = (this.enabledFeatures == VanillaBiomeParameters.EnabledFeatures.WINTER_DROP
+				? this.specialNearMountainBiomesWinterDrop
+				: this.specialNearMountainBiomes)[temperature][humidity];
 			if (registryKey != null) {
 				return registryKey;
 			}
@@ -1302,5 +1321,10 @@ public final class VanillaBiomeParameters {
 	@Debug
 	public MultiNoiseUtil.ParameterRange[] getWeirdnessParameters() {
 		return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0F, 0.0F), MultiNoiseUtil.ParameterRange.of(0.0F, 2.0F)};
+	}
+
+	public static enum EnabledFeatures {
+		NONE,
+		WINTER_DROP;
 	}
 }

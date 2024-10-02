@@ -35,7 +35,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Override
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		super.readNbt(nbt, registries);
-		this.lock = ContainerLock.fromNbt(nbt);
+		this.lock = ContainerLock.fromNbt(nbt, registries);
 		if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
 			this.customName = tryParseCustomName(nbt.getString("CustomName"), registries);
 		}
@@ -44,7 +44,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
 		super.writeNbt(nbt, registries);
-		this.lock.writeNbt(nbt);
+		this.lock.writeNbt(nbt, registries);
 		if (this.customName != null) {
 			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
 		}

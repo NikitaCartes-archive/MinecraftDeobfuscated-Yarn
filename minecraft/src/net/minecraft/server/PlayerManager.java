@@ -64,6 +64,7 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CP
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.network.state.PlayStateFactories;
+import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.ServerDynamicRegistryType;
@@ -195,7 +196,8 @@ public abstract class PlayerManager {
 		serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
 		serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
-		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().syncedValues()));
+		ServerRecipeManager serverRecipeManager = this.server.getRecipeManager();
+		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(serverRecipeManager.getPropertySets(), serverRecipeManager.getStonecutterRecipeForSync()));
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
@@ -918,7 +920,10 @@ public abstract class PlayerManager {
 		}
 
 		this.sendToAll(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(this.registryManager)));
-		SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket = new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().syncedValues());
+		ServerRecipeManager serverRecipeManager = this.server.getRecipeManager();
+		SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket = new SynchronizeRecipesS2CPacket(
+			serverRecipeManager.getPropertySets(), serverRecipeManager.getStonecutterRecipeForSync()
+		);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			serverPlayerEntity.networkHandler.sendPacket(synchronizeRecipesS2CPacket);

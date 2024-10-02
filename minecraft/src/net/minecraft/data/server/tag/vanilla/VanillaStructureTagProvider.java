@@ -10,8 +10,8 @@ import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaStructureTagProvider extends TagProvider<Structure> {
-	public VanillaStructureTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.STRUCTURE, registryLookupFuture);
+	public VanillaStructureTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.STRUCTURE, registriesFuture);
 	}
 
 	@Override

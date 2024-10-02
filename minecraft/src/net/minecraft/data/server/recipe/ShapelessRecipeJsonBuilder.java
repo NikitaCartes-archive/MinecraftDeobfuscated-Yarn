@@ -15,11 +15,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 
 public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RegistryEntryLookup<Item> registryLookup;
@@ -92,22 +93,22 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	}
 
 	@Override
-	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-		this.validate(recipeId);
+	public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey) {
+		this.validate(recipeKey);
 		Advancement.Builder builder = exporter.getAdvancementBuilder()
-			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
-			.rewards(AdvancementRewards.Builder.recipe(recipeId))
+			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeKey))
+			.rewards(AdvancementRewards.Builder.recipe(recipeKey))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.advancementBuilder.forEach(builder::criterion);
 		ShapelessRecipe shapelessRecipe = new ShapelessRecipe(
 			(String)Objects.requireNonNullElse(this.group, ""), CraftingRecipeJsonBuilder.toCraftingCategory(this.category), this.output, this.inputs
 		);
-		exporter.accept(recipeId, shapelessRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
+		exporter.accept(recipeKey, shapelessRecipe, builder.build(recipeKey.getValue().withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 
-	private void validate(Identifier recipeId) {
+	private void validate(RegistryKey<Recipe<?>> recipeKey) {
 		if (this.advancementBuilder.isEmpty()) {
-			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
+			throw new IllegalStateException("No way of obtaining recipe " + recipeKey.getValue());
 		}
 	}
 }

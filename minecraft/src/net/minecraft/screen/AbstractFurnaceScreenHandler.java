@@ -11,12 +11,15 @@ import net.minecraft.recipe.InputSlotFiller;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
+import net.minecraft.recipe.RecipePropertySet;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.book.RecipeBookType;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.slot.FurnaceFuelSlot;
 import net.minecraft.screen.slot.FurnaceOutputSlot;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -34,20 +37,27 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	private final PropertyDelegate propertyDelegate;
 	protected final World world;
 	private final RecipeType<? extends AbstractCookingRecipe> recipeType;
-	private final RecipeBookCategory category;
+	private final RecipePropertySet recipePropertySet;
+	private final RecipeBookType category;
 
 	protected AbstractFurnaceScreenHandler(
-		ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, RecipeBookCategory category, int syncId, PlayerInventory playerInventory
+		ScreenHandlerType<?> type,
+		RecipeType<? extends AbstractCookingRecipe> recipeType,
+		RegistryKey<RecipePropertySet> recipePropertySetKey,
+		RecipeBookType category,
+		int syncId,
+		PlayerInventory platerInventory
 	) {
-		this(type, recipeType, category, syncId, playerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
+		this(type, recipeType, recipePropertySetKey, category, syncId, platerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
 	}
 
 	protected AbstractFurnaceScreenHandler(
 		ScreenHandlerType<?> type,
 		RecipeType<? extends AbstractCookingRecipe> recipeType,
-		RecipeBookCategory category,
+		RegistryKey<RecipePropertySet> recipePropertySetKey,
+		RecipeBookType category,
 		int syncId,
-		PlayerInventory playerInventory,
+		PlayerInventory platerInventory,
 		Inventory inventory,
 		PropertyDelegate propertyDelegate
 	) {
@@ -58,11 +68,12 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 		checkDataCount(propertyDelegate, 4);
 		this.inventory = inventory;
 		this.propertyDelegate = propertyDelegate;
-		this.world = playerInventory.player.getWorld();
+		this.world = platerInventory.player.getWorld();
+		this.recipePropertySet = this.world.getRecipeManager().getPropertySet(recipePropertySetKey);
 		this.addSlot(new Slot(inventory, 0, 56, 17));
 		this.addSlot(new FurnaceFuelSlot(this, inventory, 1, 56, 53));
-		this.addSlot(new FurnaceOutputSlot(playerInventory.player, inventory, 2, 116, 35));
-		this.addPlayerSlots(playerInventory, 8, 84);
+		this.addSlot(new FurnaceOutputSlot(platerInventory.player, inventory, 2, 116, 35));
+		this.addPlayerSlots(platerInventory, 8, 84);
 		this.addProperties(propertyDelegate);
 	}
 
@@ -132,7 +143,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	protected boolean isSmeltable(ItemStack itemStack) {
-		return this.world.getRecipeManager().getFirstMatch(this.recipeType, new SingleStackRecipeInput(itemStack), this.world).isPresent();
+		return this.recipePropertySet.canUse(itemStack);
 	}
 
 	public boolean isFuel(ItemStack item) {
@@ -159,12 +170,14 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	@Override
-	public RecipeBookCategory getCategory() {
+	public RecipeBookType getCategory() {
 		return this.category;
 	}
 
 	@Override
-	public AbstractRecipeScreenHandler.PostFillAction fillInputSlots(boolean craftAll, boolean creative, RecipeEntry<?> recipe, PlayerInventory inventory) {
+	public AbstractRecipeScreenHandler.PostFillAction fillInputSlots(
+		boolean craftAll, boolean creative, RecipeEntry<?> recipe, ServerWorld world, PlayerInventory inventory
+	) {
 		final List<Slot> list = List.of(this.getSlot(0), this.getSlot(2));
 		return InputSlotFiller.fill(new InputSlotFiller.Handler<AbstractCookingRecipe>() {
 			@Override
@@ -179,7 +192,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 
 			@Override
 			public boolean matches(RecipeEntry<AbstractCookingRecipe> entry) {
-				return entry.value().matches(new SingleStackRecipeInput(AbstractFurnaceScreenHandler.this.inventory.getStack(0)), AbstractFurnaceScreenHandler.this.world);
+				return entry.value().matches(new SingleStackRecipeInput(AbstractFurnaceScreenHandler.this.inventory.getStack(0)), world);
 			}
 		}, 1, 1, List.of(this.getSlot(0)), list, inventory, (RecipeEntry<AbstractCookingRecipe>)recipe, craftAll, creative);
 	}

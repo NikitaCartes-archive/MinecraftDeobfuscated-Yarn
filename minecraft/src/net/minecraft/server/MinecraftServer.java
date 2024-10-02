@@ -71,7 +71,7 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.recipe.BrewingRecipeRegistry;
-import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
@@ -348,7 +348,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.serverThread = serverThread;
 			this.workerExecutor = Util.getMainWorkerExecutor();
 			this.brewingRecipeRegistry = BrewingRecipeRegistry.create(this.saveProperties.getEnabledFeatures());
-			this.resourceManagerHolder.dataPackContents.getRecipeManager().warnEmptyIngredients();
+			this.resourceManagerHolder.dataPackContents.getRecipeManager().initialize(this.saveProperties.getEnabledFeatures());
 			this.fuelRegistry = FuelRegistry.createDefault(this.combinedDynamicRegistries.getCombinedRegistryManager(), this.saveProperties.getEnabledFeatures());
 			this.discontinuousFrame = TracyClient.createDiscontinuousFrame("Server Tick");
 		}
@@ -1645,7 +1645,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				DataConfiguration dataConfiguration = new DataConfiguration(createDataPackSettings(this.dataPackManager, true), this.saveProperties.getEnabledFeatures());
 				this.saveProperties.updateLevelInfo(dataConfiguration);
 				this.resourceManagerHolder.dataPackContents.applyPendingTagLoads();
-				this.resourceManagerHolder.dataPackContents.getRecipeManager().warnEmptyIngredients();
+				this.resourceManagerHolder.dataPackContents.getRecipeManager().initialize(this.saveProperties.getEnabledFeatures());
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
 				this.commandFunctionManager.setFunctions(this.resourceManagerHolder.dataPackContents.getFunctionLoader());
@@ -1803,7 +1803,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Override
 	public abstract boolean shouldBroadcastConsoleToOps();
 
-	public RecipeManager getRecipeManager() {
+	public ServerRecipeManager getRecipeManager() {
 		return this.resourceManagerHolder.dataPackContents.getRecipeManager();
 	}
 

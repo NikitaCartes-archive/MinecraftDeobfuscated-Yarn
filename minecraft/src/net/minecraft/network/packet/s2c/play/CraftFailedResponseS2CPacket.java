@@ -1,35 +1,22 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.util.Identifier;
+import net.minecraft.recipe.display.RecipeDisplay;
 
-public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final PacketCodec<PacketByteBuf, CraftFailedResponseS2CPacket> CODEC = Packet.createCodec(
-		CraftFailedResponseS2CPacket::write, CraftFailedResponseS2CPacket::new
+public record CraftFailedResponseS2CPacket(int syncId, RecipeDisplay recipeDisplay) implements Packet<ClientPlayPacketListener> {
+	public static final PacketCodec<RegistryByteBuf, CraftFailedResponseS2CPacket> CODEC = PacketCodec.tuple(
+		PacketCodecs.SYNC_ID,
+		CraftFailedResponseS2CPacket::syncId,
+		RecipeDisplay.STREAM_CODEC,
+		CraftFailedResponseS2CPacket::recipeDisplay,
+		CraftFailedResponseS2CPacket::new
 	);
-	private final int syncId;
-	private final Identifier recipeId;
-
-	public CraftFailedResponseS2CPacket(int syncId, RecipeEntry<?> recipe) {
-		this.syncId = syncId;
-		this.recipeId = recipe.id();
-	}
-
-	private CraftFailedResponseS2CPacket(PacketByteBuf buf) {
-		this.syncId = buf.readSyncId();
-		this.recipeId = buf.readIdentifier();
-	}
-
-	private void write(PacketByteBuf buf) {
-		buf.writeSyncId(this.syncId);
-		buf.writeIdentifier(this.recipeId);
-	}
 
 	@Override
 	public PacketType<CraftFailedResponseS2CPacket> getPacketId() {
@@ -38,13 +25,5 @@ public class CraftFailedResponseS2CPacket implements Packet<ClientPlayPacketList
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onCraftFailedResponse(this);
-	}
-
-	public Identifier getRecipeId() {
-		return this.recipeId;
-	}
-
-	public int getSyncId() {
-		return this.syncId;
 	}
 }

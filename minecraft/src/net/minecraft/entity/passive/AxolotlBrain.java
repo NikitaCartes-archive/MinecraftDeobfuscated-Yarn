@@ -18,10 +18,8 @@ import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.CompositeTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.GoToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
-import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.PlayDeadTask;
@@ -30,12 +28,13 @@ import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
 import net.minecraft.entity.ai.brain.task.SeekWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
+import net.minecraft.entity.ai.brain.task.TargetUtil;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
-import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
+import net.minecraft.entity.ai.brain.task.TickCooldownTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
+import net.minecraft.entity.ai.brain.task.WalkTowardsClosestAdultTask;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -114,7 +113,7 @@ public class AxolotlBrain {
 	private static void addPlayDeadActivities(Brain<AxolotlEntity> brain) {
 		brain.setTaskList(
 			Activity.PLAY_DEAD,
-			ImmutableList.of(Pair.of(0, new PlayDeadTask()), Pair.of(1, ForgetTask.create(LookTargetUtil::hasBreedTarget, MemoryModuleType.PLAY_DEAD_TICKS))),
+			ImmutableList.of(Pair.of(0, new PlayDeadTask()), Pair.of(1, ForgetTask.create(TargetUtil::hasBreedTarget, MemoryModuleType.PLAY_DEAD_TICKS))),
 			ImmutableSet.of(Pair.of(MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleState.VALUE_PRESENT)),
 			ImmutableSet.of(MemoryModuleType.PLAY_DEAD_TICKS)
 		);
@@ -125,10 +124,10 @@ public class AxolotlBrain {
 			Activity.FIGHT,
 			0,
 			ImmutableList.of(
-				ForgetAttackTargetTask.<MobEntity>create(AxolotlEntity::appreciatePlayer),
+				ForgetAttackTargetTask.create(AxolotlEntity::appreciatePlayer),
 				RangedApproachTask.create(AxolotlBrain::getTargetApproachingSpeed),
 				MeleeAttackTask.create(20),
-				ForgetTask.<MobEntity>create(LookTargetUtil::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)
+				ForgetTask.create(TargetUtil::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)
 			),
 			MemoryModuleType.ATTACK_TARGET
 		);
@@ -139,7 +138,7 @@ public class AxolotlBrain {
 			Activity.CORE,
 			0,
 			ImmutableList.of(
-				new LookAroundTask(45, 90), new MoveToTargetTask(), PlayDeadTimerTask.create(), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
+				new UpdateLookControlTask(45, 90), new MoveToTargetTask(), PlayDeadTimerTask.create(), new TickCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
 			)
 		);
 	}
@@ -155,7 +154,7 @@ public class AxolotlBrain {
 					new RandomTask<>(
 						ImmutableList.of(
 							Pair.of(new TemptTask(AxolotlBrain::getTemptedSpeed), 1),
-							Pair.of(WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::getAdultFollowingSpeed), 1)
+							Pair.of(WalkTowardsClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::getAdultFollowingSpeed), 1)
 						)
 					)
 				),
@@ -171,7 +170,7 @@ public class AxolotlBrain {
 						ImmutableList.of(
 							Pair.of(StrollTask.createDynamicRadius(0.5F), 2),
 							Pair.of(StrollTask.create(0.15F, false), 2),
-							Pair.of(GoTowardsLookTargetTask.create(AxolotlBrain::canGoToLookTarget, AxolotlBrain::getTemptedSpeed, 3), 3),
+							Pair.of(GoToLookTargetTask.create(AxolotlBrain::canGoToLookTarget, AxolotlBrain::getTemptedSpeed, 3), 3),
 							Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5),
 							Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5)
 						)
@@ -225,7 +224,7 @@ public class AxolotlBrain {
 	}
 
 	private static Optional<? extends LivingEntity> getAttackTarget(ServerWorld world, AxolotlEntity axolotl) {
-		return LookTargetUtil.hasBreedTarget(axolotl) ? Optional.empty() : axolotl.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE);
+		return TargetUtil.hasBreedTarget(axolotl) ? Optional.empty() : axolotl.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE);
 	}
 
 	public static Predicate<ItemStack> getTemptItemPredicate() {

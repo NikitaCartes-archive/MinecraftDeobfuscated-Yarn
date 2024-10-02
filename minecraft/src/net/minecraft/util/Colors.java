@@ -53,4 +53,8 @@ public class Colors {
 	 * Represents the color purple, {@code 0xFF500050}.
 	 */
 	public static final int PURPLE = -11534256;
+	/**
+	 * Represents the color cyan, {@code 0xFF57FFE1}.
+	 */
+	public static final int CYAN = -11010079;
 }

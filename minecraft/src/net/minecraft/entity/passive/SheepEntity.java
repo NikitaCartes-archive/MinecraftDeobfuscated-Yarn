@@ -281,7 +281,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	public SheepEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = EntityType.SHEEP.create(serverWorld, SpawnReason.BREEDING);
 		if (sheepEntity != null) {
-			sheepEntity.setColor(this.getChildColor(this, (SheepEntity)passiveEntity));
+			sheepEntity.setColor(this.getChildColor(serverWorld, this, (SheepEntity)passiveEntity));
 		}
 
 		return sheepEntity;
@@ -303,19 +303,18 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		return super.initialize(world, difficulty, spawnReason, entityData);
 	}
 
-	private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {
-		DyeColor dyeColor = ((SheepEntity)firstParent).getColor();
-		DyeColor dyeColor2 = ((SheepEntity)secondParent).getColor();
+	private DyeColor getChildColor(ServerWorld world, SheepEntity firstParent, SheepEntity secondParent) {
+		DyeColor dyeColor = firstParent.getColor();
+		DyeColor dyeColor2 = secondParent.getColor();
 		CraftingRecipeInput craftingRecipeInput = createChildColorRecipeInput(dyeColor, dyeColor2);
-		return (DyeColor)this.getWorld()
-			.getRecipeManager()
-			.getFirstMatch(RecipeType.CRAFTING, craftingRecipeInput, this.getWorld())
-			.map(recipe -> ((CraftingRecipe)recipe.value()).craft(craftingRecipeInput, this.getWorld().getRegistryManager()))
+		return (DyeColor)world.getRecipeManager()
+			.getFirstMatch(RecipeType.CRAFTING, craftingRecipeInput, world)
+			.map(recipe -> ((CraftingRecipe)recipe.value()).craft(craftingRecipeInput, world.getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)
 			.map(DyeItem::getColor)
-			.orElseGet(() -> this.getWorld().random.nextBoolean() ? dyeColor : dyeColor2);
+			.orElseGet(() -> world.random.nextBoolean() ? dyeColor : dyeColor2);
 	}
 
 	private static CraftingRecipeInput createChildColorRecipeInput(DyeColor firstColor, DyeColor secondColor) {

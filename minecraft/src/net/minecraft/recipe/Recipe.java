@@ -1,17 +1,17 @@
 package net.minecraft.recipe;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
+import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 /**
@@ -55,47 +55,6 @@ public interface Recipe<T extends RecipeInput> {
 	ItemStack craft(T input, RegistryWrapper.WrapperLookup registries);
 
 	/**
-	 * {@return whether this recipe will fit into the given grid size}
-	 * 
-	 * <p>This is currently only used by recipe book.
-	 * 
-	 * @param width the width of the input inventory
-	 * @param height the height of the input inventory
-	 */
-	boolean fits(int width, int height);
-
-	/**
-	 * {@return a preview of the recipe's output}
-	 * 
-	 * <p>The returned stack should not be modified. To obtain the actual output,
-	 * call {@link #craft(RecipeInput, RegistryWrapper.WrapperLookup)}.
-	 */
-	ItemStack getResult(RegistryWrapper.WrapperLookup registries);
-
-	/**
-	 * {@return the remaining stacks to be left in the {@code inventory} after the recipe is used}
-	 * At each index, the remainder item stack in the list should correspond to the original
-	 * item stack in the {@code inventory}.
-	 * 
-	 * @implSpec The default implementation returns a list of the same size as the {@code inventory}.
-	 * At each index, the list contains the {@linkplain net.minecraft.item.Item#getRecipeRemainder()
-	 * remainder} of the item stack at the same index in the {@code inventory}, or is {@linkplain
-	 * ItemStack#EMPTY empty} if the stack has no remainder.
-	 */
-	default DefaultedList<ItemStack> getRemainder(T input) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
-
-		for (int i = 0; i < defaultedList.size(); i++) {
-			Item item = input.getStackInSlot(i).getItem();
-			if (item.hasRecipeRemainder()) {
-				defaultedList.set(i, new ItemStack(item.getRecipeRemainder()));
-			}
-		}
-
-		return defaultedList;
-	}
-
-	/**
 	 * {@return whether this recipe is ignored by the recipe book} If a recipe
 	 * is ignored by the recipe book, it will be never displayed. In addition,
 	 * it won't be restricted by the {@link net.minecraft.world.GameRules#DO_LIMITED_CRAFTING
@@ -123,18 +82,9 @@ public interface Recipe<T extends RecipeInput> {
 	}
 
 	/**
-	 * {@return an item rendered on the top left of the {@linkplain #getResult(DynamicRegistryManager)
-	 * output preview} on the recipe toast when a new recipe is unlocked} This
-	 * can be interpreted as a catalyst for the recipe.
-	 */
-	default ItemStack createIcon() {
-		return new ItemStack(Blocks.CRAFTING_TABLE);
-	}
-
-	/**
 	 * {@return the serializer associated with this recipe}
 	 */
-	RecipeSerializer<?> getSerializer();
+	RecipeSerializer<? extends Recipe<T>> getSerializer();
 
 	/**
 	 * {@return the type of this recipe}
@@ -142,7 +92,13 @@ public interface Recipe<T extends RecipeInput> {
 	 * <p>The {@code type} in the recipe JSON format is the {@linkplain
 	 * #getSerializer() serializer} instead.
 	 */
-	RecipeType<?> getType();
+	RecipeType<? extends Recipe<T>> getType();
 
 	IngredientPlacement getIngredientPlacement();
+
+	default List<RecipeDisplay> getDisplays() {
+		return List.of();
+	}
+
+	RecipeBookGroup getRecipeBookTab();
 }

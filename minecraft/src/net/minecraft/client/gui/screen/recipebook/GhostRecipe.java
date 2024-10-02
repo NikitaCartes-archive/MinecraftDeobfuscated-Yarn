@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.slot.Slot;
 
 @Environment(EnvType.CLIENT)
@@ -27,12 +28,19 @@ public class GhostRecipe {
 		this.items.clear();
 	}
 
-	public void put(ItemStack item, Slot slot) {
-		this.items.put(slot, new GhostRecipe.CyclingItem(List.of(item), true));
+	private void addItems(Slot slot, SlotDisplay.Context context, SlotDisplay display, boolean resultSlot) {
+		List<ItemStack> list = display.getStacks(context);
+		if (!list.isEmpty()) {
+			this.items.put(slot, new GhostRecipe.CyclingItem(list, resultSlot));
+		}
 	}
 
-	public void put(List<ItemStack> items, Slot slot) {
-		this.items.put(slot, new GhostRecipe.CyclingItem(items, false));
+	protected void addInputs(Slot slot, SlotDisplay.Context context, SlotDisplay display) {
+		this.addItems(slot, context, display, false);
+	}
+
+	protected void addResults(Slot slot, SlotDisplay.Context context, SlotDisplay display) {
+		this.addItems(slot, context, display, true);
 	}
 
 	public void draw(DrawContext context, MinecraftClient client, boolean resultHasPadding) {
@@ -49,7 +57,7 @@ public class GhostRecipe {
 			context.drawItemWithoutEntity(itemStack, i, j);
 			context.fill(RenderLayer.getGuiGhostRecipeOverlay(), i, j, i + 16, j + 16, 822083583);
 			if (item.isResultSlot) {
-				context.drawItemInSlot(client.textRenderer, itemStack, i, j);
+				context.drawStackOverlay(client.textRenderer, itemStack, i, j);
 			}
 		});
 	}

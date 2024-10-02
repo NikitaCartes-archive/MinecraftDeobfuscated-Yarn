@@ -36,7 +36,7 @@ import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionSyncS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
@@ -160,7 +160,7 @@ public class EntityTrackerEntry {
 					if (bl6 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
 						this.lastOnGround = this.entity.isOnGround();
 						this.updatesWithoutVehicle = 0;
-						packet2 = new EntityPositionS2CPacket(this.entity);
+						packet2 = EntityPositionSyncS2CPacket.create(this.entity);
 						bl4 = true;
 						bl5 = true;
 					} else if ((!bl3 || !bl) && !(this.entity instanceof PersistentProjectileEntity)) {

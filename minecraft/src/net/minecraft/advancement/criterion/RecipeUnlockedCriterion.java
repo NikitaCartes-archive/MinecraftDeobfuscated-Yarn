@@ -6,9 +6,11 @@ import java.util.Optional;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCriterion.Conditions> {
 	@Override
@@ -20,21 +22,21 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 		this.trigger(player, conditions -> conditions.matches(recipe));
 	}
 
-	public static AdvancementCriterion<RecipeUnlockedCriterion.Conditions> create(Identifier id) {
-		return Criteria.RECIPE_UNLOCKED.create(new RecipeUnlockedCriterion.Conditions(Optional.empty(), id));
+	public static AdvancementCriterion<RecipeUnlockedCriterion.Conditions> create(RegistryKey<Recipe<?>> registryKey) {
+		return Criteria.RECIPE_UNLOCKED.create(new RecipeUnlockedCriterion.Conditions(Optional.empty(), registryKey));
 	}
 
-	public static record Conditions(Optional<LootContextPredicate> player, Identifier recipe) implements AbstractCriterion.Conditions {
+	public static record Conditions(Optional<LootContextPredicate> player, RegistryKey<Recipe<?>> recipe) implements AbstractCriterion.Conditions {
 		public static final Codec<RecipeUnlockedCriterion.Conditions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(RecipeUnlockedCriterion.Conditions::player),
-						Identifier.CODEC.fieldOf("recipe").forGetter(RecipeUnlockedCriterion.Conditions::recipe)
+						RegistryKey.createCodec(RegistryKeys.RECIPE).fieldOf("recipe").forGetter(RecipeUnlockedCriterion.Conditions::recipe)
 					)
 					.apply(instance, RecipeUnlockedCriterion.Conditions::new)
 		);
 
 		public boolean matches(RecipeEntry<?> recipe) {
-			return this.recipe.equals(recipe.id());
+			return this.recipe == recipe.id();
 		}
 	}
 }

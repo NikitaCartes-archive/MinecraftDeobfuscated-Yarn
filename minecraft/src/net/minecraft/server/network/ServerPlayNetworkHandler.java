@@ -154,6 +154,8 @@ import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.state.ConfigurationStates;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -495,7 +497,10 @@ public class ServerPlayNetworkHandler
 	@Override
 	public void onRecipeBookData(RecipeBookDataC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		this.server.getRecipeManager().get(packet.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
+		ServerRecipeManager.ServerRecipe serverRecipe = this.server.getRecipeManager().get(packet.recipeId());
+		if (serverRecipe != null) {
+			this.player.getRecipeBook().unmarkHighlighted(serverRecipe.parent().id());
+		}
 	}
 
 	@Override
@@ -1645,28 +1650,28 @@ public class ServerPlayNetworkHandler
 	public void onCraftRequest(CraftRequestC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (!this.player.isSpectator() && this.player.currentScreenHandler.syncId == packet.getSyncId()) {
+		if (!this.player.isSpectator() && this.player.currentScreenHandler.syncId == packet.syncId()) {
 			if (!this.player.currentScreenHandler.canUse(this.player)) {
 				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
-			} else if (this.player.getRecipeBook().contains(packet.getRecipeId())) {
-				if (this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler abstractRecipeScreenHandler) {
-					this.server
-						.getRecipeManager()
-						.get(packet.getRecipeId())
-						.ifPresent(
-							recipe -> {
-								if (recipe.value().getIngredientPlacement().hasNoPlacement()) {
-									LOGGER.debug("Player {} tried to place impossible recipe {}", this.player, recipe.id());
-								} else {
-									AbstractRecipeScreenHandler.PostFillAction postFillAction = abstractRecipeScreenHandler.fillInputSlots(
-										packet.shouldCraftAll(), this.player.isCreative(), recipe, this.player.getInventory()
-									);
-									if (postFillAction == AbstractRecipeScreenHandler.PostFillAction.PLACE_GHOST_RECIPE) {
-										this.player.networkHandler.sendPacket(new CraftFailedResponseS2CPacket(this.player.currentScreenHandler.syncId, recipe));
-									}
-								}
+			} else {
+				ServerRecipeManager.ServerRecipe serverRecipe = this.server.getRecipeManager().get(packet.recipeId());
+				if (serverRecipe != null) {
+					RecipeEntry<?> recipeEntry = serverRecipe.parent();
+					if (this.player.getRecipeBook().isUnlocked(recipeEntry.id())) {
+						if (this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler abstractRecipeScreenHandler) {
+							if (recipeEntry.value().getIngredientPlacement().hasNoPlacement()) {
+								LOGGER.debug("Player {} tried to place impossible recipe {}", this.player, recipeEntry.id().getValue());
+								return;
 							}
-						);
+
+							AbstractRecipeScreenHandler.PostFillAction postFillAction = abstractRecipeScreenHandler.fillInputSlots(
+								packet.craftAll(), this.player.isCreative(), recipeEntry, this.player.getServerWorld(), this.player.getInventory()
+							);
+							if (postFillAction == AbstractRecipeScreenHandler.PostFillAction.PLACE_GHOST_RECIPE) {
+								this.player.networkHandler.sendPacket(new CraftFailedResponseS2CPacket(this.player.currentScreenHandler.syncId, serverRecipe.display().display()));
+							}
+						}
+					}
 				}
 			}
 		}

@@ -26,26 +26,26 @@ import net.minecraft.util.Util;
 
 public abstract class TagProvider<T> implements DataProvider {
 	protected final DataOutput.PathResolver pathResolver;
-	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 	private final CompletableFuture<Void> registryLoadFuture = new CompletableFuture();
 	private final CompletableFuture<TagProvider.TagLookup<T>> parentTagLookupFuture;
 	protected final RegistryKey<? extends Registry<T>> registryRef;
 	private final Map<Identifier, TagBuilder> tagBuilders = Maps.<Identifier, TagBuilder>newLinkedHashMap();
 
-	protected TagProvider(DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		this(output, registryRef, registryLookupFuture, CompletableFuture.completedFuture(TagProvider.TagLookup.empty()));
+	protected TagProvider(DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		this(output, registryRef, registriesFuture, CompletableFuture.completedFuture(TagProvider.TagLookup.empty()));
 	}
 
 	protected TagProvider(
 		DataOutput output,
 		RegistryKey<? extends Registry<T>> registryRef,
-		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
+		CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture,
 		CompletableFuture<TagProvider.TagLookup<T>> parentTagLookupFuture
 	) {
 		this.pathResolver = output.getTagResolver(registryRef);
 		this.registryRef = registryRef;
 		this.parentTagLookupFuture = parentTagLookupFuture;
-		this.registryLookupFuture = registryLookupFuture;
+		this.registriesFuture = registriesFuture;
 	}
 
 	@Override
@@ -60,10 +60,10 @@ public abstract class TagProvider<T> implements DataProvider {
 		record RegistryInfo<T>(RegistryWrapper.WrapperLookup contents, TagProvider.TagLookup<T> parent) {
 		}
 
-		return this.getRegistryLookupFuture()
-			.thenApply(registryLookupFuture -> {
+		return this.getRegistriesFuture()
+			.thenApply(registriesFuture -> {
 				this.registryLoadFuture.complete(null);
-				return registryLookupFuture;
+				return registriesFuture;
 			})
 			.thenCombineAsync(this.parentTagLookupFuture, (registries, parent) -> new RegistryInfo(registries, parent), Util.getMainWorkerExecutor())
 			.thenCompose(
@@ -115,8 +115,8 @@ public abstract class TagProvider<T> implements DataProvider {
 		return this.registryLoadFuture.thenApply(void_ -> tag -> Optional.ofNullable((TagBuilder)this.tagBuilders.get(tag.id())));
 	}
 
-	protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
-		return this.registryLookupFuture.thenApply(registries -> {
+	protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistriesFuture() {
+		return this.registriesFuture.thenApply(registries -> {
 			this.tagBuilders.clear();
 			this.configure(registries);
 			return registries;

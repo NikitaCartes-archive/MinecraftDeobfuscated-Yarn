@@ -162,25 +162,25 @@ public class WardenEntityModel extends EntityModel<WardenEntityRenderState> {
 		this.rightArm.pivotY = -13.0F;
 	}
 
-	private void setTendrilPitches(WardenEntityRenderState wardenEntityRenderState, float animationProgress) {
-		float f = wardenEntityRenderState.tendrilPitch * (float)(Math.cos((double)animationProgress * 2.25) * Math.PI * 0.1F);
+	private void setTendrilPitches(WardenEntityRenderState state, float animationProgress) {
+		float f = state.tendrilPitch * (float)(Math.cos((double)animationProgress * 2.25) * Math.PI * 0.1F);
 		this.leftTendril.pitch = f;
 		this.rightTendril.pitch = -f;
 	}
 
-	public List<ModelPart> getTendrils() {
+	public List<ModelPart> getTendrils(WardenEntityRenderState state) {
 		return this.tendrils;
 	}
 
-	public List<ModelPart> getBody() {
+	public List<ModelPart> getBody(WardenEntityRenderState state) {
 		return this.justBody;
 	}
 
-	public List<ModelPart> getHeadAndLimbs() {
+	public List<ModelPart> getHeadAndLimbs(WardenEntityRenderState state) {
 		return this.headAndLimbs;
 	}
 
-	public List<ModelPart> getBodyHeadAndLimbs() {
+	public List<ModelPart> getBodyHeadAndLimbs(WardenEntityRenderState state) {
 		return this.bodyHeadAndLimbs;
 	}
 }

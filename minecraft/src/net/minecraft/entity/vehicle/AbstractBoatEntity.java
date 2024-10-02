@@ -17,6 +17,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.CreakingEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -203,13 +204,18 @@ public abstract class AbstractBoatEntity extends VehicleEntity implements Leasha
 	}
 
 	@Override
+	public void resetLerp() {
+		this.lerpTicks = 0;
+	}
+
+	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.boatYaw = (double)yaw;
 		this.boatPitch = (double)pitch;
-		this.lerpTicks = 10;
+		this.lerpTicks = interpolationSteps;
 	}
 
 	@Override
@@ -283,6 +289,7 @@ public abstract class AbstractBoatEntity extends VehicleEntity implements Leasha
 		}
 
 		this.tickBlockCollision();
+		this.tickBlockCollision();
 		this.handleBubbleColumn();
 
 		for (int i = 0; i <= 1; i++) {
@@ -318,7 +325,8 @@ public abstract class AbstractBoatEntity extends VehicleEntity implements Leasha
 						&& this.isSmallerThanBoat(entity)
 						&& entity instanceof LivingEntity
 						&& !(entity instanceof WaterCreatureEntity)
-						&& !(entity instanceof PlayerEntity)) {
+						&& !(entity instanceof PlayerEntity)
+						&& !(entity instanceof CreakingEntity)) {
 						entity.startRiding(this);
 					} else {
 						this.pushAwayFrom(entity);
@@ -381,11 +389,6 @@ public abstract class AbstractBoatEntity extends VehicleEntity implements Leasha
 	}
 
 	private void updatePositionAndRotation() {
-		if (this.isLogicalSideForUpdatingMovement()) {
-			this.lerpTicks = 0;
-			this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
-		}
-
 		if (this.lerpTicks > 0) {
 			this.lerpPosAndRotation(this.lerpTicks, this.x, this.y, this.z, this.boatYaw, this.boatPitch);
 			this.lerpTicks--;

@@ -83,6 +83,10 @@ public class TextureMap {
 		return of(TextureKey.CROSS, getId(block));
 	}
 
+	public static TextureMap side(Block block) {
+		return of(TextureKey.SIDE, getId(block));
+	}
+
 	public static TextureMap cross(Identifier id) {
 		return of(TextureKey.CROSS, id);
 	}

@@ -68,6 +68,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer CONDUIT_WIND = register("conduit", "wind");
 	public static final EntityModelLayer COW = registerMain("cow");
 	public static final EntityModelLayer COW_BABY = registerMain("cow_baby");
+	public static final EntityModelLayer CREAKING = registerMain("creaking");
 	public static final EntityModelLayer CREEPER = registerMain("creeper");
 	public static final EntityModelLayer CREEPER_ARMOR = register("creeper", "armor");
 	public static final EntityModelLayer CREEPER_HEAD = registerMain("creeper_head");
@@ -147,6 +148,8 @@ public class EntityModelLayers {
 	public static final EntityModelLayer OAK_CHEST_BOAT = registerMain("chest_boat/oak");
 	public static final EntityModelLayer OCELOT = registerMain("ocelot");
 	public static final EntityModelLayer OCELOT_BABY = registerMain("ocelot_baby");
+	public static final EntityModelLayer PALE_OAK_BOAT = registerMain("boat/pale_oak");
+	public static final EntityModelLayer PALE_OAK_CHEST_BOAT = registerMain("chest_boat/pale_oak");
 	public static final EntityModelLayer PANDA = registerMain("panda");
 	public static final EntityModelLayer PANDA_BABY = registerMain("panda_baby");
 	public static final EntityModelLayer PARROT = registerMain("parrot");

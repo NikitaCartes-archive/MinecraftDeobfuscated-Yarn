@@ -1,10 +1,13 @@
 package net.minecraft.client.network;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,6 +21,10 @@ import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.tag.TagGroupLoader;
 import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.ResourceFactory;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 
 @Environment(EnvType.CLIENT)
 public class ClientRegistries {
@@ -42,60 +49,98 @@ public class ClientRegistries {
 		tags.forEach(this.tags::put);
 	}
 
-	private static <T> Registry.PendingTagLoad<T> method_62160(
-		DynamicRegistryManager.Immutable immutable, RegistryKey<? extends Registry<? extends T>> registryKey, TagPacketSerializer.Serialized serialized
+	private static <T> Registry.PendingTagLoad<T> startTagReload(
+		DynamicRegistryManager.Immutable registryManager, RegistryKey<? extends Registry<? extends T>> registryRef, TagPacketSerializer.Serialized tags
 	) {
-		Registry<T> registry = immutable.getOrThrow(registryKey);
-		return registry.startTagReload(serialized.toRegistryTags(registry));
+		Registry<T> registry = registryManager.getOrThrow(registryRef);
+		return registry.startTagReload(tags.toRegistryTags(registry));
 	}
 
-	private DynamicRegistryManager method_62155(ResourceFactory resourceFactory, ClientRegistries.DynamicRegistries dynamicRegistries, boolean bl) {
+	private DynamicRegistryManager createRegistryManager(ResourceFactory resourceFactory, ClientRegistries.DynamicRegistries dynamicRegistries, boolean local) {
 		CombinedDynamicRegistries<ClientDynamicRegistryType> combinedDynamicRegistries = ClientDynamicRegistryType.createCombinedDynamicRegistries();
 		DynamicRegistryManager.Immutable immutable = combinedDynamicRegistries.getPrecedingRegistryManagers(ClientDynamicRegistryType.REMOTE);
 		Map<RegistryKey<? extends Registry<?>>, RegistryLoader.ElementsAndTags> map = new HashMap();
 		dynamicRegistries.dynamicRegistries
-			.forEach((registryKey, listx) -> map.put(registryKey, new RegistryLoader.ElementsAndTags(listx, TagPacketSerializer.Serialized.NONE)));
+			.forEach((registryRef, entries) -> map.put(registryRef, new RegistryLoader.ElementsAndTags(entries, TagPacketSerializer.Serialized.NONE)));
 		List<Registry.PendingTagLoad<?>> list = new ArrayList();
 		if (this.tags != null) {
-			this.tags.forEach((registryKey, serialized) -> {
-				if (!serialized.isEmpty()) {
-					if (SerializableRegistries.isSynced(registryKey)) {
-						map.compute(registryKey, (registryKeyx, elementsAndTags) -> {
-							List<SerializableRegistries.SerializedRegistryEntry> listxx = elementsAndTags != null ? elementsAndTags.elements() : List.of();
-							return new RegistryLoader.ElementsAndTags(listxx, serialized);
+			this.tags.forEach((registryRef, tags) -> {
+				if (!tags.isEmpty()) {
+					if (SerializableRegistries.isSynced(registryRef)) {
+						map.compute(registryRef, (key, value) -> {
+							List<SerializableRegistries.SerializedRegistryEntry> listxx = value != null ? value.elements() : List.of();
+							return new RegistryLoader.ElementsAndTags(listxx, tags);
 						});
-					} else if (!bl) {
-						list.add(method_62160(immutable, registryKey, serialized));
+					} else if (!local) {
+						list.add(startTagReload(immutable, registryRef, tags));
 					}
 				}
 			});
 		}
 
 		List<RegistryWrapper.Impl<?>> list2 = TagGroupLoader.collectRegistries(immutable, list);
-		DynamicRegistryManager.Immutable immutable2 = RegistryLoader.loadFromNetwork(map, resourceFactory, list2, RegistryLoader.SYNCED_REGISTRIES).toImmutable();
+
+		DynamicRegistryManager.Immutable immutable2;
+		try {
+			immutable2 = RegistryLoader.loadFromNetwork(map, resourceFactory, list2, RegistryLoader.SYNCED_REGISTRIES).toImmutable();
+		} catch (Exception var13) {
+			CrashReport crashReport = CrashReport.create(var13, "Network Registry Load");
+			addCrashReportSection(crashReport, map, list);
+			throw new CrashException(crashReport);
+		}
+
 		DynamicRegistryManager dynamicRegistryManager = combinedDynamicRegistries.with(ClientDynamicRegistryType.REMOTE, immutable2).getCombinedRegistryManager();
 		list.forEach(Registry.PendingTagLoad::apply);
 		return dynamicRegistryManager;
 	}
 
-	private void method_62157(ClientRegistries.Tags tags, DynamicRegistryManager.Immutable immutable, boolean bl) {
-		tags.forEach((registryKey, serialized) -> {
-			if (bl || SerializableRegistries.isSynced(registryKey)) {
-				method_62160(immutable, registryKey, serialized).apply();
+	private static void addCrashReportSection(
+		CrashReport crashReport, Map<RegistryKey<? extends Registry<?>>, RegistryLoader.ElementsAndTags> data, List<Registry.PendingTagLoad<?>> tags
+	) {
+		CrashReportSection crashReportSection = crashReport.addElement("Received Elements and Tags");
+		crashReportSection.add(
+			"Dynamic Registries",
+			(CrashCallable<String>)(() -> (String)data.entrySet()
+					.stream()
+					.sorted(Comparator.comparing(entry -> ((RegistryKey)entry.getKey()).getValue()))
+					.map(
+						entry -> String.format(
+								Locale.ROOT,
+								"\n\t\t%s: elements=%d tags=%d",
+								((RegistryKey)entry.getKey()).getValue(),
+								((RegistryLoader.ElementsAndTags)entry.getValue()).elements().size(),
+								((RegistryLoader.ElementsAndTags)entry.getValue()).tags().size()
+							)
+					)
+					.collect(Collectors.joining()))
+		);
+		crashReportSection.add(
+			"Static Registries",
+			(CrashCallable<String>)(() -> (String)tags.stream()
+					.sorted(Comparator.comparing(tag -> tag.getKey().getValue()))
+					.map(tag -> String.format(Locale.ROOT, "\n\t\t%s: tags=%d", tag.getKey().getValue(), tag.size()))
+					.collect(Collectors.joining()))
+		);
+	}
+
+	private void loadTags(ClientRegistries.Tags tags, DynamicRegistryManager.Immutable registryManager, boolean local) {
+		tags.forEach((registryRef, serialized) -> {
+			if (local || SerializableRegistries.isSynced(registryRef)) {
+				startTagReload(registryManager, registryRef, serialized).apply();
 			}
 		});
 	}
 
-	public DynamicRegistryManager.Immutable createRegistryManager(ResourceFactory resourceFactory, DynamicRegistryManager.Immutable immutable, boolean local) {
+	public DynamicRegistryManager.Immutable createRegistryManager(ResourceFactory resourceFactory, DynamicRegistryManager.Immutable registryManager, boolean local) {
 		DynamicRegistryManager dynamicRegistryManager;
 		if (this.dynamicRegistries != null) {
-			dynamicRegistryManager = this.method_62155(resourceFactory, this.dynamicRegistries, local);
+			dynamicRegistryManager = this.createRegistryManager(resourceFactory, this.dynamicRegistries, local);
 		} else {
 			if (this.tags != null) {
-				this.method_62157(this.tags, immutable, !local);
+				this.loadTags(this.tags, registryManager, !local);
 			}
 
-			dynamicRegistryManager = immutable;
+			dynamicRegistryManager = registryManager;
 		}
 
 		return dynamicRegistryManager.toImmutable();

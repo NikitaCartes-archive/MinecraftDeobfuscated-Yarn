@@ -1,6 +1,6 @@
 package net.minecraft.client.gui.screen.recipebook;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +12,9 @@ import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.NetworkRecipeId;
+import net.minecraft.recipe.RecipeDisplayEntry;
+import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -27,7 +29,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	private static final int field_32415 = 25;
 	private static final Text MORE_RECIPES_TEXT = Text.translatable("gui.recipebook.moreRecipes");
 	private RecipeResultCollection resultCollection;
-	private List<RecipeEntry<?>> results = List.of();
+	private List<AnimatedResultButton.Result> results = List.of();
 	private final CurrentIndexProvider currentIndexProvider;
 	private float bounce;
 
@@ -36,16 +38,16 @@ public class AnimatedResultButton extends ClickableWidget {
 		this.currentIndexProvider = currentIndexProvider;
 	}
 
-	public void showResultCollection(RecipeResultCollection resultCollection, boolean filteringCraftable, RecipeBookResults results) {
+	public void showResultCollection(RecipeResultCollection resultCollection, boolean filteringCraftable, RecipeBookResults results, SlotDisplay.Context context) {
 		this.resultCollection = resultCollection;
-		this.results = resultCollection.filter(filteringCraftable ? RecipeResultCollection.RecipeFilterMode.CRAFTABLE : RecipeResultCollection.RecipeFilterMode.ANY);
-
-		for (RecipeEntry<?> recipeEntry : this.results) {
-			if (results.getRecipeBook().shouldDisplay(recipeEntry)) {
-				results.onRecipesDisplayed(this.results);
-				this.bounce = 15.0F;
-				break;
-			}
+		List<RecipeDisplayEntry> list = resultCollection.filter(
+			filteringCraftable ? RecipeResultCollection.RecipeFilterMode.CRAFTABLE : RecipeResultCollection.RecipeFilterMode.ANY
+		);
+		this.results = list.stream().map(entry -> new AnimatedResultButton.Result(entry.id(), entry.getStacks(context))).toList();
+		List<NetworkRecipeId> list2 = list.stream().map(RecipeDisplayEntry::id).filter(results.getRecipeBook()::isHighlighted).toList();
+		if (!list2.isEmpty()) {
+			list2.forEach(results::onRecipeDisplayed);
+			this.bounce = 15.0F;
 		}
 	}
 
@@ -79,7 +81,7 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 
 		context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), this.width, this.height);
-		ItemStack itemStack = this.getCurrentResult();
+		ItemStack itemStack = this.getDisplayStack();
 		int i = 4;
 		if (this.resultCollection.hasSingleOutput() && this.hasMultipleResults()) {
 			context.drawItem(itemStack, this.getX() + i + 1, this.getY() + i + 1, 0, 10);
@@ -100,17 +102,21 @@ public class AnimatedResultButton extends ClickableWidget {
 		return this.results.size() == 1;
 	}
 
-	public RecipeEntry<?> currentRecipe() {
+	public NetworkRecipeId getCurrentId() {
 		int i = this.currentIndexProvider.currentIndex() % this.results.size();
-		return (RecipeEntry<?>)this.results.get(i);
+		return ((AnimatedResultButton.Result)this.results.get(i)).id;
 	}
 
-	public ItemStack getCurrentResult() {
-		return this.currentRecipe().value().getResult(this.resultCollection.getRegistryManager());
+	public ItemStack getDisplayStack() {
+		int i = this.currentIndexProvider.currentIndex();
+		int j = this.results.size();
+		int k = i / j;
+		int l = i - j * k;
+		return ((AnimatedResultButton.Result)this.results.get(l)).getDisplayStack(k);
 	}
 
-	public List<Text> getTooltip() {
-		List<Text> list = Lists.<Text>newArrayList(Screen.getTooltipFromItem(MinecraftClient.getInstance(), this.getCurrentResult()));
+	public List<Text> getTooltip(ItemStack stack) {
+		List<Text> list = new ArrayList(Screen.getTooltipFromItem(MinecraftClient.getInstance(), stack));
 		if (this.hasMultipleResults()) {
 			list.add(MORE_RECIPES_TEXT);
 		}
@@ -120,8 +126,7 @@ public class AnimatedResultButton extends ClickableWidget {
 
 	@Override
 	public void appendClickableNarrations(NarrationMessageBuilder builder) {
-		ItemStack itemStack = this.getCurrentResult();
-		builder.put(NarrationPart.TITLE, Text.translatable("narration.recipe", itemStack.getName()));
+		builder.put(NarrationPart.TITLE, Text.translatable("narration.recipe", this.getDisplayStack().getName()));
 		if (this.hasMultipleResults()) {
 			builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"), Text.translatable("narration.recipe.usage.more"));
 		} else {
@@ -137,5 +142,18 @@ public class AnimatedResultButton extends ClickableWidget {
 	@Override
 	protected boolean isValidClickButton(int button) {
 		return button == 0 || button == 1;
+	}
+
+	@Environment(EnvType.CLIENT)
+	static record Result(NetworkRecipeId id, List<ItemStack> displayItems) {
+
+		public ItemStack getDisplayStack(int currentIndex) {
+			if (this.displayItems.isEmpty()) {
+				return ItemStack.EMPTY;
+			} else {
+				int i = currentIndex % this.displayItems.size();
+				return (ItemStack)this.displayItems.get(i);
+			}
+		}
 	}
 }

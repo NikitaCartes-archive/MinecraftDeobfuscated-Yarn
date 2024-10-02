@@ -18,6 +18,7 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.block.FlowerbedBlock;
 import net.minecraft.block.MultifaceGrowthBlock;
+import net.minecraft.block.PaleMossCarpetBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.TallPlantBlock;
@@ -448,6 +449,20 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 											)
 								)
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(-1.0F), true))
+						)
+					)
+			);
+	}
+
+	protected LootTable.Builder paleMossCarpetDrops(Block block) {
+		return LootTable.builder()
+			.pool(
+				LootPool.builder()
+					.with(
+						(LootPoolEntry.Builder<?>)this.applyExplosionDecay(
+							block,
+							ItemEntry.builder(block)
+								.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(PaleMossCarpetBlock.BOTTOM, true)))
 						)
 					)
 			);

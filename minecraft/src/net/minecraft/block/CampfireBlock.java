@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -21,7 +20,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.recipe.CampfireCookingRecipe;
-import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipePropertySet;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.ServerRecipeManager;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -95,9 +97,8 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof CampfireBlockEntity campfireBlockEntity) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			Optional<RecipeEntry<CampfireCookingRecipe>> optional = campfireBlockEntity.getRecipeFor(itemStack);
-			if (optional.isPresent()) {
-				if (!world.isClient && campfireBlockEntity.addItem(player, itemStack, ((CampfireCookingRecipe)((RecipeEntry)optional.get()).value()).getCookingTime())) {
+			if (world.getRecipeManager().getPropertySet(RecipePropertySet.CAMPFIRE_INPUT).canUse(itemStack)) {
+				if (world instanceof ServerWorld serverWorld && campfireBlockEntity.addItem(serverWorld, player, itemStack)) {
 					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
 					return ActionResult.SUCCESS_SERVER;
 				}
@@ -332,12 +333,21 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		if (world.isClient) {
-			return state.get(LIT) ? validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::clientTick) : null;
+		if (world instanceof ServerWorld serverWorld) {
+			if ((Boolean)state.get(LIT)) {
+				ServerRecipeManager.MatchGetter<SingleStackRecipeInput, CampfireCookingRecipe> matchGetter = ServerRecipeManager.createCachedMatchGetter(
+					RecipeType.CAMPFIRE_COOKING
+				);
+				return validateTicker(
+					type,
+					BlockEntityType.CAMPFIRE,
+					(worldx, pos, statex, blockEntity) -> CampfireBlockEntity.litServerTick(serverWorld, pos, statex, blockEntity, matchGetter)
+				);
+			} else {
+				return validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::unlitServerTick);
+			}
 		} else {
-			return state.get(LIT)
-				? validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::litServerTick)
-				: validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::unlitServerTick);
+			return state.get(LIT) ? validateTicker(type, BlockEntityType.CAMPFIRE, CampfireBlockEntity::clientTick) : null;
 		}
 	}
 

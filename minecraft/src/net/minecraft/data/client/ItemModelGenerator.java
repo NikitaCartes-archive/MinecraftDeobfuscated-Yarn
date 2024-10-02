@@ -311,6 +311,8 @@ public class ItemModelGenerator {
 		this.register(Items.OAK_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.ORANGE_DYE, Models.GENERATED);
 		this.register(Items.PAINTING, Models.GENERATED);
+		this.register(Items.PALE_OAK_BOAT, Models.GENERATED);
+		this.register(Items.PALE_OAK_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.PAPER, Models.GENERATED);
 		this.register(Items.PHANTOM_MEMBRANE, Models.GENERATED);
 		this.register(Items.PIGLIN_BANNER_PATTERN, Models.GENERATED);

@@ -222,6 +222,7 @@ public class ClientWorld extends World {
 
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		this.getWorldBorder().tick();
+		this.calculateAmbientDarkness();
 		if (this.getTickManager().shouldTick()) {
 			this.tickTime();
 		}

@@ -257,9 +257,15 @@ public class WorldCreator {
 		this.extendedWorldTypes.addAll((Collection)getWorldPresetList(registry, WorldPresetTags.EXTENDED).orElse(this.normalWorldTypes));
 		RegistryEntry<WorldPreset> registryEntry = this.worldType.preset();
 		if (registryEntry != null) {
-			this.worldType = (WorldCreator.WorldType)getWorldPreset(this.getGeneratorOptionsHolder(), registryEntry.getKey())
+			WorldCreator.WorldType worldType = (WorldCreator.WorldType)getWorldPreset(this.getGeneratorOptionsHolder(), registryEntry.getKey())
 				.map(WorldCreator.WorldType::new)
-				.orElse((WorldCreator.WorldType)this.normalWorldTypes.get(0));
+				.orElse((WorldCreator.WorldType)this.normalWorldTypes.getFirst());
+			boolean bl = LevelScreenProvider.WORLD_PRESET_TO_SCREEN_PROVIDER.get(registryEntry.getKey()) != null;
+			if (bl) {
+				this.worldType = worldType;
+			} else {
+				this.setWorldType(worldType);
+			}
 		}
 	}
 

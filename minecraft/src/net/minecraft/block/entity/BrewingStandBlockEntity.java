@@ -175,8 +175,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 
 		itemStack.decrement(1);
-		if (itemStack.getItem().hasRecipeRemainder()) {
-			ItemStack itemStack2 = new ItemStack(itemStack.getItem().getRecipeRemainder());
+		ItemStack itemStack2 = itemStack.getItem().getRecipeRemainder();
+		if (!itemStack2.isEmpty()) {
 			if (itemStack.isEmpty()) {
 				itemStack = itemStack2;
 			} else {

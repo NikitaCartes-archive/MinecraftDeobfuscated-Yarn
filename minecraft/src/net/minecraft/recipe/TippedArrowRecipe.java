@@ -50,12 +50,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width >= 3 && height >= 3;
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<TippedArrowRecipe> getSerializer() {
 		return RecipeSerializer.TIPPED_ARROW;
 	}
 }

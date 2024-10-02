@@ -17,16 +17,16 @@ import net.minecraft.registry.RegistryWrapper;
 
 public class DynamicRegistriesProvider implements DataProvider {
 	private final DataOutput output;
-	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture;
 
-	public DynamicRegistriesProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		this.registryLookupFuture = registryLookupFuture;
+	public DynamicRegistriesProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		this.registriesFuture = registriesFuture;
 		this.output = output;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		return this.registryLookupFuture
+		return this.registriesFuture
 			.thenCompose(
 				registries -> {
 					DynamicOps<JsonElement> dynamicOps = registries.getOps(JsonOps.INSTANCE);

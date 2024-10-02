@@ -32,6 +32,7 @@ import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.BoggedEntity;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
+import net.minecraft.entity.mob.CreakingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.ElderGuardianEntity;
@@ -59,6 +60,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.StrayEntity;
+import net.minecraft.entity.mob.TransientCreakingEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.entity.mob.WardenEntity;
@@ -183,7 +185,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	private static final int field_42459 = 10;
 	public static final EntityType<BoatEntity> ACACIA_BOAT = register(
 		"acacia_boat",
-		EntityType.Builder.create(method_64432(() -> Items.ACACIA_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.ACACIA_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -191,7 +193,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> ACACIA_CHEST_BOAT = register(
 		"acacia_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.ACACIA_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.ACACIA_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -236,7 +238,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestRaftEntity> BAMBOO_CHEST_RAFT = register(
 		"bamboo_chest_raft",
-		EntityType.Builder.create(method_64438(() -> Items.BAMBOO_CHEST_RAFT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestRaftFactory(() -> Items.BAMBOO_CHEST_RAFT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -244,7 +246,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<RaftEntity> BAMBOO_RAFT = register(
 		"bamboo_raft",
-		EntityType.Builder.create(method_64436(() -> Items.BAMBOO_RAFT), SpawnGroup.MISC)
+		EntityType.Builder.create(getRaftFactory(() -> Items.BAMBOO_RAFT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -258,7 +260,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> BIRCH_BOAT = register(
 		"birch_boat",
-		EntityType.Builder.create(method_64432(() -> Items.BIRCH_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.BIRCH_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -266,7 +268,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> BIRCH_CHEST_BOAT = register(
 		"birch_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.BIRCH_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.BIRCH_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -311,7 +313,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> CHERRY_BOAT = register(
 		"cherry_boat",
-		EntityType.Builder.create(method_64432(() -> Items.CHERRY_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.CHERRY_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -319,7 +321,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> CHERRY_CHEST_BOAT = register(
 		"cherry_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.CHERRY_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.CHERRY_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -352,12 +354,32 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		"cow",
 		EntityType.Builder.create(CowEntity::new, SpawnGroup.CREATURE).dimensions(0.9F, 1.4F).eyeHeight(1.3F).passengerAttachments(1.36875F).maxTrackingRange(10)
 	);
+	public static final EntityType<CreakingEntity> CREAKING = register(
+		"creaking",
+		EntityType.Builder.create(CreakingEntity::new, SpawnGroup.MONSTER)
+			.makeFireImmune()
+			.dimensions(0.9F, 2.7F)
+			.eyeHeight(2.3F)
+			.maxTrackingRange(8)
+			.requires(FeatureFlags.WINTER_DROP)
+	);
+	public static final EntityType<TransientCreakingEntity> CREAKING_TRANSIENT = register(
+		"creaking_transient",
+		EntityType.Builder.create(TransientCreakingEntity::new, SpawnGroup.MONSTER)
+			.disableSaving()
+			.disableSummon()
+			.makeFireImmune()
+			.dimensions(0.9F, 2.7F)
+			.eyeHeight(2.3F)
+			.maxTrackingRange(8)
+			.requires(FeatureFlags.WINTER_DROP)
+	);
 	public static final EntityType<CreeperEntity> CREEPER = register(
 		"creeper", EntityType.Builder.create(CreeperEntity::new, SpawnGroup.MONSTER).dimensions(0.6F, 1.7F).maxTrackingRange(8)
 	);
 	public static final EntityType<BoatEntity> DARK_OAK_BOAT = register(
 		"dark_oak_boat",
-		EntityType.Builder.create(method_64432(() -> Items.DARK_OAK_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.DARK_OAK_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -365,7 +387,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> DARK_OAK_CHEST_BOAT = register(
 		"dark_oak_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.DARK_OAK_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.DARK_OAK_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -640,7 +662,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> JUNGLE_BOAT = register(
 		"jungle_boat",
-		EntityType.Builder.create(method_64432(() -> Items.JUNGLE_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.JUNGLE_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -648,7 +670,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> JUNGLE_CHEST_BOAT = register(
 		"jungle_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.JUNGLE_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.JUNGLE_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -700,7 +722,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> MANGROVE_BOAT = register(
 		"mangrove_boat",
-		EntityType.Builder.create(method_64432(() -> Items.MANGROVE_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.MANGROVE_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -708,7 +730,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> MANGROVE_CHEST_BOAT = register(
 		"mangrove_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.MANGROVE_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.MANGROVE_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -739,7 +761,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> OAK_BOAT = register(
 		"oak_boat",
-		EntityType.Builder.create(method_64432(() -> Items.OAK_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.OAK_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -747,7 +769,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> OAK_CHEST_BOAT = register(
 		"oak_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.OAK_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.OAK_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -766,6 +788,24 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.dimensions(0.5F, 0.5F)
 			.maxTrackingRange(10)
 			.trackingTickInterval(Integer.MAX_VALUE)
+	);
+	public static final EntityType<BoatEntity> PALE_OAK_BOAT = register(
+		"pale_oak_boat",
+		EntityType.Builder.create(getBoatFactory(() -> Items.PALE_OAK_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+			.requires(FeatureFlags.WINTER_DROP)
+	);
+	public static final EntityType<ChestBoatEntity> PALE_OAK_CHEST_BOAT = register(
+		"pale_oak_chest_boat",
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.PALE_OAK_CHEST_BOAT), SpawnGroup.MISC)
+			.dropsNothing()
+			.dimensions(1.375F, 0.5625F)
+			.eyeHeight(0.5625F)
+			.maxTrackingRange(10)
+			.requires(FeatureFlags.WINTER_DROP)
 	);
 	public static final EntityType<PandaEntity> PANDA = register(
 		"panda", EntityType.Builder.create(PandaEntity::new, SpawnGroup.CREATURE).dimensions(1.3F, 1.25F).maxTrackingRange(10)
@@ -937,7 +977,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BoatEntity> SPRUCE_BOAT = register(
 		"spruce_boat",
-		EntityType.Builder.create(method_64432(() -> Items.SPRUCE_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getBoatFactory(() -> Items.SPRUCE_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -945,7 +985,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ChestBoatEntity> SPRUCE_CHEST_BOAT = register(
 		"spruce_chest_boat",
-		EntityType.Builder.create(method_64434(() -> Items.SPRUCE_CHEST_BOAT), SpawnGroup.MISC)
+		EntityType.Builder.create(getChestBoatFactory(() -> Items.SPRUCE_CHEST_BOAT), SpawnGroup.MISC)
 			.dropsNothing()
 			.dimensions(1.375F, 0.5625F)
 			.eyeHeight(0.5625F)
@@ -1533,20 +1573,20 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return this.registryEntry;
 	}
 
-	private static EntityType.EntityFactory<BoatEntity> method_64432(Supplier<Item> supplier) {
-		return (entityType, world) -> new BoatEntity(entityType, world, supplier);
+	private static EntityType.EntityFactory<BoatEntity> getBoatFactory(Supplier<Item> itemSupplier) {
+		return (type, world) -> new BoatEntity(type, world, itemSupplier);
 	}
 
-	private static EntityType.EntityFactory<ChestBoatEntity> method_64434(Supplier<Item> supplier) {
-		return (entityType, world) -> new ChestBoatEntity(entityType, world, supplier);
+	private static EntityType.EntityFactory<ChestBoatEntity> getChestBoatFactory(Supplier<Item> itemSupplier) {
+		return (type, world) -> new ChestBoatEntity(type, world, itemSupplier);
 	}
 
-	private static EntityType.EntityFactory<RaftEntity> method_64436(Supplier<Item> supplier) {
-		return (entityType, world) -> new RaftEntity(entityType, world, supplier);
+	private static EntityType.EntityFactory<RaftEntity> getRaftFactory(Supplier<Item> itemSupplier) {
+		return (type, world) -> new RaftEntity(type, world, itemSupplier);
 	}
 
-	private static EntityType.EntityFactory<ChestRaftEntity> method_64438(Supplier<Item> supplier) {
-		return (entityType, world) -> new ChestRaftEntity(entityType, world, supplier);
+	private static EntityType.EntityFactory<ChestRaftEntity> getChestRaftFactory(Supplier<Item> itemSupplier) {
+		return (type, world) -> new ChestRaftEntity(type, world, itemSupplier);
 	}
 
 	public static class Builder<T extends Entity> {

@@ -18,12 +18,13 @@ import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.BlastingRecipe;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.SmokingRecipe;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
 
 public class CookingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RecipeCategory category;
@@ -101,16 +102,16 @@ public class CookingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	}
 
 	@Override
-	public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-		this.validate(recipeId);
+	public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> recipeKey) {
+		this.validate(recipeKey);
 		Advancement.Builder builder = exporter.getAdvancementBuilder()
-			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
-			.rewards(AdvancementRewards.Builder.recipe(recipeId))
+			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeKey))
+			.rewards(AdvancementRewards.Builder.recipe(recipeKey))
 			.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		this.criteria.forEach(builder::criterion);
 		AbstractCookingRecipe abstractCookingRecipe = this.recipeFactory
 			.create((String)Objects.requireNonNullElse(this.group, ""), this.cookingCategory, this.input, new ItemStack(this.output), this.experience, this.cookingTime);
-		exporter.accept(recipeId, abstractCookingRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
+		exporter.accept(recipeKey, abstractCookingRecipe, builder.build(recipeKey.getValue().withPrefixedPath("recipes/" + this.category.getName() + "/")));
 	}
 
 	private static CookingRecipeCategory getSmeltingRecipeCategory(ItemConvertible output) {
@@ -137,9 +138,9 @@ public class CookingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 		}
 	}
 
-	private void validate(Identifier recipeId) {
+	private void validate(RegistryKey<Recipe<?>> recipeKey) {
 		if (this.criteria.isEmpty()) {
-			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
+			throw new IllegalStateException("No way of obtaining recipe " + recipeKey.getValue());
 		}
 	}
 }

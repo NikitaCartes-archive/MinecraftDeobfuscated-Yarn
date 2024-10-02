@@ -9,8 +9,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.CatVariantTags;
 
 public class VanillaCatVariantTagProvider extends TagProvider<CatVariant> {
-	public VanillaCatVariantTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.CAT_VARIANT, registryLookupFuture);
+	public VanillaCatVariantTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.CAT_VARIANT, registriesFuture);
 	}
 
 	@Override

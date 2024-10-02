@@ -288,6 +288,10 @@ public class GameOptions {
 			}
 		}
 	);
+	private static final Text HIGH_CONTRAST_BLOCK_OUTLINE_TOOLTIP = Text.translatable("options.accessibility.high_contrast_block_outline.tooltip");
+	private final SimpleOption<Boolean> highContrastBlockOutline = SimpleOption.ofBoolean(
+		"options.accessibility.high_contrast_block_outline", SimpleOption.constantTooltip(HIGH_CONTRAST_BLOCK_OUTLINE_TOOLTIP), false
+	);
 	private final SimpleOption<Boolean> narratorHotkey = SimpleOption.ofBoolean(
 		"options.accessibility.narrator_hotkey",
 		SimpleOption.constantTooltip(
@@ -964,6 +968,10 @@ public class GameOptions {
 		return this.highContrast;
 	}
 
+	public SimpleOption<Boolean> getHighContrastBlockOutline() {
+		return this.highContrastBlockOutline;
+	}
+
 	public SimpleOption<Boolean> getNarratorHotkey() {
 		return this.narratorHotkey;
 	}
@@ -1312,6 +1320,7 @@ public class GameOptions {
 		visitor.accept("mouseSensitivity", this.mouseSensitivity);
 		visitor.accept("damageTiltStrength", this.damageTiltStrength);
 		visitor.accept("highContrast", this.highContrast);
+		visitor.accept("highContrastBlockOutline", this.highContrastBlockOutline);
 		visitor.accept("narratorHotkey", this.narratorHotkey);
 		this.resourcePacks = visitor.visitObject("resourcePacks", this.resourcePacks, GameOptions::parseList, GSON::toJson);
 		this.incompatibleResourcePacks = visitor.visitObject("incompatibleResourcePacks", this.incompatibleResourcePacks, GameOptions::parseList, GSON::toJson);

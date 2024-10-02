@@ -42,6 +42,7 @@ import net.minecraft.registry.tag.BannerPatternTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -93,6 +94,7 @@ public class Items {
 	public static final Item ACACIA_PLANKS = register(Blocks.ACACIA_PLANKS);
 	public static final Item CHERRY_PLANKS = register(Blocks.CHERRY_PLANKS);
 	public static final Item DARK_OAK_PLANKS = register(Blocks.DARK_OAK_PLANKS);
+	public static final Item PALE_OAK_PLANKS = register(Blocks.PALE_OAK_PLANKS);
 	public static final Item MANGROVE_PLANKS = register(Blocks.MANGROVE_PLANKS);
 	public static final Item BAMBOO_PLANKS = register(Blocks.BAMBOO_PLANKS);
 	public static final Item CRIMSON_PLANKS = register(Blocks.CRIMSON_PLANKS);
@@ -105,6 +107,7 @@ public class Items {
 	public static final Item ACACIA_SAPLING = register(Blocks.ACACIA_SAPLING);
 	public static final Item CHERRY_SAPLING = register(Blocks.CHERRY_SAPLING);
 	public static final Item DARK_OAK_SAPLING = register(Blocks.DARK_OAK_SAPLING);
+	public static final Item PALE_OAK_SAPLING = register(Blocks.PALE_OAK_SAPLING);
 	public static final Item MANGROVE_PROPAGULE = register(Blocks.MANGROVE_PROPAGULE);
 	public static final Item BEDROCK = register(Blocks.BEDROCK);
 	public static final Item SAND = register(Blocks.SAND);
@@ -188,6 +191,7 @@ public class Items {
 	public static final Item JUNGLE_LOG = register(Blocks.JUNGLE_LOG);
 	public static final Item ACACIA_LOG = register(Blocks.ACACIA_LOG);
 	public static final Item CHERRY_LOG = register(Blocks.CHERRY_LOG);
+	public static final Item PALE_OAK_LOG = register(Blocks.PALE_OAK_LOG);
 	public static final Item DARK_OAK_LOG = register(Blocks.DARK_OAK_LOG);
 	public static final Item MANGROVE_LOG = register(Blocks.MANGROVE_LOG);
 	public static final Item MANGROVE_ROOTS = register(Blocks.MANGROVE_ROOTS);
@@ -202,6 +206,7 @@ public class Items {
 	public static final Item STRIPPED_ACACIA_LOG = register(Blocks.STRIPPED_ACACIA_LOG);
 	public static final Item STRIPPED_CHERRY_LOG = register(Blocks.STRIPPED_CHERRY_LOG);
 	public static final Item STRIPPED_DARK_OAK_LOG = register(Blocks.STRIPPED_DARK_OAK_LOG);
+	public static final Item STRIPPED_PALE_OAK_LOG = register(Blocks.STRIPPED_PALE_OAK_LOG);
 	public static final Item STRIPPED_MANGROVE_LOG = register(Blocks.STRIPPED_MANGROVE_LOG);
 	public static final Item STRIPPED_CRIMSON_STEM = register(Blocks.STRIPPED_CRIMSON_STEM);
 	public static final Item STRIPPED_WARPED_STEM = register(Blocks.STRIPPED_WARPED_STEM);
@@ -212,6 +217,7 @@ public class Items {
 	public static final Item STRIPPED_ACACIA_WOOD = register(Blocks.STRIPPED_ACACIA_WOOD);
 	public static final Item STRIPPED_CHERRY_WOOD = register(Blocks.STRIPPED_CHERRY_WOOD);
 	public static final Item STRIPPED_DARK_OAK_WOOD = register(Blocks.STRIPPED_DARK_OAK_WOOD);
+	public static final Item STRIPPED_PALE_OAK_WOOD = register(Blocks.STRIPPED_PALE_OAK_WOOD);
 	public static final Item STRIPPED_MANGROVE_WOOD = register(Blocks.STRIPPED_MANGROVE_WOOD);
 	public static final Item STRIPPED_CRIMSON_HYPHAE = register(Blocks.STRIPPED_CRIMSON_HYPHAE);
 	public static final Item STRIPPED_WARPED_HYPHAE = register(Blocks.STRIPPED_WARPED_HYPHAE);
@@ -222,6 +228,7 @@ public class Items {
 	public static final Item JUNGLE_WOOD = register(Blocks.JUNGLE_WOOD);
 	public static final Item ACACIA_WOOD = register(Blocks.ACACIA_WOOD);
 	public static final Item CHERRY_WOOD = register(Blocks.CHERRY_WOOD);
+	public static final Item PALE_OAK_WOOD = register(Blocks.PALE_OAK_WOOD);
 	public static final Item DARK_OAK_WOOD = register(Blocks.DARK_OAK_WOOD);
 	public static final Item MANGROVE_WOOD = register(Blocks.MANGROVE_WOOD);
 	public static final Item CRIMSON_HYPHAE = register(Blocks.CRIMSON_HYPHAE);
@@ -233,6 +240,7 @@ public class Items {
 	public static final Item ACACIA_LEAVES = register(Blocks.ACACIA_LEAVES);
 	public static final Item CHERRY_LEAVES = register(Blocks.CHERRY_LEAVES);
 	public static final Item DARK_OAK_LEAVES = register(Blocks.DARK_OAK_LEAVES);
+	public static final Item PALE_OAK_LEAVES = register(Blocks.PALE_OAK_LEAVES);
 	public static final Item MANGROVE_LEAVES = register(Blocks.MANGROVE_LEAVES);
 	public static final Item AZALEA_LEAVES = register(Blocks.AZALEA_LEAVES);
 	public static final Item FLOWERING_AZALEA_LEAVES = register(Blocks.FLOWERING_AZALEA_LEAVES);
@@ -295,9 +303,12 @@ public class Items {
 	public static final Item TWISTING_VINES = register(Blocks.TWISTING_VINES);
 	public static final Item SUGAR_CANE = register(Blocks.SUGAR_CANE);
 	public static final Item KELP = register(Blocks.KELP);
-	public static final Item MOSS_CARPET = register(Blocks.MOSS_CARPET);
 	public static final Item PINK_PETALS = register(Blocks.PINK_PETALS);
+	public static final Item MOSS_CARPET = register(Blocks.MOSS_CARPET);
 	public static final Item MOSS_BLOCK = register(Blocks.MOSS_BLOCK);
+	public static final Item PALE_MOSS_CARPET = register(Blocks.PALE_MOSS_CARPET);
+	public static final Item PALE_HANGING_MOSS = register(Blocks.PALE_HANGING_MOSS);
+	public static final Item PALE_MOSS_BLOCK = register(Blocks.PALE_MOSS_BLOCK);
 	public static final Item HANGING_ROOTS = register(Blocks.HANGING_ROOTS);
 	public static final Item BIG_DRIPLEAF = register(Blocks.BIG_DRIPLEAF, Blocks.BIG_DRIPLEAF_STEM);
 	public static final Item SMALL_DRIPLEAF = register(Blocks.SMALL_DRIPLEAF, TallBlockItem::new);
@@ -309,6 +320,7 @@ public class Items {
 	public static final Item ACACIA_SLAB = register(Blocks.ACACIA_SLAB);
 	public static final Item CHERRY_SLAB = register(Blocks.CHERRY_SLAB);
 	public static final Item DARK_OAK_SLAB = register(Blocks.DARK_OAK_SLAB);
+	public static final Item PALE_OAK_SLAB = register(Blocks.PALE_OAK_SLAB);
 	public static final Item MANGROVE_SLAB = register(Blocks.MANGROVE_SLAB);
 	public static final Item BAMBOO_SLAB = register(Blocks.BAMBOO_SLAB);
 	public static final Item BAMBOO_MOSAIC_SLAB = register(Blocks.BAMBOO_MOSAIC_SLAB);
@@ -354,6 +366,7 @@ public class Items {
 	public static final Item PURPUR_PILLAR = register(Blocks.PURPUR_PILLAR);
 	public static final Item PURPUR_STAIRS = register(Blocks.PURPUR_STAIRS);
 	public static final Item SPAWNER = register(Blocks.SPAWNER);
+	public static final Item CREAKING_HEART = register(Blocks.CREAKING_HEART);
 	public static final Item CHEST = register(
 		Blocks.CHEST, (UnaryOperator<Item.Settings>)(settings -> settings.component(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT))
 	);
@@ -377,6 +390,7 @@ public class Items {
 	public static final Item ACACIA_FENCE = register(Blocks.ACACIA_FENCE);
 	public static final Item CHERRY_FENCE = register(Blocks.CHERRY_FENCE);
 	public static final Item DARK_OAK_FENCE = register(Blocks.DARK_OAK_FENCE);
+	public static final Item PALE_OAK_FENCE = register(Blocks.PALE_OAK_FENCE);
 	public static final Item MANGROVE_FENCE = register(Blocks.MANGROVE_FENCE);
 	public static final Item BAMBOO_FENCE = register(Blocks.BAMBOO_FENCE);
 	public static final Item CRIMSON_FENCE = register(Blocks.CRIMSON_FENCE);
@@ -454,6 +468,7 @@ public class Items {
 	public static final Item ACACIA_STAIRS = register(Blocks.ACACIA_STAIRS);
 	public static final Item CHERRY_STAIRS = register(Blocks.CHERRY_STAIRS);
 	public static final Item DARK_OAK_STAIRS = register(Blocks.DARK_OAK_STAIRS);
+	public static final Item PALE_OAK_STAIRS = register(Blocks.PALE_OAK_STAIRS);
 	public static final Item MANGROVE_STAIRS = register(Blocks.MANGROVE_STAIRS);
 	public static final Item BAMBOO_STAIRS = register(Blocks.BAMBOO_STAIRS);
 	public static final Item BAMBOO_MOSAIC_STAIRS = register(Blocks.BAMBOO_MOSAIC_STAIRS);
@@ -889,6 +904,7 @@ public class Items {
 	public static final Item ACACIA_BUTTON = register(Blocks.ACACIA_BUTTON);
 	public static final Item CHERRY_BUTTON = register(Blocks.CHERRY_BUTTON);
 	public static final Item DARK_OAK_BUTTON = register(Blocks.DARK_OAK_BUTTON);
+	public static final Item PALE_OAK_BUTTON = register(Blocks.PALE_OAK_BUTTON);
 	public static final Item MANGROVE_BUTTON = register(Blocks.MANGROVE_BUTTON);
 	public static final Item BAMBOO_BUTTON = register(Blocks.BAMBOO_BUTTON);
 	public static final Item CRIMSON_BUTTON = register(Blocks.CRIMSON_BUTTON);
@@ -904,6 +920,7 @@ public class Items {
 	public static final Item ACACIA_PRESSURE_PLATE = register(Blocks.ACACIA_PRESSURE_PLATE);
 	public static final Item CHERRY_PRESSURE_PLATE = register(Blocks.CHERRY_PRESSURE_PLATE);
 	public static final Item DARK_OAK_PRESSURE_PLATE = register(Blocks.DARK_OAK_PRESSURE_PLATE);
+	public static final Item PALE_OAK_PRESSURE_PLATE = register(Blocks.PALE_OAK_PRESSURE_PLATE);
 	public static final Item MANGROVE_PRESSURE_PLATE = register(Blocks.MANGROVE_PRESSURE_PLATE);
 	public static final Item BAMBOO_PRESSURE_PLATE = register(Blocks.BAMBOO_PRESSURE_PLATE);
 	public static final Item CRIMSON_PRESSURE_PLATE = register(Blocks.CRIMSON_PRESSURE_PLATE);
@@ -916,6 +933,7 @@ public class Items {
 	public static final Item ACACIA_DOOR = register(Blocks.ACACIA_DOOR, TallBlockItem::new);
 	public static final Item CHERRY_DOOR = register(Blocks.CHERRY_DOOR, TallBlockItem::new);
 	public static final Item DARK_OAK_DOOR = register(Blocks.DARK_OAK_DOOR, TallBlockItem::new);
+	public static final Item PALE_OAK_DOOR = register(Blocks.PALE_OAK_DOOR, TallBlockItem::new);
 	public static final Item MANGROVE_DOOR = register(Blocks.MANGROVE_DOOR, TallBlockItem::new);
 	public static final Item BAMBOO_DOOR = register(Blocks.BAMBOO_DOOR, TallBlockItem::new);
 	public static final Item CRIMSON_DOOR = register(Blocks.CRIMSON_DOOR, TallBlockItem::new);
@@ -936,6 +954,7 @@ public class Items {
 	public static final Item ACACIA_TRAPDOOR = register(Blocks.ACACIA_TRAPDOOR);
 	public static final Item CHERRY_TRAPDOOR = register(Blocks.CHERRY_TRAPDOOR);
 	public static final Item DARK_OAK_TRAPDOOR = register(Blocks.DARK_OAK_TRAPDOOR);
+	public static final Item PALE_OAK_TRAPDOOR = register(Blocks.PALE_OAK_TRAPDOOR);
 	public static final Item MANGROVE_TRAPDOOR = register(Blocks.MANGROVE_TRAPDOOR);
 	public static final Item BAMBOO_TRAPDOOR = register(Blocks.BAMBOO_TRAPDOOR);
 	public static final Item CRIMSON_TRAPDOOR = register(Blocks.CRIMSON_TRAPDOOR);
@@ -955,6 +974,7 @@ public class Items {
 	public static final Item ACACIA_FENCE_GATE = register(Blocks.ACACIA_FENCE_GATE);
 	public static final Item CHERRY_FENCE_GATE = register(Blocks.CHERRY_FENCE_GATE);
 	public static final Item DARK_OAK_FENCE_GATE = register(Blocks.DARK_OAK_FENCE_GATE);
+	public static final Item PALE_OAK_FENCE_GATE = register(Blocks.PALE_OAK_FENCE_GATE);
 	public static final Item MANGROVE_FENCE_GATE = register(Blocks.MANGROVE_FENCE_GATE);
 	public static final Item BAMBOO_FENCE_GATE = register(Blocks.BAMBOO_FENCE_GATE);
 	public static final Item CRIMSON_FENCE_GATE = register(Blocks.CRIMSON_FENCE_GATE);
@@ -1025,6 +1045,12 @@ public class Items {
 	);
 	public static final Item DARK_OAK_CHEST_BOAT = register(
 		"dark_oak_chest_boat", settings -> new BoatItem(EntityType.DARK_OAK_CHEST_BOAT, settings), new Item.Settings().maxCount(1)
+	);
+	public static final Item PALE_OAK_BOAT = register(
+		"pale_oak_boat", settings -> new BoatItem(EntityType.PALE_OAK_BOAT, settings), new Item.Settings().maxCount(1).requires(FeatureFlags.WINTER_DROP)
+	);
+	public static final Item PALE_OAK_CHEST_BOAT = register(
+		"pale_oak_chest_boat", settings -> new BoatItem(EntityType.PALE_OAK_CHEST_BOAT, settings), new Item.Settings().maxCount(1).requires(FeatureFlags.WINTER_DROP)
 	);
 	public static final Item MANGROVE_BOAT = register(
 		"mangrove_boat", settings -> new BoatItem(EntityType.MANGROVE_BOAT, settings), new Item.Settings().maxCount(1)
@@ -1189,6 +1215,9 @@ public class Items {
 	public static final Item DARK_OAK_SIGN = register(
 		Blocks.DARK_OAK_SIGN, (block, settings) -> new SignItem(block, Blocks.DARK_OAK_WALL_SIGN, settings), new Item.Settings().maxCount(16)
 	);
+	public static final Item PALE_OAK_SIGN = register(
+		Blocks.PALE_OAK_SIGN, (block, settings) -> new SignItem(block, Blocks.PALE_OAK_WALL_SIGN, settings), new Item.Settings().maxCount(16)
+	);
 	public static final Item MANGROVE_SIGN = register(
 		Blocks.MANGROVE_SIGN, (block, settings) -> new SignItem(block, Blocks.MANGROVE_WALL_SIGN, settings), new Item.Settings().maxCount(16)
 	);
@@ -1221,6 +1250,9 @@ public class Items {
 	);
 	public static final Item DARK_OAK_HANGING_SIGN = register(
 		Blocks.DARK_OAK_HANGING_SIGN, (block, settings) -> new HangingSignItem(block, Blocks.DARK_OAK_WALL_HANGING_SIGN, settings), new Item.Settings().maxCount(16)
+	);
+	public static final Item PALE_OAK_HANGING_SIGN = register(
+		Blocks.PALE_OAK_HANGING_SIGN, (block, settings) -> new HangingSignItem(block, Blocks.PALE_OAK_WALL_HANGING_SIGN, settings), new Item.Settings().maxCount(16)
 	);
 	public static final Item MANGROVE_HANGING_SIGN = register(
 		Blocks.MANGROVE_HANGING_SIGN, (block, settings) -> new HangingSignItem(block, Blocks.MANGROVE_WALL_HANGING_SIGN, settings), new Item.Settings().maxCount(16)
@@ -1585,6 +1617,7 @@ public class Items {
 	);
 	public static final Item WOLF_SPAWN_EGG = register("wolf_spawn_egg", settings -> new SpawnEggItem(EntityType.WOLF, 14144467, 13545366, settings));
 	public static final Item ZOGLIN_SPAWN_EGG = register("zoglin_spawn_egg", settings -> new SpawnEggItem(EntityType.ZOGLIN, 13004373, 15132390, settings));
+	public static final Item CREAKING_SPAWN_EGG = register("creaking_spawn_egg", settings -> new SpawnEggItem(EntityType.CREAKING, 6250335, 16545810, settings));
 	public static final Item ZOMBIE_SPAWN_EGG = register("zombie_spawn_egg", settings -> new SpawnEggItem(EntityType.ZOMBIE, 44975, 7969893, settings));
 	public static final Item ZOMBIE_HORSE_SPAWN_EGG = register(
 		"zombie_horse_spawn_egg", settings -> new SpawnEggItem(EntityType.ZOMBIE_HORSE, 3232308, 9945732, settings)
@@ -1697,22 +1730,22 @@ public class Items {
 	public static final Item ARMOR_STAND = register("armor_stand", ArmorStandItem::new, new Item.Settings().maxCount(16));
 	public static final Item IRON_HORSE_ARMOR = register(
 		"iron_horse_armor",
-		settings -> new AnimalArmorItem(ArmorMaterials.IRON, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		settings -> new AnimalArmorItem(ArmorMaterials.IRON, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, false, settings),
 		new Item.Settings().maxCount(1)
 	);
 	public static final Item GOLDEN_HORSE_ARMOR = register(
 		"golden_horse_armor",
-		settings -> new AnimalArmorItem(ArmorMaterials.GOLD, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		settings -> new AnimalArmorItem(ArmorMaterials.GOLD, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, false, settings),
 		new Item.Settings().maxCount(1)
 	);
 	public static final Item DIAMOND_HORSE_ARMOR = register(
 		"diamond_horse_armor",
-		settings -> new AnimalArmorItem(ArmorMaterials.DIAMOND, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		settings -> new AnimalArmorItem(ArmorMaterials.DIAMOND, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, false, settings),
 		new Item.Settings().maxCount(1)
 	);
 	public static final Item LEATHER_HORSE_ARMOR = register(
 		"leather_horse_armor",
-		settings -> new AnimalArmorItem(ArmorMaterials.LEATHER, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, settings),
+		settings -> new AnimalArmorItem(ArmorMaterials.LEATHER, AnimalArmorItem.Type.EQUESTRIAN, SoundEvents.ENTITY_HORSE_ARMOR, false, settings),
 		new Item.Settings().maxCount(1)
 	);
 	public static final Item LEAD = register("lead", LeadItem::new);

@@ -20,9 +20,6 @@ public class SuggestionProviders {
 	private static final Map<Identifier, SuggestionProvider<CommandSource>> REGISTRY = Maps.<Identifier, SuggestionProvider<CommandSource>>newHashMap();
 	private static final Identifier ASK_SERVER_NAME = Identifier.ofVanilla("ask_server");
 	public static final SuggestionProvider<CommandSource> ASK_SERVER = register(ASK_SERVER_NAME, (context, builder) -> context.getSource().getCompletions(context));
-	public static final SuggestionProvider<ServerCommandSource> ALL_RECIPES = register(
-		Identifier.ofVanilla("all_recipes"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRecipeIds(), builder)
-	);
 	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_SOUNDS = register(
 		Identifier.ofVanilla("available_sounds"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getSoundIds(), builder)
 	);

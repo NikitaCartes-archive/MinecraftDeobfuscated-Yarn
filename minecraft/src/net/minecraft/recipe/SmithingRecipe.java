@@ -1,33 +1,33 @@
 package net.minecraft.recipe;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
+import java.util.Optional;
+import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.world.World;
 
 public interface SmithingRecipe extends Recipe<SmithingRecipeInput> {
 	@Override
-	default RecipeType<?> getType() {
+	default RecipeType<SmithingRecipe> getType() {
 		return RecipeType.SMITHING;
 	}
 
 	@Override
-	default boolean fits(int width, int height) {
-		return width >= 3 && height >= 1;
-	}
-
-	@Override
-	default ItemStack createIcon() {
-		return new ItemStack(Blocks.SMITHING_TABLE);
-	}
+	RecipeSerializer<? extends SmithingRecipe> getSerializer();
 
 	default boolean matches(SmithingRecipeInput smithingRecipeInput, World world) {
-		return this.testTemplate(smithingRecipeInput.template()) && this.testBase(smithingRecipeInput.base()) && this.testAddition(smithingRecipeInput.addition());
+		return Ingredient.matches(this.template(), smithingRecipeInput.template())
+			&& Ingredient.matches(this.base(), smithingRecipeInput.base())
+			&& Ingredient.matches(this.addition(), smithingRecipeInput.addition());
 	}
 
-	boolean testTemplate(ItemStack stack);
+	Optional<Ingredient> template();
 
-	boolean testBase(ItemStack stack);
+	Optional<Ingredient> base();
 
-	boolean testAddition(ItemStack stack);
+	Optional<Ingredient> addition();
+
+	@Override
+	default RecipeBookGroup getRecipeBookTab() {
+		return RecipeBookGroup.SMITHING;
+	}
 }

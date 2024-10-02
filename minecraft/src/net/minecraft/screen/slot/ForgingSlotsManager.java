@@ -3,7 +3,6 @@ package net.minecraft.screen.slot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import net.minecraft.item.ItemStack;
 
 public class ForgingSlotsManager {
@@ -19,12 +18,8 @@ public class ForgingSlotsManager {
 		}
 	}
 
-	public static ForgingSlotsManager.Builder create() {
+	public static ForgingSlotsManager.Builder builder() {
 		return new ForgingSlotsManager.Builder();
-	}
-
-	public boolean hasSlotIndex(int index) {
-		return this.inputSlots.size() >= index;
 	}
 
 	public ForgingSlotsManager.ForgingSlot getInputSlot(int index) {
@@ -47,16 +42,12 @@ public class ForgingSlotsManager {
 		return this.getInputSlotCount();
 	}
 
-	public List<Integer> getInputSlotIndices() {
-		return (List<Integer>)this.inputSlots.stream().map(ForgingSlotsManager.ForgingSlot::slotId).collect(Collectors.toList());
-	}
-
 	public static class Builder {
-		private final List<ForgingSlotsManager.ForgingSlot> inputSlots = new ArrayList();
+		private final List<ForgingSlotsManager.ForgingSlot> inputs = new ArrayList();
 		private ForgingSlotsManager.ForgingSlot resultSlot = ForgingSlotsManager.ForgingSlot.DEFAULT;
 
 		public ForgingSlotsManager.Builder input(int slotId, int x, int y, Predicate<ItemStack> mayPlace) {
-			this.inputSlots.add(new ForgingSlotsManager.ForgingSlot(slotId, x, y, mayPlace));
+			this.inputs.add(new ForgingSlotsManager.ForgingSlot(slotId, x, y, mayPlace));
 			return this;
 		}
 
@@ -66,7 +57,20 @@ public class ForgingSlotsManager {
 		}
 
 		public ForgingSlotsManager build() {
-			return new ForgingSlotsManager(this.inputSlots, this.resultSlot);
+			int i = this.inputs.size();
+
+			for (int j = 0; j < i; j++) {
+				ForgingSlotsManager.ForgingSlot forgingSlot = (ForgingSlotsManager.ForgingSlot)this.inputs.get(j);
+				if (forgingSlot.slotId != j) {
+					throw new IllegalArgumentException("Expected input slots to have continous indexes");
+				}
+			}
+
+			if (this.resultSlot.slotId != i) {
+				throw new IllegalArgumentException("Expected result slot index to follow last input slot");
+			} else {
+				return new ForgingSlotsManager(this.inputs, this.resultSlot);
+			}
 		}
 	}
 

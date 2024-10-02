@@ -20,17 +20,17 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.GoToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
-import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
+import net.minecraft.entity.ai.brain.task.TargetUtil;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -103,7 +103,7 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 	}
 
 	private static void addCoreTasks(Brain<ZoglinEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new MoveToTargetTask()));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new UpdateLookControlTask(45, 90), new MoveToTargetTask()));
 	}
 
 	private static void addIdleTasks(Brain<ZoglinEntity> brain) {
@@ -113,9 +113,7 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 			ImmutableList.of(
 				UpdateAttackTargetTask.create((world, target) -> target.getHoglinTarget(world)),
 				LookAtMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
-				new RandomTask<>(
-					ImmutableList.of(Pair.of(StrollTask.create(0.4F), 2), Pair.of(GoTowardsLookTargetTask.create(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
-				)
+				new RandomTask<>(ImmutableList.of(Pair.of(StrollTask.create(0.4F), 2), Pair.of(GoToLookTargetTask.create(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1)))
 			)
 		);
 	}
@@ -209,7 +207,7 @@ public class ZoglinEntity extends HostileEntity implements Hoglin {
 	public boolean damage(ServerWorld world, DamageSource source, float amount) {
 		boolean bl = super.damage(world, source, amount);
 		if (bl && source.getAttacker() instanceof LivingEntity livingEntity) {
-			if (this.canTarget(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
+			if (this.canTarget(livingEntity) && !TargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
 				this.setAttackTarget(livingEntity);
 			}
 

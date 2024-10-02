@@ -30,36 +30,24 @@ public class GlyphRenderer {
 		this.maxY = maxY;
 	}
 
-	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
+	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, int color, int light) {
 		float f = x + this.minX;
 		float g = x + this.maxX;
 		float h = y + this.minY;
 		float i = y + this.maxY;
 		float j = italic ? 1.0F - 0.25F * this.minY : 0.0F;
 		float k = italic ? 1.0F - 0.25F * this.maxY : 0.0F;
-		vertexConsumer.vertex(matrix, f + j, h, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.minV).light(light);
-		vertexConsumer.vertex(matrix, f + k, i, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.maxV).light(light);
-		vertexConsumer.vertex(matrix, g + k, i, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.maxV).light(light);
-		vertexConsumer.vertex(matrix, g + j, h, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.minV).light(light);
+		vertexConsumer.vertex(matrix, f + j, h, 0.0F).color(color).texture(this.minU, this.minV).light(light);
+		vertexConsumer.vertex(matrix, f + k, i, 0.0F).color(color).texture(this.minU, this.maxV).light(light);
+		vertexConsumer.vertex(matrix, g + k, i, 0.0F).color(color).texture(this.maxU, this.maxV).light(light);
+		vertexConsumer.vertex(matrix, g + j, h, 0.0F).color(color).texture(this.maxU, this.minV).light(light);
 	}
 
 	public void drawRectangle(GlyphRenderer.Rectangle rectangle, Matrix4f matrix, VertexConsumer vertexConsumer, int light) {
-		vertexConsumer.vertex(matrix, rectangle.minX, rectangle.minY, rectangle.zIndex)
-			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.minU, this.minV)
-			.light(light);
-		vertexConsumer.vertex(matrix, rectangle.maxX, rectangle.minY, rectangle.zIndex)
-			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.minU, this.maxV)
-			.light(light);
-		vertexConsumer.vertex(matrix, rectangle.maxX, rectangle.maxY, rectangle.zIndex)
-			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.maxU, this.maxV)
-			.light(light);
-		vertexConsumer.vertex(matrix, rectangle.minX, rectangle.maxY, rectangle.zIndex)
-			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.maxU, this.minV)
-			.light(light);
+		vertexConsumer.vertex(matrix, rectangle.minX, rectangle.minY, rectangle.zIndex).color(rectangle.color).texture(this.minU, this.minV).light(light);
+		vertexConsumer.vertex(matrix, rectangle.maxX, rectangle.minY, rectangle.zIndex).color(rectangle.color).texture(this.minU, this.maxV).light(light);
+		vertexConsumer.vertex(matrix, rectangle.maxX, rectangle.maxY, rectangle.zIndex).color(rectangle.color).texture(this.maxU, this.maxV).light(light);
+		vertexConsumer.vertex(matrix, rectangle.minX, rectangle.maxY, rectangle.zIndex).color(rectangle.color).texture(this.maxU, this.minV).light(light);
 	}
 
 	public RenderLayer getLayer(TextRenderer.TextLayerType layerType) {
@@ -73,21 +61,15 @@ public class GlyphRenderer {
 		protected final float maxX;
 		protected final float maxY;
 		protected final float zIndex;
-		protected final float red;
-		protected final float green;
-		protected final float blue;
-		protected final float alpha;
+		protected final int color;
 
-		public Rectangle(float minX, float minY, float maxX, float maxY, float zIndex, float red, float green, float blue, float alpha) {
+		public Rectangle(float minX, float minY, float maxX, float maxY, float zIndex, int color) {
 			this.minX = minX;
 			this.minY = minY;
 			this.maxX = maxX;
 			this.maxY = maxY;
 			this.zIndex = zIndex;
-			this.red = red;
-			this.green = green;
-			this.blue = blue;
-			this.alpha = alpha;
+			this.color = color;
 		}
 	}
 }

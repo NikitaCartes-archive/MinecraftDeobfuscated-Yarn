@@ -40,7 +40,19 @@ public class RecipeFinder {
 	}
 
 	public boolean isCraftable(Recipe<?> recipe, int quantity, @Nullable RecipeMatcher.ItemCallback<RegistryEntry<Item>> itemCallback) {
-		return this.recipeMatcher.match(recipe.getIngredientPlacement().getRawIngredients(), quantity, itemCallback);
+		return this.isCraftable(recipe.getIngredientPlacement().getRawIngredients(), quantity, itemCallback);
+	}
+
+	public boolean isCraftable(
+		List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> rawIngredients, @Nullable RecipeMatcher.ItemCallback<RegistryEntry<Item>> itemCallback
+	) {
+		return this.isCraftable(rawIngredients, 1, itemCallback);
+	}
+
+	private boolean isCraftable(
+		List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> rawIngredients, int quantity, @Nullable RecipeMatcher.ItemCallback<RegistryEntry<Item>> itemCallback
+	) {
+		return this.recipeMatcher.match(rawIngredients, quantity, itemCallback);
 	}
 
 	public int countCrafts(Recipe<?> recipe, @Nullable RecipeMatcher.ItemCallback<RegistryEntry<Item>> itemCallback) {

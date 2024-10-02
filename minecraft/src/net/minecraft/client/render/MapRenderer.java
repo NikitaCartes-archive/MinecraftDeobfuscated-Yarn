@@ -74,7 +74,7 @@ public class MapRenderer {
 						false,
 						matrices.peek().getPositionMatrix(),
 						vertexConsumers,
-						TextRenderer.TextLayerType.NORMAL,
+						TextRenderer.TextLayerType.SEE_THROUGH,
 						Integer.MIN_VALUE,
 						light
 					);

@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -62,6 +63,10 @@ public abstract class TreeDecorator {
 
 		public boolean isAir(BlockPos pos) {
 			return this.world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
+		}
+
+		public boolean matches(BlockPos pos, Predicate<BlockState> statePredicate) {
+			return this.world.testBlockState(pos, statePredicate);
 		}
 
 		public TestableWorld getWorld() {

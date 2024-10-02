@@ -62,7 +62,7 @@ public class TargetPredicate {
 			return false;
 		} else if (!target.isPartOfGame()) {
 			return false;
-		} else if (this.predicate != null && !this.predicate.method_18303(target, world)) {
+		} else if (this.predicate != null && !this.predicate.test(target, world)) {
 			return false;
 		} else {
 			if (tester == null) {
@@ -94,6 +94,6 @@ public class TargetPredicate {
 
 	@FunctionalInterface
 	public interface EntityPredicate {
-		boolean method_18303(LivingEntity target, ServerWorld world);
+		boolean test(LivingEntity target, ServerWorld world);
 	}
 }

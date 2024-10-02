@@ -56,8 +56,8 @@ public class VanillaGameEventTagProvider extends TagProvider<GameEvent> {
 		GameEvent.UNEQUIP.registryKey()
 	);
 
-	public VanillaGameEventTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.GAME_EVENT, registryLookupFuture);
+	public VanillaGameEventTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.GAME_EVENT, registriesFuture);
 	}
 
 	@Override

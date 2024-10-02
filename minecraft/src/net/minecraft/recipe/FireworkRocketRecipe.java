@@ -71,17 +71,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= 2;
-	}
-
-	@Override
-	public ItemStack getResult(RegistryWrapper.WrapperLookup registries) {
-		return new ItemStack(Items.FIREWORK_ROCKET);
-	}
-
-	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<FireworkRocketRecipe> getSerializer() {
 		return RecipeSerializer.FIREWORK_ROCKET;
 	}
 }

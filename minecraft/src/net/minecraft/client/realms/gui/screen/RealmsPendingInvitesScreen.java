@@ -7,12 +7,12 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.PendingInvite;
 import net.minecraft.client.realms.exception.RealmsServiceException;
@@ -94,34 +94,32 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	}
 
 	void handle(int index, boolean accepted) {
-		if (index < this.pendingInvitationSelectionList.getEntryCount()) {
-			String string = ((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)this.pendingInvitationSelectionList.children().get(index)).mPendingInvite.invitationId;
-			CompletableFuture.supplyAsync(() -> {
-				try {
-					RealmsClient realmsClient = RealmsClient.create();
-					if (accepted) {
-						realmsClient.acceptInvitation(string);
-					} else {
-						realmsClient.rejectInvitation(string);
-					}
-
-					return true;
-				} catch (RealmsServiceException var3x) {
-					LOGGER.error("Couldn't handle invite", (Throwable)var3x);
-					return false;
+		String string = ((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)this.pendingInvitationSelectionList.children().get(index)).mPendingInvite.invitationId;
+		CompletableFuture.supplyAsync(() -> {
+			try {
+				RealmsClient realmsClient = RealmsClient.create();
+				if (accepted) {
+					realmsClient.acceptInvitation(string);
+				} else {
+					realmsClient.rejectInvitation(string);
 				}
-			}, Util.getIoWorkerExecutor()).thenAcceptAsync(result -> {
-				if (result) {
-					this.pendingInvitationSelectionList.removeAtIndex(index);
-					RealmsPeriodicCheckers realmsPeriodicCheckers = this.client.getRealmsPeriodicCheckers();
-					if (accepted) {
-						realmsPeriodicCheckers.serverList.reset();
-					}
 
-					realmsPeriodicCheckers.pendingInvitesCount.reset();
+				return true;
+			} catch (RealmsServiceException var3x) {
+				LOGGER.error("Couldn't handle invite", (Throwable)var3x);
+				return false;
+			}
+		}, Util.getIoWorkerExecutor()).thenAcceptAsync(result -> {
+			if (result) {
+				this.pendingInvitationSelectionList.removeAtIndex(index);
+				RealmsPeriodicCheckers realmsPeriodicCheckers = this.client.getRealmsPeriodicCheckers();
+				if (accepted) {
+					realmsPeriodicCheckers.serverList.reset();
 				}
-			}, this.executor);
-		}
+
+				realmsPeriodicCheckers.pendingInvitesCount.reset();
+			}
+		}, this.executor);
 	}
 
 	@Override
@@ -133,7 +131,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			context.drawTooltip(this.textRenderer, this.tooltip, mouseX, mouseY);
 		}
 
-		if (this.pendingInvites.isDone() && this.pendingInvitationSelectionList.getEntryCount() == 0) {
+		if (this.pendingInvites.isDone() && this.pendingInvitationSelectionList.isEmpty()) {
 			context.drawCenteredTextWithShadow(this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, Colors.WHITE);
 		}
 	}
@@ -148,18 +146,13 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class PendingInvitationSelectionList extends RealmsObjectSelectionList<RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry> {
+	class PendingInvitationSelectionList extends AlwaysSelectedEntryListWidget<RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry> {
 		public PendingInvitationSelectionList() {
-			super(RealmsPendingInvitesScreen.this.width, RealmsPendingInvitesScreen.this.height - 72, 32, 36);
+			super(MinecraftClient.getInstance(), RealmsPendingInvitesScreen.this.width, RealmsPendingInvitesScreen.this.height - 72, 32, 36);
 		}
 
 		public void removeAtIndex(int index) {
 			this.remove(index);
-		}
-
-		@Override
-		public int getMaxPosition() {
-			return this.getEntryCount() * 36;
 		}
 
 		@Override
@@ -178,10 +171,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			RealmsPendingInvitesScreen.this.updateButtonStates();
 		}
 
-		public void setSelected(@Nullable RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry pendingInvitationSelectionListEntry) {
-			super.setSelected(pendingInvitationSelectionListEntry);
-			RealmsPendingInvitesScreen.this.selectedInvite = this.children().indexOf(pendingInvitationSelectionListEntry);
-			RealmsPendingInvitesScreen.this.updateButtonStates();
+		public boolean isEmpty() {
+			return this.getEntryCount() == 0;
 		}
 	}
 

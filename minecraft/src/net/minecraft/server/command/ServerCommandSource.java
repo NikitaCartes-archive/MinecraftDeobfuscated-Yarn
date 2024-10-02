@@ -17,6 +17,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ReturnValueConsumer;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
@@ -28,6 +29,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.Tracer;
@@ -526,7 +528,7 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 		Text text = Text.translatable("chat.type.admin", this.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC);
 		if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 			for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
-				if (serverPlayerEntity != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
+				if (serverPlayerEntity.getCommandOutput() != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
 					serverPlayerEntity.sendMessage(text);
 				}
 			}
@@ -564,11 +566,6 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 	}
 
 	@Override
-	public Stream<Identifier> getRecipeIds() {
-		return this.server.getRecipeManager().keys();
-	}
-
-	@Override
 	public CompletableFuture<Suggestions> getCompletions(CommandContext<?> context) {
 		return Suggestions.empty();
 	}
@@ -577,10 +574,17 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 	public CompletableFuture<Suggestions> listIdSuggestions(
 		RegistryKey<? extends Registry<?>> registryRef, CommandSource.SuggestedIdType suggestedIdType, SuggestionsBuilder builder, CommandContext<?> context
 	) {
-		return (CompletableFuture<Suggestions>)this.getRegistryManager().getOptional(registryRef).map(registry -> {
-			this.suggestIdentifiers(registry, suggestedIdType, builder);
-			return builder.buildFuture();
-		}).orElseGet(Suggestions::empty);
+		if (registryRef == RegistryKeys.RECIPE) {
+			return CommandSource.suggestIdentifiers(this.server.getRecipeManager().values().stream().map(recipe -> recipe.id().getValue()), builder);
+		} else if (registryRef == RegistryKeys.ADVANCEMENT) {
+			Collection<AdvancementEntry> collection = this.server.getAdvancementLoader().getAdvancements();
+			return CommandSource.suggestIdentifiers(collection.stream().map(AdvancementEntry::id), builder);
+		} else {
+			return (CompletableFuture<Suggestions>)this.getRegistryManager().getOptional(registryRef).map(registry -> {
+				this.suggestIdentifiers(registry, suggestedIdType, builder);
+				return builder.buildFuture();
+			}).orElseGet(Suggestions::empty);
+		}
 	}
 
 	@Override

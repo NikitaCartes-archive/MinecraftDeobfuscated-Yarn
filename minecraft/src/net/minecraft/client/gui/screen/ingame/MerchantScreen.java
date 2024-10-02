@@ -181,12 +181,12 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 					this.renderFirstBuyItem(context, itemStack2, itemStack, l, n);
 					if (!itemStack3.isEmpty()) {
 						context.drawItemWithoutEntity(itemStack3, i + 5 + 35, n);
-						context.drawItemInSlot(this.textRenderer, itemStack3, i + 5 + 35, n);
+						context.drawStackOverlay(this.textRenderer, itemStack3, i + 5 + 35, n);
 					}
 
 					this.renderArrow(context, tradeOffer, i, n);
 					context.drawItemWithoutEntity(itemStack4, i + 5 + 68, n);
-					context.drawItemInSlot(this.textRenderer, itemStack4, i + 5 + 68, n);
+					context.drawStackOverlay(this.textRenderer, itemStack4, i + 5 + 68, n);
 					context.getMatrices().pop();
 					k += 20;
 					m++;
@@ -228,10 +228,10 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private void renderFirstBuyItem(DrawContext context, ItemStack adjustedFirstBuyItem, ItemStack originalFirstBuyItem, int x, int y) {
 		context.drawItemWithoutEntity(adjustedFirstBuyItem, x, y);
 		if (originalFirstBuyItem.getCount() == adjustedFirstBuyItem.getCount()) {
-			context.drawItemInSlot(this.textRenderer, adjustedFirstBuyItem, x, y);
+			context.drawStackOverlay(this.textRenderer, adjustedFirstBuyItem, x, y);
 		} else {
-			context.drawItemInSlot(this.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
-			context.drawItemInSlot(this.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
+			context.drawStackOverlay(this.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
+			context.drawStackOverlay(this.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 300.0F);
 			context.drawGuiTexture(RenderLayer::getGuiTextured, DISCOUNT_STRIKETHROUGH_TEXTURE, x + 7, y + 12, 9, 2);

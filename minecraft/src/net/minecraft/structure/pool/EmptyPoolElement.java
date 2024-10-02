@@ -30,7 +30,7 @@ public class EmptyPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
+	public List<StructureTemplate.JigsawBlockInfo> getStructureBlockInfos(
 		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
 	) {
 		return Collections.emptyList();

@@ -1,21 +1,33 @@
 package net.minecraft.recipe;
 
-import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.book.RecipeBookGroup;
 
 public class SmokingRecipe extends AbstractCookingRecipe {
-	public SmokingRecipe(String group, CookingRecipeCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
-		super(RecipeType.SMOKING, group, category, ingredient, result, experience, cookingTime);
+	public SmokingRecipe(String string, CookingRecipeCategory cookingRecipeCategory, Ingredient ingredient, ItemStack itemStack, float f, int i) {
+		super(string, cookingRecipeCategory, ingredient, itemStack, f, i);
 	}
 
 	@Override
-	public ItemStack createIcon() {
-		return new ItemStack(Blocks.SMOKER);
+	protected Item getCookerItem() {
+		return Items.SMOKER;
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeType<SmokingRecipe> getType() {
+		return RecipeType.SMOKING;
+	}
+
+	@Override
+	public RecipeSerializer<SmokingRecipe> getSerializer() {
 		return RecipeSerializer.SMOKING;
+	}
+
+	@Override
+	public RecipeBookGroup getRecipeBookTab() {
+		return RecipeBookGroup.SMOKER_FOOD;
 	}
 }

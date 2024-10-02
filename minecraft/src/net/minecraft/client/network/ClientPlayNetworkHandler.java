@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -48,6 +49,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.recipebook.ClientRecipeManager;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.VillageSectionsDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
@@ -159,7 +161,6 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChangeUnlockedRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
@@ -191,6 +192,7 @@ import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionSyncS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -227,9 +229,14 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRotationS2CPaket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookAddS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookRemoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookSettingsS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -271,7 +278,9 @@ import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.state.ConfigurationStates;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.display.CuttingRecipeDisplay;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -326,6 +335,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private static final Text INVALID_PACKET_TEXT = Text.translatable("multiplayer.disconnect.invalid_packet");
 	private static final Text RECONFIGURING_TEXT = Text.translatable("connect.reconfiguring");
 	private static final int ACKNOWLEDGMENT_BATCH_SIZE = 64;
+	public static final int field_54852 = 64;
 	private final GameProfile profile;
 	private ClientWorld world;
 	private ClientWorld.Properties worldProperties;
@@ -338,13 +348,14 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private int simulationDistance = 3;
 	private final Random random = Random.createThreadSafe();
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
-	private final RecipeManager recipeManager;
+	private ClientRecipeManager recipeManager = new ClientRecipeManager(Map.of(), CuttingRecipeDisplay.Grouping.empty());
 	private final UUID sessionId = UUID.randomUUID();
 	private Set<RegistryKey<World>> worldKeys;
 	private final DynamicRegistryManager.Immutable combinedDynamicRegistries;
 	private final FeatureSet enabledFeatures;
 	private final BrewingRecipeRegistry brewingRecipeRegistry;
 	private FuelRegistry fuelRegistry;
+	private OptionalInt removedPlayerVehicleId = OptionalInt.empty();
 	@Nullable
 	private ClientPlayerSession session;
 	private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
@@ -373,7 +384,6 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		this.advancementHandler = new ClientAdvancementManager(client, this.worldSession);
 		this.commandSource = new ClientCommandSource(this, client);
 		this.pingMeasurer = new PingMeasurer(this, client.getDebugHud().getPingLog());
-		this.recipeManager = new RecipeManager(this.combinedDynamicRegistries);
 		this.debugSampleSubscriber = new DebugSampleSubscriber(this, client.getDebugHud());
 		if (clientConnectionState.chatState() != null) {
 			client.inGameHud.getChatHud().restoreChatState(clientConnectionState.chatState());
@@ -475,6 +485,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntitySpawn(EntitySpawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		if (this.removedPlayerVehicleId.isPresent() && this.removedPlayerVehicleId.getAsInt() == packet.getEntityId()) {
+			this.removedPlayerVehicleId = OptionalInt.empty();
+		}
+
 		Entity entity = this.createEntity(packet);
 		if (entity != null) {
 			entity.onSpawnPacket(packet);
@@ -550,24 +564,63 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	@Override
-	public void onEntityPosition(EntityPositionS2CPacket packet) {
+	public void onEntityPositionSync(EntityPositionSyncS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Entity entity = this.world.getEntityById(packet.getEntityId());
+		Entity entity = this.world.getEntityById(packet.id());
 		if (entity != null) {
-			double d = packet.getX();
-			double e = packet.getY();
-			double f = packet.getZ();
-			entity.updateTrackedPosition(d, e, f);
+			Vec3d vec3d = packet.values().position();
+			entity.getTrackedPosition().setPos(vec3d);
 			if (!entity.isLogicalSideForUpdatingMovement()) {
-				float g = packet.getYaw();
-				float h = packet.getPitch();
-				if (this.world.hasEntity(entity)) {
-					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3);
+				float f = packet.values().yaw();
+				float g = packet.values().pitch();
+				boolean bl = entity.getPos().squaredDistanceTo(vec3d) > 4096.0;
+				if (this.world.hasEntity(entity) && !bl) {
+					entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3);
 				} else {
-					entity.refreshPositionAndAngles(d, e, f, g, h);
+					entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g);
+					if (entity.hasPassengerDeep(this.client.player)) {
+						entity.updatePassengerPosition(this.client.player);
+						this.client.player.resetPosition();
+					}
 				}
 
-				entity.setOnGround(packet.isOnGround());
+				entity.setOnGround(packet.onGround());
+			}
+		}
+	}
+
+	@Override
+	public void onEntityPosition(EntityPositionS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		Entity entity = this.world.getEntityById(packet.entityId());
+		if (entity == null) {
+			if (this.removedPlayerVehicleId.isPresent() && this.removedPlayerVehicleId.getAsInt() == packet.entityId()) {
+				LOGGER.debug("Trying to teleport entity with id {}, that was formerly player vehicle, applying teleport to player instead", packet.entityId());
+				setPosition(packet.change(), packet.relatives(), this.client.player, false);
+				this.connection
+					.send(
+						new PlayerMoveC2SPacket.Full(
+							this.client.player.getX(),
+							this.client.player.getY(),
+							this.client.player.getZ(),
+							this.client.player.getYaw(),
+							this.client.player.getPitch(),
+							false,
+							false
+						)
+					);
+			}
+		} else {
+			boolean bl = packet.relatives().contains(PositionFlag.X) || packet.relatives().contains(PositionFlag.Y) || packet.relatives().contains(PositionFlag.Z);
+			boolean bl2 = this.world.hasEntity(entity) || !entity.isLogicalSideForUpdatingMovement() || bl;
+			boolean bl3 = setPosition(packet.change(), packet.relatives(), entity, bl2);
+			entity.setOnGround(packet.onGround());
+			if (!bl3 && entity.hasPassengerDeep(this.client.player)) {
+				entity.updatePassengerPosition(this.client.player);
+				this.client.player.resetPosition();
+				if (entity.isLocalPlayerOrLogicalSideForUpdatingMovement()) {
+					this.connection.send(new VehicleMoveC2SPacket(entity));
+				}
 			}
 		}
 	}
@@ -604,7 +657,11 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = packet.getEntity(this.world);
 		if (entity != null) {
-			if (!entity.isLogicalSideForUpdatingMovement()) {
+			if (entity.isLogicalSideForUpdatingMovement()) {
+				TrackedPosition trackedPosition = entity.getTrackedPosition();
+				Vec3d vec3d = trackedPosition.withDelta((long)packet.getDeltaX(), (long)packet.getDeltaY(), (long)packet.getDeltaZ());
+				trackedPosition.setPos(vec3d);
+			} else {
 				if (packet.isPositionChanged()) {
 					TrackedPosition trackedPosition = entity.getTrackedPosition();
 					Vec3d vec3d = trackedPosition.withDelta((long)packet.getDeltaX(), (long)packet.getDeltaY(), (long)packet.getDeltaZ());
@@ -645,28 +702,64 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onEntitiesDestroy(EntitiesDestroyS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.getEntityIds().forEach(entityId -> this.world.removeEntity(entityId, Entity.RemovalReason.DISCARDED));
+		packet.getEntityIds().forEach(id -> {
+			Entity entity = this.world.getEntityById(id);
+			if (entity != null) {
+				if (entity.hasPassengerDeep(this.client.player)) {
+					LOGGER.debug("Remove entity {}:{} that has player as passenger", entity.getType(), id);
+					this.removedPlayerVehicleId = OptionalInt.of(id);
+				}
+
+				this.world.removeEntity(id, Entity.RemovalReason.DISCARDED);
+			}
+		});
 	}
 
 	@Override
 	public void onPlayerPositionLook(PlayerPositionLookS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		PlayerPosition playerPosition = PlayerPosition.fromEntity(playerEntity);
-		PlayerPosition playerPosition2 = PlayerPosition.fromPacket(packet);
-		PlayerPosition playerPosition3 = PlayerPosition.apply(playerPosition, playerPosition2, packet.flags());
-		playerEntity.setPosition(playerPosition3.position());
-		playerEntity.setVelocity(playerPosition3.deltaMovement());
-		playerEntity.setYaw(playerPosition3.yaw());
-		playerEntity.setPitch(playerPosition3.pitch());
-		PlayerPosition playerPosition4 = new PlayerPosition(playerEntity.getLastRenderPos(), playerEntity.getVelocity(), playerEntity.prevYaw, playerEntity.prevPitch);
-		PlayerPosition playerPosition5 = PlayerPosition.apply(playerPosition4, playerPosition2, packet.flags());
-		playerEntity.setPrevPositionAndAngles(playerPosition5.position(), playerPosition5.yaw(), playerPosition5.pitch());
-		this.connection.send(new TeleportConfirmC2SPacket(packet.teleportId()));
+		if (!playerEntity.hasVehicle()) {
+			setPosition(packet.change(), packet.relatives(), playerEntity, false);
+		}
+
 		this.connection
 			.send(
 				new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false, false)
 			);
+		this.connection.send(new TeleportConfirmC2SPacket(packet.teleportId()));
+	}
+
+	private static boolean setPosition(PlayerPosition pos, Set<PositionFlag> flags, Entity entity, boolean bl) {
+		PlayerPosition playerPosition = PlayerPosition.fromEntityLerpTarget(entity);
+		PlayerPosition playerPosition2 = PlayerPosition.apply(playerPosition, pos, flags);
+		boolean bl2 = playerPosition.position().squaredDistanceTo(playerPosition2.position()) > 4096.0;
+		if (bl && !bl2) {
+			entity.updateTrackedPositionAndAngles(
+				playerPosition2.position().getX(), playerPosition2.position().getY(), playerPosition2.position().getZ(), playerPosition2.yaw(), playerPosition2.pitch(), 3
+			);
+			entity.setVelocity(playerPosition2.deltaMovement());
+			return true;
+		} else {
+			entity.setPosition(playerPosition2.position());
+			entity.setVelocity(playerPosition2.deltaMovement());
+			entity.setYaw(playerPosition2.yaw());
+			entity.setPitch(playerPosition2.pitch());
+			PlayerPosition playerPosition3 = new PlayerPosition(entity.getLastRenderPos(), Vec3d.ZERO, entity.prevYaw, entity.prevPitch);
+			PlayerPosition playerPosition4 = PlayerPosition.apply(playerPosition3, pos, flags);
+			entity.setPrevPositionAndAngles(playerPosition4.position(), playerPosition4.yaw(), playerPosition4.pitch());
+			return false;
+		}
+	}
+
+	@Override
+	public void onPlayerRotation(PlayerRotationS2CPaket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		PlayerEntity playerEntity = this.client.player;
+		playerEntity.setYaw(packet.yRot());
+		playerEntity.setPitch(packet.xRot());
+		playerEntity.updatePrevAngles();
+		this.connection.send(new PlayerMoveC2SPacket.LookAndOnGround(playerEntity.getYaw(), playerEntity.getPitch(), false, false));
 	}
 
 	@Override
@@ -966,16 +1059,19 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 				Entity entity2 = this.world.getEntityById(i);
 				if (entity2 != null) {
 					entity2.startRiding(entity, true);
-					if (entity2 == this.client.player && !bl) {
-						if (entity instanceof AbstractBoatEntity) {
-							this.client.player.prevYaw = entity.getYaw();
-							this.client.player.setYaw(entity.getYaw());
-							this.client.player.setHeadYaw(entity.getYaw());
-						}
+					if (entity2 == this.client.player) {
+						this.removedPlayerVehicleId = OptionalInt.empty();
+						if (!bl) {
+							if (entity instanceof AbstractBoatEntity) {
+								this.client.player.prevYaw = entity.getYaw();
+								this.client.player.setYaw(entity.getYaw());
+								this.client.player.setHeadYaw(entity.getYaw());
+							}
 
-						Text text = Text.translatable("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText());
-						this.client.inGameHud.setOverlayMessage(text, false);
-						this.client.getNarratorManager().narrate(text);
+							Text text = Text.translatable("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText());
+							this.client.inGameHud.setOverlayMessage(text, false);
+							this.client.getNarratorManager().narrate(text);
+						}
 					}
 				}
 			}
@@ -1464,10 +1560,7 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	@Override
 	public void onSynchronizeRecipes(SynchronizeRecipesS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.recipeManager.setRecipes(packet.getRecipes());
-		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.reload(this.recipeManager.sortedValues(), this.client.world.getRegistryManager());
-		this.searchManager.addRecipeOutputReloader(clientRecipeBook, this.combinedDynamicRegistries);
+		this.recipeManager = new ClientRecipeManager(packet.itemSets(), packet.stonecutterRecipes());
 	}
 
 	@Override
@@ -1503,39 +1596,47 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	}
 
 	@Override
-	public void onUnlockRecipes(ChangeUnlockedRecipesS2CPacket packet) {
+	public void onRecipeBookAdd(RecipeBookAddS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.setOptions(packet.getOptions());
-		ChangeUnlockedRecipesS2CPacket.Action action = packet.getAction();
-		switch (action) {
-			case REMOVE:
-				for (Identifier identifier : packet.getRecipeIdsToChange()) {
-					this.recipeManager.get(identifier).ifPresent(clientRecipeBook::remove);
-				}
-				break;
-			case INIT:
-				for (Identifier identifier : packet.getRecipeIdsToChange()) {
-					this.recipeManager.get(identifier).ifPresent(clientRecipeBook::add);
-				}
 
-				for (Identifier identifier : packet.getRecipeIdsToInit()) {
-					this.recipeManager.get(identifier).ifPresent(clientRecipeBook::display);
-				}
-				break;
-			case ADD:
-				for (Identifier identifier : packet.getRecipeIdsToChange()) {
-					this.recipeManager.get(identifier).ifPresent(recipe -> {
-						clientRecipeBook.add(recipe);
-						clientRecipeBook.display(recipe);
-						if (recipe.value().showNotification()) {
-							RecipeToast.show(this.client.getToastManager(), recipe);
-						}
-					});
-				}
+		for (RecipeBookAddS2CPacket.Entry entry : packet.entries()) {
+			clientRecipeBook.add(entry.contents());
+			if (entry.isHighlighted()) {
+				clientRecipeBook.markHighlighted(entry.contents().id());
+			}
+
+			if (entry.shouldShowNotification()) {
+				RecipeToast.show(this.client.getToastManager(), entry.contents().display());
+			}
 		}
 
-		clientRecipeBook.getOrderedResults().forEach(recipeResultCollection -> recipeResultCollection.initialize(clientRecipeBook));
+		this.refreshRecipeBook(clientRecipeBook);
+	}
+
+	@Override
+	public void onRecipeBookRemove(RecipeBookRemoveS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
+
+		for (NetworkRecipeId networkRecipeId : packet.recipes()) {
+			clientRecipeBook.remove(networkRecipeId);
+		}
+
+		this.refreshRecipeBook(clientRecipeBook);
+	}
+
+	@Override
+	public void onRecipeBookSettings(RecipeBookSettingsS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
+		clientRecipeBook.setOptions(packet.bookSettings());
+		this.refreshRecipeBook(clientRecipeBook);
+	}
+
+	private void refreshRecipeBook(ClientRecipeBook recipeBook) {
+		recipeBook.refresh();
+		this.searchManager.addRecipeOutputReloader(recipeBook, this.world);
 		if (this.client.currentScreen instanceof RecipeBookProvider) {
 			((RecipeBookProvider)this.client.currentScreen).refreshRecipeBook();
 		}
@@ -1881,7 +1982,13 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.client.player.getRootVehicle();
 		if (entity != this.client.player && entity.isLogicalSideForUpdatingMovement()) {
-			entity.updatePositionAndAngles(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch());
+			Vec3d vec3d = new Vec3d(packet.getX(), packet.getY(), packet.getZ());
+			Vec3d vec3d2 = new Vec3d(entity.getLerpTargetX(), entity.getLerpTargetY(), entity.getLerpTargetZ());
+			if (vec3d.distanceTo(vec3d2) > 1.0E-5F) {
+				entity.resetLerp();
+				entity.updatePositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), packet.getYaw(), packet.getPitch());
+			}
+
 			this.connection.send(new VehicleMoveC2SPacket(entity));
 		}
 	}
@@ -2160,12 +2267,10 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onCraftFailedResponse(CraftFailedResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
-		if (screenHandler.syncId == packet.getSyncId()) {
-			this.recipeManager.get(packet.getRecipeId()).ifPresent(recipeEntry -> {
-				if (this.client.currentScreen instanceof RecipeBookProvider recipeBookProvider) {
-					recipeBookProvider.getRecipeBookWidget().setGhostRecipe(recipeEntry);
-				}
-			});
+		if (screenHandler.syncId == packet.syncId()) {
+			if (this.client.currentScreen instanceof RecipeBookProvider recipeBookProvider) {
+				recipeBookProvider.onCraftFailed(packet.recipeDisplay());
+			}
 		}
 	}
 

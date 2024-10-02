@@ -124,11 +124,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 
 		@Override
-		public int getMaxPosition() {
-			return this.getEntryCount() * this.itemHeight + this.headerHeight;
-		}
-
-		@Override
 		public int getRowWidth() {
 			return 300;
 		}

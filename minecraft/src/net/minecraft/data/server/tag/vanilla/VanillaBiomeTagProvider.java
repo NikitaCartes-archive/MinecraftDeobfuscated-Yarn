@@ -12,8 +12,8 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 
 public class VanillaBiomeTagProvider extends TagProvider<Biome> {
-	public VanillaBiomeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.BIOME, registryLookupFuture);
+	public VanillaBiomeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.BIOME, registriesFuture);
 	}
 
 	@Override

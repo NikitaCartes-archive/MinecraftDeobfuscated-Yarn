@@ -397,5 +397,7 @@ public interface Registry<T> extends Keyable, RegistryWrapper.Impl<T>, IndexedIt
 		RegistryWrapper.Impl<T> getLookup();
 
 		void apply();
+
+		int size();
 	}
 }

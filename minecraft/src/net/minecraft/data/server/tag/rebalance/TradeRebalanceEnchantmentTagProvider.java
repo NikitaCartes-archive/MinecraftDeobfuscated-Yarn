@@ -10,8 +10,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.EnchantmentTags;
 
 public class TradeRebalanceEnchantmentTagProvider extends TagProvider<Enchantment> {
-	public TradeRebalanceEnchantmentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.ENCHANTMENT, registryLookupFuture);
+	public TradeRebalanceEnchantmentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.ENCHANTMENT, registriesFuture);
 	}
 
 	@Override

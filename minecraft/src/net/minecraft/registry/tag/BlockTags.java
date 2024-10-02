@@ -27,6 +27,7 @@ public final class BlockTags {
 	public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = of("overworld_natural_logs");
 	public static final TagKey<Block> LOGS = of("logs");
 	public static final TagKey<Block> DARK_OAK_LOGS = of("dark_oak_logs");
+	public static final TagKey<Block> PALE_OAK_LOGS = of("pale_oak_logs");
 	public static final TagKey<Block> OAK_LOGS = of("oak_logs");
 	public static final TagKey<Block> BIRCH_LOGS = of("birch_logs");
 	public static final TagKey<Block> ACACIA_LOGS = of("acacia_logs");

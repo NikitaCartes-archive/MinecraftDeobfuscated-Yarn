@@ -1,7 +1,5 @@
 package net.minecraft.block.enums;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
@@ -20,9 +18,10 @@ public enum Orientation implements StringIdentifiable {
 	NORTH_UP("north_up", Direction.NORTH, Direction.UP),
 	SOUTH_UP("south_up", Direction.SOUTH, Direction.UP);
 
-	private static final Int2ObjectMap<Orientation> BY_INDEX = Util.make(new Int2ObjectOpenHashMap<>(values().length), map -> {
+	private static final int DIRECTIONS = Direction.values().length;
+	private static final Orientation[] VALUES = Util.make(new Orientation[DIRECTIONS * DIRECTIONS], values -> {
 		for (Orientation orientation : values()) {
-			map.put(getIndex(orientation.facing, orientation.rotation), orientation);
+			values[getIndex(orientation.facing, orientation.rotation)] = orientation;
 		}
 	});
 	private final String name;
@@ -30,7 +29,7 @@ public enum Orientation implements StringIdentifiable {
 	private final Direction facing;
 
 	private static int getIndex(Direction facing, Direction rotation) {
-		return rotation.ordinal() << 3 | facing.ordinal();
+		return facing.ordinal() * DIRECTIONS + rotation.ordinal();
 	}
 
 	private Orientation(final String name, final Direction facing, final Direction rotation) {
@@ -45,8 +44,7 @@ public enum Orientation implements StringIdentifiable {
 	}
 
 	public static Orientation byDirections(Direction facing, Direction rotation) {
-		int i = getIndex(facing, rotation);
-		return BY_INDEX.get(i);
+		return VALUES[getIndex(facing, rotation)];
 	}
 
 	public Direction getFacing() {

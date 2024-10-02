@@ -80,13 +80,15 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput craftingRecipeInput) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingRecipeInput.size(), ItemStack.EMPTY);
+	@Override
+	public DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput input) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
-			if (itemStack.getItem().hasRecipeRemainder()) {
-				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
+			ItemStack itemStack = input.getStackInSlot(i);
+			ItemStack itemStack2 = itemStack.getItem().getRecipeRemainder();
+			if (!itemStack2.isEmpty()) {
+				defaultedList.set(i, itemStack2);
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {
 				defaultedList.set(i, itemStack.copyWithCount(1));
 				break;
@@ -97,12 +99,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<BookCloningRecipe> getSerializer() {
 		return RecipeSerializer.BOOK_CLONING;
-	}
-
-	@Override
-	public boolean fits(int width, int height) {
-		return width >= 3 && height >= 3;
 	}
 }

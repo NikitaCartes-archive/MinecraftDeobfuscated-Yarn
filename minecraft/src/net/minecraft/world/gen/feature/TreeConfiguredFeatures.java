@@ -45,7 +45,9 @@ import net.minecraft.world.gen.treedecorator.AlterGroundTreeDecorator;
 import net.minecraft.world.gen.treedecorator.AttachedToLeavesTreeDecorator;
 import net.minecraft.world.gen.treedecorator.BeehiveTreeDecorator;
 import net.minecraft.world.gen.treedecorator.CocoaBeansTreeDecorator;
+import net.minecraft.world.gen.treedecorator.CreakingHeartTreeDecorator;
 import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
+import net.minecraft.world.gen.treedecorator.PaleMossTreeDecorator;
 import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
 import net.minecraft.world.gen.trunk.BendingTrunkPlacer;
 import net.minecraft.world.gen.trunk.CherryTrunkPlacer;
@@ -66,6 +68,8 @@ public class TreeConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> HUGE_RED_MUSHROOM = ConfiguredFeatures.of("huge_red_mushroom");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> OAK = ConfiguredFeatures.of("oak");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> DARK_OAK = ConfiguredFeatures.of("dark_oak");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PALE_OAK = ConfiguredFeatures.of("pale_oak");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PALE_OAK_CREAKING = ConfiguredFeatures.of("pale_oak_creaking");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> BIRCH = ConfiguredFeatures.of("birch");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ACACIA = ConfiguredFeatures.of("acacia");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SPRUCE = ConfiguredFeatures.of("spruce");
@@ -164,6 +168,7 @@ public class TreeConfiguredFeatures {
 			Blocks.ACACIA_SAPLING,
 			Blocks.CHERRY_SAPLING,
 			Blocks.DARK_OAK_SAPLING,
+			Blocks.PALE_OAK_SAPLING,
 			Blocks.MANGROVE_PROPAGULE,
 			Blocks.DANDELION,
 			Blocks.TORCHFLOWER,
@@ -310,6 +315,36 @@ public class TreeConfiguredFeatures {
 					new DarkOakFoliagePlacer(ConstantIntProvider.create(0), ConstantIntProvider.create(0)),
 					new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
 				)
+				.ignoreVines()
+				.build()
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PALE_OAK,
+			Feature.TREE,
+			new TreeFeatureConfig.Builder(
+					BlockStateProvider.of(Blocks.PALE_OAK_LOG),
+					new DarkOakTrunkPlacer(6, 2, 1),
+					BlockStateProvider.of(Blocks.PALE_OAK_LEAVES),
+					new DarkOakFoliagePlacer(ConstantIntProvider.create(0), ConstantIntProvider.create(0)),
+					new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
+				)
+				.decorators(ImmutableList.of(new PaleMossTreeDecorator(0.15F, 0.4F, 0.8F)))
+				.ignoreVines()
+				.build()
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PALE_OAK_CREAKING,
+			Feature.TREE,
+			new TreeFeatureConfig.Builder(
+					BlockStateProvider.of(Blocks.PALE_OAK_LOG),
+					new DarkOakTrunkPlacer(6, 2, 1),
+					BlockStateProvider.of(Blocks.PALE_OAK_LEAVES),
+					new DarkOakFoliagePlacer(ConstantIntProvider.create(0), ConstantIntProvider.create(0)),
+					new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
+				)
+				.decorators(ImmutableList.of(new PaleMossTreeDecorator(0.15F, 0.4F, 0.8F), new CreakingHeartTreeDecorator(1.0F)))
 				.ignoreVines()
 				.build()
 		);

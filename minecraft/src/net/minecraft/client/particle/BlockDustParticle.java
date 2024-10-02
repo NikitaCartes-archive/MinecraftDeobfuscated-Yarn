@@ -85,6 +85,22 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static class CrumbleFactory implements ParticleFactory<BlockStateParticleEffect> {
+		@Nullable
+		public Particle createParticle(
+			BlockStateParticleEffect blockStateParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
+		) {
+			Particle particle = BlockDustParticle.create(blockStateParticleEffect, clientWorld, d, e, f, g, h, i);
+			if (particle != null) {
+				particle.setVelocity(0.0, 0.0, 0.0);
+				particle.setMaxAge(clientWorld.random.nextInt(10) + 1);
+			}
+
+			return particle;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static class DustPillarFactory implements ParticleFactory<BlockStateParticleEffect> {
 		@Nullable
 		public Particle createParticle(

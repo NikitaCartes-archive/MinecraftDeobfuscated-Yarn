@@ -11,6 +11,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
@@ -20,12 +21,12 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-public record AdvancementRewards(int experience, List<RegistryKey<LootTable>> loot, List<Identifier> recipes, Optional<LazyContainer> function) {
+public record AdvancementRewards(int experience, List<RegistryKey<LootTable>> loot, List<RegistryKey<Recipe<?>>> recipes, Optional<LazyContainer> function) {
 	public static final Codec<AdvancementRewards> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.INT.optionalFieldOf("experience", Integer.valueOf(0)).forGetter(AdvancementRewards::experience),
 					RegistryKey.createCodec(RegistryKeys.LOOT_TABLE).listOf().optionalFieldOf("loot", List.of()).forGetter(AdvancementRewards::loot),
-					Identifier.CODEC.listOf().optionalFieldOf("recipes", List.of()).forGetter(AdvancementRewards::recipes),
+					RegistryKey.createCodec(RegistryKeys.RECIPE).listOf().optionalFieldOf("recipes", List.of()).forGetter(AdvancementRewards::recipes),
 					LazyContainer.CODEC.optionalFieldOf("function").forGetter(AdvancementRewards::function)
 				)
 				.apply(instance, AdvancementRewards::new)
@@ -82,7 +83,7 @@ public record AdvancementRewards(int experience, List<RegistryKey<LootTable>> lo
 	public static class Builder {
 		private int experience;
 		private final ImmutableList.Builder<RegistryKey<LootTable>> loot = ImmutableList.builder();
-		private final ImmutableList.Builder<Identifier> recipes = ImmutableList.builder();
+		private final ImmutableList.Builder<RegistryKey<Recipe<?>>> recipes = ImmutableList.builder();
 		private Optional<Identifier> function = Optional.empty();
 
 		public static AdvancementRewards.Builder experience(int experience) {
@@ -103,12 +104,12 @@ public record AdvancementRewards(int experience, List<RegistryKey<LootTable>> lo
 			return this;
 		}
 
-		public static AdvancementRewards.Builder recipe(Identifier recipe) {
-			return new AdvancementRewards.Builder().addRecipe(recipe);
+		public static AdvancementRewards.Builder recipe(RegistryKey<Recipe<?>> recipeKey) {
+			return new AdvancementRewards.Builder().addRecipe(recipeKey);
 		}
 
-		public AdvancementRewards.Builder addRecipe(Identifier recipe) {
-			this.recipes.add(recipe);
+		public AdvancementRewards.Builder addRecipe(RegistryKey<Recipe<?>> recipeKey) {
+			this.recipes.add(recipeKey);
 			return this;
 		}
 

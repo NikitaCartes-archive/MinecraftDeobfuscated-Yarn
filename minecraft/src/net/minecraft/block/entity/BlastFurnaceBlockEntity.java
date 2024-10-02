@@ -21,8 +21,8 @@ public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected int getFuelTime(FuelRegistry fuelRegistry, ItemStack itemStack) {
-		return super.getFuelTime(fuelRegistry, itemStack) / 2;
+	protected int getFuelTime(FuelRegistry fuelRegistry, ItemStack stack) {
+		return super.getFuelTime(fuelRegistry, stack) / 2;
 	}
 
 	@Override

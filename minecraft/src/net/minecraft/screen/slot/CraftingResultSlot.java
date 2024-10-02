@@ -4,10 +4,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.world.World;
 
 public class CraftingResultSlot extends Slot {
 	private final RecipeInputInventory input;
@@ -58,6 +61,25 @@ public class CraftingResultSlot extends Slot {
 		this.amount = 0;
 	}
 
+	private static DefaultedList<ItemStack> copyInput(CraftingRecipeInput input) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
+
+		for (int i = 0; i < defaultedList.size(); i++) {
+			defaultedList.set(i, input.getStackInSlot(i));
+		}
+
+		return defaultedList;
+	}
+
+	private DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput input, World world) {
+		return world instanceof ServerWorld serverWorld
+			? (DefaultedList)serverWorld.getRecipeManager()
+				.getFirstMatch(RecipeType.CRAFTING, input, serverWorld)
+				.map(recipe -> ((CraftingRecipe)recipe.value()).getRecipeRemainders(input))
+				.orElseGet(() -> copyInput(input))
+			: CraftingRecipe.collectRecipeRemainders(input);
+	}
+
 	@Override
 	public void onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.onCrafted(stack);
@@ -65,7 +87,7 @@ public class CraftingResultSlot extends Slot {
 		CraftingRecipeInput craftingRecipeInput = positioned.input();
 		int i = positioned.left();
 		int j = positioned.top();
-		DefaultedList<ItemStack> defaultedList = player.getWorld().getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, craftingRecipeInput, player.getWorld());
+		DefaultedList<ItemStack> defaultedList = this.getRecipeRemainders(craftingRecipeInput, player.getWorld());
 
 		for (int k = 0; k < craftingRecipeInput.getHeight(); k++) {
 			for (int l = 0; l < craftingRecipeInput.getWidth(); l++) {

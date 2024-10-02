@@ -12,6 +12,7 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 
 public abstract class AbstractCraftingScreenHandler extends AbstractRecipeScreenHandler {
 	private final int width;
@@ -39,14 +40,16 @@ public abstract class AbstractCraftingScreenHandler extends AbstractRecipeScreen
 	}
 
 	@Override
-	public AbstractRecipeScreenHandler.PostFillAction fillInputSlots(boolean craftAll, boolean creative, RecipeEntry<?> recipe, PlayerInventory inventory) {
+	public AbstractRecipeScreenHandler.PostFillAction fillInputSlots(
+		boolean craftAll, boolean creative, RecipeEntry<?> recipe, ServerWorld world, PlayerInventory inventory
+	) {
 		RecipeEntry<CraftingRecipe> recipeEntry = (RecipeEntry<CraftingRecipe>)recipe;
 		this.onInputSlotFillStart();
 
-		AbstractRecipeScreenHandler.PostFillAction var7;
+		AbstractRecipeScreenHandler.PostFillAction var8;
 		try {
 			List<Slot> list = this.getInputSlots();
-			var7 = InputSlotFiller.fill(
+			var8 = InputSlotFiller.fill(
 				new InputSlotFiller.Handler<CraftingRecipe>() {
 					@Override
 					public void populateRecipeFinder(RecipeFinder finder) {
@@ -75,16 +78,16 @@ public abstract class AbstractCraftingScreenHandler extends AbstractRecipeScreen
 				creative
 			);
 		} finally {
-			this.onInputSlotFillFinish((RecipeEntry<CraftingRecipe>)recipe);
+			this.onInputSlotFillFinish(world, (RecipeEntry<CraftingRecipe>)recipe);
 		}
 
-		return var7;
+		return var8;
 	}
 
 	protected void onInputSlotFillStart() {
 	}
 
-	protected void onInputSlotFillFinish(RecipeEntry<CraftingRecipe> recipe) {
+	protected void onInputSlotFillFinish(ServerWorld world, RecipeEntry<CraftingRecipe> recipe) {
 	}
 
 	public abstract Slot getOutputSlot();

@@ -104,6 +104,8 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 	protected static <T extends BlockEntity> BlockEntityTicker<T> validateTicker(
 		World world, BlockEntityType<T> givenType, BlockEntityType<? extends AbstractFurnaceBlockEntity> expectedType
 	) {
-		return world.isClient ? null : validateTicker(givenType, expectedType, AbstractFurnaceBlockEntity::tick);
+		return world instanceof ServerWorld serverWorld
+			? validateTicker(givenType, expectedType, (worldx, pos, state, blockEntity) -> AbstractFurnaceBlockEntity.tick(serverWorld, pos, state, blockEntity))
+			: null;
 	}
 }

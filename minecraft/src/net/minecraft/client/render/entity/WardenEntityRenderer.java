@@ -2,7 +2,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.feature.WardenFeatureRenderer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.feature.EmissiveFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.WardenEntityModel;
 import net.minecraft.client.render.entity.state.WardenEntityRenderState;
@@ -20,22 +21,39 @@ public class WardenEntityRenderer extends MobEntityRenderer<WardenEntity, Warden
 
 	public WardenEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WardenEntityModel(context.getPart(EntityModelLayers.WARDEN)), 0.9F);
-		this.addFeature(new WardenFeatureRenderer(this, BIOLUMINESCENT_LAYER_TEXTURE, (state, tickDelta) -> 1.0F, WardenEntityModel::getHeadAndLimbs));
 		this.addFeature(
-			new WardenFeatureRenderer(
-				this, PULSATING_SPOTS_1_TEXTURE, (state, tickDelta) -> Math.max(0.0F, MathHelper.cos(tickDelta * 0.045F) * 0.25F), WardenEntityModel::getBodyHeadAndLimbs
+			new EmissiveFeatureRenderer<>(
+				this, BIOLUMINESCENT_LAYER_TEXTURE, (state, tickDelta) -> 1.0F, WardenEntityModel::getHeadAndLimbs, RenderLayer::getEntityTranslucentEmissive
 			)
 		);
 		this.addFeature(
-			new WardenFeatureRenderer(
+			new EmissiveFeatureRenderer<>(
+				this,
+				PULSATING_SPOTS_1_TEXTURE,
+				(state, tickDelta) -> Math.max(0.0F, MathHelper.cos(tickDelta * 0.045F) * 0.25F),
+				WardenEntityModel::getBodyHeadAndLimbs,
+				RenderLayer::getEntityTranslucentEmissive
+			)
+		);
+		this.addFeature(
+			new EmissiveFeatureRenderer<>(
 				this,
 				PULSATING_SPOTS_2_TEXTURE,
 				(state, tickDelta) -> Math.max(0.0F, MathHelper.cos(tickDelta * 0.045F + (float) Math.PI) * 0.25F),
-				WardenEntityModel::getBodyHeadAndLimbs
+				WardenEntityModel::getBodyHeadAndLimbs,
+				RenderLayer::getEntityTranslucentEmissive
 			)
 		);
-		this.addFeature(new WardenFeatureRenderer(this, TEXTURE, (state, tickDelta) -> state.tendrilPitch, WardenEntityModel::getTendrils));
-		this.addFeature(new WardenFeatureRenderer(this, HEART_TEXTURE, (state, tickDelta) -> state.heartPitch, WardenEntityModel::getBody));
+		this.addFeature(
+			new EmissiveFeatureRenderer<>(
+				this, TEXTURE, (state, tickDelta) -> state.tendrilPitch, WardenEntityModel::getTendrils, RenderLayer::getEntityTranslucentEmissive
+			)
+		);
+		this.addFeature(
+			new EmissiveFeatureRenderer<>(
+				this, HEART_TEXTURE, (state, tickDelta) -> state.heartPitch, WardenEntityModel::getBody, RenderLayer::getEntityTranslucentEmissive
+			)
+		);
 	}
 
 	public Identifier getTexture(WardenEntityRenderState wardenEntityRenderState) {

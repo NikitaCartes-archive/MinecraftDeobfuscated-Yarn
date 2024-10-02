@@ -8,7 +8,6 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChangeUnlockedRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
@@ -38,6 +37,7 @@ import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionSyncS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -73,9 +73,13 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRotationS2CPaket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProjectilePowerS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookAddS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookRemoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.RecipeBookSettingsS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -117,7 +121,7 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 /**
  * A client side packet listener where play stage packets from the server are processed.
  */
-public interface ClientPlayPacketListener extends ClientPingResultPacketListener, ClientCommonPacketListener {
+public interface ClientPlayPacketListener extends ClientCommonPacketListener, ClientPingResultPacketListener {
 	@Override
 	default NetworkPhase getPhase() {
 		return NetworkPhase.PLAY;
@@ -138,7 +142,11 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 
 	void onStatistics(StatisticsS2CPacket packet);
 
-	void onUnlockRecipes(ChangeUnlockedRecipesS2CPacket packet);
+	void onRecipeBookAdd(RecipeBookAddS2CPacket packet);
+
+	void onRecipeBookRemove(RecipeBookRemoveS2CPacket packet);
+
+	void onRecipeBookSettings(RecipeBookSettingsS2CPacket packet);
 
 	void onBlockBreakingProgress(BlockBreakingProgressS2CPacket packet);
 
@@ -198,6 +206,8 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 
 	void onPlayerPositionLook(PlayerPositionLookS2CPacket packet);
 
+	void onPlayerRotation(PlayerRotationS2CPaket packet);
+
 	void onParticle(ParticleS2CPacket packet);
 
 	void onPlayerAbilities(PlayerAbilitiesS2CPacket packet);
@@ -243,6 +253,8 @@ public interface ClientPlayPacketListener extends ClientPingResultPacketListener
 	void onPlaySoundFromEntity(PlaySoundFromEntityS2CPacket packet);
 
 	void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet);
+
+	void onEntityPositionSync(EntityPositionSyncS2CPacket packet);
 
 	void onEntityPosition(EntityPositionS2CPacket packet);
 

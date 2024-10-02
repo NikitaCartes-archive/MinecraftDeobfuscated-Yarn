@@ -810,7 +810,7 @@ public class CreativeInventoryScreen extends HandledScreen<CreativeInventoryScre
 		k += 8 + (bl2 ? 1 : -1);
 		ItemStack itemStack = group.getIcon();
 		context.drawItem(itemStack, j, k);
-		context.drawItemInSlot(this.textRenderer, itemStack, j, k);
+		context.drawStackOverlay(this.textRenderer, itemStack, j, k);
 		context.getMatrices().pop();
 	}
 

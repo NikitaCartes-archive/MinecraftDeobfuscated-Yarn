@@ -13,8 +13,8 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.EnchantmentTags;
 
 public abstract class EnchantmentTagProvider extends TagProvider<Enchantment> {
-	public EnchantmentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.ENCHANTMENT, registryLookupFuture);
+	public EnchantmentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.ENCHANTMENT, registriesFuture);
 	}
 
 	protected void createTooltipOrderTag(RegistryWrapper.WrapperLookup registries, RegistryKey<Enchantment>... enchantments) {

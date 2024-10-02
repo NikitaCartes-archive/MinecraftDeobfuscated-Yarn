@@ -73,6 +73,9 @@ public class ParticleTypes {
 	public static final ParticleType<VibrationParticleEffect> VIBRATION = register(
 		"vibration", true, type -> VibrationParticleEffect.CODEC, type -> VibrationParticleEffect.PACKET_CODEC
 	);
+	public static final ParticleType<TrailParticleEffect> TRAIL = register(
+		"trail", false, type -> TrailParticleEffect.CODEC, type -> TrailParticleEffect.PACKET_CODEC
+	);
 	public static final SimpleParticleType ITEM_SLIME = register("item_slime", false);
 	public static final SimpleParticleType ITEM_COBWEB = register("item_cobweb", false);
 	public static final SimpleParticleType ITEM_SNOWBALL = register("item_snowball", false);
@@ -140,6 +143,9 @@ public class ParticleTypes {
 	public static final SimpleParticleType OMINOUS_SPAWNING = register("ominous_spawning", true);
 	public static final SimpleParticleType RAID_OMEN = register("raid_omen", false);
 	public static final SimpleParticleType TRIAL_OMEN = register("trial_omen", false);
+	public static final ParticleType<BlockStateParticleEffect> BLOCK_CRUMBLE = register(
+		"block_crumble", false, BlockStateParticleEffect::createCodec, BlockStateParticleEffect::createPacketCodec
+	);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registries.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 	public static final PacketCodec<RegistryByteBuf, ParticleEffect> PACKET_CODEC = PacketCodecs.registryValue(RegistryKeys.PARTICLE_TYPE)
 		.dispatch(ParticleEffect::getType, ParticleType::getPacketCodec);

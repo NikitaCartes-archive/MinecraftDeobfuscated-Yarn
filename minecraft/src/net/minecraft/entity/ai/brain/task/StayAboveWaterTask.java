@@ -5,7 +5,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 
-public class StayAboveWaterTask extends MultiTickTask<MobEntity> {
+public class StayAboveWaterTask<T extends MobEntity> extends MultiTickTask<T> {
 	private final float chance;
 
 	public StayAboveWaterTask(float chance) {
@@ -13,7 +13,7 @@ public class StayAboveWaterTask extends MultiTickTask<MobEntity> {
 		this.chance = chance;
 	}
 
-	public static boolean isUnderwater(MobEntity entity) {
+	public static <T extends MobEntity> boolean isUnderwater(T entity) {
 		return entity.isTouchingWater() && entity.getFluidHeight(FluidTags.WATER) > entity.getSwimHeight() || entity.isInLava();
 	}
 

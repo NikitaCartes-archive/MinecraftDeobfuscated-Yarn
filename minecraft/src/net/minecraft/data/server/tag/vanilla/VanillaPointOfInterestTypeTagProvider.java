@@ -10,8 +10,8 @@ import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class VanillaPointOfInterestTypeTagProvider extends TagProvider<PointOfInterestType> {
-	public VanillaPointOfInterestTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.POINT_OF_INTEREST_TYPE, registryLookupFuture);
+	public VanillaPointOfInterestTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+		super(output, RegistryKeys.POINT_OF_INTEREST_TYPE, registriesFuture);
 	}
 
 	@Override

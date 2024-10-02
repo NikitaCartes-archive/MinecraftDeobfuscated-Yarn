@@ -18,12 +18,12 @@ import net.minecraft.entity.ai.brain.task.BreezeShootIfStuckTask;
 import net.minecraft.entity.ai.brain.task.BreezeShootTask;
 import net.minecraft.entity.ai.brain.task.BreezeSlideTowardsTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
+import net.minecraft.entity.ai.brain.task.UpdateLookControlTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -69,7 +69,7 @@ public class BreezeBrain {
 	}
 
 	private static void addCoreTasks(Brain<BreezeEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new LookAroundTask(45, 90)));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask<>(0.8F), new UpdateLookControlTask(45, 90)));
 	}
 
 	private static void addIdleTasks(Brain<BreezeEntity> brain) {

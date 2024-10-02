@@ -14,11 +14,11 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.book.RecipeBookType;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
 
 public class CraftingScreenHandler extends AbstractCraftingScreenHandler {
 	private static final int field_52567 = 3;
@@ -50,38 +50,40 @@ public class CraftingScreenHandler extends AbstractCraftingScreenHandler {
 
 	protected static void updateResult(
 		ScreenHandler handler,
-		World world,
+		ServerWorld world,
 		PlayerEntity player,
 		RecipeInputInventory craftingInventory,
 		CraftingResultInventory resultInventory,
 		@Nullable RecipeEntry<CraftingRecipe> recipe
 	) {
-		if (!world.isClient) {
-			CraftingRecipeInput craftingRecipeInput = craftingInventory.createRecipeInput();
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
-			ItemStack itemStack = ItemStack.EMPTY;
-			Optional<RecipeEntry<CraftingRecipe>> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingRecipeInput, world, recipe);
-			if (optional.isPresent()) {
-				RecipeEntry<CraftingRecipe> recipeEntry = (RecipeEntry<CraftingRecipe>)optional.get();
-				CraftingRecipe craftingRecipe = recipeEntry.value();
-				if (resultInventory.shouldCraftRecipe(serverPlayerEntity, recipeEntry)) {
-					ItemStack itemStack2 = craftingRecipe.craft(craftingRecipeInput, world.getRegistryManager());
-					if (itemStack2.isItemEnabled(world.getEnabledFeatures())) {
-						itemStack = itemStack2;
-					}
+		CraftingRecipeInput craftingRecipeInput = craftingInventory.createRecipeInput();
+		ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
+		ItemStack itemStack = ItemStack.EMPTY;
+		Optional<RecipeEntry<CraftingRecipe>> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingRecipeInput, world, recipe);
+		if (optional.isPresent()) {
+			RecipeEntry<CraftingRecipe> recipeEntry = (RecipeEntry<CraftingRecipe>)optional.get();
+			CraftingRecipe craftingRecipe = recipeEntry.value();
+			if (resultInventory.shouldCraftRecipe(serverPlayerEntity, recipeEntry)) {
+				ItemStack itemStack2 = craftingRecipe.craft(craftingRecipeInput, world.getRegistryManager());
+				if (itemStack2.isItemEnabled(world.getEnabledFeatures())) {
+					itemStack = itemStack2;
 				}
 			}
-
-			resultInventory.setStack(0, itemStack);
-			handler.setPreviousTrackedSlot(0, itemStack);
-			serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, handler.nextRevision(), 0, itemStack));
 		}
+
+		resultInventory.setStack(0, itemStack);
+		handler.setPreviousTrackedSlot(0, itemStack);
+		serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, handler.nextRevision(), 0, itemStack));
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
 		if (!this.filling) {
-			this.context.run((world, pos) -> updateResult(this, world, this.player, this.craftingInventory, this.craftingResultInventory, null));
+			this.context.run((world, pos) -> {
+				if (world instanceof ServerWorld serverWorld) {
+					updateResult(this, serverWorld, this.player, this.craftingInventory, this.craftingResultInventory, null);
+				}
+			});
 		}
 	}
 
@@ -91,9 +93,9 @@ public class CraftingScreenHandler extends AbstractCraftingScreenHandler {
 	}
 
 	@Override
-	public void onInputSlotFillFinish(RecipeEntry<CraftingRecipe> recipe) {
+	public void onInputSlotFillFinish(ServerWorld world, RecipeEntry<CraftingRecipe> recipe) {
 		this.filling = false;
-		this.context.run((world, pos) -> updateResult(this, world, this.player, this.craftingInventory, this.craftingResultInventory, recipe));
+		updateResult(this, world, this.player, this.craftingInventory, this.craftingResultInventory, recipe);
 	}
 
 	@Override
@@ -170,8 +172,8 @@ public class CraftingScreenHandler extends AbstractCraftingScreenHandler {
 	}
 
 	@Override
-	public RecipeBookCategory getCategory() {
-		return RecipeBookCategory.CRAFTING;
+	public RecipeBookType getCategory() {
+		return RecipeBookType.CRAFTING;
 	}
 
 	@Override

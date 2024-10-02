@@ -4,61 +4,61 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class IngredientPlacement {
-	public static final IngredientPlacement NONE = new IngredientPlacement(List.of(), List.of());
+	public static final IngredientPlacement NONE = new IngredientPlacement(List.of(), List.of(), List.of());
+	private final List<Ingredient> ingredients;
 	private final List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> rawIngredients;
 	private final List<Optional<IngredientPlacement.PlacementSlot>> placementSlots;
 
 	private IngredientPlacement(
-		List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> rawIngredients, List<Optional<IngredientPlacement.PlacementSlot>> placementSlots
+		List<Ingredient> ingredients,
+		List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> rawIngredients,
+		List<Optional<IngredientPlacement.PlacementSlot>> placementSlots
 	) {
+		this.ingredients = ingredients;
 		this.rawIngredients = rawIngredients;
 		this.placementSlots = placementSlots;
 	}
 
-	private static RecipeMatcher.RawIngredient<RegistryEntry<Item>> toRawIngredient(List<ItemStack> stacks) {
-		return RecipeFinder.sort(stacks.stream().map(ItemStack::getRegistryEntry));
-	}
-
-	private static List<ItemStack> getMatchingStacks(Ingredient ingredient) {
-		return ingredient.getMatchingStacks().stream().map(ItemStack::new).toList();
+	public static RecipeMatcher.RawIngredient<RegistryEntry<Item>> sort(Ingredient ingredient) {
+		return RecipeFinder.sort(ingredient.getMatchingStacks().stream());
 	}
 
 	public static IngredientPlacement forSingleSlot(Ingredient ingredient) {
-		List<ItemStack> list = getMatchingStacks(ingredient);
-		if (list.isEmpty()) {
+		if (ingredient.getMatchingStacks().isEmpty()) {
 			return NONE;
 		} else {
-			RecipeMatcher.RawIngredient<RegistryEntry<Item>> rawIngredient = toRawIngredient(list);
-			IngredientPlacement.PlacementSlot placementSlot = new IngredientPlacement.PlacementSlot(list, 0);
-			return new IngredientPlacement(List.of(rawIngredient), List.of(Optional.of(placementSlot)));
+			RecipeMatcher.RawIngredient<RegistryEntry<Item>> rawIngredient = sort(ingredient);
+			IngredientPlacement.PlacementSlot placementSlot = new IngredientPlacement.PlacementSlot(0);
+			return new IngredientPlacement(List.of(ingredient), List.of(rawIngredient), List.of(Optional.of(placementSlot)));
 		}
 	}
 
 	public static IngredientPlacement forMultipleSlots(List<Optional<Ingredient>> ingredients) {
 		int i = ingredients.size();
-		List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> list = new ArrayList(i);
-		List<Optional<IngredientPlacement.PlacementSlot>> list2 = new ArrayList(i);
+		List<Ingredient> list = new ArrayList(i);
+		List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> list2 = new ArrayList(i);
+		List<Optional<IngredientPlacement.PlacementSlot>> list3 = new ArrayList(i);
 		int j = 0;
 
 		for (Optional<Ingredient> optional : ingredients) {
 			if (optional.isPresent()) {
-				List<ItemStack> list3 = getMatchingStacks((Ingredient)optional.get());
-				if (list3.isEmpty()) {
+				Ingredient ingredient = (Ingredient)optional.get();
+				if (ingredient.getMatchingStacks().isEmpty()) {
 					return NONE;
 				}
 
-				list.add(toRawIngredient(list3));
-				list2.add(Optional.of(new IngredientPlacement.PlacementSlot(list3, j++)));
+				list.add(ingredient);
+				list2.add(sort(ingredient));
+				list3.add(Optional.of(new IngredientPlacement.PlacementSlot(j++)));
 			} else {
-				list2.add(Optional.empty());
+				list3.add(Optional.empty());
 			}
 		}
 
-		return new IngredientPlacement(list, list2);
+		return new IngredientPlacement(list, list2, list3);
 	}
 
 	public static IngredientPlacement forShapeless(List<Ingredient> ingredients) {
@@ -68,20 +68,23 @@ public class IngredientPlacement {
 
 		for (int j = 0; j < i; j++) {
 			Ingredient ingredient = (Ingredient)ingredients.get(j);
-			List<ItemStack> list3 = getMatchingStacks(ingredient);
-			if (list3.isEmpty()) {
+			if (ingredient.getMatchingStacks().isEmpty()) {
 				return NONE;
 			}
 
-			list.add(toRawIngredient(list3));
-			list2.add(Optional.of(new IngredientPlacement.PlacementSlot(list3, j)));
+			list.add(sort(ingredient));
+			list2.add(Optional.of(new IngredientPlacement.PlacementSlot(j)));
 		}
 
-		return new IngredientPlacement(list, list2);
+		return new IngredientPlacement(ingredients, list, list2);
 	}
 
 	public List<Optional<IngredientPlacement.PlacementSlot>> getPlacementSlots() {
 		return this.placementSlots;
+	}
+
+	public List<Ingredient> getIngredients() {
+		return this.ingredients;
 	}
 
 	public List<RecipeMatcher.RawIngredient<RegistryEntry<Item>>> getRawIngredients() {
@@ -92,14 +95,6 @@ public class IngredientPlacement {
 		return this.placementSlots.isEmpty();
 	}
 
-	public static record PlacementSlot(List<ItemStack> possibleItems, int placerOutputPosition) {
-		public PlacementSlot(List<ItemStack> possibleItems, int placerOutputPosition) {
-			if (possibleItems.isEmpty()) {
-				throw new IllegalArgumentException("Possible items list must be not empty");
-			} else {
-				this.possibleItems = possibleItems;
-				this.placerOutputPosition = placerOutputPosition;
-			}
-		}
+	public static record PlacementSlot(int placerOutputPosition) {
 	}
 }

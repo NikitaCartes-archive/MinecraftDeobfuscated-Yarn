@@ -29,6 +29,7 @@ import net.minecraft.recipe.FireworkStarRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.MapCloningRecipe;
 import net.minecraft.recipe.MapExtendingRecipe;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RepairItemRecipe;
 import net.minecraft.recipe.ShieldDecorationRecipe;
@@ -36,6 +37,8 @@ import net.minecraft.recipe.SmokingRecipe;
 import net.minecraft.recipe.TippedArrowRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -2795,7 +2798,11 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 				Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE,
 				Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE
 			)
-			.map(template -> new VanillaRecipeGenerator.SmithingTemplate(template, Identifier.ofVanilla(getItemPath(template) + "_smithing_trim")));
+			.map(
+				template -> new VanillaRecipeGenerator.SmithingTemplate(
+						template, RegistryKey.of(RegistryKeys.RECIPE, Identifier.ofVanilla(getItemPath(template) + "_smithing_trim"))
+					)
+			);
 	}
 
 	private void generateDyedShulkerBoxes() {
@@ -2815,9 +2822,10 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 		Ingredient ingredient = this.ingredientFromTag(ItemTags.BUNDLES);
 
 		for (DyeColor dyeColor : DyeColor.values()) {
-			TransmuteRecipeJsonBuilder.create(RecipeCategory.TOOLS, ingredient, Ingredient.ofItem(DyeItem.byColor(dyeColor)), BundleItem.getBundle(dyeColor))
+			DyeItem dyeItem = DyeItem.byColor(dyeColor);
+			TransmuteRecipeJsonBuilder.create(RecipeCategory.TOOLS, ingredient, Ingredient.ofItem(dyeItem), BundleItem.getBundle(dyeColor))
 				.group("bundle_dye")
-				.criterion("has_bundle", this.conditionsFromTag(ItemTags.BUNDLES))
+				.criterion(hasItem(dyeItem), this.conditionsFromItem(dyeItem))
 				.offerTo(this.exporter);
 		}
 	}
@@ -2838,6 +2846,6 @@ public class VanillaRecipeGenerator extends RecipeGenerator {
 		}
 	}
 
-	public static record SmithingTemplate(Item template, Identifier id) {
+	public static record SmithingTemplate(Item template, RegistryKey<Recipe<?>> id) {
 	}
 }

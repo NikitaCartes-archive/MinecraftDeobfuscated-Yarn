@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.realms.RealmsObjectSelectionList;
+import net.minecraft.client.gui.widget.EntryListWidget;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsAcceptRejectButton {
@@ -40,9 +40,7 @@ public abstract class RealmsAcceptRejectButton {
 
 	public abstract void handleClick(int index);
 
-	public static void render(
-		DrawContext context, List<RealmsAcceptRejectButton> buttons, RealmsObjectSelectionList<?> selectionList, int x, int y, int mouseX, int mouseY
-	) {
+	public static void render(DrawContext context, List<RealmsAcceptRejectButton> buttons, EntryListWidget<?> selectionList, int x, int y, int mouseX, int mouseY) {
 		for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
 			if (selectionList.getRowWidth() > realmsAcceptRejectButton.getRight()) {
 				realmsAcceptRejectButton.render(context, x, y, mouseX, mouseY);
@@ -51,7 +49,7 @@ public abstract class RealmsAcceptRejectButton {
 	}
 
 	public static void handleClick(
-		RealmsObjectSelectionList<?> selectionList,
+		EntryListWidget<?> selectionList,
 		AlwaysSelectedEntryListWidget.Entry<?> entry,
 		List<RealmsAcceptRejectButton> buttons,
 		int button,

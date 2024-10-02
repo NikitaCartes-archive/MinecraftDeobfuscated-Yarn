@@ -19,11 +19,11 @@ import net.minecraft.world.tick.ScheduledTickView;
 public class HeavyCoreBlock extends Block implements Waterloggable {
 	public static final MapCodec<HeavyCoreBlock> CODEC = createCodec(HeavyCoreBlock::new);
 	private static final VoxelShape OUTLINE_SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
-	public static final BooleanProperty field_52631 = Properties.WATERLOGGED;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
 	public HeavyCoreBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(field_52631, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class HeavyCoreBlock extends Block implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(field_52631);
+		builder.add(WATERLOGGED);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class HeavyCoreBlock extends Block implements Waterloggable {
 		BlockState neighborState,
 		Random random
 	) {
-		if ((Boolean)state.get(field_52631)) {
+		if ((Boolean)state.get(WATERLOGGED)) {
 			tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
@@ -56,13 +56,13 @@ public class HeavyCoreBlock extends Block implements Waterloggable {
 
 	@Override
 	protected FluidState getFluidState(BlockState state) {
-		return state.get(field_52631) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return this.getDefaultState().with(field_52631, Boolean.valueOf(fluidState.isOf(Fluids.WATER)));
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.isOf(Fluids.WATER)));
 	}
 
 	@Override

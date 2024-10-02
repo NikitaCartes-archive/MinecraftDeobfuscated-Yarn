@@ -85,6 +85,8 @@ public class RealmsWorldCreating {
 						} else {
 							client.setScreenAndRender(parent);
 						}
+
+						RealmsMainScreen.resetServerList();
 					}
 
 					return null;

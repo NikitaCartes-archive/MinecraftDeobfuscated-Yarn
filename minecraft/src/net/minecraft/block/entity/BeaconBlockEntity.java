@@ -301,7 +301,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			this.customName = tryParseCustomName(nbt.getString("CustomName"), registries);
 		}
 
-		this.lock = ContainerLock.fromNbt(nbt);
+		this.lock = ContainerLock.fromNbt(nbt, registries);
 	}
 
 	@Override
@@ -314,7 +314,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			nbt.putString("CustomName", Text.Serialization.toJsonString(this.customName, registries));
 		}
 
-		this.lock.writeNbt(nbt);
+		this.lock.writeNbt(nbt, registries);
 	}
 
 	public void setCustomName(@Nullable Text customName) {

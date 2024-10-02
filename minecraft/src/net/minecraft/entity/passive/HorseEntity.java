@@ -202,6 +202,11 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 		return true;
 	}
 
+	@Override
+	protected void damageArmor(DamageSource source, float amount) {
+		this.damageEquipment(source, amount, new EquipmentSlot[]{EquipmentSlot.BODY});
+	}
+
 	@Nullable
 	@Override
 	public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {

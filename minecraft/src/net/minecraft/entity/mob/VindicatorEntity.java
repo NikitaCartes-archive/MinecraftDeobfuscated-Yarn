@@ -13,6 +13,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -56,10 +57,11 @@ public class VindicatorEntity extends IllagerEntity {
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new VindicatorEntity.BreakDoorGoal(this));
-		this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this));
-		this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
-		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
+		this.goalSelector.add(1, new FleeEntityGoal(this, CreakingEntity.class, 8.0F, 1.0, 1.2));
+		this.goalSelector.add(2, new VindicatorEntity.BreakDoorGoal(this));
+		this.goalSelector.add(3, new IllagerEntity.LongDoorInteractGoal(this));
+		this.goalSelector.add(4, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
+		this.goalSelector.add(5, new MeleeAttackGoal(this, 1.0, false));
 		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, MerchantEntity.class, true));

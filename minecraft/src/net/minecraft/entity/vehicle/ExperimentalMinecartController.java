@@ -283,6 +283,7 @@ public class ExperimentalMinecartController extends MinecartController {
 
 			if (d > 1.0E-5F || moveIteration.initial) {
 				this.minecart.tickBlockCollision();
+				this.minecart.tickBlockCollision();
 			}
 		}
 	}

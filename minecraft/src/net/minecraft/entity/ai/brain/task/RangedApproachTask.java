@@ -29,9 +29,9 @@ public class RangedApproachTask {
 						(walkTarget, lookTarget, attackTarget, visibleMobs) -> (world, entity, time) -> {
 								LivingEntity livingEntity = context.getValue(attackTarget);
 								Optional<LivingTargetCache> optional = context.getOptionalValue(visibleMobs);
-								if (optional.isPresent()
-									&& ((LivingTargetCache)optional.get()).contains(livingEntity)
-									&& LookTargetUtil.isTargetWithinAttackRange(entity, livingEntity, 1)) {
+								if (optional.isPresent() && ((LivingTargetCache)optional.get()).contains(livingEntity) && TargetUtil.isTargetWithinAttackRange(entity, livingEntity, 1)
+									)
+								 {
 									walkTarget.forget();
 								} else {
 									lookTarget.remember(new EntityLookTarget(livingEntity, true));

@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.CrossbowAttackGoal;
+import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -62,6 +63,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector.add(1, new FleeEntityGoal(this, CreakingEntity.class, 8.0F, 1.0, 1.2));
 		this.goalSelector.add(2, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
 		this.goalSelector.add(3, new CrossbowAttackGoal<>(this, 1.0, 8.0F));
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));

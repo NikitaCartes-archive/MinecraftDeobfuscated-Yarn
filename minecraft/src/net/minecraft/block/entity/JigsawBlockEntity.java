@@ -1,7 +1,5 @@
 package net.minecraft.block.entity;
 
-import java.util.Arrays;
-import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.enums.Orientation;
@@ -13,6 +11,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.text.Text;
@@ -115,8 +114,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		this.target = Identifier.of(nbt.getString("target"));
 		this.pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL, Identifier.of(nbt.getString("pool")));
 		this.finalState = nbt.getString("final_state");
-		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(nbt.getString("joint"))
-			.orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
+		this.joint = StructureTemplate.readJoint(nbt, this.getCachedState());
 		this.placementPriority = nbt.getInt("placement_priority");
 		this.selectionPriority = nbt.getInt("selection_priority");
 	}
@@ -141,6 +139,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		ROLLABLE("rollable"),
 		ALIGNED("aligned");
 
+		public static final StringIdentifiable.EnumCodec<JigsawBlockEntity.Joint> CODEC = StringIdentifiable.createCodec(JigsawBlockEntity.Joint::values);
 		private final String name;
 
 		private Joint(final String name) {
@@ -150,10 +149,6 @@ public class JigsawBlockEntity extends BlockEntity {
 		@Override
 		public String asString() {
 			return this.name;
-		}
-
-		public static Optional<JigsawBlockEntity.Joint> byName(String name) {
-			return Arrays.stream(values()).filter(joint -> joint.asString().equals(name)).findFirst();
 		}
 
 		public Text asText() {

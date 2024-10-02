@@ -9,28 +9,20 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
-import net.minecraft.util.math.Vec3d;
 
-public record PlayerPositionLookS2CPacket(int teleportId, Vec3d position, Vec3d deltaMovement, float yaw, float pitch, Set<PositionFlag> flags)
-	implements Packet<ClientPlayPacketListener> {
+public record PlayerPositionLookS2CPacket(int teleportId, PlayerPosition change, Set<PositionFlag> relatives) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<PacketByteBuf, PlayerPositionLookS2CPacket> CODEC = PacketCodec.tuple(
 		PacketCodecs.VAR_INT,
 		PlayerPositionLookS2CPacket::teleportId,
-		Vec3d.PACKET_CODEC,
-		PlayerPositionLookS2CPacket::position,
-		Vec3d.PACKET_CODEC,
-		PlayerPositionLookS2CPacket::deltaMovement,
-		PacketCodecs.FLOAT,
-		PlayerPositionLookS2CPacket::yaw,
-		PacketCodecs.FLOAT,
-		PlayerPositionLookS2CPacket::pitch,
+		PlayerPosition.PACKET_CODEC,
+		PlayerPositionLookS2CPacket::change,
 		PositionFlag.PACKET_CODEC,
-		PlayerPositionLookS2CPacket::flags,
+		PlayerPositionLookS2CPacket::relatives,
 		PlayerPositionLookS2CPacket::new
 	);
 
 	public static PlayerPositionLookS2CPacket of(int teleportId, PlayerPosition pos, Set<PositionFlag> flags) {
-		return new PlayerPositionLookS2CPacket(teleportId, pos.position(), pos.deltaMovement(), pos.yaw(), pos.pitch(), flags);
+		return new PlayerPositionLookS2CPacket(teleportId, pos, flags);
 	}
 
 	@Override
