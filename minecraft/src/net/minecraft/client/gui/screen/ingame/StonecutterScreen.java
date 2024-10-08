@@ -10,10 +10,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.recipe.display.CuttingRecipeDisplay;
 import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -79,9 +81,9 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 				int n = i + m % 4 * 16;
 				int o = j + m / 4 * 18 + 2;
 				if (x >= n && x < n + 16 && y >= o && y < o + 18) {
-					SlotDisplay.Context context = SlotDisplay.Context.create(this.client.world);
+					ContextParameterMap contextParameterMap = SlotDisplayContexts.createParameters(this.client.world);
 					SlotDisplay slotDisplay = ((CuttingRecipeDisplay.GroupEntry)grouping.entries().get(l)).recipe().optionDisplay();
-					drawContext.drawItemTooltip(this.textRenderer, slotDisplay.getFirst(context), x, y);
+					drawContext.drawItemTooltip(this.textRenderer, slotDisplay.getFirst(contextParameterMap), x, y);
 				}
 			}
 		}
@@ -108,7 +110,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 
 	private void renderRecipeIcons(DrawContext context, int x, int y, int scrollOffset) {
 		CuttingRecipeDisplay.Grouping<StonecuttingRecipe> grouping = this.handler.getAvailableRecipes();
-		SlotDisplay.Context context2 = SlotDisplay.Context.create(this.client.world);
+		ContextParameterMap contextParameterMap = SlotDisplayContexts.createParameters(this.client.world);
 
 		for (int i = this.scrollOffset; i < scrollOffset && i < grouping.size(); i++) {
 			int j = i - this.scrollOffset;
@@ -116,7 +118,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 			int l = j / 4;
 			int m = y + l * 18 + 2;
 			SlotDisplay slotDisplay = ((CuttingRecipeDisplay.GroupEntry)grouping.entries().get(i)).recipe().optionDisplay();
-			context.drawItem(slotDisplay.getFirst(context2), k, m);
+			context.drawItem(slotDisplay.getFirst(contextParameterMap), k, m);
 		}
 	}
 

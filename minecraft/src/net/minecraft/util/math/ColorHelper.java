@@ -1,6 +1,7 @@
 package net.minecraft.util.math;
 
 import net.minecraft.util.Colors;
+import org.joml.Vector3f;
 
 /**
  * Contains color-related helper methods that mostly use ARGB colors represented as {@code 0xAARRGGBB}.
@@ -128,6 +129,13 @@ public class ColorHelper {
 
 	public static int fromFloats(float alpha, float red, float green, float blue) {
 		return getArgb(channelFromFloat(alpha), channelFromFloat(red), channelFromFloat(green), channelFromFloat(blue));
+	}
+
+	public static Vector3f toVector(int rgb) {
+		float f = (float)getRed(rgb) / 255.0F;
+		float g = (float)getGreen(rgb) / 255.0F;
+		float h = (float)getBlue(rgb) / 255.0F;
+		return new Vector3f(f, g, h);
 	}
 
 	public static int average(int first, int second) {

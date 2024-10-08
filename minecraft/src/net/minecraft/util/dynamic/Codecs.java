@@ -107,7 +107,7 @@ public class Codecs {
 				.apply(instance, AxisAngle4f::new)
 	);
 	public static final Codec<Quaternionf> ROTATION = Codec.withAlternative(QUATERNION_F, AXIS_ANGLE_4F.xmap(Quaternionf::new, AxisAngle4f::new));
-	public static Codec<Matrix4f> MATRIX_4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.decodeFixedLengthList(list, 16).map(listx -> {
+	public static final Codec<Matrix4f> MATRIX_4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.decodeFixedLengthList(list, 16).map(listx -> {
 			Matrix4f matrix4f = new Matrix4f();
 
 			for (int i = 0; i < listx.size(); i++) {
@@ -217,7 +217,7 @@ public class Codecs {
 		int[] is = string.codePoints().toArray();
 		return is.length != 1 ? DataResult.error(() -> "Expected one codepoint, got: " + string) : DataResult.success(is[0]);
 	}, Character::toString);
-	public static Codec<String> IDENTIFIER_PATH = Codec.STRING
+	public static final Codec<String> IDENTIFIER_PATH = Codec.STRING
 		.validate(
 			path -> !Identifier.isPathValid(path) ? DataResult.error(() -> "Invalid string to use as a resource path element: " + path) : DataResult.success(path)
 		);

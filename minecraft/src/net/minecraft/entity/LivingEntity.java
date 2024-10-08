@@ -79,9 +79,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.consume.UseAction;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -1531,7 +1531,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		Optional<RegistryKey<LootTable>> optional = this.getLootTableKey();
 		if (!optional.isEmpty()) {
 			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)optional.get());
-			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+			LootWorldContext.Builder builder = new LootWorldContext.Builder(world)
 				.add(LootContextParameters.THIS_ENTITY, this)
 				.add(LootContextParameters.ORIGIN, this.getPos())
 				.add(LootContextParameters.DAMAGE_SOURCE, damageSource)
@@ -1541,8 +1541,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).luck(this.attackingPlayer.getLuck());
 			}
 
-			LootContextParameterSet lootContextParameterSet = builder.build(LootContextTypes.ENTITY);
-			lootTable.generateLoot(lootContextParameterSet, this.getLootTableSeed(), stack -> this.dropStack(world, stack));
+			LootWorldContext lootWorldContext = builder.build(LootContextTypes.ENTITY);
+			lootTable.generateLoot(lootWorldContext, this.getLootTableSeed(), stack -> this.dropStack(world, stack));
 		}
 	}
 
@@ -1572,12 +1572,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected boolean forEachGeneratedItem(
 		ServerWorld world,
 		RegistryKey<LootTable> lootTableKey,
-		Function<LootContextParameterSet.Builder, LootContextParameterSet> lootContextParametersFactory,
+		Function<LootWorldContext.Builder, LootWorldContext> lootContextParametersFactory,
 		BiConsumer<ServerWorld, ItemStack> lootConsumer
 	) {
 		LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(lootTableKey);
-		LootContextParameterSet lootContextParameterSet = (LootContextParameterSet)lootContextParametersFactory.apply(new LootContextParameterSet.Builder(world));
-		List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
+		LootWorldContext lootWorldContext = (LootWorldContext)lootContextParametersFactory.apply(new LootWorldContext.Builder(world));
+		List<ItemStack> list = lootTable.generateLoot(lootWorldContext);
 		if (!list.isEmpty()) {
 			list.forEach(stack -> lootConsumer.accept(world, stack));
 			return true;

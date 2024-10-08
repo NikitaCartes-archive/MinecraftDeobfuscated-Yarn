@@ -1599,6 +1599,9 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	public void onRecipeBookAdd(RecipeBookAddS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
+		if (packet.replace()) {
+			clientRecipeBook.clear();
+		}
 
 		for (RecipeBookAddS2CPacket.Entry entry : packet.entries()) {
 			clientRecipeBook.add(entry.contents());

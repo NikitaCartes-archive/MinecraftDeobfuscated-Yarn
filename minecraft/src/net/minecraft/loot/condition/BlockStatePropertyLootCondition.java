@@ -8,11 +8,11 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.context.ContextParameter;
 
 public record BlockStatePropertyLootCondition(RegistryEntry<Block> block, Optional<StatePredicate> properties) implements LootCondition {
 	public static final MapCodec<BlockStatePropertyLootCondition> CODEC = RecordCodecBuilder.<BlockStatePropertyLootCondition>mapCodec(
@@ -37,7 +37,7 @@ public record BlockStatePropertyLootCondition(RegistryEntry<Block> block, Option
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getAllowedParameters() {
 		return Set.of(LootContextParameters.BLOCK_STATE);
 	}
 

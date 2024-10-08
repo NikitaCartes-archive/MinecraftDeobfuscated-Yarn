@@ -4,7 +4,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 
 public class CampfireCookingRecipe extends AbstractCookingRecipe {
 	public CampfireCookingRecipe(String string, CookingRecipeCategory cookingRecipeCategory, Ingredient ingredient, ItemStack itemStack, float f, int i) {
@@ -27,7 +28,7 @@ public class CampfireCookingRecipe extends AbstractCookingRecipe {
 	}
 
 	@Override
-	public RecipeBookGroup getRecipeBookTab() {
-		return RecipeBookGroup.CAMPFIRE;
+	public RecipeBookCategory getRecipeBookTab() {
+		return RecipeBookCategories.CAMPFIRE;
 	}
 }

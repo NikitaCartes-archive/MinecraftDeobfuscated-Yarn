@@ -7,31 +7,30 @@ import com.mojang.serialization.DataResult;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextType;
 
 public class LootContextTypes {
-	private static final BiMap<Identifier, LootContextType> MAP = HashBiMap.create();
-	public static final Codec<LootContextType> CODEC = Identifier.CODEC
+	private static final BiMap<Identifier, ContextType> MAP = HashBiMap.create();
+	public static final Codec<ContextType> CODEC = Identifier.CODEC
 		.comapFlatMap(
-			id -> (DataResult)Optional.ofNullable((LootContextType)MAP.get(id))
+			id -> (DataResult)Optional.ofNullable((ContextType)MAP.get(id))
 					.map(DataResult::success)
 					.orElseGet(() -> DataResult.error(() -> "No parameter set exists with id: '" + id + "'")),
 			MAP.inverse()::get
 		);
-	public static final LootContextType EMPTY = register("empty", builder -> {
+	public static final ContextType EMPTY = register("empty", builder -> {
 	});
-	public static final LootContextType CHEST = register(
-		"chest", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
-	);
-	public static final LootContextType COMMAND = register(
+	public static final ContextType CHEST = register("chest", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY));
+	public static final ContextType COMMAND = register(
 		"command", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
 	);
-	public static final LootContextType SELECTOR = register(
+	public static final ContextType SELECTOR = register(
 		"selector", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY)
 	);
-	public static final LootContextType FISHING = register(
+	public static final ContextType FISHING = register(
 		"fishing", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.TOOL).allow(LootContextParameters.THIS_ENTITY)
 	);
-	public static final LootContextType ENTITY = register(
+	public static final ContextType ENTITY = register(
 		"entity",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.ORIGIN)
@@ -40,36 +39,34 @@ public class LootContextTypes {
 				.allow(LootContextParameters.DIRECT_ATTACKING_ENTITY)
 				.allow(LootContextParameters.LAST_DAMAGE_PLAYER)
 	);
-	public static final LootContextType EQUIPMENT = register(
+	public static final ContextType EQUIPMENT = register(
 		"equipment", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY)
 	);
-	public static final LootContextType ARCHAEOLOGY = register(
+	public static final ContextType ARCHAEOLOGY = register(
 		"archaeology", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.TOOL)
 	);
-	public static final LootContextType GIFT = register(
-		"gift", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY)
-	);
-	public static final LootContextType BARTER = register("barter", builder -> builder.require(LootContextParameters.THIS_ENTITY));
-	public static final LootContextType VAULT = register(
+	public static final ContextType GIFT = register("gift", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY));
+	public static final ContextType BARTER = register("barter", builder -> builder.require(LootContextParameters.THIS_ENTITY));
+	public static final ContextType VAULT = register(
 		"vault", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY).allow(LootContextParameters.TOOL)
 	);
-	public static final LootContextType ADVANCEMENT_REWARD = register(
+	public static final ContextType ADVANCEMENT_REWARD = register(
 		"advancement_reward", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
 	);
-	public static final LootContextType ADVANCEMENT_ENTITY = register(
+	public static final ContextType ADVANCEMENT_ENTITY = register(
 		"advancement_entity", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN)
 	);
-	public static final LootContextType ADVANCEMENT_LOCATION = register(
+	public static final ContextType ADVANCEMENT_LOCATION = register(
 		"advancement_location",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.ORIGIN)
 				.require(LootContextParameters.TOOL)
 				.require(LootContextParameters.BLOCK_STATE)
 	);
-	public static final LootContextType BLOCK_USE = register(
+	public static final ContextType BLOCK_USE = register(
 		"block_use", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN).require(LootContextParameters.BLOCK_STATE)
 	);
-	public static final LootContextType GENERIC = register(
+	public static final ContextType GENERIC = register(
 		"generic",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.LAST_DAMAGE_PLAYER)
@@ -82,7 +79,7 @@ public class LootContextTypes {
 				.require(LootContextParameters.TOOL)
 				.require(LootContextParameters.EXPLOSION_RADIUS)
 	);
-	public static final LootContextType BLOCK = register(
+	public static final ContextType BLOCK = register(
 		"block",
 		builder -> builder.require(LootContextParameters.BLOCK_STATE)
 				.require(LootContextParameters.ORIGIN)
@@ -91,10 +88,10 @@ public class LootContextTypes {
 				.allow(LootContextParameters.BLOCK_ENTITY)
 				.allow(LootContextParameters.EXPLOSION_RADIUS)
 	);
-	public static final LootContextType SHEARING = register(
+	public static final ContextType SHEARING = register(
 		"shearing", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.TOOL)
 	);
-	public static final LootContextType ENCHANTED_DAMAGE = register(
+	public static final ContextType ENCHANTED_DAMAGE = register(
 		"enchanted_damage",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.ENCHANTMENT_LEVEL)
@@ -103,21 +100,21 @@ public class LootContextTypes {
 				.allow(LootContextParameters.DIRECT_ATTACKING_ENTITY)
 				.allow(LootContextParameters.ATTACKING_ENTITY)
 	);
-	public static final LootContextType ENCHANTED_ITEM = register(
+	public static final ContextType ENCHANTED_ITEM = register(
 		"enchanted_item", builder -> builder.require(LootContextParameters.TOOL).require(LootContextParameters.ENCHANTMENT_LEVEL)
 	);
-	public static final LootContextType ENCHANTED_LOCATION = register(
+	public static final ContextType ENCHANTED_LOCATION = register(
 		"enchanted_location",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.ENCHANTMENT_LEVEL)
 				.require(LootContextParameters.ORIGIN)
 				.require(LootContextParameters.ENCHANTMENT_ACTIVE)
 	);
-	public static final LootContextType ENCHANTED_ENTITY = register(
+	public static final ContextType ENCHANTED_ENTITY = register(
 		"enchanted_entity",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ENCHANTMENT_LEVEL).require(LootContextParameters.ORIGIN)
 	);
-	public static final LootContextType HIT_BLOCK = register(
+	public static final ContextType HIT_BLOCK = register(
 		"hit_block",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)
 				.require(LootContextParameters.ENCHANTMENT_LEVEL)
@@ -125,16 +122,16 @@ public class LootContextTypes {
 				.require(LootContextParameters.BLOCK_STATE)
 	);
 
-	private static LootContextType register(String name, Consumer<LootContextType.Builder> type) {
-		LootContextType.Builder builder = new LootContextType.Builder();
+	private static ContextType register(String name, Consumer<ContextType.Builder> type) {
+		ContextType.Builder builder = new ContextType.Builder();
 		type.accept(builder);
-		LootContextType lootContextType = builder.build();
+		ContextType contextType = builder.build();
 		Identifier identifier = Identifier.ofVanilla(name);
-		LootContextType lootContextType2 = MAP.put(identifier, lootContextType);
-		if (lootContextType2 != null) {
+		ContextType contextType2 = MAP.put(identifier, contextType);
+		if (contextType2 != null) {
 			throw new IllegalStateException("Loot table parameter set " + identifier + " is already registered");
 		} else {
-			return lootContextType;
+			return contextType;
 		}
 	}
 }

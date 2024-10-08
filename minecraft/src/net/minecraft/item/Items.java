@@ -397,7 +397,11 @@ public class Items {
 	public static final Item WARPED_FENCE = register(Blocks.WARPED_FENCE);
 	public static final Item PUMPKIN = register(Blocks.PUMPKIN);
 	public static final Item CARVED_PUMPKIN = register(
-		Blocks.CARVED_PUMPKIN, (UnaryOperator<Item.Settings>)(settings -> settings.equippableUnswappable(EquipmentSlot.HEAD))
+		Blocks.CARVED_PUMPKIN,
+		(UnaryOperator<Item.Settings>)(settings -> settings.component(
+				DataComponentTypes.EQUIPPABLE,
+				EquippableComponent.builder(EquipmentSlot.HEAD).swappable(false).cameraOverlay(Identifier.ofVanilla("misc/pumpkinblur")).build()
+			))
 	);
 	public static final Item JACK_O_LANTERN = register(Blocks.JACK_O_LANTERN);
 	public static final Item NETHERRACK = register(Blocks.NETHERRACK);

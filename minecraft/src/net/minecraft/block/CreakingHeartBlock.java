@@ -65,17 +65,8 @@ public class CreakingHeartBlock extends BlockWithEntity {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (isWorldNaturalAndNight(world)) {
 			if (state.get(CREAKING) != CreakingHeartBlock.Creaking.DISABLED) {
-				if (random.nextInt(16) == 0 && isSurroundedByLogs(world, pos)) {
-					world.playSound(
-						(double)(pos.getX() + world.random.nextBetween(-16, 16)),
-						(double)(pos.getY() + world.random.nextBetween(-14, 2)),
-						(double)(pos.getZ() + world.random.nextBetween(-16, 16)),
-						SoundEvents.BLOCK_CREAKING_HEART_IDLE,
-						SoundCategory.BLOCKS,
-						1.0F,
-						1.0F,
-						false
-					);
+				if (random.nextInt(16) == 0 && isSurroundedByPaleOakLogs(world, pos)) {
+					world.playSound((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), SoundEvents.BLOCK_CREAKING_HEART_IDLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 				}
 			}
 		}
@@ -115,11 +106,11 @@ public class CreakingHeartBlock extends BlockWithEntity {
 		return true;
 	}
 
-	private static boolean isSurroundedByLogs(WorldAccess world, BlockPos pos) {
+	private static boolean isSurroundedByPaleOakLogs(WorldAccess world, BlockPos pos) {
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
-			if (!blockState.isIn(BlockTags.LOGS)) {
+			if (!blockState.isIn(BlockTags.PALE_OAK_LOGS)) {
 				return false;
 			}
 		}
@@ -164,6 +155,20 @@ public class CreakingHeartBlock extends BlockWithEntity {
 		}
 
 		return super.onBreak(world, pos, state, player);
+	}
+
+	@Override
+	protected boolean hasComparatorOutput(BlockState state) {
+		return true;
+	}
+
+	@Override
+	protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		if (state.get(CREAKING) != CreakingHeartBlock.Creaking.ACTIVE) {
+			return 0;
+		} else {
+			return world.getBlockEntity(pos) instanceof CreakingHeartBlockEntity creakingHeartBlockEntity ? creakingHeartBlockEntity.getComparatorOutput() : 0;
+		}
 	}
 
 	public static enum Creaking implements StringIdentifiable {

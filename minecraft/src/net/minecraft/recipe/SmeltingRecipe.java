@@ -4,7 +4,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CookingRecipeCategory;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 
 public class SmeltingRecipe extends AbstractCookingRecipe {
 	public SmeltingRecipe(String string, CookingRecipeCategory cookingRecipeCategory, Ingredient ingredient, ItemStack itemStack, float f, int i) {
@@ -27,11 +28,11 @@ public class SmeltingRecipe extends AbstractCookingRecipe {
 	}
 
 	@Override
-	public RecipeBookGroup getRecipeBookTab() {
+	public RecipeBookCategory getRecipeBookTab() {
 		return switch (this.getCategory()) {
-			case BLOCKS -> RecipeBookGroup.FURNACE_BLOCKS;
-			case FOOD -> RecipeBookGroup.FURNACE_FOOD;
-			case MISC -> RecipeBookGroup.FURNACE_MISC;
+			case BLOCKS -> RecipeBookCategories.FURNACE_BLOCKS;
+			case FOOD -> RecipeBookCategories.FURNACE_FOOD;
+			case MISC -> RecipeBookCategories.FURNACE_MISC;
 		};
 	}
 }

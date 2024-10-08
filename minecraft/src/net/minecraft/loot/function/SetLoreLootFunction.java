@@ -13,10 +13,10 @@ import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.collection.ListOperation;
+import net.minecraft.util.context.ContextParameter;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetLoreLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -47,8 +47,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return (Set<LootContextParameter<?>>)this.entity.map(entity -> Set.of(entity.getParameter())).orElseGet(Set::of);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return (Set<ContextParameter<?>>)this.entity.map(entity -> Set.of(entity.getParameter())).orElseGet(Set::of);
 	}
 
 	@Override

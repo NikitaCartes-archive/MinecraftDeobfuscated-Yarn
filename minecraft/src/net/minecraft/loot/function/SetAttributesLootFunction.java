@@ -18,12 +18,12 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 
@@ -53,10 +53,10 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return (Set<LootContextParameter<?>>)this.attributes
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return (Set<ContextParameter<?>>)this.attributes
 			.stream()
-			.flatMap(attribute -> attribute.amount.getRequiredParameters().stream())
+			.flatMap(attribute -> attribute.amount.getAllowedParameters().stream())
 			.collect(ImmutableSet.toImmutableSet());
 	}
 

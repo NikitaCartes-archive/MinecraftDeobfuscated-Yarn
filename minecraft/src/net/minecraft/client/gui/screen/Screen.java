@@ -50,7 +50,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
-import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.lwjgl.glfw.GLFW;
@@ -462,15 +461,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.refreshWidgetPositions();
 	}
 
-	public static void wrapScreenError(Runnable task, String errorTitle, String screenName) {
-		try {
-			task.run();
-		} catch (Throwable var6) {
-			CrashReport crashReport = CrashReport.create(var6, errorTitle);
-			CrashReportSection crashReportSection = crashReport.addElement("Affected screen");
-			crashReportSection.add("Screen name", (CrashCallable<String>)(() -> screenName));
-			throw new CrashException(crashReport);
-		}
+	public void addCrashReportSection(CrashReport report) {
+		CrashReportSection crashReportSection = report.addElement("Affected screen", 1);
+		crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.getClass().getCanonicalName()));
 	}
 
 	protected boolean isValidCharacterForName(String name, char character, int cursorPos) {

@@ -3,23 +3,29 @@ package net.minecraft.client.recipebook;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.recipe.book.RecipeBookCategories;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
 
 @Environment(EnvType.CLIENT)
-public enum RecipeBookType implements RecipeBookCategory {
-	CRAFTING(RecipeBookGroup.CRAFTING_EQUIPMENT, RecipeBookGroup.CRAFTING_BUILDING_BLOCKS, RecipeBookGroup.CRAFTING_MISC, RecipeBookGroup.CRAFTING_REDSTONE),
-	FURNACE(RecipeBookGroup.FURNACE_FOOD, RecipeBookGroup.FURNACE_BLOCKS, RecipeBookGroup.FURNACE_MISC),
-	BLAST_FURNACE(RecipeBookGroup.BLAST_FURNACE_BLOCKS, RecipeBookGroup.BLAST_FURNACE_MISC),
-	SMOKER(RecipeBookGroup.SMOKER_FOOD);
+public enum RecipeBookType implements RecipeBookGroup {
+	CRAFTING(
+		RecipeBookCategories.CRAFTING_EQUIPMENT,
+		RecipeBookCategories.CRAFTING_BUILDING_BLOCKS,
+		RecipeBookCategories.CRAFTING_MISC,
+		RecipeBookCategories.CRAFTING_REDSTONE
+	),
+	FURNACE(RecipeBookCategories.FURNACE_FOOD, RecipeBookCategories.FURNACE_BLOCKS, RecipeBookCategories.FURNACE_MISC),
+	BLAST_FURNACE(RecipeBookCategories.BLAST_FURNACE_BLOCKS, RecipeBookCategories.BLAST_FURNACE_MISC),
+	SMOKER(RecipeBookCategories.SMOKER_FOOD);
 
-	private final List<RecipeBookGroup> groups;
+	private final List<RecipeBookCategory> categories;
 
-	private RecipeBookType(final RecipeBookGroup... groups) {
-		this.groups = List.of(groups);
+	private RecipeBookType(final RecipeBookCategory... categories) {
+		this.categories = List.of(categories);
 	}
 
-	public List<RecipeBookGroup> getGroups() {
-		return this.groups;
+	public List<RecipeBookCategory> getCategories() {
+		return this.categories;
 	}
 }

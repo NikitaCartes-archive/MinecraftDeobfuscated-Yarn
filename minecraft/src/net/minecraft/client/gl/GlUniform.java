@@ -5,6 +5,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.joml.Matrix3f;
@@ -64,6 +66,29 @@ public class GlUniform extends Uniform implements AutoCloseable {
 
 	public static void uniform1(int location, int value) {
 		RenderSystem.glUniform1i(location, value);
+	}
+
+	public void set(ShaderProgramDefinition.Uniform uniform) {
+		this.set(uniform.values(), uniform.count());
+	}
+
+	public void set(List<Float> values, int count) {
+		float[] fs = new float[Math.max(count, 16)];
+		if (values.size() == 1) {
+			Arrays.fill(fs, (Float)values.getFirst());
+		} else {
+			for (int i = 0; i < values.size(); i++) {
+				fs[i] = (Float)values.get(i);
+			}
+		}
+
+		if (this.dataType <= 3) {
+			this.setForDataType((int)fs[0], (int)fs[1], (int)fs[2], (int)fs[3]);
+		} else if (this.dataType <= 7) {
+			this.setForDataType(fs[0], fs[1], fs[2], fs[3]);
+		} else {
+			this.set(Arrays.copyOfRange(fs, 0, count));
+		}
 	}
 
 	public void close() {

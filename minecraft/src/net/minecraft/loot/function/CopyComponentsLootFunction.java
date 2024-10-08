@@ -15,10 +15,10 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.context.ContextParameter;
 
 public class CopyComponentsLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<CopyComponentsLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -56,7 +56,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getAllowedParameters() {
 		return this.source.getRequiredParameters();
 	}
 
@@ -130,7 +130,7 @@ public class CopyComponentsLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public Set<LootContextParameter<?>> getRequiredParameters() {
+		public Set<ContextParameter<?>> getRequiredParameters() {
 			switch (this) {
 				case BLOCK_ENTITY:
 					return Set.of(LootContextParameters.BLOCK_ENTITY);

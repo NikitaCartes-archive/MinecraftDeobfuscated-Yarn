@@ -7,8 +7,8 @@ import java.util.Set;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
+import net.minecraft.util.context.ContextParameter;
 
 public class LimitCountLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<LimitCountLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -29,7 +29,7 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getAllowedParameters() {
 		return this.limit.getRequiredParameters();
 	}
 

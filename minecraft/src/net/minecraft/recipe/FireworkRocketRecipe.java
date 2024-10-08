@@ -22,29 +22,33 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		boolean bl = false;
-		int i = 0;
+		if (craftingRecipeInput.getStackCount() < 2) {
+			return false;
+		} else {
+			boolean bl = false;
+			int i = 0;
 
-		for (int j = 0; j < craftingRecipeInput.size(); j++) {
-			ItemStack itemStack = craftingRecipeInput.getStackInSlot(j);
-			if (!itemStack.isEmpty()) {
-				if (PAPER.test(itemStack)) {
-					if (bl) {
+			for (int j = 0; j < craftingRecipeInput.size(); j++) {
+				ItemStack itemStack = craftingRecipeInput.getStackInSlot(j);
+				if (!itemStack.isEmpty()) {
+					if (PAPER.test(itemStack)) {
+						if (bl) {
+							return false;
+						}
+
+						bl = true;
+					} else if (DURATION_MODIFIER.test(itemStack)) {
+						if (++i > 3) {
+							return false;
+						}
+					} else if (!FIREWORK_STAR.test(itemStack)) {
 						return false;
 					}
-
-					bl = true;
-				} else if (DURATION_MODIFIER.test(itemStack)) {
-					if (++i > 3) {
-						return false;
-					}
-				} else if (!FIREWORK_STAR.test(itemStack)) {
-					return false;
 				}
 			}
-		}
 
-		return bl && i >= 1;
+			return bl && i >= 1;
+		}
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {

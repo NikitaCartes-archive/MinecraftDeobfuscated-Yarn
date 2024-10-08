@@ -3,7 +3,8 @@ package net.minecraft.recipe;
 import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.recipe.display.StonecutterRecipeDisplay;
@@ -25,7 +26,7 @@ public class StonecuttingRecipe extends SingleStackRecipe {
 
 	@Override
 	public List<RecipeDisplay> getDisplays() {
-		return List.of(new StonecutterRecipeDisplay(this.createResultDisplay(), new SlotDisplay.ItemSlotDisplay(Items.STONECUTTER)));
+		return List.of(new StonecutterRecipeDisplay(this.ingredient().toDisplay(), this.createResultDisplay(), new SlotDisplay.ItemSlotDisplay(Items.STONECUTTER)));
 	}
 
 	public SlotDisplay createResultDisplay() {
@@ -33,7 +34,7 @@ public class StonecuttingRecipe extends SingleStackRecipe {
 	}
 
 	@Override
-	public RecipeBookGroup getRecipeBookTab() {
-		return RecipeBookGroup.STONECUTTER;
+	public RecipeBookCategory getRecipeBookTab() {
+		return RecipeBookCategories.STONECUTTER;
 	}
 }

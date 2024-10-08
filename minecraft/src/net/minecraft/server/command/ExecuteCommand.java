@@ -80,9 +80,9 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
@@ -847,11 +847,11 @@ public class ExecuteCommand {
 
 	private static boolean testLootCondition(ServerCommandSource source, RegistryEntry<LootCondition> lootCondition) {
 		ServerWorld serverWorld = source.getWorld();
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(serverWorld)
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		LootContext lootContext = new LootContext.Builder(lootWorldContext).build(Optional.empty());
 		lootContext.markActive(LootContext.predicate(lootCondition.value()));
 		return lootCondition.value().test(lootContext);
 	}

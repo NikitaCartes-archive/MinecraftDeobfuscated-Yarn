@@ -114,7 +114,11 @@ public class ModelPredicateProviderRegistry {
 			Identifier.ofVanilla("pulling"),
 			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
-		register(Items.BUNDLE, Identifier.ofVanilla("filled"), (stack, world, entity, seed) -> BundleItem.getAmountFilled(stack));
+
+		for (BundleItem bundleItem : BundleItem.getBundles()) {
+			register(bundleItem.asItem(), Identifier.ofVanilla("filled"), (stack, world, entity, seed) -> BundleItem.getAmountFilled(stack));
+		}
+
 		register(Items.CLOCK, Identifier.ofVanilla("time"), new ClampedModelPredicateProvider() {
 			private double time;
 			private double step;

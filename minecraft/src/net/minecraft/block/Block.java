@@ -27,8 +27,8 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
@@ -362,7 +362,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity) {
-		LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+		LootWorldContext.Builder builder = new LootWorldContext.Builder(world)
 			.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 			.add(LootContextParameters.TOOL, ItemStack.EMPTY)
 			.addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity);
@@ -372,7 +372,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public static List<ItemStack> getDroppedStacks(
 		BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack stack
 	) {
-		LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+		LootWorldContext.Builder builder = new LootWorldContext.Builder(world)
 			.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 			.add(LootContextParameters.TOOL, stack)
 			.addOptional(LootContextParameters.THIS_ENTITY, entity)

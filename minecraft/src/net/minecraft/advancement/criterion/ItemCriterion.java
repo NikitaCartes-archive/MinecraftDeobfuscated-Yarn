@@ -13,9 +13,9 @@ import net.minecraft.loot.condition.LocationCheckLootCondition;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.MatchToolLootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
@@ -34,13 +34,13 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 	public void trigger(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
 		ServerWorld serverWorld = player.getServerWorld();
 		BlockState blockState = serverWorld.getBlockState(pos);
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(serverWorld)
 			.add(LootContextParameters.ORIGIN, pos.toCenterPos())
 			.add(LootContextParameters.THIS_ENTITY, player)
 			.add(LootContextParameters.BLOCK_STATE, blockState)
 			.add(LootContextParameters.TOOL, stack)
 			.build(LootContextTypes.ADVANCEMENT_LOCATION);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		LootContext lootContext = new LootContext.Builder(lootWorldContext).build(Optional.empty());
 		this.trigger(player, conditions -> conditions.test(lootContext));
 	}
 

@@ -16,10 +16,11 @@ import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.NetworkRecipeId;
-import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookResults {
@@ -84,13 +85,13 @@ public class RecipeBookResults {
 
 	private void refreshResultButtons() {
 		int i = 20 * this.currentPage;
-		SlotDisplay.Context context = SlotDisplay.Context.create(this.client.world);
+		ContextParameterMap contextParameterMap = SlotDisplayContexts.createParameters(this.client.world);
 
 		for (int j = 0; j < this.resultButtons.size(); j++) {
 			AnimatedResultButton animatedResultButton = (AnimatedResultButton)this.resultButtons.get(j);
 			if (i + j < this.resultCollections.size()) {
 				RecipeResultCollection recipeResultCollection = (RecipeResultCollection)this.resultCollections.get(i + j);
-				animatedResultButton.showResultCollection(recipeResultCollection, this.filteringCraftable, this, context);
+				animatedResultButton.showResultCollection(recipeResultCollection, this.filteringCraftable, this, contextParameterMap);
 				animatedResultButton.visible = true;
 			} else {
 				animatedResultButton.visible = false;
@@ -169,7 +170,7 @@ public class RecipeBookResults {
 			this.refreshResultButtons();
 			return true;
 		} else {
-			SlotDisplay.Context context = SlotDisplay.Context.create(this.client.world);
+			ContextParameterMap contextParameterMap = SlotDisplayContexts.createParameters(this.client.world);
 
 			for (AnimatedResultButton animatedResultButton : this.resultButtons) {
 				if (animatedResultButton.mouseClicked(mouseX, mouseY, button)) {
@@ -180,7 +181,7 @@ public class RecipeBookResults {
 						this.alternatesWidget
 							.showAlternativesForResult(
 								animatedResultButton.getResultCollection(),
-								context,
+								contextParameterMap,
 								this.filteringCraftable,
 								animatedResultButton.getX(),
 								animatedResultButton.getY(),

@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,7 @@ public class ShaderProgram implements AutoCloseable {
 	private final IntList samplerLocations = new IntArrayList();
 	private final List<GlUniform> uniforms = new ArrayList();
 	private final Map<String, GlUniform> uniformsByName = new HashMap();
+	private final Map<String, ShaderProgramDefinition.Uniform> uniformDefinitionsByName = new HashMap();
 	private final int glRef;
 	@Nullable
 	public GlUniform modelViewMat;
@@ -111,6 +111,7 @@ public class ShaderProgram implements AutoCloseable {
 				glUniform.setLocation(i);
 				this.uniforms.add(glUniform);
 				this.uniformsByName.put(string, glUniform);
+				this.uniformDefinitionsByName.put(string, uniform);
 			}
 		}
 
@@ -189,6 +190,11 @@ public class ShaderProgram implements AutoCloseable {
 		return (GlUniform)this.uniformsByName.get(name);
 	}
 
+	@Nullable
+	public ShaderProgramDefinition.Uniform getUniformDefinition(String name) {
+		return (ShaderProgramDefinition.Uniform)this.uniformDefinitionsByName.get(name);
+	}
+
 	public Uniform getUniformOrDefault(String name) {
 		GlUniform glUniform = this.getUniform(name);
 		return (Uniform)(glUniform == null ? DEFAULT_UNIFORM : glUniform);
@@ -199,33 +205,11 @@ public class ShaderProgram implements AutoCloseable {
 	}
 
 	private GlUniform createGlUniform(ShaderProgramDefinition.Uniform uniform) {
-		String string = uniform.name();
 		int i = GlUniform.getTypeIndex(uniform.type());
 		int j = uniform.count();
-		float[] fs = new float[Math.max(j, 16)];
-		int k = 0;
-
-		for (float f : uniform.values()) {
-			fs[k++] = f;
-		}
-
-		if (j > 1 && uniform.values().size() == 1) {
-			while (k < j) {
-				fs[k] = fs[0];
-				k++;
-			}
-		}
-
-		int l = j > 1 && j <= 4 && i < 8 ? j - 1 : 0;
-		GlUniform glUniform = new GlUniform(string, i + l, j);
-		if (i <= 3) {
-			glUniform.setForDataType((int)fs[0], (int)fs[1], (int)fs[2], (int)fs[3]);
-		} else if (i <= 7) {
-			glUniform.setForDataType(fs[0], fs[1], fs[2], fs[3]);
-		} else {
-			glUniform.set(Arrays.copyOfRange(fs, 0, j));
-		}
-
+		int k = j > 1 && j <= 4 && i < 8 ? j - 1 : 0;
+		GlUniform glUniform = new GlUniform(uniform.name(), i + k, j);
+		glUniform.set(uniform);
 		return glUniform;
 	}
 

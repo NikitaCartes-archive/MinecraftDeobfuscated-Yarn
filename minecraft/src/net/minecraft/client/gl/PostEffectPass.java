@@ -62,7 +62,7 @@ public class PostEffectPass {
 				for (PostEffectPipeline.Uniform uniform : this.uniforms) {
 					GlUniform glUniform = this.program.getUniform(uniform.name());
 					if (glUniform != null) {
-						set(glUniform, uniform.values());
+						glUniform.set(uniform.values(), uniform.values().size());
 					}
 				}
 
@@ -86,23 +86,20 @@ public class PostEffectPass {
 				for (PostEffectPass.Sampler sampler2 : this.samplers) {
 					sampler2.postRender(handles);
 				}
+
+				this.setUniforms();
 			});
 		}
 	}
 
-	private static void set(GlUniform uniform, List<Float> values) {
-		switch (values.size()) {
-			case 1:
-				uniform.set((Float)values.getFirst());
-				break;
-			case 2:
-				uniform.set((Float)values.get(0), (Float)values.get(1));
-				break;
-			case 3:
-				uniform.set((Float)values.get(0), (Float)values.get(1), (Float)values.get(2));
-				break;
-			case 4:
-				uniform.setAndFlip((Float)values.get(0), (Float)values.get(1), (Float)values.get(2), (Float)values.get(3));
+	private void setUniforms() {
+		for (PostEffectPipeline.Uniform uniform : this.uniforms) {
+			String string = uniform.name();
+			GlUniform glUniform = this.program.getUniform(string);
+			ShaderProgramDefinition.Uniform uniform2 = this.program.getUniformDefinition(string);
+			if (glUniform != null && uniform2 != null && !uniform.values().equals(uniform2.values())) {
+				glUniform.set(uniform2);
+			}
 		}
 	}
 

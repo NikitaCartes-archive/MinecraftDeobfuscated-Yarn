@@ -1,15 +1,14 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.Vec3d;
 
 public record DamageSourcePropertiesLootCondition(Optional<DamageSourcePredicate> predicate) implements LootCondition {
@@ -24,8 +23,8 @@ public record DamageSourcePropertiesLootCondition(Optional<DamageSourcePredicate
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.ORIGIN, LootContextParameters.DAMAGE_SOURCE);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.ORIGIN, LootContextParameters.DAMAGE_SOURCE);
 	}
 
 	public boolean test(LootContext lootContext) {

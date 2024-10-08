@@ -53,7 +53,9 @@ public abstract class AbstractCookingRecipe extends SingleStackRecipe {
 				this.ingredient().toDisplay(),
 				SlotDisplay.AnyFuelSlotDisplay.INSTANCE,
 				new SlotDisplay.StackSlotDisplay(this.result()),
-				new SlotDisplay.ItemSlotDisplay(this.getCookerItem())
+				new SlotDisplay.ItemSlotDisplay(this.getCookerItem()),
+				this.cookingTime,
+				this.experience
 			)
 		);
 	}

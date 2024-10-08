@@ -40,25 +40,29 @@ public class TransmuteRecipe implements CraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		boolean bl = false;
-		boolean bl2 = false;
+		if (craftingRecipeInput.getStackCount() != 2) {
+			return false;
+		} else {
+			boolean bl = false;
+			boolean bl2 = false;
 
-		for (int i = 0; i < craftingRecipeInput.size(); i++) {
-			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
-			if (!itemStack.isEmpty()) {
-				if (!bl && this.input.test(itemStack) && itemStack.getItem() != this.result.value()) {
-					bl = true;
-				} else {
-					if (bl2 || !this.material.test(itemStack)) {
-						return false;
+			for (int i = 0; i < craftingRecipeInput.size(); i++) {
+				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
+				if (!itemStack.isEmpty()) {
+					if (!bl && this.input.test(itemStack) && itemStack.getItem() != this.result.value()) {
+						bl = true;
+					} else {
+						if (bl2 || !this.material.test(itemStack)) {
+							return false;
+						}
+
+						bl2 = true;
 					}
-
-					bl2 = true;
 				}
 			}
-		}
 
-		return bl && bl2;
+			return bl && bl2;
+		}
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {

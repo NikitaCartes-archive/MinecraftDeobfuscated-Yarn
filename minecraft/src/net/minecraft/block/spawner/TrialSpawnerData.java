@@ -25,8 +25,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -300,9 +300,9 @@ public class TrialSpawnerData {
 			return this.itemsToDropWhenOminous;
 		} else {
 			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(config.itemsToDropWhenOminous());
-			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world).build(LootContextTypes.EMPTY);
+			LootWorldContext lootWorldContext = new LootWorldContext.Builder(world).build(LootContextTypes.EMPTY);
 			long l = getLootSeed(world, pos);
-			ObjectArrayList<ItemStack> objectArrayList = lootTable.generateLoot(lootContextParameterSet, l);
+			ObjectArrayList<ItemStack> objectArrayList = lootTable.generateLoot(lootWorldContext, l);
 			if (objectArrayList.isEmpty()) {
 				return DataPool.empty();
 			} else {

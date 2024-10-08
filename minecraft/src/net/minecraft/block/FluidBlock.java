@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -117,7 +117,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+	protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
 		return Collections.emptyList();
 	}
 

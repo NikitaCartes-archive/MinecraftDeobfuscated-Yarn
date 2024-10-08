@@ -35,7 +35,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements DynamicTexture
 	}
 
 	@Nullable
-	public GlyphRenderer getGlyphRenderer(RenderableGlyph glyph) {
+	public BakedGlyph bake(RenderableGlyph glyph) {
 		if (glyph.hasColor() != this.hasColor) {
 			return null;
 		} else {
@@ -46,7 +46,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements DynamicTexture
 				float f = 256.0F;
 				float g = 256.0F;
 				float h = 0.01F;
-				return new GlyphRenderer(
+				return new BakedGlyph(
 					this.textRenderLayers,
 					((float)slot.x + 0.01F) / 256.0F,
 					((float)slot.x - 0.01F + (float)glyph.getWidth()) / 256.0F,

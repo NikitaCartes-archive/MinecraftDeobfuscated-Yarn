@@ -55,7 +55,7 @@ public class CreakingBrain {
 			10,
 			ImmutableList.of(
 				UpdateAttackTargetTask.create(
-					(world, creaking) -> creaking.isActive() && creaking.isUnrooted(),
+					(world, creaking) -> creaking.isActive(),
 					(world, creaking) -> creaking.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER)
 				),
 				LookAtMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),

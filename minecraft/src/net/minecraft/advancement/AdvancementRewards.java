@@ -8,9 +8,9 @@ import java.util.Optional;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -35,14 +35,14 @@ public record AdvancementRewards(int experience, List<RegistryKey<LootTable>> lo
 
 	public void apply(ServerPlayerEntity player) {
 		player.addExperience(this.experience);
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(player.getServerWorld())
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(player.getServerWorld())
 			.add(LootContextParameters.THIS_ENTITY, player)
 			.add(LootContextParameters.ORIGIN, player.getPos())
 			.build(LootContextTypes.ADVANCEMENT_REWARD);
 		boolean bl = false;
 
 		for (RegistryKey<LootTable> registryKey : this.loot) {
-			for (ItemStack itemStack : player.server.getReloadableRegistries().getLootTable(registryKey).generateLoot(lootContextParameterSet)) {
+			for (ItemStack itemStack : player.server.getReloadableRegistries().getLootTable(registryKey).generateLoot(lootWorldContext)) {
 				if (player.giveItemStack(itemStack)) {
 					player.getWorld()
 						.playSound(

@@ -16,7 +16,6 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
-import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.MutableRegistry;
@@ -29,6 +28,7 @@ import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.context.ContextType;
 import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.util.math.random.RandomSequence;
 import org.slf4j.Logger;
@@ -110,6 +110,6 @@ public class LootTableProvider implements DataProvider {
 		return "Loot Tables";
 	}
 
-	public static record LootTypeGenerator(Function<RegistryWrapper.WrapperLookup, LootTableGenerator> provider, LootContextType paramSet) {
+	public static record LootTypeGenerator(Function<RegistryWrapper.WrapperLookup, LootTableGenerator> provider, ContextType paramSet) {
 	}
 }

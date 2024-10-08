@@ -26,16 +26,16 @@ public class FontStorage implements AutoCloseable {
 	private static final float MAX_ADVANCE = 32.0F;
 	private final TextureManager textureManager;
 	private final Identifier id;
-	private GlyphRenderer blankGlyphRenderer;
-	private GlyphRenderer whiteRectangleGlyphRenderer;
+	private BakedGlyph blankBakedGlyph;
+	private BakedGlyph whiteRectangleBakedGlyph;
 	private List<Font.FontFilterPair> allFonts = List.of();
 	private List<Font> availableFonts = List.of();
-	private final GlyphContainer<GlyphRenderer> glyphRendererCache = new GlyphContainer<>(GlyphRenderer[]::new, GlyphRenderer[][]::new);
+	private final GlyphContainer<BakedGlyph> bakedGlyphCache = new GlyphContainer<>(BakedGlyph[]::new, BakedGlyph[][]::new);
 	private final GlyphContainer<FontStorage.GlyphPair> glyphCache = new GlyphContainer<>(FontStorage.GlyphPair[]::new, FontStorage.GlyphPair[][]::new);
 	private final Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
 	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
 	private final IntFunction<FontStorage.GlyphPair> glyphFinder = this::findGlyph;
-	private final IntFunction<GlyphRenderer> glyphRendererFinder = this::findGlyphRenderer;
+	private final IntFunction<BakedGlyph> glyphBaker = this::bake;
 
 	public FontStorage(TextureManager textureManager, Identifier id) {
 		this.textureManager = textureManager;
@@ -55,11 +55,11 @@ public class FontStorage implements AutoCloseable {
 
 	private void clear() {
 		this.closeGlyphAtlases();
-		this.glyphRendererCache.clear();
+		this.bakedGlyphCache.clear();
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
-		this.blankGlyphRenderer = BuiltinEmptyGlyph.MISSING.bake(this::getGlyphRenderer);
-		this.whiteRectangleGlyphRenderer = BuiltinEmptyGlyph.WHITE.bake(this::getGlyphRenderer);
+		this.blankBakedGlyph = BuiltinEmptyGlyph.MISSING.bake(this::bake);
+		this.whiteRectangleBakedGlyph = BuiltinEmptyGlyph.WHITE.bake(this::bake);
 	}
 
 	private List<Font> applyFilters(List<Font.FontFilterPair> allFonts, Set<FontFilterType> activeFilters) {
@@ -148,26 +148,26 @@ public class FontStorage implements AutoCloseable {
 		return this.glyphCache.computeIfAbsent(codePoint, this.glyphFinder).getGlyph(validateAdvance);
 	}
 
-	private GlyphRenderer findGlyphRenderer(int codePoint) {
+	private BakedGlyph bake(int codePoint) {
 		for (Font font : this.availableFonts) {
 			Glyph glyph = font.getGlyph(codePoint);
 			if (glyph != null) {
-				return glyph.bake(this::getGlyphRenderer);
+				return glyph.bake(this::bake);
 			}
 		}
 
-		return this.blankGlyphRenderer;
+		return this.blankBakedGlyph;
 	}
 
-	public GlyphRenderer getGlyphRenderer(int codePoint) {
-		return this.glyphRendererCache.computeIfAbsent(codePoint, this.glyphRendererFinder);
+	public BakedGlyph getBaked(int codePoint) {
+		return this.bakedGlyphCache.computeIfAbsent(codePoint, this.glyphBaker);
 	}
 
-	private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {
+	private BakedGlyph bake(RenderableGlyph c) {
 		for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
-			GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(c);
-			if (glyphRenderer != null) {
-				return glyphRenderer;
+			BakedGlyph bakedGlyph = glyphAtlasTexture.bake(c);
+			if (bakedGlyph != null) {
+				return bakedGlyph;
 			}
 		}
 
@@ -177,21 +177,21 @@ public class FontStorage implements AutoCloseable {
 		GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(textRenderLayerSet, bl);
 		this.glyphAtlases.add(glyphAtlasTexture2);
 		this.textureManager.registerTexture(identifier, glyphAtlasTexture2);
-		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(c);
-		return glyphRenderer2 == null ? this.blankGlyphRenderer : glyphRenderer2;
+		BakedGlyph bakedGlyph2 = glyphAtlasTexture2.bake(c);
+		return bakedGlyph2 == null ? this.blankBakedGlyph : bakedGlyph2;
 	}
 
-	public GlyphRenderer getObfuscatedGlyphRenderer(Glyph glyph) {
+	public BakedGlyph getObfuscatedBakedGlyph(Glyph glyph) {
 		IntList intList = this.charactersByWidth.get(MathHelper.ceil(glyph.getAdvance(false)));
-		return intList != null && !intList.isEmpty() ? this.getGlyphRenderer(intList.getInt(RANDOM.nextInt(intList.size()))) : this.blankGlyphRenderer;
+		return intList != null && !intList.isEmpty() ? this.getBaked(intList.getInt(RANDOM.nextInt(intList.size()))) : this.blankBakedGlyph;
 	}
 
 	public Identifier getId() {
 		return this.id;
 	}
 
-	public GlyphRenderer getRectangleRenderer() {
-		return this.whiteRectangleGlyphRenderer;
+	public BakedGlyph getRectangleBakedGlyph() {
+		return this.whiteRectangleBakedGlyph;
 	}
 
 	@Environment(EnvType.CLIENT)

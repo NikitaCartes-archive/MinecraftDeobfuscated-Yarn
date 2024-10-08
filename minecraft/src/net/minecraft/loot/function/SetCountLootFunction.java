@@ -8,9 +8,9 @@ import java.util.Set;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.context.ContextParameter;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetCountLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -38,8 +38,8 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.countRange.getRequiredParameters();
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return this.countRange.getAllowedParameters();
 	}
 
 	@Override

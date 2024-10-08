@@ -1,6 +1,5 @@
 package net.minecraft.loot.function;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
@@ -16,10 +15,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 
@@ -59,8 +58,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.TOOL);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.TOOL);
 	}
 
 	@Override

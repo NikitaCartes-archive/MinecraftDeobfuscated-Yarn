@@ -19,26 +19,25 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Nullable
-	private Pair<ItemStack, ItemStack> findPair(CraftingRecipeInput input) {
-		ItemStack itemStack = null;
-		ItemStack itemStack2 = null;
+	private static Pair<ItemStack, ItemStack> findPair(CraftingRecipeInput craftingRecipeInput) {
+		if (craftingRecipeInput.getStackCount() != 2) {
+			return null;
+		} else {
+			ItemStack itemStack = null;
 
-		for (int i = 0; i < input.size(); i++) {
-			ItemStack itemStack3 = input.getStackInSlot(i);
-			if (!itemStack3.isEmpty()) {
-				if (itemStack == null) {
-					itemStack = itemStack3;
-				} else {
-					if (itemStack2 != null) {
-						return null;
+			for (int i = 0; i < craftingRecipeInput.size(); i++) {
+				ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
+				if (!itemStack2.isEmpty()) {
+					if (itemStack != null) {
+						return canCombineStacks(itemStack, itemStack2) ? Pair.of(itemStack, itemStack2) : null;
 					}
 
-					itemStack2 = itemStack3;
+					itemStack = itemStack2;
 				}
 			}
-		}
 
-		return itemStack != null && itemStack2 != null && canCombineStacks(itemStack, itemStack2) ? Pair.of(itemStack, itemStack2) : null;
+			return null;
+		}
 	}
 
 	private static boolean canCombineStacks(ItemStack first, ItemStack second) {
@@ -52,11 +51,11 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		return this.findPair(craftingRecipeInput) != null;
+		return findPair(craftingRecipeInput) != null;
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
-		Pair<ItemStack, ItemStack> pair = this.findPair(craftingRecipeInput);
+		Pair<ItemStack, ItemStack> pair = findPair(craftingRecipeInput);
 		if (pair == null) {
 			return ItemStack.EMPTY;
 		} else {

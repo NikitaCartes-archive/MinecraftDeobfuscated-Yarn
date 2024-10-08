@@ -43,16 +43,9 @@ public class EquipmentRenderer {
 	}
 
 	public void render(
-		EquipmentModel.LayerType layerType,
-		Identifier modelId,
-		Model model,
-		ItemStack stack,
-		Function<Identifier, RenderLayer> renderLayerFunction,
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light
+		EquipmentModel.LayerType layerType, Identifier modelId, Model model, ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light
 	) {
-		this.render(layerType, modelId, model, stack, renderLayerFunction, matrices, vertexConsumers, light, null);
+		this.render(layerType, modelId, model, stack, matrices, vertexConsumers, light, null);
 	}
 
 	public void render(
@@ -60,7 +53,6 @@ public class EquipmentRenderer {
 		Identifier modelId,
 		Model model,
 		ItemStack stack,
-		Function<Identifier, RenderLayer> renderLayerFunction,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
 		int light,
@@ -77,7 +69,7 @@ public class EquipmentRenderer {
 					Identifier identifier = layer.usePlayerTexture() && texture != null
 						? texture
 						: (Identifier)this.layerTextures.apply(new EquipmentRenderer.LayerTextureKey(layerType, layer));
-					VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumers, (RenderLayer)renderLayerFunction.apply(identifier), bl);
+					VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumers, RenderLayer.getArmorCutoutNoCull(identifier), bl);
 					model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, j);
 					bl = false;
 				}

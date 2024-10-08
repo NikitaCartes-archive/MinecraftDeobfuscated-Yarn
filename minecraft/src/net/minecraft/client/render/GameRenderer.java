@@ -479,11 +479,13 @@ public class GameRenderer implements AutoCloseable {
 					21000.0F
 				);
 			RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
+			float f = 1000.0F;
 			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 			matrix4fStack.pushMatrix();
-			matrix4fStack.translation(0.0F, 0.0F, -11000.0F);
+			matrix4fStack.translation(0.0F, 0.0F, -10000.0F);
 			DiffuseLighting.enableGuiDepthLighting();
 			DrawContext drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
+			drawContext.getMatrices().translate(0.0F, 0.0F, -1000.0F);
 			if (bl && tick && this.client.world != null) {
 				profiler.swap("gui");
 				if (!this.client.options.hudHidden) {
@@ -499,8 +501,8 @@ public class GameRenderer implements AutoCloseable {
 			if (this.client.getOverlay() != null) {
 				try {
 					this.client.getOverlay().render(drawContext, i, j, tickCounter.getLastFrameDuration());
-				} catch (Throwable var17) {
-					CrashReport crashReport = CrashReport.create(var17, "Rendering overlay");
+				} catch (Throwable var18) {
+					CrashReport crashReport = CrashReport.create(var18, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -508,8 +510,8 @@ public class GameRenderer implements AutoCloseable {
 			} else if (bl && this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.renderWithTooltip(drawContext, i, j, tickCounter.getLastFrameDuration());
-				} catch (Throwable var16) {
-					CrashReport crashReport = CrashReport.create(var16, "Rendering screen");
+				} catch (Throwable var17) {
+					CrashReport crashReport = CrashReport.create(var17, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -535,8 +537,8 @@ public class GameRenderer implements AutoCloseable {
 					if (this.client.currentScreen != null) {
 						this.client.currentScreen.updateNarrator();
 					}
-				} catch (Throwable var15) {
-					CrashReport crashReport = CrashReport.create(var15, "Narrating screen");
+				} catch (Throwable var16) {
+					CrashReport crashReport = CrashReport.create(var16, "Narrating screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);

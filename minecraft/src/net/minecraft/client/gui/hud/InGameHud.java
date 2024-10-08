@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,7 +25,9 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -36,7 +39,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardEntry;
@@ -46,6 +48,7 @@ import net.minecraft.scoreboard.number.NumberFormat;
 import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
@@ -103,12 +106,12 @@ public class InGameHud {
 	private static final Identifier FOOD_FULL_TEXTURE = Identifier.ofVanilla("hud/food_full");
 	private static final Identifier AIR_TEXTURE = Identifier.ofVanilla("hud/air");
 	private static final Identifier AIR_BURSTING_TEXTURE = Identifier.ofVanilla("hud/air_bursting");
+	private static final Identifier AIR_EMPTY_TEXTURE = Identifier.ofVanilla("hud/air_empty");
 	private static final Identifier VEHICLE_CONTAINER_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_container");
 	private static final Identifier VEHICLE_FULL_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_full");
 	private static final Identifier VEHICLE_HALF_HEART_TEXTURE = Identifier.ofVanilla("hud/heart/vehicle_half");
 	private static final Identifier VIGNETTE_TEXTURE = Identifier.ofVanilla("textures/misc/vignette.png");
 	public static final Identifier NAUSEA_TEXTURE = Identifier.ofVanilla("textures/misc/nausea.png");
-	private static final Identifier PUMPKIN_BLUR = Identifier.ofVanilla("textures/misc/pumpkinblur.png");
 	private static final Identifier SPYGLASS_SCOPE = Identifier.ofVanilla("textures/misc/spyglass_scope.png");
 	private static final Identifier POWDER_SNOW_OUTLINE = Identifier.ofVanilla("textures/misc/powder_snow_outline.png");
 	private static final Comparator<ScoreboardEntry> SCOREBOARD_ENTRY_COMPARATOR = Comparator.comparing(ScoreboardEntry::value)
@@ -123,6 +126,17 @@ public class InGameHud {
 	private static final float field_32172 = 0.2F;
 	private static final int field_33942 = 9;
 	private static final int field_33943 = 8;
+	private static final int field_54914 = 10;
+	private static final int field_54915 = 9;
+	private static final int field_54916 = 8;
+	private static final int field_54917 = 2;
+	private static final int field_54918 = 4;
+	private static final float field_54920 = 0.5F;
+	private static final float field_54921 = 0.1F;
+	private static final float field_54922 = 1.0F;
+	private static final float field_54923 = 0.1F;
+	private static final int field_54924 = 3;
+	private static final int field_54925 = 5;
 	private static final float field_35431 = 0.2F;
 	private static final int field_52769 = 5;
 	private static final int field_52770 = 5;
@@ -155,6 +169,7 @@ public class InGameHud {
 	private int renderHealthValue;
 	private long lastHealthCheckTime;
 	private long heartJumpEndTick;
+	private int lastBurstBubble;
 	private float autosaveIndicatorAlpha;
 	private float lastAutosaveIndicatorAlpha;
 	private final LayeredDrawer layeredDrawer = new LayeredDrawer();
@@ -217,9 +232,15 @@ public class InGameHud {
 				this.renderSpyglassOverlay(context, this.spyglassScale);
 			} else {
 				this.spyglassScale = 0.5F;
-				ItemStack itemStack = this.client.player.getInventory().getArmorStack(3);
-				if (itemStack.isIn(ItemTags.GAZE_DISGUISE_EQUIPMENT)) {
-					this.renderOverlay(context, PUMPKIN_BLUR, 1.0F);
+
+				for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+					ItemStack itemStack = this.client.player.getEquippedStack(equipmentSlot);
+					EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
+					if (equippableComponent != null && equippableComponent.slot() == equipmentSlot && equippableComponent.cameraOverlay().isPresent()) {
+						this.renderOverlay(
+							context, ((Identifier)equippableComponent.cameraOverlay().get()).withPath((UnaryOperator<String>)(string -> "textures/" + string + ".png")), 1.0F
+						);
+					}
 				}
 			}
 		}
@@ -808,23 +829,7 @@ public class InGameHud {
 			}
 
 			Profilers.get().swap("air");
-			int u = playerEntity.getMaxAir();
-			int v = Math.min(playerEntity.getAir(), u);
-			if (playerEntity.isSubmergedIn(FluidTags.WATER) || v < u) {
-				int w = this.getHeartRows(t) - 1;
-				r -= w * 10;
-				int x = MathHelper.ceil((double)(v - 2) * 10.0 / (double)u);
-				int y = MathHelper.ceil((double)v * 10.0 / (double)u) - x;
-
-				for (int z = 0; z < x + y; z++) {
-					if (z < x) {
-						context.drawGuiTexture(RenderLayer::getGuiTextured, AIR_TEXTURE, m - z * 8 - 9, r, 9, 9);
-					} else {
-						context.drawGuiTexture(RenderLayer::getGuiTextured, AIR_BURSTING_TEXTURE, m - z * 8 - 9, r, 9, 9);
-					}
-				}
-			}
-
+			this.renderAirBubbles(context, playerEntity, t, r, m);
 			Profilers.get().pop();
 		}
 	}
@@ -908,6 +913,57 @@ public class InGameHud {
 
 	private void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half) {
 		context.drawGuiTexture(RenderLayer::getGuiTextured, type.getTexture(hardcore, half, blinking), x, y, 9, 9);
+	}
+
+	private void renderAirBubbles(DrawContext context, PlayerEntity player, int heartCount, int top, int left) {
+		int i = player.getMaxAir();
+		int j = Math.clamp((long)player.getAir(), 0, i);
+		boolean bl = player.isSubmergedIn(FluidTags.WATER);
+		if (bl || j < i) {
+			top = this.getAirBubbleY(heartCount, top);
+			int k = getAirBubbles(j, i, -2);
+			int l = getAirBubbles(j, i, 0);
+			int m = 10 - getAirBubbles(j, i, getAirBubbleDelay(j, bl));
+			boolean bl2 = k != l;
+			if (!bl) {
+				this.lastBurstBubble = 0;
+			}
+
+			for (int n = 1; n <= 10; n++) {
+				int o = left - (n - 1) * 8 - 9;
+				if (n <= k) {
+					context.drawGuiTexture(RenderLayer::getGuiTextured, AIR_TEXTURE, o, top, 9, 9);
+				} else if (bl2 && n == l && bl) {
+					context.drawGuiTexture(RenderLayer::getGuiTextured, AIR_BURSTING_TEXTURE, o, top, 9, 9);
+					this.playBurstSound(n, player, m);
+				} else if (n > 10 - m) {
+					int p = m == 10 && this.ticks % 2 == 0 ? this.random.nextInt(2) : 0;
+					context.drawGuiTexture(RenderLayer::getGuiTextured, AIR_EMPTY_TEXTURE, o, top + p, 9, 9);
+				}
+			}
+		}
+	}
+
+	private int getAirBubbleY(int heartCount, int top) {
+		int i = this.getHeartRows(heartCount) - 1;
+		return top - i * 10;
+	}
+
+	private static int getAirBubbles(int air, int maxAir, int delay) {
+		return MathHelper.ceil((float)((air + delay) * 10) / (float)maxAir);
+	}
+
+	private static int getAirBubbleDelay(int air, boolean submergedInWater) {
+		return air != 0 && submergedInWater ? 4 : 0;
+	}
+
+	private void playBurstSound(int bubble, PlayerEntity player, int burstBubbles) {
+		if (this.lastBurstBubble != bubble) {
+			float f = 0.5F + 0.1F * (float)Math.max(0, burstBubbles - 3 + 1);
+			float g = 1.0F + 0.1F * (float)Math.max(0, burstBubbles - 5 + 1);
+			player.playSound(SoundEvents.UI_HUD_BUBBLE_POP, f, g);
+			this.lastBurstBubble = bubble;
+		}
 	}
 
 	private void renderFood(DrawContext context, PlayerEntity player, int top, int right) {

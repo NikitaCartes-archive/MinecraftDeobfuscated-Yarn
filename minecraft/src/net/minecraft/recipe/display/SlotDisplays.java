@@ -10,6 +10,7 @@ public class SlotDisplays {
 		Registry.register(registries, "item_stack", SlotDisplay.StackSlotDisplay.SERIALIZER);
 		Registry.register(registries, "tag", SlotDisplay.TagSlotDisplay.SERIALIZER);
 		Registry.register(registries, "smithing_trim", SlotDisplay.SmithingTrimSlotDisplay.SERIALIZER);
+		Registry.register(registries, "with_remainder", SlotDisplay.WithRemainderSlotDisplay.SERIALIZER);
 		return Registry.register(registries, "composite", SlotDisplay.CompositeSlotDisplay.SERIALIZER);
 	}
 }

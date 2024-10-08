@@ -21,8 +21,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
@@ -150,7 +150,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+	protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
 		BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
 			builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {

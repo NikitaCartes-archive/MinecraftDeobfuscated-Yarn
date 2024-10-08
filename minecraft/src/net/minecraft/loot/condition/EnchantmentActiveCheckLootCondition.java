@@ -5,8 +5,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.util.context.ContextParameter;
 
 public record EnchantmentActiveCheckLootCondition(boolean active) implements LootCondition {
 	public static final MapCodec<EnchantmentActiveCheckLootCondition> CODEC = RecordCodecBuilder.mapCodec(
@@ -24,7 +24,7 @@ public record EnchantmentActiveCheckLootCondition(boolean active) implements Loo
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getAllowedParameters() {
 		return Set.of(LootContextParameters.ENCHANTMENT_ACTIVE);
 	}
 

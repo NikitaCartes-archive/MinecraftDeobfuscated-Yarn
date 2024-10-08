@@ -1,6 +1,8 @@
 package net.minecraft.item;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
@@ -34,7 +36,7 @@ public class BundleItem extends Item {
 	private static final int ITEM_BAR_COLOR = ColorHelper.fromFloats(1.0F, 0.44F, 0.53F, 1.0F);
 	private static final int field_54109 = 10;
 	private static final int field_54110 = 2;
-	private static final int field_54111 = 60;
+	private static final int MAX_USE_TIME = 200;
 	private final Identifier openFrontTexture;
 	private final Identifier openBackTexture;
 
@@ -240,7 +242,7 @@ public class BundleItem extends Item {
 
 	@Override
 	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-		return 60;
+		return 200;
 	}
 
 	@Override
@@ -257,6 +259,30 @@ public class BundleItem extends Item {
 			entity.getStack().set(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
 			ItemUsage.spawnItemContents(entity, bundleContentsComponent.iterateCopy());
 		}
+	}
+
+	public static List<BundleItem> getBundles() {
+		return Stream.of(
+				Items.BUNDLE,
+				Items.WHITE_BUNDLE,
+				Items.ORANGE_BUNDLE,
+				Items.MAGENTA_BUNDLE,
+				Items.LIGHT_BLUE_BUNDLE,
+				Items.YELLOW_BUNDLE,
+				Items.LIME_BUNDLE,
+				Items.PINK_BUNDLE,
+				Items.GRAY_BUNDLE,
+				Items.LIGHT_GRAY_BUNDLE,
+				Items.CYAN_BUNDLE,
+				Items.BLACK_BUNDLE,
+				Items.BROWN_BUNDLE,
+				Items.GREEN_BUNDLE,
+				Items.RED_BUNDLE,
+				Items.BLUE_BUNDLE,
+				Items.PURPLE_BUNDLE
+			)
+			.map(item -> (BundleItem)item)
+			.toList();
 	}
 
 	public static Item getBundle(DyeColor color) {

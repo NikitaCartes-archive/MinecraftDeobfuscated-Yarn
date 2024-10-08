@@ -290,7 +290,6 @@ public class IntegratedServerLoader {
 			return;
 		} catch (OutOfMemoryError var11) {
 			CrashMemoryReserve.releaseMemory();
-			System.gc();
 			String string = "Ran out of memory trying to read level data of world folder \"" + session.getDirectoryName() + "\"";
 			LOGGER.error(LogUtils.FATAL_MARKER, string);
 			OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError("Ran out of memory reading level data");

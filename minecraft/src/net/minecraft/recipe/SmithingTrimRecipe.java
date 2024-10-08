@@ -36,23 +36,24 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 	}
 
 	public ItemStack craft(SmithingRecipeInput smithingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
-		ItemStack itemStack = smithingRecipeInput.base();
-		if (Ingredient.matches(this.base, itemStack)) {
-			Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional = ArmorTrimMaterials.get(wrapperLookup, smithingRecipeInput.addition());
-			Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional2 = ArmorTrimPatterns.get(wrapperLookup, smithingRecipeInput.template());
-			if (optional.isPresent() && optional2.isPresent()) {
-				ArmorTrim armorTrim = itemStack.get(DataComponentTypes.TRIM);
-				if (armorTrim != null && armorTrim.equals((RegistryEntry<ArmorTrimPattern>)optional2.get(), (RegistryEntry<ArmorTrimMaterial>)optional.get())) {
-					return ItemStack.EMPTY;
-				}
+		return craft(wrapperLookup, smithingRecipeInput.base(), smithingRecipeInput.addition(), smithingRecipeInput.template());
+	}
 
-				ItemStack itemStack2 = itemStack.copyWithCount(1);
-				itemStack2.set(DataComponentTypes.TRIM, new ArmorTrim((RegistryEntry<ArmorTrimMaterial>)optional.get(), (RegistryEntry<ArmorTrimPattern>)optional2.get()));
-				return itemStack2;
+	public static ItemStack craft(RegistryWrapper.WrapperLookup registries, ItemStack base, ItemStack addition, ItemStack template) {
+		Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional = ArmorTrimMaterials.get(registries, addition);
+		Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional2 = ArmorTrimPatterns.get(registries, template);
+		if (optional.isPresent() && optional2.isPresent()) {
+			ArmorTrim armorTrim = base.get(DataComponentTypes.TRIM);
+			if (armorTrim != null && armorTrim.equals((RegistryEntry<ArmorTrimPattern>)optional2.get(), (RegistryEntry<ArmorTrimMaterial>)optional.get())) {
+				return ItemStack.EMPTY;
+			} else {
+				ItemStack itemStack = base.copyWithCount(1);
+				itemStack.set(DataComponentTypes.TRIM, new ArmorTrim((RegistryEntry<ArmorTrimMaterial>)optional.get(), (RegistryEntry<ArmorTrimPattern>)optional2.get()));
+				return itemStack;
 			}
+		} else {
+			return ItemStack.EMPTY;
 		}
-
-		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -86,7 +87,18 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 
 	@Override
 	public List<RecipeDisplay> getDisplays() {
-		return List.of(new SmithingRecipeDisplay(SlotDisplay.SmithingTrimSlotDisplay.INSTANCE, new SlotDisplay.ItemSlotDisplay(Items.SMITHING_TABLE)));
+		SlotDisplay slotDisplay = Ingredient.toDisplay(this.base);
+		SlotDisplay slotDisplay2 = Ingredient.toDisplay(this.addition);
+		SlotDisplay slotDisplay3 = Ingredient.toDisplay(this.template);
+		return List.of(
+			new SmithingRecipeDisplay(
+				slotDisplay3,
+				slotDisplay,
+				slotDisplay2,
+				new SlotDisplay.SmithingTrimSlotDisplay(slotDisplay, slotDisplay2, slotDisplay3),
+				new SlotDisplay.ItemSlotDisplay(Items.SMITHING_TABLE)
+			)
+		);
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingTrimRecipe> {

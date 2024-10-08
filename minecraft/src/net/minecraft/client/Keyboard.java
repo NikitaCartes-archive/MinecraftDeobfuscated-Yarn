@@ -10,7 +10,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.GameMenuScreen;
@@ -423,34 +422,42 @@ public class Keyboard {
 			}
 
 			if (screen != null) {
-				boolean[] bls = new boolean[]{false};
-				Screen.wrapScreenError(() -> {
-					if (action == 1 || action == 2) {
+				try {
+					if (action != 1 && action != 2) {
+						if (action == 0 && screen.keyReleased(key, scancode, modifiers)) {
+							return;
+						}
+					} else {
 						screen.applyKeyPressNarratorDelay();
-						bls[0] = screen.keyPressed(key, scancode, modifiers);
-					} else if (action == 0) {
-						bls[0] = screen.keyReleased(key, scancode, modifiers);
+						if (screen.keyPressed(key, scancode, modifiers)) {
+							return;
+						}
 					}
-				}, "keyPressed event handler", screen.getClass().getCanonicalName());
-				if (bls[0]) {
-					return;
+				} catch (Throwable var14) {
+					CrashReport crashReport = CrashReport.create(var14, "keyPressed event handler");
+					screen.addCrashReportSection(crashReport);
+					CrashReportSection crashReportSection = crashReport.addElement("Key");
+					crashReportSection.add("Key", key);
+					crashReportSection.add("Scancode", scancode);
+					crashReportSection.add("Mods", modifiers);
+					throw new CrashException(crashReport);
 				}
 			}
 
 			InputUtil.Key key2;
 			boolean bl3;
 			boolean var10000;
-			label180: {
+			label197: {
 				key2 = InputUtil.fromKeyCode(key, scancode);
 				bl3 = this.client.currentScreen == null;
-				label141:
+				label153:
 				if (!bl3) {
 					if (this.client.currentScreen instanceof GameMenuScreen gameMenuScreen && !gameMenuScreen.shouldShowMenu()) {
-						break label141;
+						break label153;
 					}
 
 					var10000 = false;
-					break label180;
+					break label197;
 				}
 
 				var10000 = true;
@@ -503,14 +510,22 @@ public class Keyboard {
 
 	private void onChar(long window, int codePoint, int modifiers) {
 		if (window == this.client.getWindow().getHandle()) {
-			Element element = this.client.currentScreen;
-			if (element != null && this.client.getOverlay() == null) {
-				if (Character.charCount(codePoint) == 1) {
-					Screen.wrapScreenError(() -> element.charTyped((char)codePoint, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
-				} else {
-					for (char c : Character.toChars(codePoint)) {
-						Screen.wrapScreenError(() -> element.charTyped(c, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
+			Screen screen = this.client.currentScreen;
+			if (screen != null && this.client.getOverlay() == null) {
+				try {
+					if (Character.isBmpCodePoint(codePoint)) {
+						screen.charTyped((char)codePoint, modifiers);
+					} else if (Character.isValidCodePoint(codePoint)) {
+						screen.charTyped(Character.highSurrogate(codePoint), modifiers);
+						screen.charTyped(Character.lowSurrogate(codePoint), modifiers);
 					}
+				} catch (Throwable var9) {
+					CrashReport crashReport = CrashReport.create(var9, "charTyped event handler");
+					screen.addCrashReportSection(crashReport);
+					CrashReportSection crashReportSection = crashReport.addElement("Key");
+					crashReportSection.add("Codepoint", codePoint);
+					crashReportSection.add("Mods", modifiers);
+					throw new CrashException(crashReport);
 				}
 			}
 		}

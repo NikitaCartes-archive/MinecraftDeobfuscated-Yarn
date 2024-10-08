@@ -18,8 +18,8 @@ import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -261,8 +261,8 @@ public final class TrialSpawnerLogic {
 
 	public void ejectLootTable(ServerWorld world, BlockPos pos, RegistryKey<LootTable> lootTable) {
 		LootTable lootTable2 = world.getServer().getReloadableRegistries().getLootTable(lootTable);
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world).build(LootContextTypes.EMPTY);
-		ObjectArrayList<ItemStack> objectArrayList = lootTable2.generateLoot(lootContextParameterSet);
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(world).build(LootContextTypes.EMPTY);
+		ObjectArrayList<ItemStack> objectArrayList = lootTable2.generateLoot(lootWorldContext);
 		if (!objectArrayList.isEmpty()) {
 			for (ItemStack itemStack : objectArrayList) {
 				ItemDispenserBehavior.spawnItem(world, itemStack, 2, Direction.UP, Vec3d.ofBottomCenter(pos).offset(Direction.UP, 1.2));

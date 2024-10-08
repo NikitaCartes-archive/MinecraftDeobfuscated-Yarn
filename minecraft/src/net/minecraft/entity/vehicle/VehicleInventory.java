@@ -12,9 +12,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryKey;
@@ -105,7 +105,7 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 			}
 
 			this.setLootTable(null);
-			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld()).add(LootContextParameters.ORIGIN, this.getPos());
+			LootWorldContext.Builder builder = new LootWorldContext.Builder((ServerWorld)this.getWorld()).add(LootContextParameters.ORIGIN, this.getPos());
 			if (player != null) {
 				builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			}

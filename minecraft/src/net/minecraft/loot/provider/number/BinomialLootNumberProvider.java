@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.random.Random;
 
 public record BinomialLootNumberProvider(LootNumberProvider n, LootNumberProvider p) implements LootNumberProvider {
@@ -48,7 +48,7 @@ public record BinomialLootNumberProvider(LootNumberProvider n, LootNumberProvide
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return Sets.<LootContextParameter<?>>union(this.n.getRequiredParameters(), this.p.getRequiredParameters());
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Sets.<ContextParameter<?>>union(this.n.getAllowedParameters(), this.p.getAllowedParameters());
 	}
 }

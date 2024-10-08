@@ -777,7 +777,7 @@ public abstract class RecipeGenerator {
 							@Override
 							public void accept(RegistryKey<Recipe<?>> key, Recipe<?> recipe, @Nullable AdvancementEntry advancement) {
 								if (!set.add(key)) {
-									throw new IllegalStateException("Duplicate recipe " + key);
+									throw new IllegalStateException("Duplicate recipe " + key.getValue());
 								} else {
 									this.addRecipe(key, recipe);
 									if (advancement != null) {

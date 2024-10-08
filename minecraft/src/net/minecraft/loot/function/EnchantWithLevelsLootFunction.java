@@ -10,7 +10,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -19,6 +18,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.EnchantmentTags;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.random.Random;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
@@ -47,8 +47,8 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.levels.getRequiredParameters();
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return this.levels.getAllowedParameters();
 	}
 
 	@Override

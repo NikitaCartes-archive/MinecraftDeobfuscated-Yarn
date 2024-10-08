@@ -22,9 +22,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -436,14 +436,14 @@ public class FishingBobberEntity extends ProjectileEntity {
 				this.getWorld().sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
-				LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+				LootWorldContext lootWorldContext = new LootWorldContext.Builder((ServerWorld)this.getWorld())
 					.add(LootContextParameters.ORIGIN, this.getPos())
 					.add(LootContextParameters.TOOL, usedItem)
 					.add(LootContextParameters.THIS_ENTITY, this)
 					.luck((float)this.luckBonus + playerEntity.getLuck())
 					.build(LootContextTypes.FISHING);
 				LootTable lootTable = this.getWorld().getServer().getReloadableRegistries().getLootTable(LootTables.FISHING_GAMEPLAY);
-				List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
+				List<ItemStack> list = lootTable.generateLoot(lootWorldContext);
 				Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, list);
 
 				for (ItemStack itemStack : list) {

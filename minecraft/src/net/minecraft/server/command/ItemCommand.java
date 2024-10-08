@@ -27,9 +27,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.ReloadableRegistries;
@@ -457,11 +457,11 @@ public class ItemCommand {
 
 	private static ItemStack getStackWithModifier(ServerCommandSource source, RegistryEntry<LootFunction> lootFunction, ItemStack stack) {
 		ServerWorld serverWorld = source.getWorld();
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(serverWorld)
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		LootContext lootContext = new LootContext.Builder(lootWorldContext).build(Optional.empty());
 		lootContext.markActive(LootContext.itemModifier(lootFunction.value()));
 		ItemStack itemStack = (ItemStack)lootFunction.value().apply(stack, lootContext);
 		itemStack.capCount(itemStack.getMaxCount());

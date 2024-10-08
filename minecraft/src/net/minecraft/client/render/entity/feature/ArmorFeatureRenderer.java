@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -89,7 +88,7 @@ public class ArmorFeatureRenderer<S extends BipedEntityRenderState, M extends Bi
 			this.setVisible(armorModel, slot);
 			Identifier identifier = (Identifier)equippableComponent.model().orElseThrow();
 			EquipmentModel.LayerType layerType = this.usesInnerModel(slot) ? EquipmentModel.LayerType.HUMANOID_LEGGINGS : EquipmentModel.LayerType.HUMANOID;
-			this.equipmentRenderer.render(layerType, identifier, armorModel, stack, RenderLayer::getArmorCutoutNoCull, matrices, vertexConsumers, light);
+			this.equipmentRenderer.render(layerType, identifier, armorModel, stack, matrices, vertexConsumers, light);
 		}
 	}
 

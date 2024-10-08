@@ -20,13 +20,13 @@ public interface Glyph {
 		return 1.0F;
 	}
 
-	GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> glyphRendererGetter);
+	BakedGlyph bake(Function<RenderableGlyph, BakedGlyph> glyphRendererGetter);
 
 	@Environment(EnvType.CLIENT)
 	public interface EmptyGlyph extends Glyph {
 		@Override
-		default GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-			return EmptyGlyphRenderer.INSTANCE;
+		default BakedGlyph bake(Function<RenderableGlyph, BakedGlyph> function) {
+			return EmptyBakedGlyph.INSTANCE;
 		}
 	}
 }

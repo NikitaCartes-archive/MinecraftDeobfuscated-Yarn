@@ -3858,7 +3858,7 @@ public class BlockStateModelGenerator {
 			Identifier identifier = BlockStateModelGenerator.TintType.NOT_TINTED.getCrossModel().upload(block, string, textureMap, this.modelCollector);
 			return BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
 		});
-		this.registerItemModel(block, "_tip");
+		this.registerItemModel(block);
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(blockStateVariantMap));
 	}
 

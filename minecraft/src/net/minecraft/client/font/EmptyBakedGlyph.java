@@ -7,14 +7,14 @@ import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
-public class EmptyGlyphRenderer extends GlyphRenderer {
-	public static final EmptyGlyphRenderer INSTANCE = new EmptyGlyphRenderer();
+public class EmptyBakedGlyph extends BakedGlyph {
+	public static final EmptyBakedGlyph INSTANCE = new EmptyBakedGlyph();
 
-	public EmptyGlyphRenderer() {
+	public EmptyBakedGlyph() {
 		super(TextRenderLayerSet.of(Identifier.ofVanilla("")), 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
-	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, int color, int light) {
+	public void draw(BakedGlyph.DrawnGlyph glyph, Matrix4f matrices, VertexConsumer vertexConsumers, int light) {
 	}
 }

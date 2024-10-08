@@ -181,7 +181,7 @@ public class TeleportCommand {
 	) throws CommandSyntaxException {
 		Vec3d vec3d = location.getPos(source);
 		Vec2f vec2f = rotation == null ? null : rotation.getRotation(source);
-		Set<PositionFlag> set = getFlags(location, rotation);
+		Set<PositionFlag> set = getFlags(location, rotation, source.getEntity().getWorld().getRegistryKey() == world.getRegistryKey());
 
 		for (Entity entity : targets) {
 			if (rotation == null) {
@@ -212,21 +212,27 @@ public class TeleportCommand {
 		return targets.size();
 	}
 
-	private static Set<PositionFlag> getFlags(PosArgument pos, @Nullable PosArgument rotation) {
+	private static Set<PositionFlag> getFlags(PosArgument pos, @Nullable PosArgument rotation, boolean sameDimension) {
 		Set<PositionFlag> set = EnumSet.noneOf(PositionFlag.class);
 		if (pos.isXRelative()) {
 			set.add(PositionFlag.DELTA_X);
-			set.add(PositionFlag.X);
+			if (sameDimension) {
+				set.add(PositionFlag.X);
+			}
 		}
 
 		if (pos.isYRelative()) {
 			set.add(PositionFlag.DELTA_Y);
-			set.add(PositionFlag.Y);
+			if (sameDimension) {
+				set.add(PositionFlag.Y);
+			}
 		}
 
 		if (pos.isZRelative()) {
 			set.add(PositionFlag.DELTA_Z);
-			set.add(PositionFlag.Z);
+			if (sameDimension) {
+				set.add(PositionFlag.Z);
+			}
 		}
 
 		if (rotation == null) {

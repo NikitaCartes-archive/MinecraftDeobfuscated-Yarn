@@ -16,35 +16,36 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.random.Random;
 
 public class LootContext {
-	private final LootContextParameterSet parameters;
+	private final LootWorldContext worldContext;
 	private final Random random;
 	private final RegistryEntryLookup.RegistryLookup lookup;
 	private final Set<LootContext.Entry<?>> activeEntries = Sets.<LootContext.Entry<?>>newLinkedHashSet();
 
-	LootContext(LootContextParameterSet parameters, Random random, RegistryEntryLookup.RegistryLookup lookup) {
-		this.parameters = parameters;
+	LootContext(LootWorldContext worldContext, Random random, RegistryEntryLookup.RegistryLookup lookup) {
+		this.worldContext = worldContext;
 		this.random = random;
 		this.lookup = lookup;
 	}
 
-	public boolean hasParameter(LootContextParameter<?> parameter) {
-		return this.parameters.contains(parameter);
+	public boolean hasParameter(ContextParameter<?> parameter) {
+		return this.worldContext.getParameters().contains(parameter);
 	}
 
-	public <T> T requireParameter(LootContextParameter<T> parameter) {
-		return this.parameters.get(parameter);
-	}
-
-	public void drop(Identifier id, Consumer<ItemStack> lootConsumer) {
-		this.parameters.addDynamicDrops(id, lootConsumer);
+	public <T> T requireParameter(ContextParameter<T> parameter) {
+		return this.worldContext.getParameters().getOrThrow(parameter);
 	}
 
 	@Nullable
-	public <T> T get(LootContextParameter<T> parameter) {
-		return this.parameters.getOptional(parameter);
+	public <T> T get(ContextParameter<T> parameter) {
+		return this.worldContext.getParameters().getNullable(parameter);
+	}
+
+	public void drop(Identifier id, Consumer<ItemStack> lootConsumer) {
+		this.worldContext.addDynamicDrops(id, lootConsumer);
 	}
 
 	public boolean isActive(LootContext.Entry<?> entry) {
@@ -68,11 +69,11 @@ public class LootContext {
 	}
 
 	public float getLuck() {
-		return this.parameters.getLuck();
+		return this.worldContext.getLuck();
 	}
 
 	public ServerWorld getWorld() {
-		return this.parameters.getWorld();
+		return this.worldContext.getWorld();
 	}
 
 	public static LootContext.Entry<LootTable> table(LootTable table) {
@@ -88,12 +89,12 @@ public class LootContext {
 	}
 
 	public static class Builder {
-		private final LootContextParameterSet parameters;
+		private final LootWorldContext worldContext;
 		@Nullable
 		private Random random;
 
-		public Builder(LootContextParameterSet parameters) {
-			this.parameters = parameters;
+		public Builder(LootWorldContext worldContext) {
+			this.worldContext = worldContext;
 		}
 
 		public LootContext.Builder random(long seed) {
@@ -110,14 +111,14 @@ public class LootContext {
 		}
 
 		public ServerWorld getWorld() {
-			return this.parameters.getWorld();
+			return this.worldContext.getWorld();
 		}
 
 		public LootContext build(Optional<Identifier> randomId) {
 			ServerWorld serverWorld = this.getWorld();
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Random random = (Random)Optional.ofNullable(this.random).or(() -> randomId.map(serverWorld::getOrCreateRandom)).orElseGet(serverWorld::getRandom);
-			return new LootContext(this.parameters, random, minecraftServer.getReloadableRegistries().createRegistryLookup());
+			return new LootContext(this.worldContext, random, minecraftServer.getReloadableRegistries().createRegistryLookup());
 		}
 	}
 
@@ -129,14 +130,14 @@ public class LootContext {
 
 		public static final StringIdentifiable.EnumCodec<LootContext.EntityTarget> CODEC = StringIdentifiable.createCodec(LootContext.EntityTarget::values);
 		private final String type;
-		private final LootContextParameter<? extends Entity> parameter;
+		private final ContextParameter<? extends Entity> parameter;
 
-		private EntityTarget(final String type, final LootContextParameter<? extends Entity> parameter) {
+		private EntityTarget(final String type, final ContextParameter<? extends Entity> parameter) {
 			this.type = type;
 			this.parameter = parameter;
 		}
 
-		public LootContextParameter<? extends Entity> getParameter() {
+		public ContextParameter<? extends Entity> getParameter() {
 			return this.parameter;
 		}
 

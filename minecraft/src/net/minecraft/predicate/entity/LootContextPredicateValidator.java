@@ -3,10 +3,10 @@ package net.minecraft.predicate.entity;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.loot.LootTableReporter;
-import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.util.ErrorReporter;
+import net.minecraft.util.context.ContextType;
 
 public class LootContextPredicateValidator {
 	private final ErrorReporter errorReporter;
@@ -29,11 +29,11 @@ public class LootContextPredicateValidator {
 		this.validate(predicate, LootContextTypes.ADVANCEMENT_ENTITY, path);
 	}
 
-	public void validate(LootContextPredicate predicate, LootContextType type, String path) {
+	public void validate(LootContextPredicate predicate, ContextType type, String path) {
 		predicate.validateConditions(new LootTableReporter(this.errorReporter.makeChild(path), type, this.conditionsLookup));
 	}
 
-	public void validate(List<LootContextPredicate> predicates, LootContextType type, String path) {
+	public void validate(List<LootContextPredicate> predicates, ContextType type, String path) {
 		for (int i = 0; i < predicates.size(); i++) {
 			LootContextPredicate lootContextPredicate = (LootContextPredicate)predicates.get(i);
 			lootContextPredicate.validateConditions(new LootTableReporter(this.errorReporter.makeChild(path + "[" + i + "]"), type, this.conditionsLookup));

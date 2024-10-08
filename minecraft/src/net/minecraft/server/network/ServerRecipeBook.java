@@ -83,7 +83,7 @@ public class ServerRecipeBook extends RecipeBook {
 		}
 
 		if (!list.isEmpty()) {
-			player.networkHandler.sendPacket(new RecipeBookAddS2CPacket(list));
+			player.networkHandler.sendPacket(new RecipeBookAddS2CPacket(list, false));
 		}
 
 		return list.size();
@@ -160,7 +160,7 @@ public class ServerRecipeBook extends RecipeBook {
 			this.collector.displaysForRecipe(registryKey, display -> list.add(new RecipeBookAddS2CPacket.Entry(display, false, this.highlighted.contains(registryKey))));
 		}
 
-		player.networkHandler.sendPacket(new RecipeBookAddS2CPacket(list));
+		player.networkHandler.sendPacket(new RecipeBookAddS2CPacket(list, true));
 	}
 
 	public void copyFrom(ServerRecipeBook recipeBook) {

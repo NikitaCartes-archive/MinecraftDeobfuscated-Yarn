@@ -15,13 +15,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.context.ContextParameter;
 
 public class EnchantedCountIncreaseLootFunction extends ConditionalLootFunction {
 	public static final int DEFAULT_LIMIT = 0;
@@ -53,8 +53,8 @@ public class EnchantedCountIncreaseLootFunction extends ConditionalLootFunction 
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return Sets.<LootContextParameter<?>>union(ImmutableSet.of(LootContextParameters.ATTACKING_ENTITY), this.count.getRequiredParameters());
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Sets.<ContextParameter<?>>union(ImmutableSet.of(LootContextParameters.ATTACKING_ENTITY), this.count.getAllowedParameters());
 	}
 
 	private boolean hasLimit() {

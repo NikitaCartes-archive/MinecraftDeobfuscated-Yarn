@@ -8,17 +8,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.display.RecipeDisplay;
-import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.context.ContextParameterMap;
 
 /**
  * A recipe that is synced to the clients. Note that this does not include
  * the recipe's registry key.
  */
 public record RecipeDisplayEntry(
-	NetworkRecipeId id, RecipeDisplay display, OptionalInt group, RecipeBookGroup category, Optional<List<Ingredient>> craftingRequirements
+	NetworkRecipeId id, RecipeDisplay display, OptionalInt group, RecipeBookCategory category, Optional<List<Ingredient>> craftingRequirements
 ) {
 	public static final PacketCodec<RegistryByteBuf, RecipeDisplayEntry> PACKET_CODEC = PacketCodec.tuple(
 		NetworkRecipeId.PACKET_CODEC,
@@ -27,14 +28,14 @@ public record RecipeDisplayEntry(
 		RecipeDisplayEntry::display,
 		PacketCodecs.OPTIONAL_INT,
 		RecipeDisplayEntry::group,
-		RecipeBookGroup.PACKET_CODEC,
+		PacketCodecs.registryValue(RegistryKeys.RECIPE_BOOK_CATEGORY),
 		RecipeDisplayEntry::category,
 		Ingredient.PACKET_CODEC.collect(PacketCodecs.toList()).collect(PacketCodecs::optional),
 		RecipeDisplayEntry::craftingRequirements,
 		RecipeDisplayEntry::new
 	);
 
-	public List<ItemStack> getStacks(SlotDisplay.Context context) {
+	public List<ItemStack> getStacks(ContextParameterMap context) {
 		return this.display.result().getStacks(context);
 	}
 

@@ -19,9 +19,9 @@ import net.minecraft.block.vault.VaultSharedData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -302,10 +302,8 @@ public class VaultBlockEntity extends BlockEntity {
 
 		private static ItemStack generateDisplayItem(ServerWorld world, BlockPos pos, RegistryKey<LootTable> lootTable) {
 			LootTable lootTable2 = world.getServer().getReloadableRegistries().getLootTable(lootTable);
-			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
-				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
-				.build(LootContextTypes.VAULT);
-			List<ItemStack> list = lootTable2.generateLoot(lootContextParameterSet, world.getRandom());
+			LootWorldContext lootWorldContext = new LootWorldContext.Builder(world).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos)).build(LootContextTypes.VAULT);
+			List<ItemStack> list = lootTable2.generateLoot(lootWorldContext, world.getRandom());
 			return list.isEmpty() ? ItemStack.EMPTY : Util.getRandom(list, world.getRandom());
 		}
 
@@ -320,13 +318,13 @@ public class VaultBlockEntity extends BlockEntity {
 
 		private static List<ItemStack> generateLoot(ServerWorld world, VaultConfig config, BlockPos pos, PlayerEntity player, ItemStack key) {
 			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(config.lootTable());
-			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+			LootWorldContext lootWorldContext = new LootWorldContext.Builder(world)
 				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 				.luck(player.getLuck())
 				.add(LootContextParameters.THIS_ENTITY, player)
 				.add(LootContextParameters.TOOL, key)
 				.build(LootContextTypes.VAULT);
-			return lootTable.generateLoot(lootContextParameterSet);
+			return lootTable.generateLoot(lootWorldContext);
 		}
 
 		private static boolean canBeUnlocked(VaultConfig config, VaultState state) {

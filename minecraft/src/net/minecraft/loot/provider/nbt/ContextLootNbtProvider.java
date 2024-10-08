@@ -1,6 +1,5 @@
 package net.minecraft.loot.provider.nbt;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,10 +8,10 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.util.context.ContextParameter;
 
 public class ContextLootNbtProvider implements LootNbtProvider {
 	private static final String BLOCK_ENTITY_TARGET_NAME = "block_entity";
@@ -29,8 +28,8 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 		}
 
 		@Override
-		public Set<LootContextParameter<?>> getRequiredParameters() {
-			return ImmutableSet.of(LootContextParameters.BLOCK_ENTITY);
+		public Set<ContextParameter<?>> getRequiredParameters() {
+			return Set.of(LootContextParameters.BLOCK_ENTITY);
 		}
 	};
 	public static final ContextLootNbtProvider BLOCK_ENTITY = new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
@@ -63,8 +62,8 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 			}
 
 			@Override
-			public Set<LootContextParameter<?>> getRequiredParameters() {
-				return ImmutableSet.of(entityTarget.getParameter());
+			public Set<ContextParameter<?>> getRequiredParameters() {
+				return Set.of(entityTarget.getParameter());
 			}
 		};
 	}
@@ -85,7 +84,7 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getRequiredParameters() {
 		return this.target.getRequiredParameters();
 	}
 
@@ -99,6 +98,6 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 
 		String getName();
 
-		Set<LootContextParameter<?>> getRequiredParameters();
+		Set<ContextParameter<?>> getRequiredParameters();
 	}
 }

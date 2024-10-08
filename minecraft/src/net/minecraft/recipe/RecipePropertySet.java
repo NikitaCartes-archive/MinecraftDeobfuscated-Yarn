@@ -22,7 +22,7 @@ public class RecipePropertySet {
 	public static final RegistryKey<RecipePropertySet> SMITHING_ADDITION = register("smithing_addition");
 	public static final RegistryKey<RecipePropertySet> FURNACE_INPUT = register("furnace_input");
 	public static final RegistryKey<RecipePropertySet> BLAST_FURNACE_INPUT = register("blast_furnace_input");
-	public static final RegistryKey<RecipePropertySet> SMELTER_INPUT = register("smelter_input");
+	public static final RegistryKey<RecipePropertySet> SMOKER_INPUT = register("smoker_input");
 	public static final RegistryKey<RecipePropertySet> CAMPFIRE_INPUT = register("campfire_input");
 	public static final PacketCodec<RegistryByteBuf, RecipePropertySet> PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.ITEM)
 		.collect(PacketCodecs.toList())

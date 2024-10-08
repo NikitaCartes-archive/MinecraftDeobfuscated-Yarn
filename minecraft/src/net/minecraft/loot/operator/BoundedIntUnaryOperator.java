@@ -12,10 +12,10 @@ import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.MathHelper;
 
 public class BoundedIntUnaryOperator {
@@ -38,14 +38,14 @@ public class BoundedIntUnaryOperator {
 	private final BoundedIntUnaryOperator.Applier applier;
 	private final BoundedIntUnaryOperator.Tester tester;
 
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		Builder<LootContextParameter<?>> builder = ImmutableSet.builder();
+	public Set<ContextParameter<?>> getRequiredParameters() {
+		Builder<ContextParameter<?>> builder = ImmutableSet.builder();
 		if (this.min != null) {
-			builder.addAll(this.min.getRequiredParameters());
+			builder.addAll(this.min.getAllowedParameters());
 		}
 
 		if (this.max != null) {
-			builder.addAll(this.max.getRequiredParameters());
+			builder.addAll(this.max.getAllowedParameters());
 		}
 
 		return builder.build();

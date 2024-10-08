@@ -46,17 +46,20 @@ public class TransientCreakingEntity extends CreakingEntity {
 			return super.damage(world, source, amount);
 		} else if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 			return super.damage(world, source, amount);
-		} else if (!this.isInvulnerableTo(world, source) && this.invulnerableAnimationTimer <= 0 && source.getAttacker() instanceof PlayerEntity) {
+		} else if (!this.isInvulnerableTo(world, source) && this.invulnerableAnimationTimer <= 0) {
 			this.invulnerableAnimationTimer = 8;
 			this.getWorld().sendEntityStatus(this, EntityStatuses.INVULNERABLE_CREAKING_HIT);
 			if (this.getWorld().getBlockEntity(this.heartPos) instanceof CreakingHeartBlockEntity creakingHeartBlockEntity && creakingHeartBlockEntity.isPuppet(this)) {
-				creakingHeartBlockEntity.onPuppetDamage();
+				if (source.getAttacker() instanceof PlayerEntity) {
+					creakingHeartBlockEntity.onPuppetDamage();
+				}
+
 				this.playHurtSound(source);
 			}
 
 			return true;
 		} else {
-			return true;
+			return false;
 		}
 	}
 
@@ -157,6 +160,8 @@ public class TransientCreakingEntity extends CreakingEntity {
 	}
 
 	class CreakingLandPathNodeMaker extends LandPathNodeMaker {
+		private static final int field_54896 = 1024;
+
 		@Override
 		public PathNodeType getDefaultNodeType(PathContext context, int x, int y, int z) {
 			BlockPos blockPos = TransientCreakingEntity.this.heartPos;

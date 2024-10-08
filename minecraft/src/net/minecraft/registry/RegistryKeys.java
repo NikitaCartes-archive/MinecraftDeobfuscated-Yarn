@@ -54,6 +54,7 @@ import net.minecraft.predicate.item.ItemSubPredicate;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.scoreboard.number.NumberFormatType;
@@ -200,6 +201,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<ConsumeEffect.Type<?>>> CONSUME_EFFECT_TYPE = of("consume_effect_type");
 	public static final RegistryKey<Registry<RecipeDisplay.Serializer<?>>> RECIPE_DISPLAY = of("recipe_display");
 	public static final RegistryKey<Registry<SlotDisplay.Serializer<?>>> SLOT_DISPLAY = of("slot_display");
+	public static final RegistryKey<Registry<RecipeBookCategory>> RECIPE_BOOK_CATEGORY = of("recipe_book_category");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");

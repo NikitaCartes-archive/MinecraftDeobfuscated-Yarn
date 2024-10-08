@@ -13,9 +13,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.tag.TagKey;
@@ -164,11 +164,11 @@ public record EntityPredicate(
 	}
 
 	public static LootContext createAdvancementEntityLootContext(ServerPlayerEntity player, Entity target) {
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(player.getServerWorld())
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(player.getServerWorld())
 			.add(LootContextParameters.THIS_ENTITY, target)
 			.add(LootContextParameters.ORIGIN, player.getPos())
 			.build(LootContextTypes.ADVANCEMENT_ENTITY);
-		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		return new LootContext.Builder(lootWorldContext).build(Optional.empty());
 	}
 
 	public static class Builder {

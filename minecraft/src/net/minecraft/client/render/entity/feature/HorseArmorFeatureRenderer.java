@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -40,10 +39,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntityRender
 			HorseEntityModel horseEntityModel = horseEntityRenderState.baby ? this.babyModel : this.model;
 			Identifier identifier = (Identifier)equippableComponent.model().get();
 			horseEntityModel.setAngles(horseEntityRenderState);
-			this.equipmentRenderer
-				.render(
-					EquipmentModel.LayerType.HORSE_BODY, identifier, horseEntityModel, itemStack, RenderLayer::getEntityCutoutNoCull, matrixStack, vertexConsumerProvider, i
-				);
+			this.equipmentRenderer.render(EquipmentModel.LayerType.HORSE_BODY, identifier, horseEntityModel, itemStack, matrixStack, vertexConsumerProvider, i);
 		}
 	}
 }

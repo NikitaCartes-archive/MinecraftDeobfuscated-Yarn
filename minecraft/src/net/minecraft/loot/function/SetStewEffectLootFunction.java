@@ -16,11 +16,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
+import net.minecraft.util.context.ContextParameter;
 
 public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	private static final Codec<List<SetStewEffectLootFunction.StewEffect>> STEW_EFFECT_LIST_CODEC = SetStewEffectLootFunction.StewEffect.CODEC
@@ -54,10 +54,10 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return (Set<LootContextParameter<?>>)this.stewEffects
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return (Set<ContextParameter<?>>)this.stewEffects
 			.stream()
-			.flatMap(stewEffect -> stewEffect.duration().getRequiredParameters().stream())
+			.flatMap(stewEffect -> stewEffect.duration().getAllowedParameters().stream())
 			.collect(ImmutableSet.toImmutableSet());
 	}
 

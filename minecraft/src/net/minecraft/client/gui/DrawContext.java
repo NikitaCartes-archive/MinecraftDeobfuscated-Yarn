@@ -313,11 +313,11 @@ public class DrawContext {
 		if (scaling instanceof Scaling.Stretch) {
 			this.drawSprite(renderLayers, sprite2, textureWidth, textureHeight, u, v, x, y, width, height, -1);
 		} else {
-			this.drawGuiTexture(renderLayers, sprite2, x, y, width, height);
+			this.drawSprite(renderLayers, sprite2, x, y, width, height);
 		}
 	}
 
-	public void drawGuiTexture(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height) {
+	public void drawSprite(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height) {
 		this.drawSprite(renderLayers, sprite, x, y, width, height, -1);
 	}
 

@@ -14,29 +14,33 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		int i = 0;
-		ItemStack itemStack = ItemStack.EMPTY;
+		if (craftingRecipeInput.getStackCount() < 2) {
+			return false;
+		} else {
+			boolean bl = false;
+			boolean bl2 = false;
 
-		for (int j = 0; j < craftingRecipeInput.size(); j++) {
-			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(j);
-			if (!itemStack2.isEmpty()) {
-				if (itemStack2.contains(DataComponentTypes.MAP_ID)) {
-					if (!itemStack.isEmpty()) {
-						return false;
+			for (int i = 0; i < craftingRecipeInput.size(); i++) {
+				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
+				if (!itemStack.isEmpty()) {
+					if (itemStack.contains(DataComponentTypes.MAP_ID)) {
+						if (bl2) {
+							return false;
+						}
+
+						bl2 = true;
+					} else {
+						if (!itemStack.isOf(Items.MAP)) {
+							return false;
+						}
+
+						bl = true;
 					}
-
-					itemStack = itemStack2;
-				} else {
-					if (!itemStack2.isOf(Items.MAP)) {
-						return false;
-					}
-
-					i++;
 				}
 			}
-		}
 
-		return !itemStack.isEmpty() && i > 0;
+			return bl2 && bl;
+		}
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {

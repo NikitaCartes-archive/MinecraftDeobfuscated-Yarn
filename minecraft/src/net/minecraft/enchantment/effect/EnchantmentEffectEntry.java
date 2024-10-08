@@ -7,11 +7,11 @@ import java.util.Optional;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextType;
 import net.minecraft.util.ErrorReporter;
+import net.minecraft.util.context.ContextType;
 
 public record EnchantmentEffectEntry<T>(T effect, Optional<LootCondition> requirements) {
-	public static Codec<LootCondition> createRequirementsCodec(LootContextType lootContextType) {
+	public static Codec<LootCondition> createRequirementsCodec(ContextType lootContextType) {
 		return LootCondition.CODEC
 			.validate(
 				condition -> {
@@ -25,7 +25,7 @@ public record EnchantmentEffectEntry<T>(T effect, Optional<LootCondition> requir
 			);
 	}
 
-	public static <T> Codec<EnchantmentEffectEntry<T>> createCodec(Codec<T> effectCodec, LootContextType lootContextType) {
+	public static <T> Codec<EnchantmentEffectEntry<T>> createCodec(Codec<T> effectCodec, ContextType lootContextType) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						effectCodec.fieldOf("effect").forGetter(EnchantmentEffectEntry::effect),

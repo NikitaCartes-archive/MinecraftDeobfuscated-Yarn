@@ -12,7 +12,7 @@ import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -21,6 +21,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -58,17 +59,17 @@ public class SearchManager {
 				DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
 				Registry<Item> registry = dynamicRegistryManager.getOrThrow(RegistryKeys.ITEM);
 				Item.TooltipContext tooltipContext = Item.TooltipContext.create(dynamicRegistryManager);
-				SlotDisplay.Context context = SlotDisplay.Context.create(world);
+				ContextParameterMap contextParameterMap = SlotDisplayContexts.createParameters(world);
 				TooltipType tooltipType = TooltipType.Default.BASIC;
 				CompletableFuture<?> completableFuture = this.recipeOutputReloadFuture;
 				this.recipeOutputReloadFuture = CompletableFuture.supplyAsync(
 					() -> new TextSearchProvider(
 							resultCollection -> collectItemTooltips(
-									resultCollection.getAllRecipes().stream().flatMap(display -> display.getStacks(context).stream()), tooltipContext, tooltipType
+									resultCollection.getAllRecipes().stream().flatMap(display -> display.getStacks(contextParameterMap).stream()), tooltipContext, tooltipType
 								),
 							resultCollection -> resultCollection.getAllRecipes()
 									.stream()
-									.flatMap(display -> display.getStacks(context).stream())
+									.flatMap(display -> display.getStacks(contextParameterMap).stream())
 									.map(stack -> registry.getId(stack.getItem())),
 							list
 						),

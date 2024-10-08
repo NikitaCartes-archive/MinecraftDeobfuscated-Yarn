@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DustParticleEffect;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class RedDustParticle extends AbstractDustParticle<DustParticleEffect> {
@@ -20,9 +21,10 @@ public class RedDustParticle extends AbstractDustParticle<DustParticleEffect> {
 	) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
 		float f = this.random.nextFloat() * 0.4F + 0.6F;
-		this.red = this.darken(parameters.getColor().x(), f);
-		this.green = this.darken(parameters.getColor().y(), f);
-		this.blue = this.darken(parameters.getColor().z(), f);
+		Vector3f vector3f = parameters.getColor();
+		this.red = this.darken(vector3f.x(), f);
+		this.green = this.darken(vector3f.y(), f);
+		this.blue = this.darken(vector3f.z(), f);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -1,13 +1,12 @@
 package net.minecraft.loot.provider.score;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.scoreboard.ScoreHolder;
+import net.minecraft.util.context.ContextParameter;
 
 public record FixedLootScoreProvider(String name) implements LootScoreProvider {
 	public static final MapCodec<FixedLootScoreProvider> CODEC = RecordCodecBuilder.mapCodec(
@@ -29,7 +28,7 @@ public record FixedLootScoreProvider(String name) implements LootScoreProvider {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of();
+	public Set<ContextParameter<?>> getRequiredParameters() {
+		return Set.of();
 	}
 }

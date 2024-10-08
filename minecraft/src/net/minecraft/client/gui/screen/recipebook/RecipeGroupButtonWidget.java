@@ -10,7 +10,7 @@ import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeDisplayEntry;
-import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -77,7 +77,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		}
 	}
 
-	public RecipeBookCategory getCategory() {
+	public RecipeBookGroup getCategory() {
 		return this.tab.category();
 	}
 

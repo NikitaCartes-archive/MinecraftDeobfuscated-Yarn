@@ -9,10 +9,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.display.RecipeDisplay;
-import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 
 @Environment(EnvType.CLIENT)
 public class RecipeToast implements Toast {
@@ -77,9 +78,9 @@ public class RecipeToast implements Toast {
 			toastManager.add(recipeToast);
 		}
 
-		SlotDisplay.Context context = SlotDisplay.Context.create(toastManager.getClient().world);
-		ItemStack itemStack = display.craftingStation().getFirst(context);
-		ItemStack itemStack2 = display.result().getFirst(context);
+		ContextParameterMap contextParameterMap = SlotDisplayContexts.createParameters(toastManager.getClient().world);
+		ItemStack itemStack = display.craftingStation().getFirst(contextParameterMap);
+		ItemStack itemStack2 = display.result().getFirst(contextParameterMap);
 		recipeToast.addRecipes(itemStack, itemStack2);
 	}
 

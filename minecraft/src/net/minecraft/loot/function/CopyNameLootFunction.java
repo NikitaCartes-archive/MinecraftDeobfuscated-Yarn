@@ -1,6 +1,5 @@
 package net.minecraft.loot.function;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,10 +9,10 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.context.ContextParameter;
 
 public class CopyNameLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<CopyNameLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -34,8 +33,8 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.source.parameter);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(this.source.parameter);
 	}
 
 	@Override
@@ -59,9 +58,9 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 
 		public static final Codec<CopyNameLootFunction.Source> CODEC = StringIdentifiable.createCodec(CopyNameLootFunction.Source::values);
 		private final String name;
-		final LootContextParameter<?> parameter;
+		final ContextParameter<?> parameter;
 
-		private Source(final String name, final LootContextParameter<?> parameter) {
+		private Source(final String name, final ContextParameter<?> parameter) {
 			this.name = name;
 			this.parameter = parameter;
 		}

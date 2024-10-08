@@ -38,8 +38,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -331,7 +331,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			EnchantmentHelper.applyEnchantmentProvider(
 				itemStack, world.getRegistryManager(), EnchantmentProviders.ENDERMAN_LOOT_DROP, world.getLocalDifficulty(this.getBlockPos()), this.getRandom()
 			);
-			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+			LootWorldContext.Builder builder = new LootWorldContext.Builder((ServerWorld)this.getWorld())
 				.add(LootContextParameters.ORIGIN, this.getPos())
 				.add(LootContextParameters.TOOL, itemStack)
 				.addOptional(LootContextParameters.THIS_ENTITY, this);

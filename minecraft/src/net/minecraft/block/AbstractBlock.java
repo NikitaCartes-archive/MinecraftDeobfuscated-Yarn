@@ -34,9 +34,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeyedValue;
@@ -575,7 +575,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			boolean bl = explosion.getCausingEntity() instanceof PlayerEntity;
 			if (block.shouldDropItemsOnExplosion(explosion)) {
 				BlockEntity blockEntity = state.hasBlockEntity() ? world.getBlockEntity(pos) : null;
-				LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+				LootWorldContext.Builder builder = new LootWorldContext.Builder(world)
 					.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 					.add(LootContextParameters.TOOL, ItemStack.EMPTY)
 					.addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity)
@@ -767,14 +767,14 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see ItemStack#split
 	 * @see net.minecraft.loot.context.LootContextParameters
 	 */
-	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+	protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
 		if (this.lootTableKey.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			LootContextParameterSet lootContextParameterSet = builder.add(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
-			ServerWorld serverWorld = lootContextParameterSet.getWorld();
+			LootWorldContext lootWorldContext = builder.add(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
+			ServerWorld serverWorld = lootWorldContext.getWorld();
 			LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable((RegistryKey<LootTable>)this.lootTableKey.get());
-			return lootTable.generateLoot(lootContextParameterSet);
+			return lootTable.generateLoot(lootWorldContext);
 		}
 	}
 
@@ -1506,7 +1506,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.getBlock().onStacksDropped(this.asBlockState(), world, pos, tool, dropExperience);
 		}
 
-		public List<ItemStack> getDroppedStacks(LootContextParameterSet.Builder builder) {
+		public List<ItemStack> getDroppedStacks(LootWorldContext.Builder builder) {
 			return this.getBlock().getDroppedStacks(this.asBlockState(), builder);
 		}
 

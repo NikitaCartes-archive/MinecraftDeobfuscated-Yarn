@@ -233,9 +233,10 @@ public class CreakingEntity extends HostileEntity {
 			Predicate<LivingEntity> predicate = this.isActive() ? LivingEntity.NOT_WEARING_GAZE_DISGUISE_PREDICATE : entity -> true;
 
 			for (PlayerEntity playerEntity : list) {
-				if (this.isEntityLookingAtMe(
-					playerEntity, 0.5, false, true, predicate, new DoubleSupplier[]{this::getEyeY, this::getY, () -> (this.getEyeY() + this.getY()) / 2.0}
-				)) {
+				if (!playerEntity.isCreative()
+					&& this.isEntityLookingAtMe(
+						playerEntity, 0.5, false, true, predicate, new DoubleSupplier[]{this::getEyeY, this::getY, () -> (this.getEyeY() + this.getY()) / 2.0}
+					)) {
 					if (this.isActive()) {
 						return false;
 					}
@@ -244,6 +245,7 @@ public class CreakingEntity extends HostileEntity {
 						this.emitGameEvent(GameEvent.ENTITY_ACTION);
 						this.playSound(SoundEvents.ENTITY_CREAKING_ACTIVATE);
 						this.setActive(true);
+						this.getBrain().remember(MemoryModuleType.ATTACK_TARGET, playerEntity);
 						return false;
 					}
 				}

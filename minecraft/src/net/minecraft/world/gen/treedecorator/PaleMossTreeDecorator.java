@@ -46,46 +46,48 @@ public class PaleMossTreeDecorator extends TreeDecorator {
 		Random random = generator.getRandom();
 		StructureWorldAccess structureWorldAccess = (StructureWorldAccess)generator.getWorld();
 		List<BlockPos> list = Util.copyShuffled(generator.getLogPositions(), random);
-		Mutable<BlockPos> mutable = new MutableObject<>((BlockPos)list.getFirst());
-		list.forEach(pos -> {
-			if (pos.getY() < mutable.getValue().getY()) {
-				mutable.setValue(pos);
+		if (!list.isEmpty()) {
+			Mutable<BlockPos> mutable = new MutableObject<>((BlockPos)list.getFirst());
+			list.forEach(pos -> {
+				if (pos.getY() < mutable.getValue().getY()) {
+					mutable.setValue(pos);
+				}
+			});
+			BlockPos blockPos = mutable.getValue();
+			if (random.nextFloat() < this.groundProbability) {
+				structureWorldAccess.getRegistryManager()
+					.getOptional(RegistryKeys.CONFIGURED_FEATURE)
+					.flatMap(registry -> registry.getOptional(VegetationConfiguredFeatures.PALE_MOSS_PATCH_BONEMEAL))
+					.ifPresent(
+						entry -> ((ConfiguredFeature)entry.value())
+								.generate(structureWorldAccess, structureWorldAccess.toServerWorld().getChunkManager().getChunkGenerator(), random, blockPos.up())
+					);
 			}
-		});
-		BlockPos blockPos = mutable.getValue();
-		if (random.nextFloat() < this.groundProbability) {
-			structureWorldAccess.getRegistryManager()
-				.getOptional(RegistryKeys.CONFIGURED_FEATURE)
-				.flatMap(registry -> registry.getOptional(VegetationConfiguredFeatures.PALE_MOSS_PATCH_BONEMEAL))
-				.ifPresent(
-					entry -> ((ConfiguredFeature)entry.value())
-							.generate(structureWorldAccess, structureWorldAccess.toServerWorld().getChunkManager().getChunkGenerator(), random, blockPos.up())
-				);
+
+			generator.getLogPositions().forEach(pos -> {
+				if (random.nextFloat() < this.trunkProbability) {
+					BlockPos blockPosxx = pos.down();
+					if (generator.isAir(blockPosxx)) {
+						decorate(blockPosxx, generator);
+					}
+				}
+
+				if (random.nextFloat() < this.trunkProbability) {
+					BlockPos blockPosx = pos.up();
+					if (generator.isAir(blockPosx)) {
+						PaleMossCarpetBlock.placeAt((StructureWorldAccess)generator.getWorld(), blockPosx, generator.getRandom(), 3);
+					}
+				}
+			});
+			generator.getLeavesPositions().forEach(pos -> {
+				if (random.nextFloat() < this.leavesProbability) {
+					BlockPos blockPosx = pos.down();
+					if (generator.isAir(blockPosx)) {
+						decorate(blockPosx, generator);
+					}
+				}
+			});
 		}
-
-		generator.getLogPositions().forEach(pos -> {
-			if (random.nextFloat() < this.trunkProbability) {
-				BlockPos blockPosxx = pos.down();
-				if (generator.isAir(blockPosxx)) {
-					decorate(blockPosxx, generator);
-				}
-			}
-
-			if (random.nextFloat() < this.trunkProbability) {
-				BlockPos blockPosx = pos.up();
-				if (generator.isAir(blockPosx)) {
-					PaleMossCarpetBlock.placeAt((StructureWorldAccess)generator.getWorld(), blockPosx, generator.getRandom(), 3);
-				}
-			}
-		});
-		generator.getLeavesPositions().forEach(pos -> {
-			if (random.nextFloat() < this.leavesProbability) {
-				BlockPos blockPosx = pos.down();
-				if (generator.isAir(blockPosx)) {
-					decorate(blockPosx, generator);
-				}
-			}
-		});
 	}
 
 	private static void decorate(BlockPos pos, TreeDecorator.Generator generator) {

@@ -376,7 +376,6 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
-			.target(ITEM_ENTITY_TARGET)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);

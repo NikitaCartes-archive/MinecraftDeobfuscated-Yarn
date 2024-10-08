@@ -33,9 +33,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -384,7 +384,7 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 	}
 
 	public static LootContext createEnchantedDamageLootContext(ServerWorld world, int level, Entity entity, DamageSource damageSource) {
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(world)
 			.add(LootContextParameters.THIS_ENTITY, entity)
 			.add(LootContextParameters.ENCHANTMENT_LEVEL, level)
 			.add(LootContextParameters.ORIGIN, entity.getPos())
@@ -392,44 +392,44 @@ public record Enchantment(Text description, Enchantment.Definition definition, R
 			.addOptional(LootContextParameters.ATTACKING_ENTITY, damageSource.getAttacker())
 			.addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, damageSource.getSource())
 			.build(LootContextTypes.ENCHANTED_DAMAGE);
-		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		return new LootContext.Builder(lootWorldContext).build(Optional.empty());
 	}
 
 	private static LootContext createEnchantedItemLootContext(ServerWorld world, int level, ItemStack stack) {
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(world)
 			.add(LootContextParameters.TOOL, stack)
 			.add(LootContextParameters.ENCHANTMENT_LEVEL, level)
 			.build(LootContextTypes.ENCHANTED_ITEM);
-		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		return new LootContext.Builder(lootWorldContext).build(Optional.empty());
 	}
 
 	private static LootContext createEnchantedLocationLootContext(ServerWorld world, int level, Entity entity, boolean enchantmentActive) {
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(world)
 			.add(LootContextParameters.THIS_ENTITY, entity)
 			.add(LootContextParameters.ENCHANTMENT_LEVEL, level)
 			.add(LootContextParameters.ORIGIN, entity.getPos())
 			.add(LootContextParameters.ENCHANTMENT_ACTIVE, enchantmentActive)
 			.build(LootContextTypes.ENCHANTED_LOCATION);
-		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		return new LootContext.Builder(lootWorldContext).build(Optional.empty());
 	}
 
 	private static LootContext createEnchantedEntityLootContext(ServerWorld world, int level, Entity entity, Vec3d pos) {
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(world)
 			.add(LootContextParameters.THIS_ENTITY, entity)
 			.add(LootContextParameters.ENCHANTMENT_LEVEL, level)
 			.add(LootContextParameters.ORIGIN, pos)
 			.build(LootContextTypes.ENCHANTED_ENTITY);
-		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		return new LootContext.Builder(lootWorldContext).build(Optional.empty());
 	}
 
 	private static LootContext createHitBlockLootContext(ServerWorld world, int level, Entity entity, Vec3d pos, BlockState state) {
-		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+		LootWorldContext lootWorldContext = new LootWorldContext.Builder(world)
 			.add(LootContextParameters.THIS_ENTITY, entity)
 			.add(LootContextParameters.ENCHANTMENT_LEVEL, level)
 			.add(LootContextParameters.ORIGIN, pos)
 			.add(LootContextParameters.BLOCK_STATE, state)
 			.build(LootContextTypes.HIT_BLOCK);
-		return new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+		return new LootContext.Builder(lootWorldContext).build(Optional.empty());
 	}
 
 	private static <T> void applyEffects(List<EnchantmentEffectEntry<T>> entries, LootContext lootContext, Consumer<T> effectConsumer) {

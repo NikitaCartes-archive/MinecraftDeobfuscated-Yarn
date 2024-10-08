@@ -5,10 +5,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.context.ContextParameter;
 
 public record ValueCheckLootCondition(LootNumberProvider value, BoundedIntUnaryOperator range) implements LootCondition {
 	public static final MapCodec<ValueCheckLootCondition> CODEC = RecordCodecBuilder.mapCodec(
@@ -25,8 +25,8 @@ public record ValueCheckLootCondition(LootNumberProvider value, BoundedIntUnaryO
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return Sets.<LootContextParameter<?>>union(this.value.getRequiredParameters(), this.range.getRequiredParameters());
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Sets.<ContextParameter<?>>union(this.value.getAllowedParameters(), this.range.getRequiredParameters());
 	}
 
 	public boolean test(LootContext lootContext) {

@@ -114,6 +114,9 @@ public class GameRules {
 		"spectatorsGenerateChunks", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
 	public static final GameRules.Key<GameRules.IntRule> SPAWN_RADIUS = register("spawnRadius", GameRules.Category.PLAYER, GameRules.IntRule.create(10));
+	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_PLAYER_MOVEMENT_CHECK = register(
+		"disablePlayerMovementCheck", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
+	);
 	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = register(
 		"disableElytraMovementCheck", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);

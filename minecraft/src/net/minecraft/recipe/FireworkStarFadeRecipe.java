@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -21,29 +20,33 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		boolean bl = false;
-		boolean bl2 = false;
+		if (craftingRecipeInput.getStackCount() < 2) {
+			return false;
+		} else {
+			boolean bl = false;
+			boolean bl2 = false;
 
-		for (int i = 0; i < craftingRecipeInput.size(); i++) {
-			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
-			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() instanceof DyeItem) {
-					bl = true;
-				} else {
-					if (!INPUT_STAR.test(itemStack)) {
-						return false;
+			for (int i = 0; i < craftingRecipeInput.size(); i++) {
+				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
+				if (!itemStack.isEmpty()) {
+					if (itemStack.getItem() instanceof DyeItem) {
+						bl = true;
+					} else {
+						if (!INPUT_STAR.test(itemStack)) {
+							return false;
+						}
+
+						if (bl2) {
+							return false;
+						}
+
+						bl2 = true;
 					}
-
-					if (bl2) {
-						return false;
-					}
-
-					bl2 = true;
 				}
 			}
-		}
 
-		return bl2 && bl;
+			return bl2 && bl;
+		}
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
@@ -52,9 +55,8 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 
 		for (int i = 0; i < craftingRecipeInput.size(); i++) {
 			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
-			Item item = itemStack2.getItem();
-			if (item instanceof DyeItem) {
-				intList.add(((DyeItem)item).getColor().getFireworkColor());
+			if (itemStack2.getItem() instanceof DyeItem dyeItem) {
+				intList.add(dyeItem.getColor().getFireworkColor());
 			} else if (INPUT_STAR.test(itemStack2)) {
 				itemStack = itemStack2.copyWithCount(1);
 			}

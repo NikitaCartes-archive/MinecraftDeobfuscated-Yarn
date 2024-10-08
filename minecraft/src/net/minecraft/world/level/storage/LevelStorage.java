@@ -230,7 +230,6 @@ public class LevelStorage {
 					return this.readSummary(levelSave, bl);
 				} catch (OutOfMemoryError var12) {
 					CrashMemoryReserve.releaseMemory();
-					System.gc();
 					String string = "Ran out of memory trying to read summary of world folder \"" + levelSave.getRootPath() + "\"";
 					LOGGER.error(LogUtils.FATAL_MARKER, string);
 					OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError("Ran out of memory reading level data");

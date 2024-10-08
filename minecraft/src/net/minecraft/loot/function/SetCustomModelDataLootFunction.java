@@ -9,9 +9,9 @@ import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.context.ContextParameter;
 
 public class SetCustomModelDataLootFunction extends ConditionalLootFunction {
 	static final MapCodec<SetCustomModelDataLootFunction> CODEC = RecordCodecBuilder.mapCodec(
@@ -27,8 +27,8 @@ public class SetCustomModelDataLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.value.getRequiredParameters();
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return this.value.getAllowedParameters();
 	}
 
 	@Override

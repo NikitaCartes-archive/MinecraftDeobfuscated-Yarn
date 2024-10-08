@@ -1,15 +1,14 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.Vec3d;
 
 public record EntityPropertiesLootCondition(Optional<EntityPredicate> predicate, LootContext.EntityTarget entity) implements LootCondition {
@@ -27,8 +26,8 @@ public record EntityPropertiesLootCondition(Optional<EntityPredicate> predicate,
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.ORIGIN, this.entity.getParameter());
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.ORIGIN, this.entity.getParameter());
 	}
 
 	public boolean test(LootContext lootContext) {

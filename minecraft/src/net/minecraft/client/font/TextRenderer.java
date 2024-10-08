@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.ibm.icu.text.ArabicShaping;
 import com.ibm.icu.text.ArabicShapingException;
 import com.ibm.icu.text.Bidi;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -176,7 +177,7 @@ public class TextRenderer {
 			this, vertexConsumers, x, y, tweakTransparency(color), false, matrix, TextRenderer.TextLayerType.POLYGON_OFFSET, light
 		);
 		text.accept(drawer2);
-		drawer2.drawLayer();
+		drawer2.drawLayer(x);
 	}
 
 	private static int tweakTransparency(int argb) {
@@ -248,7 +249,7 @@ public class TextRenderer {
 	) {
 		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light);
 		TextVisitFactory.visitFormatted(text, Style.EMPTY, drawer);
-		return drawer.drawLayer();
+		return drawer.drawLayer(x);
 	}
 
 	private float drawLayer(
@@ -265,25 +266,7 @@ public class TextRenderer {
 	) {
 		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light);
 		text.accept(drawer);
-		return drawer.drawLayer();
-	}
-
-	void drawGlyph(
-		GlyphRenderer glyphRenderer,
-		boolean bold,
-		boolean italic,
-		float weight,
-		float x,
-		float y,
-		Matrix4f matrix,
-		VertexConsumer vertexConsumer,
-		int color,
-		int light
-	) {
-		glyphRenderer.draw(italic, x, y, matrix, vertexConsumer, color, light);
-		if (bold) {
-			glyphRenderer.draw(italic, x + weight, y, matrix, vertexConsumer, color, light);
-		}
+		return drawer.drawLayer(x);
 	}
 
 	/**
@@ -392,12 +375,13 @@ public class TextRenderer {
 		private final int light;
 		float x;
 		float y;
+		private final List<BakedGlyph.DrawnGlyph> glyphs;
 		@Nullable
-		private List<GlyphRenderer.Rectangle> rectangles;
+		private List<BakedGlyph.Rectangle> rectangles;
 
-		private void addRectangle(GlyphRenderer.Rectangle rectangle) {
+		private void addRectangle(BakedGlyph.Rectangle rectangle) {
 			if (this.rectangles == null) {
-				this.rectangles = Lists.<GlyphRenderer.Rectangle>newArrayList();
+				this.rectangles = Lists.<BakedGlyph.Rectangle>newArrayList();
 			}
 
 			this.rectangles.add(rectangle);
@@ -430,6 +414,7 @@ public class TextRenderer {
 			final int light
 		) {
 			this.field_24240 = textRenderer;
+			this.glyphs = new ArrayList();
 			this.vertexConsumers = vertexConsumers;
 			this.x = x;
 			this.y = y;
@@ -446,7 +431,7 @@ public class TextRenderer {
 		public boolean accept(int i, Style style, int j) {
 			FontStorage fontStorage = this.field_24240.getFontStorage(style.getFont());
 			Glyph glyph = fontStorage.getGlyph(j, this.field_24240.validateAdvance);
-			GlyphRenderer glyphRenderer = style.isObfuscated() && j != 32 ? fontStorage.getObfuscatedGlyphRenderer(glyph) : fontStorage.getGlyphRenderer(j);
+			BakedGlyph bakedGlyph = style.isObfuscated() && j != 32 ? fontStorage.getObfuscatedBakedGlyph(glyph) : fontStorage.getBaked(j);
 			boolean bl = style.isBold();
 			TextColor textColor = style.getColor();
 			int k = textColor != null
@@ -454,40 +439,49 @@ public class TextRenderer {
 				: this.color;
 			float f = glyph.getAdvance(bl);
 			float g = i == 0 ? this.x - 1.0F : this.x;
-			if (this.backgroundColor != 0) {
-				GlyphRenderer.Rectangle rectangle = new GlyphRenderer.Rectangle(g, this.y + 9.0F, this.x + f, this.y - 1.0F, -0.01F, this.backgroundColor);
-				GlyphRenderer glyphRenderer2 = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();
-				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer2.getLayer(this.layerType));
-				glyphRenderer2.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);
-			}
-
-			if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
+			if (!(bakedGlyph instanceof EmptyBakedGlyph)) {
 				float h = bl ? glyph.getBoldOffset() : 0.0F;
 				float l = this.shadow ? glyph.getShadowOffset() : 0.0F;
-				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
-				this.field_24240.drawGlyph(glyphRenderer, bl, style.isItalic(), h, this.x + l, this.y + l, this.matrix, vertexConsumer, k, this.light);
+				this.glyphs.add(new BakedGlyph.DrawnGlyph(this.x + l, this.y + l, k, bakedGlyph, style, h));
 			}
 
 			float h = this.shadow ? 1.0F : 0.0F;
 			if (style.isStrikethrough()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(g + h, this.y + h + 4.5F, this.x + h + f, this.y + h + 4.5F - 1.0F, 0.01F, k));
+				this.addRectangle(new BakedGlyph.Rectangle(g + h, this.y + h + 4.5F, this.x + h + f, this.y + h + 4.5F - 1.0F, 0.01F, k));
 			}
 
 			if (style.isUnderlined()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(g + h, this.y + h + 9.0F, this.x + h + f, this.y + h + 9.0F - 1.0F, 0.01F, k));
+				this.addRectangle(new BakedGlyph.Rectangle(g + h, this.y + h + 9.0F, this.x + h + f, this.y + h + 9.0F - 1.0F, 0.01F, k));
 			}
 
 			this.x += f;
 			return true;
 		}
 
-		public float drawLayer() {
-			if (this.rectangles != null) {
-				GlyphRenderer glyphRenderer = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();
-				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
+		float drawLayer(float x) {
+			BakedGlyph bakedGlyph = null;
+			if (this.backgroundColor != 0) {
+				BakedGlyph.Rectangle rectangle = new BakedGlyph.Rectangle(x - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, -0.01F, this.backgroundColor);
+				bakedGlyph = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
+				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(bakedGlyph.getLayer(this.layerType));
+				bakedGlyph.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);
+			}
 
-				for (GlyphRenderer.Rectangle rectangle : this.rectangles) {
-					glyphRenderer.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);
+			for (BakedGlyph.DrawnGlyph drawnGlyph : this.glyphs) {
+				BakedGlyph bakedGlyph2 = drawnGlyph.glyph();
+				VertexConsumer vertexConsumer2 = this.vertexConsumers.getBuffer(bakedGlyph2.getLayer(this.layerType));
+				bakedGlyph2.draw(drawnGlyph, this.matrix, vertexConsumer2, this.light);
+			}
+
+			if (this.rectangles != null) {
+				if (bakedGlyph == null) {
+					bakedGlyph = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
+				}
+
+				VertexConsumer vertexConsumer3 = this.vertexConsumers.getBuffer(bakedGlyph.getLayer(this.layerType));
+
+				for (BakedGlyph.Rectangle rectangle2 : this.rectangles) {
+					bakedGlyph.drawRectangle(rectangle2, this.matrix, vertexConsumer3, this.light);
 				}
 			}
 

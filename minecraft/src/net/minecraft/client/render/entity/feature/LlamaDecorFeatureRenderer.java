@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -47,7 +46,6 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntityRender
 	private void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, LlamaEntityRenderState state, ItemStack stack, Identifier modelId, int light) {
 		LlamaEntityModel llamaEntityModel = state.baby ? this.babyModel : this.model;
 		llamaEntityModel.setAngles(state);
-		this.equipmentRenderer
-			.render(EquipmentModel.LayerType.LLAMA_BODY, modelId, llamaEntityModel, stack, RenderLayer::getEntityCutoutNoCull, matrices, vertexConsumers, light);
+		this.equipmentRenderer.render(EquipmentModel.LayerType.LLAMA_BODY, modelId, llamaEntityModel, stack, matrices, vertexConsumers, light);
 	}
 }

@@ -102,7 +102,7 @@ public class StatusEffectsDisplay {
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			RegistryEntry<StatusEffect> registryEntry = statusEffectInstance.getEffectType();
 			Sprite sprite = statusEffectSpriteManager.getSprite(registryEntry);
-			context.drawGuiTexture(RenderLayer::getGuiTextured, sprite, x + (wide ? 6 : 7), i + 7, 18, 18);
+			context.drawSprite(RenderLayer::getGuiTextured, sprite, x + (wide ? 6 : 7), i + 7, 18, 18);
 			i += height;
 		}
 	}

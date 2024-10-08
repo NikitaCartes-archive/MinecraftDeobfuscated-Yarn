@@ -1,11 +1,10 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.random.Random;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
@@ -21,8 +20,8 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.EXPLOSION_RADIUS);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.EXPLOSION_RADIUS);
 	}
 
 	public boolean test(LootContext lootContext) {

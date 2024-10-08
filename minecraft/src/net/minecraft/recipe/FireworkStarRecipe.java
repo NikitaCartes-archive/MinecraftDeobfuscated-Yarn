@@ -46,50 +46,54 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		boolean bl = false;
-		boolean bl2 = false;
-		boolean bl3 = false;
-		boolean bl4 = false;
-		boolean bl5 = false;
+		if (craftingRecipeInput.getStackCount() < 2) {
+			return false;
+		} else {
+			boolean bl = false;
+			boolean bl2 = false;
+			boolean bl3 = false;
+			boolean bl4 = false;
+			boolean bl5 = false;
 
-		for (int i = 0; i < craftingRecipeInput.size(); i++) {
-			ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
-			if (!itemStack.isEmpty()) {
-				if (TYPE_MODIFIER_MAP.containsKey(itemStack.getItem())) {
-					if (bl3) {
-						return false;
+			for (int i = 0; i < craftingRecipeInput.size(); i++) {
+				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
+				if (!itemStack.isEmpty()) {
+					if (TYPE_MODIFIER_MAP.containsKey(itemStack.getItem())) {
+						if (bl3) {
+							return false;
+						}
+
+						bl3 = true;
+					} else if (FLICKER_MODIFIER.test(itemStack)) {
+						if (bl5) {
+							return false;
+						}
+
+						bl5 = true;
+					} else if (TRAIL_MODIFIER.test(itemStack)) {
+						if (bl4) {
+							return false;
+						}
+
+						bl4 = true;
+					} else if (GUNPOWDER.test(itemStack)) {
+						if (bl) {
+							return false;
+						}
+
+						bl = true;
+					} else {
+						if (!(itemStack.getItem() instanceof DyeItem)) {
+							return false;
+						}
+
+						bl2 = true;
 					}
-
-					bl3 = true;
-				} else if (FLICKER_MODIFIER.test(itemStack)) {
-					if (bl5) {
-						return false;
-					}
-
-					bl5 = true;
-				} else if (TRAIL_MODIFIER.test(itemStack)) {
-					if (bl4) {
-						return false;
-					}
-
-					bl4 = true;
-				} else if (GUNPOWDER.test(itemStack)) {
-					if (bl) {
-						return false;
-					}
-
-					bl = true;
-				} else {
-					if (!(itemStack.getItem() instanceof DyeItem)) {
-						return false;
-					}
-
-					bl2 = true;
 				}
 			}
-		}
 
-		return bl && bl2;
+			return bl && bl2;
+		}
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
@@ -108,8 +112,8 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 					bl = true;
 				} else if (TRAIL_MODIFIER.test(itemStack)) {
 					bl2 = true;
-				} else if (itemStack.getItem() instanceof DyeItem) {
-					intList.add(((DyeItem)itemStack.getItem()).getColor().getFireworkColor());
+				} else if (itemStack.getItem() instanceof DyeItem dyeItem) {
+					intList.add(dyeItem.getColor().getFireworkColor());
 				}
 			}
 		}

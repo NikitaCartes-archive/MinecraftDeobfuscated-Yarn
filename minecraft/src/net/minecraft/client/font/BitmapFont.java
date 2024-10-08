@@ -57,8 +57,8 @@ public class BitmapFont implements Font {
 		}
 
 		@Override
-		public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-			return (GlyphRenderer)function.apply(
+		public BakedGlyph bake(Function<RenderableGlyph, BakedGlyph> function) {
+			return (BakedGlyph)function.apply(
 				new RenderableGlyph() {
 					@Override
 					public float getOversample() {

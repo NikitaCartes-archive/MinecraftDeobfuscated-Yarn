@@ -22,9 +22,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
@@ -470,11 +470,11 @@ public class EntitySelectorOptions {
 								if (optional.isEmpty()) {
 									return false;
 								} else {
-									LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+									LootWorldContext lootWorldContext = new LootWorldContext.Builder(serverWorld)
 										.add(LootContextParameters.THIS_ENTITY, entity)
 										.add(LootContextParameters.ORIGIN, entity.getPos())
 										.build(LootContextTypes.SELECTOR);
-									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
+									LootContext lootContext = new LootContext.Builder(lootWorldContext).build(Optional.empty());
 									lootContext.markActive(LootContext.predicate((LootCondition)optional.get()));
 									return bl ^ ((LootCondition)optional.get()).test(lootContext);
 								}

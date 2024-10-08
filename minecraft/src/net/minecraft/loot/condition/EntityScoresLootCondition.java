@@ -11,11 +11,11 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.util.context.ContextParameter;
 
 public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget entity) implements LootCondition {
 	public static final MapCodec<EntityScoresLootCondition> CODEC = RecordCodecBuilder.mapCodec(
@@ -32,8 +32,8 @@ public record EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> sco
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return (Set<LootContextParameter<?>>)Stream.concat(
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return (Set<ContextParameter<?>>)Stream.concat(
 				Stream.of(this.entity.getParameter()), this.scores.values().stream().flatMap(operator -> operator.getRequiredParameters().stream())
 			)
 			.collect(ImmutableSet.toImmutableSet());

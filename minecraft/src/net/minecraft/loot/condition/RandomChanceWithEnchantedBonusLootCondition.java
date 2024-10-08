@@ -1,6 +1,5 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -12,11 +11,11 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.context.ContextParameter;
 
 public record RandomChanceWithEnchantedBonusLootCondition(
 	float unenchantedChance, EnchantmentLevelBasedValue enchantedChance, RegistryEntry<Enchantment> enchantment
@@ -36,8 +35,8 @@ public record RandomChanceWithEnchantedBonusLootCondition(
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.ATTACKING_ENTITY);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.ATTACKING_ENTITY);
 	}
 
 	public boolean test(LootContext lootContext) {

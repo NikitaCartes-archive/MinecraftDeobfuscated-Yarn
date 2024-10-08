@@ -28,6 +28,7 @@ public record EquippableComponent(
 	EquipmentSlot slot,
 	RegistryEntry<SoundEvent> equipSound,
 	Optional<Identifier> model,
+	Optional<Identifier> cameraOverlay,
 	Optional<RegistryEntryList<EntityType<?>>> allowedEntities,
 	boolean dispensable,
 	boolean swappable,
@@ -38,6 +39,7 @@ public record EquippableComponent(
 					EquipmentSlot.CODEC.fieldOf("slot").forGetter(EquippableComponent::slot),
 					SoundEvent.ENTRY_CODEC.optionalFieldOf("equip_sound", SoundEvents.ITEM_ARMOR_EQUIP_GENERIC).forGetter(EquippableComponent::equipSound),
 					Identifier.CODEC.optionalFieldOf("model").forGetter(EquippableComponent::model),
+					Identifier.CODEC.optionalFieldOf("camera_overlay").forGetter(EquippableComponent::cameraOverlay),
 					RegistryCodecs.entryList(RegistryKeys.ENTITY_TYPE).optionalFieldOf("allowed_entities").forGetter(EquippableComponent::allowedEntities),
 					Codec.BOOL.optionalFieldOf("dispensable", Boolean.valueOf(true)).forGetter(EquippableComponent::dispensable),
 					Codec.BOOL.optionalFieldOf("swappable", Boolean.valueOf(true)).forGetter(EquippableComponent::swappable),
@@ -52,6 +54,8 @@ public record EquippableComponent(
 		EquippableComponent::equipSound,
 		Identifier.PACKET_CODEC.collect(PacketCodecs::optional),
 		EquippableComponent::model,
+		Identifier.PACKET_CODEC.collect(PacketCodecs::optional),
+		EquippableComponent::cameraOverlay,
 		PacketCodecs.registryEntryList(RegistryKeys.ENTITY_TYPE).collect(PacketCodecs::optional),
 		EquippableComponent::allowedEntities,
 		PacketCodecs.BOOL,
@@ -115,6 +119,7 @@ public record EquippableComponent(
 		private final EquipmentSlot slot;
 		private RegistryEntry<SoundEvent> equipSound = SoundEvents.ITEM_ARMOR_EQUIP_GENERIC;
 		private Optional<Identifier> model = Optional.empty();
+		private Optional<Identifier> cameraOverlay = Optional.empty();
 		private Optional<RegistryEntryList<EntityType<?>>> allowedEntities = Optional.empty();
 		private boolean dispensable = true;
 		private boolean swappable = true;
@@ -131,6 +136,11 @@ public record EquippableComponent(
 
 		public EquippableComponent.Builder model(Identifier model) {
 			this.model = Optional.of(model);
+			return this;
+		}
+
+		public EquippableComponent.Builder cameraOverlay(Identifier cameraOverlay) {
+			this.cameraOverlay = Optional.of(cameraOverlay);
 			return this;
 		}
 
@@ -159,7 +169,9 @@ public record EquippableComponent(
 		}
 
 		public EquippableComponent build() {
-			return new EquippableComponent(this.slot, this.equipSound, this.model, this.allowedEntities, this.dispensable, this.swappable, this.damageOnHurt);
+			return new EquippableComponent(
+				this.slot, this.equipSound, this.model, this.cameraOverlay, this.allowedEntities, this.dispensable, this.swappable, this.damageOnHurt
+			);
 		}
 	}
 }

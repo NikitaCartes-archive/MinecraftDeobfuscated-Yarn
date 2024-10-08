@@ -1,11 +1,10 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.util.context.ContextParameter;
 
 public class KilledByPlayerLootCondition implements LootCondition {
 	private static final KilledByPlayerLootCondition INSTANCE = new KilledByPlayerLootCondition();
@@ -20,8 +19,8 @@ public class KilledByPlayerLootCondition implements LootCondition {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.LAST_DAMAGE_PLAYER);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
 	public boolean test(LootContext lootContext) {

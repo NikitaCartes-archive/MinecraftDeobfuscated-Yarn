@@ -8,7 +8,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.registry.RegistryKey;
 
 public interface EquipmentHolder {
@@ -18,15 +18,15 @@ public interface EquipmentHolder {
 
 	void setEquipmentDropChance(EquipmentSlot slot, float dropChance);
 
-	default void setEquipmentFromTable(EquipmentTable equipmentTable, LootContextParameterSet parameters) {
+	default void setEquipmentFromTable(EquipmentTable equipmentTable, LootWorldContext parameters) {
 		this.setEquipmentFromTable(equipmentTable.lootTable(), parameters, equipmentTable.slotDropChances());
 	}
 
-	default void setEquipmentFromTable(RegistryKey<LootTable> lootTable, LootContextParameterSet parameters, Map<EquipmentSlot, Float> slotDropChances) {
+	default void setEquipmentFromTable(RegistryKey<LootTable> lootTable, LootWorldContext parameters, Map<EquipmentSlot, Float> slotDropChances) {
 		this.setEquipmentFromTable(lootTable, parameters, 0L, slotDropChances);
 	}
 
-	default void setEquipmentFromTable(RegistryKey<LootTable> lootTable, LootContextParameterSet parameters, long seed, Map<EquipmentSlot, Float> slotDropChances) {
+	default void setEquipmentFromTable(RegistryKey<LootTable> lootTable, LootWorldContext parameters, long seed, Map<EquipmentSlot, Float> slotDropChances) {
 		LootTable lootTable2 = parameters.getWorld().getServer().getReloadableRegistries().getLootTable(lootTable);
 		if (lootTable2 != LootTable.EMPTY) {
 			List<ItemStack> list = lootTable2.generateLoot(parameters, seed);

@@ -40,13 +40,14 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.recipe.display.RecipeDisplay;
-import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
@@ -259,8 +260,8 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 		int l = 0;
 
 		for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
-			RecipeBookCategory recipeBookCategory = recipeGroupButtonWidget.getCategory();
-			if (recipeBookCategory instanceof RecipeBookType) {
+			RecipeBookGroup recipeBookGroup = recipeGroupButtonWidget.getCategory();
+			if (recipeBookGroup instanceof RecipeBookType) {
 				recipeGroupButtonWidget.visible = true;
 				recipeGroupButtonWidget.setPosition(i, j + 27 * l++);
 			} else if (recipeGroupButtonWidget.hasKnownRecipes(this.recipeBook)) {
@@ -523,11 +524,11 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 
 	public void onCraftFailed(RecipeDisplay display) {
 		this.ghostRecipe.clear();
-		SlotDisplay.Context context = SlotDisplay.Context.create((World)Objects.requireNonNull(this.client.world));
-		this.showGhostRecipe(this.ghostRecipe, display, context);
+		ContextParameterMap contextParameterMap = SlotDisplayContexts.createParameters((World)Objects.requireNonNull(this.client.world));
+		this.showGhostRecipe(this.ghostRecipe, display, contextParameterMap);
 	}
 
-	protected abstract void showGhostRecipe(GhostRecipe ghostRecipe, RecipeDisplay display, SlotDisplay.Context context);
+	protected abstract void showGhostRecipe(GhostRecipe ghostRecipe, RecipeDisplay display, ContextParameterMap context);
 
 	protected void sendBookDataPacket() {
 		if (this.client.getNetworkHandler() != null) {
@@ -561,17 +562,17 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record Tab(ItemStack primaryIcon, Optional<ItemStack> secondaryIcon, RecipeBookCategory category) {
+	public static record Tab(ItemStack primaryIcon, Optional<ItemStack> secondaryIcon, RecipeBookGroup category) {
 		public Tab(RecipeBookType type) {
 			this(new ItemStack(Items.COMPASS), Optional.empty(), type);
 		}
 
-		public Tab(Item primaryIcon, RecipeBookGroup group) {
-			this(new ItemStack(primaryIcon), Optional.empty(), group);
+		public Tab(Item primaryIcon, RecipeBookCategory category) {
+			this(new ItemStack(primaryIcon), Optional.empty(), category);
 		}
 
-		public Tab(Item primaryIcon, Item secondaryIcon, RecipeBookGroup group) {
-			this(new ItemStack(primaryIcon), Optional.of(new ItemStack(secondaryIcon)), group);
+		public Tab(Item primaryIcon, Item secondaryIcon, RecipeBookCategory category) {
+			this(new ItemStack(primaryIcon), Optional.of(new ItemStack(secondaryIcon)), category);
 		}
 	}
 }

@@ -9,9 +9,9 @@ import java.util.Set;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
@@ -42,8 +42,8 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.durabilityRange.getRequiredParameters();
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return this.durabilityRange.getAllowedParameters();
 	}
 
 	@Override

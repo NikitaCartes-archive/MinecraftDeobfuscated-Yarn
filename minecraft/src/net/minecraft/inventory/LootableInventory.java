@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryKey;
@@ -156,8 +156,7 @@ public interface LootableInventory extends Inventory {
 			}
 
 			this.setLootTable(null);
-			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)world)
-				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos));
+			LootWorldContext.Builder builder = new LootWorldContext.Builder((ServerWorld)world).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos));
 			if (player != null) {
 				builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			}

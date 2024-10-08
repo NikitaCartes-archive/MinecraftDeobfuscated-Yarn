@@ -6,10 +6,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextType;
+import net.minecraft.util.context.ContextType;
 
 public record TargetedEnchantmentEffect<T>(EnchantmentEffectTarget enchanted, EnchantmentEffectTarget affected, T effect, Optional<LootCondition> requirements) {
-	public static <S> Codec<TargetedEnchantmentEffect<S>> createPostAttackCodec(Codec<S> effectCodec, LootContextType lootContextType) {
+	public static <S> Codec<TargetedEnchantmentEffect<S>> createPostAttackCodec(Codec<S> effectCodec, ContextType lootContextType) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						EnchantmentEffectTarget.CODEC.fieldOf("enchanted").forGetter(TargetedEnchantmentEffect::enchanted),
@@ -21,7 +21,7 @@ public record TargetedEnchantmentEffect<T>(EnchantmentEffectTarget enchanted, En
 		);
 	}
 
-	public static <S> Codec<TargetedEnchantmentEffect<S>> createEquipmentDropsCodec(Codec<S> effectCodec, LootContextType lootContextType) {
+	public static <S> Codec<TargetedEnchantmentEffect<S>> createEquipmentDropsCodec(Codec<S> effectCodec, ContextType lootContextType) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						EnchantmentEffectTarget.CODEC

@@ -20,5 +20,6 @@ public class WinterDropBiomeTagProvider extends TagProvider<Biome> {
 	protected void configure(RegistryWrapper.WrapperLookup registries) {
 		this.getOrCreateTagBuilder(BiomeTags.IS_FOREST).add(WinterDropBuiltinBiomes.PALE_GARDEN);
 		this.getOrCreateTagBuilder(BiomeTags.STRONGHOLD_BIASED_TO).add(WinterDropBuiltinBiomes.PALE_GARDEN);
+		this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD).add(WinterDropBuiltinBiomes.PALE_GARDEN);
 	}
 }

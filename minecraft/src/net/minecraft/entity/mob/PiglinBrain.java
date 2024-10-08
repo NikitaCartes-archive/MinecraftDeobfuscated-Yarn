@@ -60,9 +60,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -434,7 +434,7 @@ public class PiglinBrain {
 	private static List<ItemStack> getBarteredItem(PiglinEntity piglin) {
 		LootTable lootTable = piglin.getWorld().getServer().getReloadableRegistries().getLootTable(LootTables.PIGLIN_BARTERING_GAMEPLAY);
 		List<ItemStack> list = lootTable.generateLoot(
-			new LootContextParameterSet.Builder((ServerWorld)piglin.getWorld()).add(LootContextParameters.THIS_ENTITY, piglin).build(LootContextTypes.BARTER)
+			new LootWorldContext.Builder((ServerWorld)piglin.getWorld()).add(LootContextParameters.THIS_ENTITY, piglin).build(LootContextTypes.BARTER)
 		);
 		return list;
 	}

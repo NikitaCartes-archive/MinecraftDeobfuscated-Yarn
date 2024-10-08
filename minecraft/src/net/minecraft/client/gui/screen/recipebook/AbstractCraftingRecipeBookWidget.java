@@ -9,7 +9,7 @@ import net.minecraft.client.recipebook.RecipeBookType;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
 import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.recipe.display.ShapedCraftingRecipeDisplay;
 import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
@@ -18,6 +18,7 @@ import net.minecraft.screen.AbstractCraftingScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 
 @Environment(EnvType.CLIENT)
 public class AbstractCraftingRecipeBookWidget extends RecipeBookWidget<AbstractCraftingScreenHandler> {
@@ -30,10 +31,10 @@ public class AbstractCraftingRecipeBookWidget extends RecipeBookWidget<AbstractC
 	private static final Text TOGGLE_CRAFTABLE_TEXT = Text.translatable("gui.recipebook.toggleRecipes.craftable");
 	private static final List<RecipeBookWidget.Tab> TABS = List.of(
 		new RecipeBookWidget.Tab(RecipeBookType.CRAFTING),
-		new RecipeBookWidget.Tab(Items.IRON_AXE, Items.GOLDEN_SWORD, RecipeBookGroup.CRAFTING_EQUIPMENT),
-		new RecipeBookWidget.Tab(Items.BRICKS, RecipeBookGroup.CRAFTING_BUILDING_BLOCKS),
-		new RecipeBookWidget.Tab(Items.LAVA_BUCKET, Items.APPLE, RecipeBookGroup.CRAFTING_MISC),
-		new RecipeBookWidget.Tab(Items.REDSTONE, RecipeBookGroup.CRAFTING_REDSTONE)
+		new RecipeBookWidget.Tab(Items.IRON_AXE, Items.GOLDEN_SWORD, RecipeBookCategories.CRAFTING_EQUIPMENT),
+		new RecipeBookWidget.Tab(Items.BRICKS, RecipeBookCategories.CRAFTING_BUILDING_BLOCKS),
+		new RecipeBookWidget.Tab(Items.LAVA_BUCKET, Items.APPLE, RecipeBookCategories.CRAFTING_MISC),
+		new RecipeBookWidget.Tab(Items.REDSTONE, RecipeBookCategories.CRAFTING_REDSTONE)
 	);
 
 	public AbstractCraftingRecipeBookWidget(AbstractCraftingScreenHandler screenHandler) {
@@ -58,7 +59,7 @@ public class AbstractCraftingRecipeBookWidget extends RecipeBookWidget<AbstractC
 	}
 
 	@Override
-	protected void showGhostRecipe(GhostRecipe ghostRecipe, RecipeDisplay display, SlotDisplay.Context context) {
+	protected void showGhostRecipe(GhostRecipe ghostRecipe, RecipeDisplay display, ContextParameterMap context) {
 		ghostRecipe.addResults(this.craftingScreenHandler.getOutputSlot(), context, display.result());
 		Objects.requireNonNull(display);
 		switch (display) {

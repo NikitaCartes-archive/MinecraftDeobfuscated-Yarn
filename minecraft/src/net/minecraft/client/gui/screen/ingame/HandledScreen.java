@@ -267,7 +267,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			Pair<Identifier, Identifier> pair = slot.getBackgroundSprite();
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
-				context.drawGuiTexture(RenderLayer::getGuiTextured, sprite, i, j, 16, 16);
+				context.drawSprite(RenderLayer::getGuiTextured, sprite, i, j, 16, 16);
 				bl2 = true;
 			}
 		}

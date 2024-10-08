@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.MathHelper;
 
 public record UniformLootNumberProvider(LootNumberProvider min, LootNumberProvider max) implements LootNumberProvider {
@@ -37,7 +37,7 @@ public record UniformLootNumberProvider(LootNumberProvider min, LootNumberProvid
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return Sets.<LootContextParameter<?>>union(this.min.getRequiredParameters(), this.max.getRequiredParameters());
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Sets.<ContextParameter<?>>union(this.min.getAllowedParameters(), this.max.getAllowedParameters());
 	}
 }

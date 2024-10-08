@@ -53,10 +53,7 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntityRenderSt
 			WolfEntityModel wolfEntityModel = wolfEntityRenderState.baby ? this.babyModel : this.model;
 			Identifier identifier = (Identifier)equippableComponent.model().get();
 			wolfEntityModel.setAngles(wolfEntityRenderState);
-			this.equipmentRenderer
-				.render(
-					EquipmentModel.LayerType.WOLF_BODY, identifier, wolfEntityModel, itemStack, RenderLayer::getEntityCutoutNoCull, matrixStack, vertexConsumerProvider, i
-				);
+			this.equipmentRenderer.render(EquipmentModel.LayerType.WOLF_BODY, identifier, wolfEntityModel, itemStack, matrixStack, vertexConsumerProvider, i);
 			this.renderCracks(matrixStack, vertexConsumerProvider, i, itemStack, wolfEntityModel);
 		}
 	}

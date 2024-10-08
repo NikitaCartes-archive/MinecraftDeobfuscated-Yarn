@@ -54,7 +54,7 @@ public class DedicatedServerWatchdog implements Runnable {
 				crashReportSection.add(
 					"Level stats",
 					(CrashCallable<String>)(() -> (String)Streams.stream(this.server.getWorlds())
-							.map(world -> world.getRegistryKey() + ": " + world.getDebugString())
+							.map(world -> world.getRegistryKey().getValue() + ": " + world.getDebugString())
 							.collect(Collectors.joining(",\n")))
 				);
 				Bootstrap.println("Crash report:\n" + crashReport.asString(ReportType.MINECRAFT_CRASH_REPORT));

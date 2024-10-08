@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.DyeItem;
@@ -17,33 +17,37 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		ItemStack itemStack = ItemStack.EMPTY;
-		List<ItemStack> list = Lists.<ItemStack>newArrayList();
+		if (craftingRecipeInput.getStackCount() < 2) {
+			return false;
+		} else {
+			boolean bl = false;
+			boolean bl2 = false;
 
-		for (int i = 0; i < craftingRecipeInput.size(); i++) {
-			ItemStack itemStack2 = craftingRecipeInput.getStackInSlot(i);
-			if (!itemStack2.isEmpty()) {
-				if (itemStack2.isIn(ItemTags.DYEABLE)) {
-					if (!itemStack.isEmpty()) {
-						return false;
+			for (int i = 0; i < craftingRecipeInput.size(); i++) {
+				ItemStack itemStack = craftingRecipeInput.getStackInSlot(i);
+				if (!itemStack.isEmpty()) {
+					if (itemStack.isIn(ItemTags.DYEABLE)) {
+						if (bl) {
+							return false;
+						}
+
+						bl = true;
+					} else {
+						if (!(itemStack.getItem() instanceof DyeItem)) {
+							return false;
+						}
+
+						bl2 = true;
 					}
-
-					itemStack = itemStack2;
-				} else {
-					if (!(itemStack2.getItem() instanceof DyeItem)) {
-						return false;
-					}
-
-					list.add(itemStack2);
 				}
 			}
-		}
 
-		return !itemStack.isEmpty() && !list.isEmpty();
+			return bl2 && bl;
+		}
 	}
 
 	public ItemStack craft(CraftingRecipeInput craftingRecipeInput, RegistryWrapper.WrapperLookup wrapperLookup) {
-		List<DyeItem> list = Lists.<DyeItem>newArrayList();
+		List<DyeItem> list = new ArrayList();
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingRecipeInput.size(); i++) {

@@ -25,6 +25,7 @@ import net.minecraft.recipe.display.ShapelessCraftingRecipeDisplay;
 import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -51,7 +52,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 	public void showAlternativesForResult(
 		RecipeResultCollection resultCollection,
-		SlotDisplay.Context context,
+		ContextParameterMap context,
 		boolean filteringCraftable,
 		int buttonX,
 		int buttonY,
@@ -250,12 +251,12 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		private static final int field_54829 = 3;
 
 		public CraftingAlternativeButtonWidget(
-			final int x, final int y, final NetworkRecipeId recipeId, final RecipeDisplay display, final SlotDisplay.Context context, final boolean craftable
+			final int x, final int y, final NetworkRecipeId recipeId, final RecipeDisplay display, final ContextParameterMap context, final boolean craftable
 		) {
 			super(x, y, recipeId, craftable, collectInputSlots(display, context));
 		}
 
-		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> collectInputSlots(RecipeDisplay display, SlotDisplay.Context context) {
+		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> collectInputSlots(RecipeDisplay display, ContextParameterMap context) {
 			List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> list = new ArrayList();
 			Objects.requireNonNull(display);
 			switch (display) {
@@ -304,12 +305,12 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 		private static final Identifier FURNACE_OVERLAY_DISABLED_HIGHLIGHTED = Identifier.ofVanilla("recipe_book/furnace_overlay_disabled_highlighted");
 
 		public FurnaceAlternativeButtonWidget(
-			final int x, final int y, final NetworkRecipeId recipeId, final RecipeDisplay display, final SlotDisplay.Context context, final boolean craftable
+			final int x, final int y, final NetworkRecipeId recipeId, final RecipeDisplay display, final ContextParameterMap context, final boolean craftable
 		) {
 			super(x, y, recipeId, craftable, alignRecipe(display, context));
 		}
 
-		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> alignRecipe(RecipeDisplay display, SlotDisplay.Context context) {
+		private static List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> alignRecipe(RecipeDisplay display, ContextParameterMap context) {
 			if (display instanceof FurnaceRecipeDisplay furnaceRecipeDisplay) {
 				List<ItemStack> list = furnaceRecipeDisplay.ingredient().getStacks(context);
 				if (!list.isEmpty()) {

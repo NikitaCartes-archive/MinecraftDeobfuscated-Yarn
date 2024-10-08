@@ -28,8 +28,8 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.EnchantmentTags;
@@ -296,7 +296,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+	protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
 		Entity entity = builder.getOptional(LootContextParameters.THIS_ENTITY);
 		if (entity instanceof TntEntity
 			|| entity instanceof CreeperEntity

@@ -6,9 +6,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -48,7 +48,7 @@ public record LocationCheckLootCondition(Optional<LocationPredicate> predicate, 
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getAllowedParameters() {
 		return Set.of(LootContextParameters.ORIGIN);
 	}
 

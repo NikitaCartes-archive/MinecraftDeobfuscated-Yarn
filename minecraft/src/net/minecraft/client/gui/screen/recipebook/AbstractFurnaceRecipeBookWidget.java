@@ -7,11 +7,11 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.display.FurnaceRecipeDisplay;
 import net.minecraft.recipe.display.RecipeDisplay;
-import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 
 @Environment(EnvType.CLIENT)
 public class AbstractFurnaceRecipeBookWidget extends RecipeBookWidget<AbstractFurnaceScreenHandler> {
@@ -42,7 +42,7 @@ public class AbstractFurnaceRecipeBookWidget extends RecipeBookWidget<AbstractFu
 	}
 
 	@Override
-	protected void showGhostRecipe(GhostRecipe ghostRecipe, RecipeDisplay display, SlotDisplay.Context context) {
+	protected void showGhostRecipe(GhostRecipe ghostRecipe, RecipeDisplay display, ContextParameterMap context) {
 		ghostRecipe.addResults(this.craftingScreenHandler.getOutputSlot(), context, display.result());
 		if (display instanceof FurnaceRecipeDisplay furnaceRecipeDisplay) {
 			ghostRecipe.addInputs(this.craftingScreenHandler.slots.get(0), context, furnaceRecipeDisplay.ingredient());

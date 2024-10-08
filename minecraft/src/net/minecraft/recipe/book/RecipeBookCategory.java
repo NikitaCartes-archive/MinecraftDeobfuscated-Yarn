@@ -1,4 +1,4 @@
 package net.minecraft.recipe.book;
 
-public interface RecipeBookCategory {
+public class RecipeBookCategory implements RecipeBookGroup {
 }

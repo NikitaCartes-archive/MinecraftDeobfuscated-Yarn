@@ -254,7 +254,7 @@ public class Blocks {
 		"pale_oak_sapling",
 		settings -> new SaplingBlock(SaplingGenerator.PALE_OAK, settings),
 		AbstractBlock.Settings.create()
-			.mapColor(MapColor.DARK_GREEN)
+			.mapColor(MapColor.OFF_WHITE)
 			.noCollision()
 			.ticksRandomly()
 			.breakInstantly()
@@ -6192,7 +6192,7 @@ public class Blocks {
 		"pale_moss_block",
 		settings -> new MossBlock(VegetationConfiguredFeatures.PALE_MOSS_PATCH_BONEMEAL, settings),
 		AbstractBlock.Settings.create()
-			.mapColor(MapColor.GRAY)
+			.mapColor(MapColor.LIGHT_GRAY)
 			.strength(0.1F)
 			.sounds(BlockSoundGroup.MOSS_BLOCK)
 			.pistonBehavior(PistonBehavior.DESTROY)

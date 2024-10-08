@@ -14,10 +14,10 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.recipe.RecipeDisplayEntry;
-import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
 
 @Environment(EnvType.CLIENT)
 public class AnimatedResultButton extends ClickableWidget {
@@ -38,7 +38,7 @@ public class AnimatedResultButton extends ClickableWidget {
 		this.currentIndexProvider = currentIndexProvider;
 	}
 
-	public void showResultCollection(RecipeResultCollection resultCollection, boolean filteringCraftable, RecipeBookResults results, SlotDisplay.Context context) {
+	public void showResultCollection(RecipeResultCollection resultCollection, boolean filteringCraftable, RecipeBookResults results, ContextParameterMap context) {
 		this.resultCollection = resultCollection;
 		List<RecipeDisplayEntry> list = resultCollection.filter(
 			filteringCraftable ? RecipeResultCollection.RecipeFilterMode.CRAFTABLE : RecipeResultCollection.RecipeFilterMode.ANY

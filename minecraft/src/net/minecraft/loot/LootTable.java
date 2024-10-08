@@ -14,9 +14,8 @@ import java.util.function.Consumer;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.LootFunctionTypes;
@@ -26,6 +25,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.context.ContextType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 public class LootTable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, Optional.empty(), List.of(), List.of());
-	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
+	public static final ContextType GENERIC = LootContextTypes.GENERIC;
 	public static final long DEFAULT_SEED = 0L;
 	public static final Codec<LootTable> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
@@ -45,13 +45,13 @@ public class LootTable {
 				.apply(instance, LootTable::new)
 	);
 	public static final Codec<RegistryEntry<LootTable>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.LOOT_TABLE, CODEC);
-	private final LootContextType type;
+	private final ContextType type;
 	private final Optional<Identifier> randomSequenceId;
 	private final List<LootPool> pools;
 	private final List<LootFunction> functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
-	LootTable(LootContextType type, Optional<Identifier> randomSequenceId, List<LootPool> pools, List<LootFunction> functions) {
+	LootTable(ContextType type, Optional<Identifier> randomSequenceId, List<LootPool> pools, List<LootFunction> functions) {
 		this.type = type;
 		this.randomSequenceId = randomSequenceId;
 		this.pools = pools;
@@ -77,7 +77,7 @@ public class LootTable {
 		};
 	}
 
-	public void generateUnprocessedLoot(LootContextParameterSet parameters, Consumer<ItemStack> lootConsumer) {
+	public void generateUnprocessedLoot(LootWorldContext parameters, Consumer<ItemStack> lootConsumer) {
 		this.generateUnprocessedLoot(new LootContext.Builder(parameters).build(this.randomSequenceId), lootConsumer);
 	}
 
@@ -96,13 +96,13 @@ public class LootTable {
 		}
 	}
 
-	public void generateLoot(LootContextParameterSet parameters, long seed, Consumer<ItemStack> lootConsumer) {
+	public void generateLoot(LootWorldContext parameters, long seed, Consumer<ItemStack> lootConsumer) {
 		this.generateUnprocessedLoot(
 			new LootContext.Builder(parameters).random(seed).build(this.randomSequenceId), processStacks(parameters.getWorld(), lootConsumer)
 		);
 	}
 
-	public void generateLoot(LootContextParameterSet parameters, Consumer<ItemStack> lootConsumer) {
+	public void generateLoot(LootWorldContext parameters, Consumer<ItemStack> lootConsumer) {
 		this.generateUnprocessedLoot(parameters, processStacks(parameters.getWorld(), lootConsumer));
 	}
 
@@ -110,15 +110,15 @@ public class LootTable {
 		this.generateUnprocessedLoot(context, processStacks(context.getWorld(), lootConsumer));
 	}
 
-	public ObjectArrayList<ItemStack> generateLoot(LootContextParameterSet parameters, Random random) {
+	public ObjectArrayList<ItemStack> generateLoot(LootWorldContext parameters, Random random) {
 		return this.generateLoot(new LootContext.Builder(parameters).random(random).build(this.randomSequenceId));
 	}
 
-	public ObjectArrayList<ItemStack> generateLoot(LootContextParameterSet parameters, long seed) {
+	public ObjectArrayList<ItemStack> generateLoot(LootWorldContext parameters, long seed) {
 		return this.generateLoot(new LootContext.Builder(parameters).random(seed).build(this.randomSequenceId));
 	}
 
-	public ObjectArrayList<ItemStack> generateLoot(LootContextParameterSet parameters) {
+	public ObjectArrayList<ItemStack> generateLoot(LootWorldContext parameters) {
 		return this.generateLoot(new LootContext.Builder(parameters).build(this.randomSequenceId));
 	}
 
@@ -128,7 +128,7 @@ public class LootTable {
 		return objectArrayList;
 	}
 
-	public LootContextType getType() {
+	public ContextType getType() {
 		return this.type;
 	}
 
@@ -142,7 +142,7 @@ public class LootTable {
 		}
 	}
 
-	public void supplyInventory(Inventory inventory, LootContextParameterSet parameters, long seed) {
+	public void supplyInventory(Inventory inventory, LootWorldContext parameters, long seed) {
 		LootContext lootContext = new LootContext.Builder(parameters).random(seed).build(this.randomSequenceId);
 		ObjectArrayList<ItemStack> objectArrayList = this.generateLoot(lootContext);
 		Random random = lootContext.getRandom();
@@ -218,7 +218,7 @@ public class LootTable {
 	public static class Builder implements LootFunctionConsumingBuilder<LootTable.Builder> {
 		private final ImmutableList.Builder<LootPool> pools = ImmutableList.builder();
 		private final ImmutableList.Builder<LootFunction> functions = ImmutableList.builder();
-		private LootContextType type = LootTable.GENERIC;
+		private ContextType type = LootTable.GENERIC;
 		private Optional<Identifier> randomSequenceId = Optional.empty();
 
 		public LootTable.Builder pool(LootPool.Builder poolBuilder) {
@@ -226,7 +226,7 @@ public class LootTable {
 			return this;
 		}
 
-		public LootTable.Builder type(LootContextType type) {
+		public LootTable.Builder type(ContextType type) {
 			this.type = type;
 			return this;
 		}

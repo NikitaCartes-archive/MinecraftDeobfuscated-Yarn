@@ -50,7 +50,7 @@ public class DownloadingTerrainScreen extends Screen {
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		switch (this.worldEntryReason) {
 			case NETHER_PORTAL:
-				context.drawGuiTexture(
+				context.drawSprite(
 					RenderLayer::getGuiOpaqueTexturedBackground, this.getBackgroundSprite(), 0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight()
 				);
 				break;

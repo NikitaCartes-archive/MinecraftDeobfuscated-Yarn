@@ -1,7 +1,8 @@
 package net.minecraft.recipe;
 
 import java.util.Optional;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.SmithingRecipeInput;
 import net.minecraft.world.World;
 
@@ -27,7 +28,7 @@ public interface SmithingRecipe extends Recipe<SmithingRecipeInput> {
 	Optional<Ingredient> addition();
 
 	@Override
-	default RecipeBookGroup getRecipeBookTab() {
-		return RecipeBookGroup.SMITHING;
+	default RecipeBookCategory getRecipeBookTab() {
+		return RecipeBookCategories.SMITHING;
 	}
 }

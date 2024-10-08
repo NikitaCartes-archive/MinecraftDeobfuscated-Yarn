@@ -1,6 +1,5 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -11,9 +10,9 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.dynamic.Codecs;
 
 public record TableBonusLootCondition(RegistryEntry<Enchantment> enchantment, List<Float> chances) implements LootCondition {
@@ -31,8 +30,8 @@ public record TableBonusLootCondition(RegistryEntry<Enchantment> enchantment, Li
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.TOOL);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.TOOL);
 	}
 
 	public boolean test(LootContext lootContext) {

@@ -1,6 +1,5 @@
 package net.minecraft.loot.function;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,13 +13,13 @@ import net.minecraft.item.map.MapDecorationTypes;
 import net.minecraft.item.map.MapState;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.context.ContextParameter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.structure.Structure;
@@ -72,8 +71,8 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.ORIGIN);
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return Set.of(LootContextParameters.ORIGIN);
 	}
 
 	@Override

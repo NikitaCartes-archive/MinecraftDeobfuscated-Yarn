@@ -65,9 +65,9 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
@@ -1067,8 +1067,8 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 		return set;
 	}
 
-	private LootContextParameterSet createEquipmentLootParameters(ServerWorld world) {
-		return new LootContextParameterSet.Builder(world)
+	private LootWorldContext createEquipmentLootParameters(ServerWorld world) {
+		return new LootWorldContext.Builder(world)
 			.add(LootContextParameters.ORIGIN, this.getPos())
 			.add(LootContextParameters.THIS_ENTITY, this)
 			.build(LootContextTypes.EQUIPMENT);

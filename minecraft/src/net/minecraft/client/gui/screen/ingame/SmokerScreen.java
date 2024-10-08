@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.recipebook.RecipeBookType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Items;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
 import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -19,7 +19,7 @@ public class SmokerScreen extends AbstractFurnaceScreen<SmokerScreenHandler> {
 	private static final Identifier TEXTURE = Identifier.ofVanilla("textures/gui/container/smoker.png");
 	private static final Text TOGGLE_SMOKABLE_TEXT = Text.translatable("gui.recipebook.toggleRecipes.smokable");
 	private static final List<RecipeBookWidget.Tab> TABS = List.of(
-		new RecipeBookWidget.Tab(RecipeBookType.SMOKER), new RecipeBookWidget.Tab(Items.PORKCHOP, RecipeBookGroup.SMOKER_FOOD)
+		new RecipeBookWidget.Tab(RecipeBookType.SMOKER), new RecipeBookWidget.Tab(Items.PORKCHOP, RecipeBookCategories.SMOKER_FOOD)
 	);
 
 	public SmokerScreen(SmokerScreenHandler handler, PlayerInventory inventory, Text title) {

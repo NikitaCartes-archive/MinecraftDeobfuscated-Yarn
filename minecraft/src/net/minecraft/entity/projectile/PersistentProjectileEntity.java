@@ -197,6 +197,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			this.inGroundTime++;
+			if (this.isAlive()) {
+				this.tickBlockCollision();
+			}
 		} else {
 			this.inGroundTime = 0;
 			Vec3d vec3d3 = this.getPos();

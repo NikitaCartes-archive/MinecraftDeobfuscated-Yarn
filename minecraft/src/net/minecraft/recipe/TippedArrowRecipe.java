@@ -14,7 +14,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 	}
 
 	public boolean matches(CraftingRecipeInput craftingRecipeInput, World world) {
-		if (craftingRecipeInput.getWidth() == 3 && craftingRecipeInput.getHeight() == 3) {
+		if (craftingRecipeInput.getWidth() == 3 && craftingRecipeInput.getHeight() == 3 && craftingRecipeInput.getStackCount() == 9) {
 			for (int i = 0; i < craftingRecipeInput.getHeight(); i++) {
 				for (int j = 0; j < craftingRecipeInput.getWidth(); j++) {
 					ItemStack itemStack = craftingRecipeInput.getStackInSlot(j, i);

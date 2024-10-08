@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity.feature;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
 import net.minecraft.client.render.entity.model.ElytraEntityModel;
@@ -43,18 +42,7 @@ public class ElytraFeatureRenderer<S extends BipedEntityRenderState, M extends E
 			matrixStack.push();
 			matrixStack.translate(0.0F, 0.0F, 0.125F);
 			elytraEntityModel.setAngles(bipedEntityRenderState);
-			this.equipmentRenderer
-				.render(
-					EquipmentModel.LayerType.WINGS,
-					identifier2,
-					elytraEntityModel,
-					itemStack,
-					RenderLayer::getArmorCutoutNoCull,
-					matrixStack,
-					vertexConsumerProvider,
-					i,
-					identifier
-				);
+			this.equipmentRenderer.render(EquipmentModel.LayerType.WINGS, identifier2, elytraEntityModel, itemStack, matrixStack, vertexConsumerProvider, i, identifier);
 			matrixStack.pop();
 		}
 	}

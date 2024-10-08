@@ -4,6 +4,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.CreakingHeartBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LargeEntitySpawnHelper;
@@ -23,13 +24,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class CreakingHeartBlockEntity extends BlockEntity {
 	private static final int field_54776 = 32;
-	public static final int field_54775 = 1024;
-	private static final int field_54777 = 1156;
+	public static final int field_54775 = 32;
+	private static final int field_54777 = 34;
 	private static final int field_54778 = 16;
 	private static final int field_54779 = 8;
 	private static final int field_54780 = 5;
@@ -44,12 +46,19 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 	private int trailParticlesSpawnTimer;
 	@Nullable
 	private Vec3d lastCreakingPuppetPos;
+	private int comparatorOutput;
 
 	public CreakingHeartBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.CREAKING_HEART, pos, state);
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, CreakingHeartBlockEntity blockEntity) {
+		int i = blockEntity.calcComparatorOutput();
+		if (blockEntity.comparatorOutput != i) {
+			blockEntity.comparatorOutput = i;
+			world.updateComparators(pos, Blocks.CREAKING_HEART);
+		}
+
 		if (blockEntity.trailParticlesSpawnTimer > 0) {
 			if (blockEntity.trailParticlesSpawnTimer > 50) {
 				blockEntity.spawnTrailParticles((ServerWorld)world, 1, true);
@@ -75,7 +84,7 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 		if (blockEntity.creakingUpdateTimer-- < 0) {
 			blockEntity.creakingUpdateTimer = 20;
 			if (blockEntity.creakingPuppet != null) {
-				if (CreakingHeartBlock.isWorldNaturalAndNight(world) && !(blockEntity.creakingPuppet.squaredDistanceTo(Vec3d.ofBottomCenter(pos)) > 1156.0)) {
+				if (CreakingHeartBlock.isWorldNaturalAndNight(world) && !(blockEntity.getDistanceToPuppet() > 34.0)) {
 					if (blockEntity.creakingPuppet.isRemoved()) {
 						blockEntity.creakingPuppet = null;
 					}
@@ -101,6 +110,10 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 
 				if (state.get(CreakingHeartBlock.CREAKING) == CreakingHeartBlock.Creaking.ACTIVE) {
 					if (world.getDifficulty() != Difficulty.PEACEFUL) {
+						if (world instanceof ServerWorld serverWorld && !serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+							return;
+						}
+
 						PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 32.0, false);
 						if (playerEntity != null) {
 							blockEntity.creakingPuppet = spawnCreakingPuppet((ServerWorld)world, blockEntity);
@@ -113,6 +126,10 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 				}
 			}
 		}
+	}
+
+	private double getDistanceToPuppet() {
+		return this.creakingPuppet == null ? 0.0 : Math.sqrt(this.creakingPuppet.squaredDistanceTo(Vec3d.ofBottomCenter(this.getPos())));
 	}
 
 	@Nullable
@@ -151,9 +168,9 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 		}
 	}
 
-	private void spawnTrailParticles(ServerWorld world, int count, boolean bl) {
+	private void spawnTrailParticles(ServerWorld world, int count, boolean towardsPuppet) {
 		if (this.creakingPuppet != null) {
-			int i = bl ? 16545810 : 6250335;
+			int i = towardsPuppet ? 16545810 : 6250335;
 			Random random = world.random;
 
 			for (double d = 0.0; d < (double)count; d++) {
@@ -166,7 +183,7 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 						random.nextDouble() * this.creakingPuppet.getBoundingBox().getLengthZ()
 					);
 				Vec3d vec3d2 = Vec3d.of(this.getPos()).add(random.nextDouble(), random.nextDouble(), random.nextDouble());
-				if (bl) {
+				if (towardsPuppet) {
 					Vec3d vec3d3 = vec3d;
 					vec3d = vec3d2;
 					vec3d2 = vec3d3;
@@ -187,5 +204,19 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 
 	public boolean isPuppet(CreakingEntity creaking) {
 		return this.creakingPuppet == creaking;
+	}
+
+	public int getComparatorOutput() {
+		return this.comparatorOutput;
+	}
+
+	public int calcComparatorOutput() {
+		if (this.creakingPuppet == null) {
+			return 0;
+		} else {
+			double d = this.getDistanceToPuppet();
+			double e = Math.clamp(d, 0.0, 32.0) / 32.0;
+			return 15 - (int)Math.floor(e * 15.0);
+		}
 	}
 }

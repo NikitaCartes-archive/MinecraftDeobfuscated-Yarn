@@ -67,7 +67,15 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 
 	@Override
 	public List<RecipeDisplay> getDisplays() {
-		return List.of(new SmithingRecipeDisplay(new SlotDisplay.StackSlotDisplay(this.result), new SlotDisplay.ItemSlotDisplay(Items.SMITHING_TABLE)));
+		return List.of(
+			new SmithingRecipeDisplay(
+				Ingredient.toDisplay(this.template),
+				Ingredient.toDisplay(this.base),
+				Ingredient.toDisplay(this.addition),
+				new SlotDisplay.StackSlotDisplay(this.result),
+				new SlotDisplay.ItemSlotDisplay(Items.SMITHING_TABLE)
+			)
+		);
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingTransformRecipe> {

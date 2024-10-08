@@ -16,6 +16,9 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Smoother;
 import org.joml.Vector2i;
@@ -76,7 +79,7 @@ public class Mouse {
 					return;
 				}
 
-				this.activeButton = i;
+				this.activeButton = button;
 				this.glfwTime = GlfwUtil.getTime();
 			} else if (this.activeButton != -1) {
 				if (this.client.options.getTouchscreen().getValue() && --this.field_1796 > 0) {
@@ -86,7 +89,6 @@ public class Mouse {
 				this.activeButton = -1;
 			}
 
-			boolean[] bls = new boolean[]{false};
 			if (this.client.getOverlay() == null) {
 				if (this.client.currentScreen == null) {
 					if (!this.cursorLocked && bl) {
@@ -98,28 +100,53 @@ public class Mouse {
 					Screen screen = this.client.currentScreen;
 					if (bl) {
 						screen.applyMousePressScrollNarratorDelay();
-						Screen.wrapScreenError(() -> bls[0] = screen.mouseClicked(d, e, i), "mouseClicked event handler", screen.getClass().getCanonicalName());
+
+						try {
+							if (screen.mouseClicked(d, e, i)) {
+								return;
+							}
+						} catch (Throwable var17) {
+							CrashReport crashReport = CrashReport.create(var17, "mouseClicked event handler");
+							screen.addCrashReportSection(crashReport);
+							CrashReportSection crashReportSection = crashReport.addElement("Mouse");
+							crashReportSection.add("Scaled X", d);
+							crashReportSection.add("Scaled Y", e);
+							crashReportSection.add("Button", button);
+							throw new CrashException(crashReport);
+						}
 					} else {
-						Screen.wrapScreenError(() -> bls[0] = screen.mouseReleased(d, e, i), "mouseReleased event handler", screen.getClass().getCanonicalName());
+						try {
+							if (screen.mouseReleased(d, e, i)) {
+								return;
+							}
+						} catch (Throwable var16) {
+							CrashReport crashReport = CrashReport.create(var16, "mouseReleased event handler");
+							screen.addCrashReportSection(crashReport);
+							CrashReportSection crashReportSection = crashReport.addElement("Mouse");
+							crashReportSection.add("Scaled X", d);
+							crashReportSection.add("Scaled Y", e);
+							crashReportSection.add("Button", button);
+							throw new CrashException(crashReport);
+						}
 					}
 				}
 			}
 
-			if (!bls[0] && this.client.currentScreen == null && this.client.getOverlay() == null) {
-				if (i == 0) {
+			if (this.client.currentScreen == null && this.client.getOverlay() == null) {
+				if (button == 0) {
 					this.leftButtonClicked = bl;
-				} else if (i == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+				} else if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
 					this.middleButtonClicked = bl;
-				} else if (i == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+				} else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
 					this.rightButtonClicked = bl;
 				}
 
-				KeyBinding.setKeyPressed(InputUtil.Type.MOUSE.createFromCode(i), bl);
+				KeyBinding.setKeyPressed(InputUtil.Type.MOUSE.createFromCode(button), bl);
 				if (bl) {
-					if (this.client.player.isSpectator() && i == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+					if (this.client.player.isSpectator() && button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
 						this.client.inGameHud.getSpectatorHud().useSelectedCommand();
 					} else {
-						KeyBinding.onKeyPressed(InputUtil.Type.MOUSE.createFromCode(i));
+						KeyBinding.onKeyPressed(InputUtil.Type.MOUSE.createFromCode(button));
 					}
 				}
 			}
@@ -241,11 +268,32 @@ public class Mouse {
 			if (screen != null && this.client.getOverlay() == null && bl) {
 				double f = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
 				double g = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-				Screen.wrapScreenError(() -> screen.mouseMoved(f, g), "mouseMoved event handler", screen.getClass().getCanonicalName());
+
+				try {
+					screen.mouseMoved(f, g);
+				} catch (Throwable var19) {
+					CrashReport crashReport = CrashReport.create(var19, "mouseMoved event handler");
+					screen.addCrashReportSection(crashReport);
+					CrashReportSection crashReportSection = crashReport.addElement("Mouse");
+					crashReportSection.add("Scaled X", f);
+					crashReportSection.add("Scaled Y", g);
+					throw new CrashException(crashReport);
+				}
+
 				if (this.activeButton != -1 && this.glfwTime > 0.0) {
 					double h = this.cursorDeltaX * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
 					double i = this.cursorDeltaY * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-					Screen.wrapScreenError(() -> screen.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", screen.getClass().getCanonicalName());
+
+					try {
+						screen.mouseDragged(f, g, this.activeButton, h, i);
+					} catch (Throwable var18) {
+						CrashReport crashReport2 = CrashReport.create(var18, "mouseDragged event handler");
+						screen.addCrashReportSection(crashReport2);
+						CrashReportSection crashReportSection2 = crashReport2.addElement("Mouse");
+						crashReportSection2.add("Scaled X", f);
+						crashReportSection2.add("Scaled Y", g);
+						throw new CrashException(crashReport2);
+					}
 				}
 
 				screen.applyMouseMoveNarratorDelay();

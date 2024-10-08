@@ -14,6 +14,7 @@ public class RotateCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("rotate")
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("target", EntityArgumentType.entity())
 						.then(

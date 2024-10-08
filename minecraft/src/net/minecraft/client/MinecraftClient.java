@@ -991,6 +991,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void printCrashReport(CrashReport crashReport) {
+		CrashMemoryReserve.releaseMemory();
 		CrashReport crashReport2 = this.addDetailsToCrashReport(crashReport);
 		this.cleanUpAfterCrash();
 		printCrashReport(this, this.runDirectory, crashReport2);
@@ -1477,13 +1478,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void cleanUpAfterCrash() {
-		try {
-			CrashMemoryReserve.releaseMemory();
-		} catch (Throwable var3) {
-		}
+		CrashMemoryReserve.releaseMemory();
 
 		try {
-			System.gc();
 			if (this.integratedServerRunning && this.server != null) {
 				this.server.stop(true);
 			}
@@ -1829,7 +1826,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (this.currentScreen != null) {
-			Screen.wrapScreenError(() -> this.currentScreen.tick(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
+			try {
+				this.currentScreen.tick();
+			} catch (Throwable var5) {
+				CrashReport crashReport = CrashReport.create(var5, "Ticking screen");
+				this.currentScreen.addCrashReportSection(crashReport);
+				throw new CrashException(crashReport);
+			}
 		}
 
 		if (!this.getDebugHud().shouldShowDebugHud()) {
@@ -1883,8 +1886,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 				try {
 					this.world.tick(() -> true);
-				} catch (Throwable var5) {
-					CrashReport crashReport = CrashReport.create(var5, "Exception in world tick");
+				} catch (Throwable var6) {
+					CrashReport crashReport = CrashReport.create(var6, "Exception in world tick");
 					if (this.world == null) {
 						CrashReportSection crashReportSection = crashReport.addElement("Affected level");
 						crashReportSection.add("Problem", "Level is null!");
@@ -2398,17 +2401,23 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {
 		SystemDetails systemDetails = report.getSystemDetailsSection();
-		addSystemDetailsToCrashReport(systemDetails, this, this.languageManager, this.gameVersion, this.options);
-		this.addUptimesToCrashReport(report.addElement("Uptime"));
-		if (this.world != null) {
-			this.world.addDetailsToCrashReport(report);
+
+		try {
+			addSystemDetailsToCrashReport(systemDetails, this, this.languageManager, this.gameVersion, this.options);
+			this.addUptimesToCrashReport(report.addElement("Uptime"));
+			if (this.world != null) {
+				this.world.addDetailsToCrashReport(report);
+			}
+
+			if (this.server != null) {
+				this.server.addSystemDetails(systemDetails);
+			}
+
+			this.resourceReloadLogger.addReloadSection(report);
+		} catch (Throwable var4) {
+			LOGGER.error("Failed to collect details", var4);
 		}
 
-		if (this.server != null) {
-			this.server.addSystemDetails(systemDetails);
-		}
-
-		this.resourceReloadLogger.addReloadSection(report);
 		return report;
 	}
 

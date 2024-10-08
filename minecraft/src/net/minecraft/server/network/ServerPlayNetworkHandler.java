@@ -877,9 +877,9 @@ public class ServerPlayNetworkHandler
 									q = 1;
 								}
 
-								if (!this.player.isInTeleportationState() && (!this.player.getServerWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !bl)) {
+								if (this.shouldCheckMovement(bl)) {
 									float r = bl ? 300.0F : 100.0F;
-									if (p - o > (double)(r * (float)q) && !this.isHost()) {
+									if (p - o > (double)(r * (float)q)) {
 										LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), l, m, n);
 										this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYaw(), this.player.getPitch());
 										return;
@@ -959,6 +959,17 @@ public class ServerPlayNetworkHandler
 					}
 				}
 			}
+		}
+	}
+
+	private boolean shouldCheckMovement(boolean elytra) {
+		if (this.isHost()) {
+			return false;
+		} else if (this.player.isInTeleportationState()) {
+			return false;
+		} else {
+			GameRules gameRules = this.player.getServerWorld().getGameRules();
+			return gameRules.getBoolean(GameRules.DISABLE_PLAYER_MOVEMENT_CHECK) ? false : !elytra || !gameRules.getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK);
 		}
 	}
 
@@ -1699,6 +1710,7 @@ public class ServerPlayNetworkHandler
 		if (this.player.interactionManager.isCreative()) {
 			boolean bl = packet.slot() < 0;
 			ItemStack itemStack = packet.stack();
+			ItemStack itemStack2 = itemStack.copy();
 			if (!itemStack.isItemEnabled(this.player.getWorld().getEnabledFeatures())) {
 				return;
 			}
@@ -1718,7 +1730,7 @@ public class ServerPlayNetworkHandler
 			boolean bl3 = itemStack.isEmpty() || itemStack.getCount() <= itemStack.getMaxCount();
 			if (bl2 && bl3) {
 				this.player.playerScreenHandler.getSlot(packet.slot()).setStack(itemStack);
-				this.player.playerScreenHandler.setPreviousTrackedSlot(packet.slot(), itemStack);
+				this.player.playerScreenHandler.setPreviousTrackedSlot(packet.slot(), itemStack2);
 				this.player.playerScreenHandler.sendContentUpdates();
 			} else if (bl && bl3) {
 				if (this.creativeItemDropCooldown.canUse()) {

@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
+import net.minecraft.util.context.ContextParameter;
 
 public record InvertedLootCondition(LootCondition term) implements LootCondition {
 	public static final MapCodec<InvertedLootCondition> CODEC = RecordCodecBuilder.mapCodec(
@@ -22,8 +22,8 @@ public record InvertedLootCondition(LootCondition term) implements LootCondition
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.term.getRequiredParameters();
+	public Set<ContextParameter<?>> getAllowedParameters() {
+		return this.term.getAllowedParameters();
 	}
 
 	@Override

@@ -164,8 +164,8 @@ public class TrueTypeFont implements Font {
 		}
 
 		@Override
-		public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-			return (GlyphRenderer)function.apply(new RenderableGlyph() {
+		public BakedGlyph bake(Function<RenderableGlyph, BakedGlyph> function) {
+			return (BakedGlyph)function.apply(new RenderableGlyph() {
 				@Override
 				public int getWidth() {
 					return TtfGlyph.this.width;

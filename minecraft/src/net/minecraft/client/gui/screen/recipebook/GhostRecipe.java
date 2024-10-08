@@ -14,6 +14,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.display.SlotDisplay;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.context.ContextParameterMap;
 
 @Environment(EnvType.CLIENT)
 public class GhostRecipe {
@@ -28,18 +29,18 @@ public class GhostRecipe {
 		this.items.clear();
 	}
 
-	private void addItems(Slot slot, SlotDisplay.Context context, SlotDisplay display, boolean resultSlot) {
+	private void addItems(Slot slot, ContextParameterMap context, SlotDisplay display, boolean resultSlot) {
 		List<ItemStack> list = display.getStacks(context);
 		if (!list.isEmpty()) {
 			this.items.put(slot, new GhostRecipe.CyclingItem(list, resultSlot));
 		}
 	}
 
-	protected void addInputs(Slot slot, SlotDisplay.Context context, SlotDisplay display) {
+	protected void addInputs(Slot slot, ContextParameterMap context, SlotDisplay display) {
 		this.addItems(slot, context, display, false);
 	}
 
-	protected void addResults(Slot slot, SlotDisplay.Context context, SlotDisplay display) {
+	protected void addResults(Slot slot, ContextParameterMap context, SlotDisplay display) {
 		this.addItems(slot, context, display, true);
 	}
 

@@ -37,7 +37,6 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.block.OrientationHelper;
 import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.tick.ScheduledTickView;
-import org.joml.Vector3f;
 
 public class RedstoneWireBlock extends Block {
 	public static final MapCodec<RedstoneWireBlock> CODEC = createCodec(RedstoneWireBlock::new);
@@ -82,13 +81,13 @@ public class RedstoneWireBlock extends Block {
 		)
 	);
 	private static final Map<BlockState, VoxelShape> SHAPES = Maps.<BlockState, VoxelShape>newHashMap();
-	private static final Vector3f[] COLORS = Util.make(new Vector3f[16], vector3fs -> {
+	private static final int[] COLORS = Util.make(new int[16], colors -> {
 		for (int i = 0; i <= 15; i++) {
 			float f = (float)i / 15.0F;
 			float g = f * 0.6F + (f > 0.0F ? 0.4F : 0.3F);
 			float h = MathHelper.clamp(f * f * 0.7F - 0.5F, 0.0F, 1.0F);
 			float j = MathHelper.clamp(f * f * 0.6F - 0.7F, 0.0F, 1.0F);
-			vector3fs[i] = new Vector3f(g, h, j);
+			colors[i] = ColorHelper.fromFloats(1.0F, g, h, j);
 		}
 	});
 	private static final float field_31221 = 0.2F;
@@ -423,12 +422,11 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	public static int getWireColor(int powerLevel) {
-		Vector3f vector3f = COLORS[powerLevel];
-		return ColorHelper.fromFloats(0.0F, vector3f.x(), vector3f.y(), vector3f.z());
+		return COLORS[powerLevel];
 	}
 
-	private void addPoweredParticles(
-		World world, Random random, BlockPos pos, Vector3f color, Direction perpendicular, Direction direction, float minOffset, float maxOffset
+	private static void addPoweredParticles(
+		World world, Random random, BlockPos pos, int color, Direction perpendicular, Direction direction, float minOffset, float maxOffset
 	) {
 		float f = maxOffset - minOffset;
 		if (!(random.nextFloat() >= 0.2F * f)) {
@@ -449,13 +447,13 @@ public class RedstoneWireBlock extends Block {
 				WireConnection wireConnection = state.get((Property<WireConnection>)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
 				switch (wireConnection) {
 					case UP:
-						this.addPoweredParticles(world, random, pos, COLORS[i], direction, Direction.UP, -0.5F, 0.5F);
+						addPoweredParticles(world, random, pos, COLORS[i], direction, Direction.UP, -0.5F, 0.5F);
 					case SIDE:
-						this.addPoweredParticles(world, random, pos, COLORS[i], Direction.DOWN, direction, 0.0F, 0.5F);
+						addPoweredParticles(world, random, pos, COLORS[i], Direction.DOWN, direction, 0.0F, 0.5F);
 						break;
 					case NONE:
 					default:
-						this.addPoweredParticles(world, random, pos, COLORS[i], Direction.DOWN, direction, 0.0F, 0.3F);
+						addPoweredParticles(world, random, pos, COLORS[i], Direction.DOWN, direction, 0.0F, 0.3F);
 				}
 			}
 		}

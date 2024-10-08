@@ -40,7 +40,8 @@ public class RecipeFinder {
 	}
 
 	public boolean isCraftable(Recipe<?> recipe, int quantity, @Nullable RecipeMatcher.ItemCallback<RegistryEntry<Item>> itemCallback) {
-		return this.isCraftable(recipe.getIngredientPlacement().getRawIngredients(), quantity, itemCallback);
+		IngredientPlacement ingredientPlacement = recipe.getIngredientPlacement();
+		return ingredientPlacement.hasNoPlacement() ? false : this.isCraftable(ingredientPlacement.getRawIngredients(), quantity, itemCallback);
 	}
 
 	public boolean isCraftable(

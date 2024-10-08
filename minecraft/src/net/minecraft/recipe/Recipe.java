@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.Registries;
@@ -100,5 +100,5 @@ public interface Recipe<T extends RecipeInput> {
 		return List.of();
 	}
 
-	RecipeBookGroup getRecipeBookTab();
+	RecipeBookCategory getRecipeBookTab();
 }

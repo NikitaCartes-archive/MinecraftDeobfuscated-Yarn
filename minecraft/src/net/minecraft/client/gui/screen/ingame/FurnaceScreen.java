@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.recipebook.RecipeBookType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Items;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
 import net.minecraft.screen.FurnaceScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -20,9 +20,9 @@ public class FurnaceScreen extends AbstractFurnaceScreen<FurnaceScreenHandler> {
 	private static final Text TOGGLE_SMELTABLE_TEXT = Text.translatable("gui.recipebook.toggleRecipes.smeltable");
 	private static final List<RecipeBookWidget.Tab> TABS = List.of(
 		new RecipeBookWidget.Tab(RecipeBookType.FURNACE),
-		new RecipeBookWidget.Tab(Items.PORKCHOP, RecipeBookGroup.FURNACE_FOOD),
-		new RecipeBookWidget.Tab(Items.STONE, RecipeBookGroup.FURNACE_BLOCKS),
-		new RecipeBookWidget.Tab(Items.LAVA_BUCKET, Items.EMERALD, RecipeBookGroup.FURNACE_MISC)
+		new RecipeBookWidget.Tab(Items.PORKCHOP, RecipeBookCategories.FURNACE_FOOD),
+		new RecipeBookWidget.Tab(Items.STONE, RecipeBookCategories.FURNACE_BLOCKS),
+		new RecipeBookWidget.Tab(Items.LAVA_BUCKET, Items.EMERALD, RecipeBookCategories.FURNACE_MISC)
 	);
 
 	public FurnaceScreen(FurnaceScreenHandler handler, PlayerInventory inventory, Text title) {

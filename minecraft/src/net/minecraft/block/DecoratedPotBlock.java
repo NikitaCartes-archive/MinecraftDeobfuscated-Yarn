@@ -20,8 +20,8 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -179,7 +179,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+	protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
 		BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
 			builder.addDynamicDrop(SHERDS_DYNAMIC_DROP_ID, lootConsumer -> {

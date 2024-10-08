@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.score.ContextLootScoreProvider;
 import net.minecraft.loot.provider.score.LootScoreProvider;
 import net.minecraft.loot.provider.score.LootScoreProviderTypes;
@@ -13,6 +12,7 @@ import net.minecraft.scoreboard.ReadableScoreboardScore;
 import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.util.context.ContextParameter;
 
 public record ScoreLootNumberProvider(LootScoreProvider target, String score, float scale) implements LootNumberProvider {
 	public static final MapCodec<ScoreLootNumberProvider> CODEC = RecordCodecBuilder.mapCodec(
@@ -30,7 +30,7 @@ public record ScoreLootNumberProvider(LootScoreProvider target, String score, fl
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> getRequiredParameters() {
+	public Set<ContextParameter<?>> getAllowedParameters() {
 		return this.target.getRequiredParameters();
 	}
 

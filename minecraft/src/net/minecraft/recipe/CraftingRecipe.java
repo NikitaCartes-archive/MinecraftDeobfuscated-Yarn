@@ -3,7 +3,8 @@ package net.minecraft.recipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -34,12 +35,12 @@ public interface CraftingRecipe extends Recipe<CraftingRecipeInput> {
 	}
 
 	@Override
-	default RecipeBookGroup getRecipeBookTab() {
+	default RecipeBookCategory getRecipeBookTab() {
 		return switch (this.getCategory()) {
-			case BUILDING -> RecipeBookGroup.CRAFTING_BUILDING_BLOCKS;
-			case EQUIPMENT -> RecipeBookGroup.CRAFTING_EQUIPMENT;
-			case REDSTONE -> RecipeBookGroup.CRAFTING_REDSTONE;
-			case MISC -> RecipeBookGroup.CRAFTING_MISC;
+			case BUILDING -> RecipeBookCategories.CRAFTING_BUILDING_BLOCKS;
+			case EQUIPMENT -> RecipeBookCategories.CRAFTING_EQUIPMENT;
+			case REDSTONE -> RecipeBookCategories.CRAFTING_REDSTONE;
+			case MISC -> RecipeBookCategories.CRAFTING_MISC;
 		};
 	}
 }

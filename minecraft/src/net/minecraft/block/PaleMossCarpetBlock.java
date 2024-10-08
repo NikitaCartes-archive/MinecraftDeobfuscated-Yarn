@@ -67,7 +67,7 @@ public class PaleMossCarpetBlock extends Block implements Fertilizable {
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
-				.with(BOTTOM, Boolean.valueOf(false))
+				.with(BOTTOM, Boolean.valueOf(true))
 				.with(NORTH, WallShape.NONE)
 				.with(EAST, WallShape.NONE)
 				.with(SOUTH, WallShape.NONE)
@@ -134,7 +134,8 @@ public class PaleMossCarpetBlock extends Block implements Fertilizable {
 
 	@Override
 	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return !world.isAir(pos.down());
+		BlockState blockState = world.getBlockState(pos.down());
+		return state.get(BOTTOM) ? !blockState.isAir() : blockState.isOf(this) && (Boolean)blockState.get(BOTTOM);
 	}
 
 	private static boolean hasAnyShape(BlockState state) {
@@ -197,11 +198,11 @@ public class PaleMossCarpetBlock extends Block implements Fertilizable {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return updateState(this.getDefaultState().with(BOTTOM, Boolean.valueOf(true)), ctx.getWorld(), ctx.getBlockPos(), true);
+		return updateState(this.getDefaultState(), ctx.getWorld(), ctx.getBlockPos(), true);
 	}
 
 	public static void placeAt(WorldAccess world, BlockPos pos, Random random, int flags) {
-		BlockState blockState = Blocks.PALE_MOSS_CARPET.getDefaultState().with(BOTTOM, Boolean.valueOf(true));
+		BlockState blockState = Blocks.PALE_MOSS_CARPET.getDefaultState();
 		BlockState blockState2 = updateState(blockState, world, pos, true);
 		world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
 		BlockState blockState3 = createUpperState(world, pos, random::nextBoolean);
@@ -226,7 +227,7 @@ public class PaleMossCarpetBlock extends Block implements Fertilizable {
 		BlockState blockState = world.getBlockState(blockPos);
 		boolean bl = blockState.isOf(Blocks.PALE_MOSS_CARPET);
 		if ((!bl || !(Boolean)blockState.get(BOTTOM)) && (bl || blockState.isReplaceable())) {
-			BlockState blockState2 = Blocks.PALE_MOSS_CARPET.getDefaultState();
+			BlockState blockState2 = Blocks.PALE_MOSS_CARPET.getDefaultState().with(BOTTOM, Boolean.valueOf(false));
 			BlockState blockState3 = updateState(blockState2, world, pos.up(), true);
 
 			for (Direction direction : Direction.Type.HORIZONTAL) {

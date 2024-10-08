@@ -1003,7 +1003,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		);
 		VanillaRecipeGenerator.streamSmithingTemplates()
 			.filter(template -> set.contains(template.template()))
-			.forEach(templatex -> builder.criterion("armor_trimmed_" + templatex.id(), RecipeCraftedCriterion.Conditions.create(templatex.id())));
+			.forEach(templatex -> builder.criterion("armor_trimmed_" + templatex.id().getValue(), RecipeCraftedCriterion.Conditions.create(templatex.id())));
 		return builder;
 	}
 
@@ -1011,7 +1011,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		builder.criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
 		VanillaRecipeGenerator.streamSmithingTemplates()
 			.map(VanillaRecipeGenerator.SmithingTemplate::id)
-			.forEach(template -> builder.criterion("armor_trimmed_" + template, RecipeCraftedCriterion.Conditions.create(template)));
+			.forEach(template -> builder.criterion("armor_trimmed_" + template.getValue(), RecipeCraftedCriterion.Conditions.create(template)));
 		return builder;
 	}
 

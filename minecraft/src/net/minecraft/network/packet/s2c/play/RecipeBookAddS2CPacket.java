@@ -10,9 +10,13 @@ import net.minecraft.network.packet.PacketType;
 import net.minecraft.network.packet.PlayPackets;
 import net.minecraft.recipe.RecipeDisplayEntry;
 
-public record RecipeBookAddS2CPacket(List<RecipeBookAddS2CPacket.Entry> entries) implements Packet<ClientPlayPacketListener> {
+public record RecipeBookAddS2CPacket(List<RecipeBookAddS2CPacket.Entry> entries, boolean replace) implements Packet<ClientPlayPacketListener> {
 	public static final PacketCodec<RegistryByteBuf, RecipeBookAddS2CPacket> CODEC = PacketCodec.tuple(
-		RecipeBookAddS2CPacket.Entry.PACKET_CODEC.collect(PacketCodecs.toList()), RecipeBookAddS2CPacket::entries, RecipeBookAddS2CPacket::new
+		RecipeBookAddS2CPacket.Entry.PACKET_CODEC.collect(PacketCodecs.toList()),
+		RecipeBookAddS2CPacket::entries,
+		PacketCodecs.BOOL,
+		RecipeBookAddS2CPacket::replace,
+		RecipeBookAddS2CPacket::new
 	);
 
 	@Override

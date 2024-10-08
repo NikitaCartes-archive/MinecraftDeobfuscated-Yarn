@@ -25,7 +25,7 @@ public interface StructurePoolAliasLookup {
 			bindings.forEach(binding -> binding.forEach(random, builder::put));
 			Map<RegistryKey<StructurePool>, RegistryKey<StructurePool>> map = builder.build();
 			return alias -> (RegistryKey<StructurePool>)Objects.requireNonNull(
-					(RegistryKey)map.getOrDefault(alias, alias), () -> "alias " + alias + " was mapped to null value"
+					(RegistryKey)map.getOrDefault(alias, alias), () -> "alias " + alias.getValue() + " was mapped to null value"
 				);
 		}
 	}
