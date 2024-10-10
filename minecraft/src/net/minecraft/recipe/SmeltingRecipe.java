@@ -28,7 +28,7 @@ public class SmeltingRecipe extends AbstractCookingRecipe {
 	}
 
 	@Override
-	public RecipeBookCategory getRecipeBookTab() {
+	public RecipeBookCategory getRecipeBookCategory() {
 		return switch (this.getCategory()) {
 			case BLOCKS -> RecipeBookCategories.FURNACE_BLOCKS;
 			case FOOD -> RecipeBookCategories.FURNACE_FOOD;

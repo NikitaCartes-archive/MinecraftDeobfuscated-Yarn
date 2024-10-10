@@ -7,14 +7,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryFixedCodec;
 
 public class SetItemLootFunction extends ConditionalLootFunction {
 	public static final MapCodec<SetItemLootFunction> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> addConditionsField(instance)
-				.and(RegistryFixedCodec.of(RegistryKeys.ITEM).fieldOf("item").forGetter(lootFunction -> lootFunction.item))
+				.and(Item.ENTRY_CODEC.fieldOf("item").forGetter(lootFunction -> lootFunction.item))
 				.apply(instance, SetItemLootFunction::new)
 	);
 	private final RegistryEntry<Item> item;

@@ -21,7 +21,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -118,17 +117,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 					entity.detach();
 				}
 
-				Vec3d vec3d3;
-				if (this.getVelocity().lengthSquared() > 0.0) {
-					Box box = entity.getBoundingBox();
-					Vec3d vec3d = new Vec3d(box.getLengthX(), box.getLengthY(), box.getLengthZ()).multiply(0.5000099999997474);
-					Vec3d vec3d2 = new Vec3d(Math.signum(this.getVelocity().x), Math.signum(this.getVelocity().y), Math.signum(this.getVelocity().z));
-					vec3d3 = vec3d2.multiply(vec3d).add(0.0, box.getLengthY() * 0.5, 0.0);
-				} else {
-					vec3d3 = Vec3d.ZERO;
-				}
-
-				Vec3d vec3d4 = this.getPos().subtract(vec3d3);
+				Vec3d vec3d = this.getLastRenderPos();
 				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 					if (serverPlayerEntity.networkHandler.isConnectionOpen()) {
 						if (this.random.nextFloat() < 0.05F && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
@@ -139,8 +128,12 @@ public class EnderPearlEntity extends ThrownItemEntity {
 							}
 						}
 
+						if (this.hasPortalCooldown()) {
+							entity.resetPortalCooldown();
+						}
+
 						ServerPlayerEntity serverPlayerEntity2 = serverPlayerEntity.teleportTo(
-							new TeleportTarget(serverWorld, vec3d4, Vec3d.ZERO, 0.0F, 0.0F, PositionFlag.combine(PositionFlag.ROT, PositionFlag.DELTA), TeleportTarget.NO_OP)
+							new TeleportTarget(serverWorld, vec3d, Vec3d.ZERO, 0.0F, 0.0F, PositionFlag.combine(PositionFlag.ROT, PositionFlag.DELTA), TeleportTarget.NO_OP)
 						);
 						if (serverPlayerEntity2 != null) {
 							serverPlayerEntity2.onLanding();
@@ -148,15 +141,15 @@ public class EnderPearlEntity extends ThrownItemEntity {
 							serverPlayerEntity2.damage(serverPlayerEntity.getServerWorld(), this.getDamageSources().enderPearl(), 5.0F);
 						}
 
-						this.playTeleportSound(serverWorld, vec3d4);
+						this.playTeleportSound(serverWorld, vec3d);
 					}
 				} else {
-					Entity entity2 = entity.teleportTo(new TeleportTarget(serverWorld, vec3d4, entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP));
+					Entity entity2 = entity.teleportTo(new TeleportTarget(serverWorld, vec3d, entity.getVelocity(), entity.getYaw(), entity.getPitch(), TeleportTarget.NO_OP));
 					if (entity2 != null) {
 						entity2.onLanding();
 					}
 
-					this.playTeleportSound(serverWorld, vec3d4);
+					this.playTeleportSound(serverWorld, vec3d);
 				}
 
 				this.discard();

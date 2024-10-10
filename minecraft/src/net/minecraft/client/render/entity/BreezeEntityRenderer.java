@@ -39,6 +39,7 @@ public class BreezeEntityRenderer extends MobEntityRenderer<BreezeEntity, Breeze
 
 	public void updateRenderState(BreezeEntity breezeEntity, BreezeEntityRenderState breezeEntityRenderState, float f) {
 		super.updateRenderState(breezeEntity, breezeEntityRenderState, f);
+		breezeEntityRenderState.idleAnimationState.copyFrom(breezeEntity.idleAnimationState);
 		breezeEntityRenderState.shootingAnimationState.copyFrom(breezeEntity.shootingAnimationState);
 		breezeEntityRenderState.slidingAnimationState.copyFrom(breezeEntity.slidingAnimationState);
 		breezeEntityRenderState.slidingBackAnimationState.copyFrom(breezeEntity.slidingBackAnimationState);

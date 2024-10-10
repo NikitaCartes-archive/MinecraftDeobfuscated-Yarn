@@ -77,6 +77,7 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.ShieldItem;
 import net.minecraft.item.consume.UseAction;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameters;
@@ -1399,7 +1400,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			bl = true;
 		}
 
-		if (!source.isIn(DamageTypeTags.BYPASSES_SHIELD) && this.isBlocking() && !bl) {
+		ItemStack itemStack = this.getBlockingItem();
+		if (!source.isIn(DamageTypeTags.BYPASSES_SHIELD) && itemStack != null && itemStack.getItem() instanceof ShieldItem && !bl) {
 			Vec3d vec3d = source.getPosition();
 			if (vec3d != null) {
 				Vec3d vec3d2 = this.getRotationVector(0.0F, this.getHeadYaw());
@@ -2026,12 +2028,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	private void addDeathParticles() {
+	public void addDeathParticles() {
 		for (int i = 0; i < 20; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.getWorld().addParticle(ParticleTypes.POOF, this.getParticleX(1.0), this.getRandomBodyY(), this.getParticleZ(1.0), d, e, f);
+			double g = 10.0;
+			this.getWorld()
+				.addParticle(ParticleTypes.POOF, this.getParticleX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
 		}
 	}
 

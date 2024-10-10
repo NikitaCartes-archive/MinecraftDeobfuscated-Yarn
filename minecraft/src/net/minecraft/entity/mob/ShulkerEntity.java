@@ -296,11 +296,11 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
-		if (movementType == MovementType.SHULKER_BOX) {
+	public void move(MovementType type, Vec3d movement) {
+		if (type == MovementType.SHULKER_BOX) {
 			this.tryTeleport();
 		} else {
-			super.move(movementType, movement);
+			super.move(type, movement);
 		}
 	}
 

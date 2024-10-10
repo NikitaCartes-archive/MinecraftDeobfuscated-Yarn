@@ -434,6 +434,9 @@ public interface PacketCodec<B, V> extends PacketDecoder<B, V>, PacketEncoder<B,
 		};
 	}
 
+	/**
+	 * {@return a codec for encoding eight values}
+	 */
 	static <B, C, T1, T2, T3, T4, T5, T6, T7, T8> PacketCodec<B, C> tuple(
 		PacketCodec<? super B, T1> codec1,
 		Function<C, T1> from1,

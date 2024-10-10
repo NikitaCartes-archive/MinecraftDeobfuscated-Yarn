@@ -181,10 +181,10 @@ public class TeleportCommand {
 	) throws CommandSyntaxException {
 		Vec3d vec3d = location.getPos(source);
 		Vec2f vec2f = rotation == null ? null : rotation.getRotation(source);
-		Set<PositionFlag> set = getFlags(location, rotation, source.getEntity().getWorld().getRegistryKey() == world.getRegistryKey());
 
 		for (Entity entity : targets) {
-			if (rotation == null) {
+			Set<PositionFlag> set = getFlags(location, rotation, entity.getWorld().getRegistryKey() == world.getRegistryKey());
+			if (vec2f == null) {
 				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.getYaw(), entity.getPitch(), facingLocation);
 			} else {
 				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, facingLocation);
@@ -235,17 +235,12 @@ public class TeleportCommand {
 			}
 		}
 
-		if (rotation == null) {
+		if (rotation == null || rotation.isXRelative()) {
 			set.add(PositionFlag.X_ROT);
-			set.add(PositionFlag.Y_ROT);
-		} else {
-			if (rotation.isXRelative()) {
-				set.add(PositionFlag.X_ROT);
-			}
+		}
 
-			if (rotation.isYRelative()) {
-				set.add(PositionFlag.Y_ROT);
-			}
+		if (rotation == null || rotation.isYRelative()) {
+			set.add(PositionFlag.Y_ROT);
 		}
 
 		return set;

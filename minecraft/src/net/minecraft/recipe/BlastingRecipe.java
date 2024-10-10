@@ -28,7 +28,7 @@ public class BlastingRecipe extends AbstractCookingRecipe {
 	}
 
 	@Override
-	public RecipeBookCategory getRecipeBookTab() {
+	public RecipeBookCategory getRecipeBookCategory() {
 		return switch (this.getCategory()) {
 			case BLOCKS -> RecipeBookCategories.BLAST_FURNACE_BLOCKS;
 			case FOOD, MISC -> RecipeBookCategories.BLAST_FURNACE_MISC;

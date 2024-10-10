@@ -74,8 +74,8 @@ public class RenderSystem {
 	});
 	private static Matrix4f projectionMatrix = new Matrix4f();
 	private static Matrix4f savedProjectionMatrix = new Matrix4f();
-	private static VertexSorter vertexSorting = VertexSorter.BY_DISTANCE;
-	private static VertexSorter savedVertexSorting = VertexSorter.BY_DISTANCE;
+	private static ProjectionType projectionType = ProjectionType.PERSPECTIVE;
+	private static ProjectionType savedProjectionType = ProjectionType.PERSPECTIVE;
 	private static final Matrix4fStack modelViewStack = new Matrix4fStack(16);
 	private static Matrix4f textureMatrix = new Matrix4f();
 	private static final int[] shaderTextures = new int[12];
@@ -676,10 +676,10 @@ public class RenderSystem {
 		return texture >= 0 && texture < shaderTextures.length ? shaderTextures[texture] : 0;
 	}
 
-	public static void setProjectionMatrix(Matrix4f projectionMatrix, VertexSorter vertexSorting) {
+	public static void setProjectionMatrix(Matrix4f projectionMatrix, ProjectionType projectionType) {
 		assertOnRenderThread();
 		RenderSystem.projectionMatrix = new Matrix4f(projectionMatrix);
-		RenderSystem.vertexSorting = vertexSorting;
+		RenderSystem.projectionType = projectionType;
 	}
 
 	public static void setTextureMatrix(Matrix4f textureMatrix) {
@@ -695,13 +695,13 @@ public class RenderSystem {
 	public static void backupProjectionMatrix() {
 		assertOnRenderThread();
 		savedProjectionMatrix = projectionMatrix;
-		savedVertexSorting = vertexSorting;
+		savedProjectionType = projectionType;
 	}
 
 	public static void restoreProjectionMatrix() {
 		assertOnRenderThread();
 		projectionMatrix = savedProjectionMatrix;
-		vertexSorting = savedVertexSorting;
+		projectionType = savedProjectionType;
 	}
 
 	public static Matrix4f getProjectionMatrix() {
@@ -744,9 +744,9 @@ public class RenderSystem {
 		return shaderGameTime;
 	}
 
-	public static VertexSorter getVertexSorting() {
+	public static ProjectionType getProjectionType() {
 		assertOnRenderThread();
-		return vertexSorting;
+		return projectionType;
 	}
 
 	/**

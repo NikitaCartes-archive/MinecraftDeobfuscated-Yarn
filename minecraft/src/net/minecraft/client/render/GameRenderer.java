@@ -1,7 +1,7 @@
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -370,7 +370,7 @@ public class GameRenderer implements AutoCloseable {
 	private void renderHand(Camera camera, float tickDelta, Matrix4f matrix4f) {
 		if (!this.renderingPanorama) {
 			Matrix4f matrix4f2 = this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false));
-			RenderSystem.setProjectionMatrix(matrix4f2, VertexSorter.BY_DISTANCE);
+			RenderSystem.setProjectionMatrix(matrix4f2, ProjectionType.PERSPECTIVE);
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.push();
 			matrixStack.multiplyPositionMatrix(matrix4f.invert(new Matrix4f()));
@@ -478,14 +478,12 @@ public class GameRenderer implements AutoCloseable {
 					1000.0F,
 					21000.0F
 				);
-			RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
-			float f = 1000.0F;
+			RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.ORTHOGRAPHIC);
 			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 			matrix4fStack.pushMatrix();
-			matrix4fStack.translation(0.0F, 0.0F, -10000.0F);
+			matrix4fStack.translation(0.0F, 0.0F, -11000.0F);
 			DiffuseLighting.enableGuiDepthLighting();
 			DrawContext drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
-			drawContext.getMatrices().translate(0.0F, 0.0F, -1000.0F);
 			if (bl && tick && this.client.world != null) {
 				profiler.swap("gui");
 				if (!this.client.options.hudHidden) {
@@ -501,8 +499,8 @@ public class GameRenderer implements AutoCloseable {
 			if (this.client.getOverlay() != null) {
 				try {
 					this.client.getOverlay().render(drawContext, i, j, tickCounter.getLastFrameDuration());
-				} catch (Throwable var18) {
-					CrashReport crashReport = CrashReport.create(var18, "Rendering overlay");
+				} catch (Throwable var17) {
+					CrashReport crashReport = CrashReport.create(var17, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -510,8 +508,8 @@ public class GameRenderer implements AutoCloseable {
 			} else if (bl && this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.renderWithTooltip(drawContext, i, j, tickCounter.getLastFrameDuration());
-				} catch (Throwable var17) {
-					CrashReport crashReport = CrashReport.create(var17, "Rendering screen");
+				} catch (Throwable var16) {
+					CrashReport crashReport = CrashReport.create(var16, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -537,8 +535,8 @@ public class GameRenderer implements AutoCloseable {
 					if (this.client.currentScreen != null) {
 						this.client.currentScreen.updateNarrator();
 					}
-				} catch (Throwable var16) {
-					CrashReport crashReport = CrashReport.create(var16, "Narrating screen");
+				} catch (Throwable var15) {
+					CrashReport crashReport = CrashReport.create(var15, "Narrating screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -675,7 +673,7 @@ public class GameRenderer implements AutoCloseable {
 
 		float n = Math.max(h, (float)this.client.options.getFov().getValue().intValue());
 		Matrix4f matrix4f2 = this.getBasicProjectionMatrix(n);
-		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE);
+		RenderSystem.setProjectionMatrix(matrix4f, ProjectionType.PERSPECTIVE);
 		Quaternionf quaternionf = camera.getRotation().conjugate(new Quaternionf());
 		Matrix4f matrix4f3 = new Matrix4f().rotation(quaternionf);
 		this.client.worldRenderer.setupFrustum(camera.getPos(), matrix4f3, matrix4f2);

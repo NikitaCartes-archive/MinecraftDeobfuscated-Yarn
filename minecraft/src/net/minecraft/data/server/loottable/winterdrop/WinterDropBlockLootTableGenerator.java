@@ -29,7 +29,7 @@ public class WinterDropBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.PALE_OAK_FENCE_GATE);
 		this.addDrop(Blocks.PALE_OAK_FENCE);
 		this.addDrop(Blocks.PALE_MOSS_CARPET, block -> this.paleMossCarpetDrops(block));
-		this.addDrop(Blocks.PALE_HANGING_MOSS);
+		this.addDrop(Blocks.PALE_HANGING_MOSS, block -> this.dropsWithSilkTouchOrShears(block));
 		this.addDrop(Blocks.PALE_MOSS_BLOCK);
 		this.addPottedPlantDrops(Blocks.POTTED_PALE_OAK_SAPLING);
 		this.addDrop(Blocks.PALE_OAK_SLAB, block -> this.slabDrops(block));

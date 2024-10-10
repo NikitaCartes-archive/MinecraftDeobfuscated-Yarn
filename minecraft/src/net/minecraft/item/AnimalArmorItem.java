@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.equipment.ArmorMaterial;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -14,7 +15,7 @@ public class AnimalArmorItem extends Item {
 		this.type = type;
 	}
 
-	public AnimalArmorItem(ArmorMaterial material, AnimalArmorItem.Type type, SoundEvent equipSound, boolean damageOnHurt, Item.Settings settings) {
+	public AnimalArmorItem(ArmorMaterial material, AnimalArmorItem.Type type, RegistryEntry<SoundEvent> equipSound, boolean damageOnHurt, Item.Settings settings) {
 		super(material.applyBodyArmorSettings(settings, equipSound, damageOnHurt, type.allowedEntities));
 		this.type = type;
 	}

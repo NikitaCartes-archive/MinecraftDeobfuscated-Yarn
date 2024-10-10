@@ -9,7 +9,6 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
@@ -18,7 +17,7 @@ public record ArmorTrimPattern(Identifier assetId, RegistryEntry<Item> templateI
 	public static final Codec<ArmorTrimPattern> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("asset_id").forGetter(ArmorTrimPattern::assetId),
-					RegistryFixedCodec.of(RegistryKeys.ITEM).fieldOf("template_item").forGetter(ArmorTrimPattern::templateItem),
+					Item.ENTRY_CODEC.fieldOf("template_item").forGetter(ArmorTrimPattern::templateItem),
 					TextCodecs.CODEC.fieldOf("description").forGetter(ArmorTrimPattern::description),
 					Codec.BOOL.fieldOf("decal").orElse(false).forGetter(ArmorTrimPattern::decal)
 				)

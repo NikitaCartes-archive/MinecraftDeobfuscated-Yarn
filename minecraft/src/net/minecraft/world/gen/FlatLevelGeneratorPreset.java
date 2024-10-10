@@ -6,13 +6,12 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 
 public record FlatLevelGeneratorPreset(RegistryEntry<Item> displayItem, FlatChunkGeneratorConfig settings) {
 	public static final Codec<FlatLevelGeneratorPreset> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					RegistryFixedCodec.of(RegistryKeys.ITEM).fieldOf("display").forGetter(preset -> preset.displayItem),
+					Item.ENTRY_CODEC.fieldOf("display").forGetter(preset -> preset.displayItem),
 					FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(preset -> preset.settings)
 				)
 				.apply(instance, FlatLevelGeneratorPreset::new)

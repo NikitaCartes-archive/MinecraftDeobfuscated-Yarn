@@ -12,7 +12,6 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.animation.BreezeAnimations;
 import net.minecraft.client.render.entity.state.BreezeEntityRenderState;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BreezeEntityModel extends EntityModel<BreezeEntityRenderState> {
@@ -109,15 +108,7 @@ public class BreezeEntityModel extends EntityModel<BreezeEntityRenderState> {
 
 	public void setAngles(BreezeEntityRenderState breezeEntityRenderState) {
 		super.setAngles(breezeEntityRenderState);
-		float f = breezeEntityRenderState.age * (float) Math.PI * -0.1F;
-		this.windTop.pivotX = MathHelper.cos(f) * 1.0F * 0.6F;
-		this.windTop.pivotZ = MathHelper.sin(f) * 1.0F * 0.6F;
-		this.windMid.pivotX = MathHelper.sin(f) * 0.5F * 0.8F;
-		this.windMid.pivotZ = MathHelper.cos(f) * 0.8F;
-		this.windBottom.pivotX = MathHelper.cos(f) * -0.25F * 1.0F;
-		this.windBottom.pivotZ = MathHelper.sin(f) * -0.25F * 1.0F;
-		this.head.pivotY = 4.0F + MathHelper.cos(f) / 4.0F;
-		this.rods.yaw = breezeEntityRenderState.age * (float) Math.PI * 0.1F;
+		this.animate(breezeEntityRenderState.idleAnimationState, BreezeAnimations.IDLE, breezeEntityRenderState.age);
 		this.animate(breezeEntityRenderState.shootingAnimationState, BreezeAnimations.SHOOTING, breezeEntityRenderState.age);
 		this.animate(breezeEntityRenderState.slidingAnimationState, BreezeAnimations.SLIDING, breezeEntityRenderState.age);
 		this.animate(breezeEntityRenderState.slidingBackAnimationState, BreezeAnimations.SLIDING_BACK, breezeEntityRenderState.age);

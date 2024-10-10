@@ -736,7 +736,7 @@ public class SoundEvents {
 	public static final ImmutableList<RegistryEntry.Reference<SoundEvent>> GOAT_HORN_SOUNDS = registerGoatHornSounds();
 	public static final SoundEvent ENTITY_HORSE_AMBIENT = register("entity.horse.ambient");
 	public static final SoundEvent ENTITY_HORSE_ANGRY = register("entity.horse.angry");
-	public static final SoundEvent ENTITY_HORSE_ARMOR = register("entity.horse.armor");
+	public static final RegistryEntry.Reference<SoundEvent> ENTITY_HORSE_ARMOR = registerReference("entity.horse.armor");
 	public static final SoundEvent ENTITY_HORSE_BREATHE = register("entity.horse.breathe");
 	public static final SoundEvent ENTITY_HORSE_DEATH = register("entity.horse.death");
 	public static final SoundEvent ENTITY_HORSE_EAT = register("entity.horse.eat");

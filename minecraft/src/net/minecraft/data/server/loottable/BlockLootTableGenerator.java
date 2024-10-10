@@ -100,12 +100,12 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 		return MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(this.registries.getOrThrow(RegistryKeys.ITEM), Items.SHEARS));
 	}
 
-	private LootCondition.Builder createWithShearsOrSilkTouchCondition() {
+	private LootCondition.Builder createWithSilkTouchOrShearsCondition() {
 		return this.createWithShearsCondition().or(this.createSilkTouchCondition());
 	}
 
 	private LootCondition.Builder createWithoutShearsOrSilkTouchCondition() {
-		return this.createWithShearsOrSilkTouchCondition().invert();
+		return this.createWithSilkTouchOrShearsCondition().invert();
 	}
 
 	protected BlockLootTableGenerator(Set<Item> explosionImmuneItems, FeatureSet requiredFeatures, RegistryWrapper.WrapperLookup registries) {
@@ -153,7 +153,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected LootTable.Builder dropsWithSilkTouchOrShears(Block block, LootPoolEntry.Builder<?> loot) {
-		return drops(block, this.createWithShearsOrSilkTouchCondition(), loot);
+		return drops(block, this.createWithSilkTouchOrShearsCondition(), loot);
 	}
 
 	protected LootTable.Builder drops(Block withSilkTouch, ItemConvertible withoutSilkTouch) {
@@ -431,6 +431,13 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(this.createWithShearsCondition()).with(ItemEntry.builder(item)));
 	}
 
+	protected LootTable.Builder dropsWithSilkTouchOrShears(ItemConvertible item) {
+		return LootTable.builder()
+			.pool(
+				LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(this.createWithSilkTouchOrShearsCondition()).with(ItemEntry.builder(item))
+			);
+	}
+
 	protected LootTable.Builder multifaceGrowthDrops(Block drop, LootCondition.Builder condition) {
 		return LootTable.builder()
 			.pool(
@@ -638,14 +645,14 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 
 		for (Block block : Registries.BLOCK) {
 			if (block.isEnabled(this.requiredFeatures)) {
-				block.getLootTableKey().ifPresent(registryKey -> {
-					if (set.add(registryKey)) {
-						LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(registryKey);
+				block.getLootTableKey().ifPresent(lootTableKey -> {
+					if (set.add(lootTableKey)) {
+						LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(lootTableKey);
 						if (builder == null) {
-							throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", registryKey.getValue(), Registries.BLOCK.getId(block)));
+							throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", lootTableKey.getValue(), Registries.BLOCK.getId(block)));
 						}
 
-						lootTableBiConsumer.accept(registryKey, builder);
+						lootTableBiConsumer.accept(lootTableKey, builder);
 					}
 				});
 			}

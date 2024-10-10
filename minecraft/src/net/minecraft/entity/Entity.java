@@ -1,6 +1,7 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
@@ -8,20 +9,20 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.floats.FloatArraySet;
 import it.unimi.dsi.fastutil.floats.FloatArrays;
 import it.unimi.dsi.fastutil.floats.FloatSet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -331,6 +332,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	public double lastRenderY;
 	public double lastRenderZ;
 	public boolean noClip;
+	private boolean onFire;
 	protected final Random random = Random.create();
 	public int age;
 	private int fireTicks = -this.getBurningDuration();
@@ -380,7 +382,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	private boolean hasVisualFire;
 	@Nullable
 	private BlockState stateAtPos = null;
-	private final Map<BlockPos, BlockState> collidedBlocks = new HashMap();
+	private final List<Entity.QueuedCollisionCheck> queuedCollisionChecks = new ArrayList();
+	private final Set<BlockState> collidedBlocks = new ReferenceArraySet<>();
+	private final LongSet collidedBlockPositions = new LongOpenHashSet();
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -908,11 +912,12 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 		return this.onGround;
 	}
 
-	public void move(MovementType movementType, Vec3d movement) {
+	public void move(MovementType type, Vec3d movement) {
 		if (this.noClip) {
 			this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
 		} else {
-			if (movementType == MovementType.PISTON) {
+			this.onFire = this.isOnFire();
+			if (type == MovementType.PISTON) {
 				movement = this.adjustMovementForPiston(movement);
 				if (movement.equals(Vec3d.ZERO)) {
 					return;
@@ -927,7 +932,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 				this.setVelocity(Vec3d.ZERO);
 			}
 
-			movement = this.adjustMovementForSneaking(movement, movementType);
+			movement = this.adjustMovementForSneaking(movement, type);
 			Vec3d vec3d = this.adjustMovementForCollisions(movement);
 			double d = vec3d.lengthSquared();
 			if (d > 1.0E-7 || movement.lengthSquared() - d < 1.0E-7) {
@@ -1035,31 +1040,23 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 
 	public void tickBlockCollision(Vec3d lastRenderPos, Vec3d pos) {
 		if (this.shouldTickBlockCollision()) {
-			boolean bl = this.isOnFire();
 			if (this.isOnGround()) {
 				BlockPos blockPos = this.getLandingPos();
 				BlockState blockState = this.getWorld().getBlockState(blockPos);
 				blockState.getBlock().onSteppedOn(this.getWorld(), blockPos, blockState, this);
 			}
 
-			this.checkBlockCollision(this.collidedBlocks, lastRenderPos, pos);
-			boolean bl2 = false;
-
-			for (Entry<BlockPos, BlockState> entry : this.collidedBlocks.entrySet()) {
-				((BlockState)entry.getValue()).onEntityCollision(this.getWorld(), (BlockPos)entry.getKey(), this);
-				this.onBlockCollision((BlockState)entry.getValue());
-				if (((BlockState)entry.getValue()).isIn(BlockTags.FIRE) || ((BlockState)entry.getValue()).isOf(Blocks.LAVA)) {
-					bl2 = true;
-				}
-			}
-
+			this.queuedCollisionChecks.add(new Entity.QueuedCollisionCheck(lastRenderPos, pos));
+			this.checkBlockCollision(this.queuedCollisionChecks, this.collidedBlocks);
+			boolean bl = Iterables.any(this.collidedBlocks, state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA));
+			this.queuedCollisionChecks.clear();
 			this.collidedBlocks.clear();
-			if (!bl2) {
+			if (!bl) {
 				if (this.fireTicks <= 0) {
 					this.setFireTicks(-this.getBurningDuration());
 				}
 
-				if (bl && (this.inPowderSnow || this.isWet())) {
+				if (this.onFire && (this.inPowderSnow || this.isWet())) {
 					this.playExtinguishSound();
 				}
 			}
@@ -1112,7 +1109,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	}
 
 	public void extinguishWithSound() {
-		if (!this.getWorld().isClient && this.isOnFire()) {
+		if (!this.getWorld().isClient && this.onFire) {
 			this.playExtinguishSound();
 		}
 
@@ -1370,34 +1367,49 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 		return SoundEvents.ENTITY_GENERIC_SPLASH;
 	}
 
-	public void checkBlockCollision(Vec3d oldPos, Vec3d newPos) {
-		this.checkBlockCollision(this.collidedBlocks, oldPos, newPos);
+	public void queueBlockCollisionCheck(Vec3d oldPos, Vec3d newPos) {
+		this.queuedCollisionChecks.add(new Entity.QueuedCollisionCheck(oldPos, newPos));
 	}
 
-	private void checkBlockCollision(Map<BlockPos, BlockState> collidedBlocks, Vec3d oldPos, Vec3d newPos) {
-		Box box = this.getBoundingBox().contract(1.0E-5F);
+	private void checkBlockCollision(List<Entity.QueuedCollisionCheck> queuedCollisionChecks, Set<BlockState> collidedBlocks) {
+		if (this.shouldTickBlockCollision()) {
+			Box box = this.getBoundingBox().contract(1.0E-5F);
+			LongSet longSet = this.collidedBlockPositions;
 
-		for (BlockPos blockPos : BlockView.collectCollisionsBetween(oldPos, newPos, box)) {
-			if (!this.isAlive()) {
-				return;
-			}
+			for (Entity.QueuedCollisionCheck queuedCollisionCheck : queuedCollisionChecks) {
+				Vec3d vec3d = queuedCollisionCheck.from();
+				Vec3d vec3d2 = queuedCollisionCheck.to();
 
-			BlockState blockState = this.getWorld().getBlockState(blockPos);
-			if (!blockState.isAir() && !collidedBlocks.containsKey(blockPos)) {
-				try {
-					VoxelShape voxelShape = blockState.getInsideCollisionShape(this.getWorld(), blockPos);
-					if (voxelShape == VoxelShapes.fullCube() || this.collides(oldPos, newPos, blockPos, voxelShape)) {
-						collidedBlocks.put(blockPos.toImmutable(), blockState);
+				for (BlockPos blockPos : BlockView.collectCollisionsBetween(vec3d, vec3d2, box)) {
+					if (!this.isAlive()) {
+						return;
 					}
-				} catch (Throwable var12) {
-					CrashReport crashReport = CrashReport.create(var12, "Colliding entity with block");
-					CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
-					CrashReportSection.addBlockInfo(crashReportSection, this.getWorld(), blockPos, blockState);
-					CrashReportSection crashReportSection2 = crashReport.addElement("Entity being checked for collision");
-					this.populateCrashReport(crashReportSection2);
-					throw new CrashException(crashReport);
+
+					BlockState blockState = this.getWorld().getBlockState(blockPos);
+					if (!blockState.isAir() && longSet.add(blockPos.asLong())) {
+						try {
+							VoxelShape voxelShape = blockState.getInsideCollisionShape(this.getWorld(), blockPos);
+							if (voxelShape != VoxelShapes.fullCube() && !this.collides(vec3d, vec3d2, blockPos, voxelShape)) {
+								continue;
+							}
+
+							blockState.onEntityCollision(this.getWorld(), blockPos, this);
+							this.onBlockCollision(blockState);
+						} catch (Throwable var16) {
+							CrashReport crashReport = CrashReport.create(var16, "Colliding entity with block");
+							CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
+							CrashReportSection.addBlockInfo(crashReportSection, this.getWorld(), blockPos, blockState);
+							CrashReportSection crashReportSection2 = crashReport.addElement("Entity being checked for collision");
+							this.populateCrashReport(crashReportSection2);
+							throw new CrashException(crashReport);
+						}
+
+						collidedBlocks.add(blockState);
+					}
 				}
 			}
+
+			longSet.clear();
 		}
 	}
 
@@ -4016,7 +4028,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 		this.refreshPosition();
 		this.resetPosition();
 		this.setVelocity(playerPosition2.deltaMovement());
-		this.collidedBlocks.clear();
+		this.queuedCollisionChecks.clear();
 	}
 
 	public void rotate(float yaw, float pitch) {
@@ -4810,6 +4822,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 		return this.getControllingPassenger() instanceof PlayerEntity playerEntity ? playerEntity.isMainPlayer() : this.canMoveVoluntarily();
 	}
 
+	public boolean isControlledByPlayer() {
+		LivingEntity livingEntity = this.getControllingPassenger();
+		return livingEntity != null && livingEntity.isControlledByPlayer();
+	}
+
 	public boolean canMoveVoluntarily() {
 		return !this.getWorld().isClient;
 	}
@@ -5516,6 +5533,9 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	@FunctionalInterface
 	public interface PositionUpdater {
 		void accept(Entity entity, double x, double y, double z);
+	}
+
+	static record QueuedCollisionCheck(Vec3d from, Vec3d to) {
 	}
 
 	/**

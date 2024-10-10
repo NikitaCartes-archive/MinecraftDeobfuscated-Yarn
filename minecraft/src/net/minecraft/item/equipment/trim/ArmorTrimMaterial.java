@@ -12,7 +12,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
@@ -24,7 +23,7 @@ public record ArmorTrimMaterial(
 	public static final Codec<ArmorTrimMaterial> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.IDENTIFIER_PATH.fieldOf("asset_name").forGetter(ArmorTrimMaterial::assetName),
-					RegistryFixedCodec.of(RegistryKeys.ITEM).fieldOf("ingredient").forGetter(ArmorTrimMaterial::ingredient),
+					Item.ENTRY_CODEC.fieldOf("ingredient").forGetter(ArmorTrimMaterial::ingredient),
 					Codec.FLOAT.fieldOf("item_model_index").forGetter(ArmorTrimMaterial::itemModelIndex),
 					Codec.unboundedMap(Identifier.CODEC, Codec.STRING)
 						.optionalFieldOf("override_armor_materials", Map.of())

@@ -1,7 +1,7 @@
 package net.minecraft.client.gl;
 
+import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.VertexSorter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +72,7 @@ public class PostEffectPass {
 				RenderSystem.depthFunc(519);
 				RenderSystem.setShader(this.program);
 				RenderSystem.backupProjectionMatrix();
-				RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorter.BY_Z);
+				RenderSystem.setProjectionMatrix(projectionMatrix, ProjectionType.ORTHOGRAPHIC);
 				BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
 				bufferBuilder.vertex(0.0F, 0.0F, 500.0F);
 				bufferBuilder.vertex((float)framebuffer.textureWidth, 0.0F, 500.0F);

@@ -22,9 +22,7 @@ public class SlimeBlock extends TranslucentBlock {
 
 	@Override
 	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
-		if (entity.bypassesLandingEffects()) {
-			super.onLandedUpon(world, state, pos, entity, fallDistance);
-		} else {
+		if (!entity.bypassesLandingEffects()) {
 			entity.handleFallDamage(fallDistance, 0.0F, world.getDamageSources().fall());
 		}
 	}

@@ -94,7 +94,7 @@ public abstract class BlockAttachedEntity extends Entity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
+	public void move(MovementType type, Vec3d movement) {
 		if (this.getWorld() instanceof ServerWorld serverWorld && !this.isRemoved() && movement.lengthSquared() > 0.0) {
 			this.kill(serverWorld);
 			this.onBreak(serverWorld, null);

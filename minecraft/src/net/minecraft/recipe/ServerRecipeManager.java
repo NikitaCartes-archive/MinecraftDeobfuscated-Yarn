@@ -133,7 +133,7 @@ public class ServerRecipeManager extends SinglePreparationResourceReloader<Prepa
 	}
 
 	private static boolean isEnabled(FeatureSet features, Ingredient ingredient) {
-		return ingredient.getMatchingStacks().stream().allMatch(entry -> ((Item)entry.value()).isEnabled(features));
+		return ingredient.getMatchingItems().stream().allMatch(entry -> ((Item)entry.value()).isEnabled(features));
 	}
 
 	public <I extends RecipeInput, T extends Recipe<I>> Optional<RecipeEntry<T>> getFirstMatch(
@@ -291,7 +291,7 @@ public class ServerRecipeManager extends SinglePreparationResourceReloader<Prepa
 				if (recipeDisplay.isEnabled(enabledFeatures)) {
 					int i = list.size();
 					NetworkRecipeId networkRecipeId = new NetworkRecipeId(i);
-					RecipeDisplayEntry recipeDisplayEntry = new RecipeDisplayEntry(networkRecipeId, recipeDisplay, optionalInt, recipe.getRecipeBookTab(), optional);
+					RecipeDisplayEntry recipeDisplayEntry = new RecipeDisplayEntry(networkRecipeId, recipeDisplay, optionalInt, recipe.getRecipeBookCategory(), optional);
 					list.add(new ServerRecipeManager.ServerRecipe(recipeDisplayEntry, recipeEntry));
 				}
 			}

@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CreakingHeartBlock;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LargeEntitySpawnHelper;
 import net.minecraft.entity.SpawnReason;
@@ -143,7 +144,7 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 		} else {
 			TransientCreakingEntity transientCreakingEntity = (TransientCreakingEntity)optional.get();
 			world.emitGameEvent(transientCreakingEntity, GameEvent.ENTITY_PLACE, transientCreakingEntity.getPos());
-			transientCreakingEntity.playSpawnEffects();
+			world.sendEntityStatus(transientCreakingEntity, EntityStatuses.ADD_DEATH_PARTICLES);
 			transientCreakingEntity.setHeartPos(blockPos);
 			return transientCreakingEntity;
 		}

@@ -23,11 +23,11 @@ public class IngredientPlacement {
 	}
 
 	public static RecipeMatcher.RawIngredient<RegistryEntry<Item>> sort(Ingredient ingredient) {
-		return RecipeFinder.sort(ingredient.getMatchingStacks().stream());
+		return RecipeFinder.sort(ingredient.getMatchingItems().stream());
 	}
 
 	public static IngredientPlacement forSingleSlot(Ingredient ingredient) {
-		if (ingredient.getMatchingStacks().isEmpty()) {
+		if (ingredient.getMatchingItems().isEmpty()) {
 			return NONE;
 		} else {
 			RecipeMatcher.RawIngredient<RegistryEntry<Item>> rawIngredient = sort(ingredient);
@@ -46,7 +46,7 @@ public class IngredientPlacement {
 		for (Optional<Ingredient> optional : ingredients) {
 			if (optional.isPresent()) {
 				Ingredient ingredient = (Ingredient)optional.get();
-				if (ingredient.getMatchingStacks().isEmpty()) {
+				if (ingredient.getMatchingItems().isEmpty()) {
 					return NONE;
 				}
 
@@ -68,7 +68,7 @@ public class IngredientPlacement {
 
 		for (int j = 0; j < i; j++) {
 			Ingredient ingredient = (Ingredient)ingredients.get(j);
-			if (ingredient.getMatchingStacks().isEmpty()) {
+			if (ingredient.getMatchingItems().isEmpty()) {
 				return NONE;
 			}
 

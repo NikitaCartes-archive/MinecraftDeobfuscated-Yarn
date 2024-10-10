@@ -127,15 +127,15 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!entity.isFireImmune()) {
-			if (entity.getFireTicks() >= 0) {
-				if (entity instanceof ServerPlayerEntity) {
-					int i = world.getRandom().nextBetweenExclusive(1, 3);
-					entity.setFireTicks(entity.getFireTicks() + i);
-				}
-
-				entity.setOnFireFor(8.0F);
-			} else {
+			if (entity.getFireTicks() < 0) {
 				entity.setFireTicks(entity.getFireTicks() + 1);
+			} else if (entity instanceof ServerPlayerEntity) {
+				int i = world.getRandom().nextBetweenExclusive(1, 3);
+				entity.setFireTicks(entity.getFireTicks() + i);
+			}
+
+			if (entity.getFireTicks() >= 0) {
+				entity.setOnFireFor(8.0F);
 			}
 		}
 

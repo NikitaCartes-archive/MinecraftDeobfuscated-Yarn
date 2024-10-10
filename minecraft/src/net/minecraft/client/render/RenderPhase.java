@@ -24,7 +24,6 @@ import org.joml.Matrix4fStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderPhase {
-	private static final float VIEW_OFFSET_Z_LAYERING_SCALE = 2.4414062E-4F;
 	public static final double field_42230 = 8.0;
 	protected final String name;
 	private final Runnable beginAction;
@@ -134,6 +133,7 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram ARMOR_CUTOUT_NO_CULL_PROGRAM = new RenderPhase.ShaderProgram(
 		ShaderProgramKeys.RENDERTYPE_ARMOR_CUTOUT_NO_CULL
 	);
+	protected static final RenderPhase.ShaderProgram ARMOR_TRANSLUCENT = new RenderPhase.ShaderProgram(ShaderProgramKeys.RENDERTYPE_ARMOR_TRANSLUCENT);
 	protected static final RenderPhase.ShaderProgram ENTITY_SOLID_PROGRAM = new RenderPhase.ShaderProgram(ShaderProgramKeys.RENDERTYPE_ENTITY_SOLID);
 	protected static final RenderPhase.ShaderProgram ENTITY_CUTOUT_PROGRAM = new RenderPhase.ShaderProgram(ShaderProgramKeys.RENDERTYPE_ENTITY_CUTOUT);
 	protected static final RenderPhase.ShaderProgram ENTITY_CUTOUT_NONULL_PROGRAM = new RenderPhase.ShaderProgram(
@@ -228,7 +228,7 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Layering VIEW_OFFSET_Z_LAYERING = new RenderPhase.Layering("view_offset_z_layering", () -> {
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.pushMatrix();
-		matrix4fStack.scale(0.99975586F, 0.99975586F, 0.99975586F);
+		RenderSystem.getProjectionType().apply(matrix4fStack, 1.0F);
 	}, () -> {
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.popMatrix();
@@ -236,7 +236,7 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Layering VIEW_OFFSET_Z_LAYERING_FORWARD = new RenderPhase.Layering("view_offset_z_layering_forward", () -> {
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.pushMatrix();
-		matrix4fStack.scale(1.0002441F, 1.0002441F, 1.0002441F);
+		RenderSystem.getProjectionType().apply(matrix4fStack, -1.0F);
 	}, () -> {
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.popMatrix();

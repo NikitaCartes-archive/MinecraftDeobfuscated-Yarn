@@ -72,7 +72,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -371,13 +370,7 @@ public abstract class MobEntity extends LivingEntity implements EquipmentHolder,
 
 	public void playSpawnEffects() {
 		if (this.getWorld().isClient) {
-			for (int i = 0; i < 20; i++) {
-				double d = this.random.nextGaussian() * 0.02;
-				double e = this.random.nextGaussian() * 0.02;
-				double f = this.random.nextGaussian() * 0.02;
-				double g = 10.0;
-				this.getWorld().addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
-			}
+			this.addDeathParticles();
 		} else {
 			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_SPAWN_EFFECTS);
 		}

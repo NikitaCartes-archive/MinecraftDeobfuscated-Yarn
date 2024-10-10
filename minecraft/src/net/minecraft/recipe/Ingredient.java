@@ -31,11 +31,11 @@ public final class Ingredient implements Predicate<ItemStack> {
 			entries -> entries.size() == 0 ? Optional.empty() : Optional.of(new Ingredient(entries)),
 			optional -> (RegistryEntryList)optional.map(ingredient -> ingredient.entries).orElse(RegistryEntryList.of())
 		);
-	public static final Codec<RegistryEntryList<Item>> ENTRIES_CODEC = RegistryEntryListCodec.create(RegistryKeys.ITEM, ItemStack.ITEM_CODEC, false);
+	public static final Codec<RegistryEntryList<Item>> ENTRIES_CODEC = RegistryEntryListCodec.create(RegistryKeys.ITEM, Item.ENTRY_CODEC, false);
 	public static final Codec<Ingredient> CODEC = Codecs.nonEmptyEntryList(ENTRIES_CODEC).xmap(Ingredient::new, ingredient -> ingredient.entries);
 	private final RegistryEntryList<Item> entries;
 	@Nullable
-	private List<RegistryEntry<Item>> matchingStacks;
+	private List<RegistryEntry<Item>> matchingItems;
 
 	private Ingredient(RegistryEntryList<Item> entries) {
 		entries.getStorage().ifRight(list -> {
@@ -52,16 +52,16 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return (Boolean)ingredient.map(ingredient2 -> ingredient2.test(stack)).orElseGet(stack::isEmpty);
 	}
 
-	public List<RegistryEntry<Item>> getMatchingStacks() {
-		if (this.matchingStacks == null) {
-			this.matchingStacks = ImmutableList.copyOf(this.entries);
+	public List<RegistryEntry<Item>> getMatchingItems() {
+		if (this.matchingItems == null) {
+			this.matchingItems = ImmutableList.copyOf(this.entries);
 		}
 
-		return this.matchingStacks;
+		return this.matchingItems;
 	}
 
 	public boolean test(ItemStack itemStack) {
-		List<RegistryEntry<Item>> list = this.getMatchingStacks();
+		List<RegistryEntry<Item>> list = this.getMatchingItems();
 
 		for (int i = 0; i < list.size(); i++) {
 			if (itemStack.itemMatches((RegistryEntry<Item>)list.get(i))) {
@@ -95,9 +95,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 	public SlotDisplay toDisplay() {
 		return this.entries
 			.getStorage()
-			.map(
-				SlotDisplay.TagSlotDisplay::new, displays -> new SlotDisplay.CompositeSlotDisplay(displays.stream().map(Ingredient::createDisplayWithRemainder).toList())
-			);
+			.map(SlotDisplay.TagSlotDisplay::new, items -> new SlotDisplay.CompositeSlotDisplay(items.stream().map(Ingredient::createDisplayWithRemainder).toList()));
 	}
 
 	public static SlotDisplay toDisplay(Optional<Ingredient> ingredient) {

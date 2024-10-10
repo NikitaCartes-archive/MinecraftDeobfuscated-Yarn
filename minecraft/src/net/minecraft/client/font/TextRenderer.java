@@ -173,6 +173,7 @@ public class TextRenderer {
 			}
 		}
 
+		drawer.drawGlyphs();
 		TextRenderer.Drawer drawer2 = new TextRenderer.Drawer(
 			this, vertexConsumers, x, y, tweakTransparency(color), false, matrix, TextRenderer.TextLayerType.POLYGON_OFFSET, light
 		);
@@ -467,25 +468,28 @@ public class TextRenderer {
 				bakedGlyph.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);
 			}
 
-			for (BakedGlyph.DrawnGlyph drawnGlyph : this.glyphs) {
-				BakedGlyph bakedGlyph2 = drawnGlyph.glyph();
-				VertexConsumer vertexConsumer2 = this.vertexConsumers.getBuffer(bakedGlyph2.getLayer(this.layerType));
-				bakedGlyph2.draw(drawnGlyph, this.matrix, vertexConsumer2, this.light);
-			}
-
+			this.drawGlyphs();
 			if (this.rectangles != null) {
 				if (bakedGlyph == null) {
 					bakedGlyph = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
 				}
 
-				VertexConsumer vertexConsumer3 = this.vertexConsumers.getBuffer(bakedGlyph.getLayer(this.layerType));
+				VertexConsumer vertexConsumer2 = this.vertexConsumers.getBuffer(bakedGlyph.getLayer(this.layerType));
 
 				for (BakedGlyph.Rectangle rectangle2 : this.rectangles) {
-					bakedGlyph.drawRectangle(rectangle2, this.matrix, vertexConsumer3, this.light);
+					bakedGlyph.drawRectangle(rectangle2, this.matrix, vertexConsumer2, this.light);
 				}
 			}
 
 			return this.x;
+		}
+
+		void drawGlyphs() {
+			for (BakedGlyph.DrawnGlyph drawnGlyph : this.glyphs) {
+				BakedGlyph bakedGlyph = drawnGlyph.glyph();
+				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(bakedGlyph.getLayer(this.layerType));
+				bakedGlyph.draw(drawnGlyph, this.matrix, vertexConsumer, this.light);
+			}
 		}
 	}
 

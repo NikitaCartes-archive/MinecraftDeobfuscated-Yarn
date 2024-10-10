@@ -5,6 +5,58 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class BreezeAnimations {
+	public static final Animation IDLE = Animation.Builder.create(2.0F)
+		.looping()
+		.addBoneAnimation(
+			"wind_top",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.5F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(0.25F, AnimationHelper.createTranslationalVector(0.5F, 0.0F, -0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(0.75F, AnimationHelper.createTranslationalVector(-0.5F, 0.0F, -0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.25F, AnimationHelper.createTranslationalVector(-0.5F, 0.0F, 0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.75F, AnimationHelper.createTranslationalVector(0.5F, 0.0F, 0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(2.0F, AnimationHelper.createTranslationalVector(0.5F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"wind_mid",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.5F, 0.0F, -0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(0.5F, AnimationHelper.createTranslationalVector(-0.5F, 0.0F, -0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(-0.5F, 0.0F, 0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.5F, AnimationHelper.createTranslationalVector(0.5F, 0.0F, 0.5F), Transformation.Interpolations.LINEAR),
+				new Keyframe(2.0F, AnimationHelper.createTranslationalVector(0.5F, 0.0F, -0.5F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"head",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(0.0F, 1.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(2.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)
+			)
+		)
+		.addBoneAnimation(
+			"rods",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(2.0F, AnimationHelper.createRotationalVector(0.0F, 1080.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"rods",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(0.0F, -1.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(2.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.build();
 	public static final Animation SHOOTING = Animation.Builder.create(1.125F)
 		.addBoneAnimation(
 			"head",

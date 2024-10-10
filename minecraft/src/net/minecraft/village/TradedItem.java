@@ -19,7 +19,7 @@ import net.minecraft.util.dynamic.Codecs;
 public record TradedItem(RegistryEntry<Item> item, int count, ComponentPredicate components, ItemStack itemStack) {
 	public static final Codec<TradedItem> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ItemStack.ITEM_CODEC.fieldOf("id").forGetter(TradedItem::item),
+					Item.ENTRY_CODEC.fieldOf("id").forGetter(TradedItem::item),
 					Codecs.POSITIVE_INT.fieldOf("count").orElse(1).forGetter(TradedItem::count),
 					ComponentPredicate.CODEC.optionalFieldOf("components", ComponentPredicate.EMPTY).forGetter(TradedItem::components)
 				)

@@ -15,13 +15,19 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
 /**
- * A recipe is an arrangement of item stacks in an inventory that can
- * yield a product item stack.
+ * A recipe is an arrangement of items in an inventory that can
+ * yield a product item stack. <strong>Recipes are not used on the client side</strong>;
+ * the server syncs to the client a {@link RecipeDisplayEntry},
+ * which is used instead.
  * 
- * <p>Recipes are loaded by and stored in the {@link RecipeManager}. They
- * are part of the server's data packs and are sent to the client, governed
- * by their {@linkplain #getSerializer() serializers}. Hence, recipes
- * should not be stored, as they may become obsolete after reloads.
+ * <p>Recipes are loaded by and stored in the {@link ServerRecipeManager}. They
+ * are part of the server's data packs. Hence, recipes should not be stored,
+ * as they may become obsolete after reloads.
+ * 
+ * <p>{@link RecipeEntry} is a pair of the recipe and its ID ({@linkplain
+ * net.minecraft.registry.RegistryKey a registry key}). The ID can be used to
+ * refer to recipes in saved data. However, the client does not receive the ID of
+ * recipes.
  * 
  * <p>A few of the methods in this class are dedicated to crafting recipes
  * or recipe books. Users can have stub implementations if they do not use
@@ -96,9 +102,15 @@ public interface Recipe<T extends RecipeInput> {
 
 	IngredientPlacement getIngredientPlacement();
 
+	/**
+	 * {@link the list of recipe displays corresponding to the recipe}
+	 * 
+	 * <p>Recipe displays are sent to the client and displayed in the recipe book.
+	 * One recipe can have multiple displays.
+	 */
 	default List<RecipeDisplay> getDisplays() {
 		return List.of();
 	}
 
-	RecipeBookCategory getRecipeBookTab();
+	RecipeBookCategory getRecipeBookCategory();
 }

@@ -69,6 +69,11 @@ public class TridentEntity extends PersistentProjectileEntity {
 
 				this.discard();
 			} else {
+				if (!(entity instanceof PlayerEntity) && this.getPos().distanceTo(entity.getEyePos()) < (double)entity.getWidth() + 1.0) {
+					this.discard();
+					return;
+				}
+
 				this.setNoClip(true);
 				Vec3d vec3d = entity.getEyePos().subtract(this.getPos());
 				this.setPos(this.getX(), this.getY() + vec3d.y * 0.015 * (double)i, this.getZ());

@@ -3,6 +3,8 @@ package net.minecraft.item;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -98,6 +100,9 @@ import org.slf4j.Logger;
  * @see net.minecraft.inventory.Inventory
  */
 public class Item implements ToggleableFeature, ItemConvertible {
+	public static final Codec<RegistryEntry<Item>> ENTRY_CODEC = Registries.ITEM
+		.getEntryCodec()
+		.validate(entry -> entry.matches(Items.AIR.getRegistryEntry()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(entry));
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Map<Block, Item> BLOCK_ITEMS = Maps.<Block, Item>newHashMap();
 	public static final Identifier BASE_ATTACK_DAMAGE_MODIFIER_ID = Identifier.ofVanilla("base_attack_damage");

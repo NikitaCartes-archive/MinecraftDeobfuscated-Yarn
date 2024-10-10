@@ -2,6 +2,7 @@ package net.minecraft.client.font;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -19,9 +20,11 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class FontStorage implements AutoCloseable {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Random RANDOM = Random.create();
 	private static final float MAX_ADVANCE = 32.0F;
 	private final TextureManager textureManager;
@@ -156,6 +159,7 @@ public class FontStorage implements AutoCloseable {
 			}
 		}
 
+		LOGGER.warn("Couldn't find glyph for character {} (\\u{})", Character.toString(codePoint), String.format("%04x", codePoint));
 		return this.blankBakedGlyph;
 	}
 

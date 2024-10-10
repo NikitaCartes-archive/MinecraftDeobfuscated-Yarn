@@ -16,7 +16,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Util;
@@ -127,8 +126,7 @@ public interface SlotDisplay {
 
 	public static record ItemSlotDisplay(RegistryEntry<Item> item) implements SlotDisplay {
 		public static final MapCodec<SlotDisplay.ItemSlotDisplay> CODEC = RecordCodecBuilder.mapCodec(
-			instance -> instance.group(RegistryFixedCodec.of(RegistryKeys.ITEM).fieldOf("item").forGetter(SlotDisplay.ItemSlotDisplay::item))
-					.apply(instance, SlotDisplay.ItemSlotDisplay::new)
+			instance -> instance.group(Item.ENTRY_CODEC.fieldOf("item").forGetter(SlotDisplay.ItemSlotDisplay::item)).apply(instance, SlotDisplay.ItemSlotDisplay::new)
 		);
 		public static final PacketCodec<RegistryByteBuf, SlotDisplay.ItemSlotDisplay> PACKET_CODEC = PacketCodec.tuple(
 			PacketCodecs.registryEntry(RegistryKeys.ITEM), SlotDisplay.ItemSlotDisplay::item, SlotDisplay.ItemSlotDisplay::new

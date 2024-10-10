@@ -372,20 +372,20 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
+	public void move(MovementType type, Vec3d movement) {
 		if (areMinecartImprovementsEnabled(this.getWorld())) {
 			Vec3d vec3d = this.getPos().add(movement);
-			super.move(movementType, movement);
+			super.move(type, movement);
 			boolean bl = this.controller.handleCollision();
 			if (bl) {
-				super.move(movementType, vec3d.subtract(this.getPos()));
+				super.move(type, vec3d.subtract(this.getPos()));
 			}
 
-			if (movementType.equals(MovementType.PISTON)) {
+			if (type.equals(MovementType.PISTON)) {
 				this.onRail = false;
 			}
 		} else {
-			super.move(movementType, movement);
+			super.move(type, movement);
 		}
 	}
 

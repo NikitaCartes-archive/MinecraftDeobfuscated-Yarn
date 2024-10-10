@@ -780,10 +780,10 @@ public class RealmsMainScreen extends RealmsScreen {
 			return x + width - RealmsMainScreen.this.textRenderer.getWidth(gameMode) - 20;
 		}
 
-		protected void drawGameMode(RealmsServer server, DrawContext context, int x, int entryWidth, int y) {
+		protected int drawGameMode(RealmsServer server, DrawContext context, int x, int entryWidth, int y) {
 			boolean bl = server.hardcore;
 			int i = server.gameMode;
-			int j = 0;
+			int j = x;
 			if (GameMode.isValid(i)) {
 				Text text = RealmsMainScreen.getGameModeText(i, bl);
 				j = this.getGameModeRight(x, entryWidth, text);
@@ -791,8 +791,11 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 
 			if (bl) {
-				context.drawGuiTexture(RenderLayer::getGuiTextured, RealmsMainScreen.HARDCORE_ICON_TEXTURE, j - 10, this.getDescriptionY(y), 8, 8);
+				j -= 10;
+				context.drawGuiTexture(RenderLayer::getGuiTextured, RealmsMainScreen.HARDCORE_ICON_TEXTURE, j, this.getDescriptionY(y), 8, 8);
 			}
+
+			return j;
 		}
 
 		protected int getNameY(int y) {
@@ -889,11 +892,12 @@ public class RealmsMainScreen extends RealmsScreen {
 				context.drawText(RealmsMainScreen.this.textRenderer, text, k, j, Colors.GRAY, false);
 			}
 
+			int l = x;
 			if (!this.server.isMinigame()) {
-				this.drawGameMode(this.server, context, x, entryWidth, j);
+				l = this.drawGameMode(this.server, context, x, entryWidth, j);
 			}
 
-			context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), Colors.GRAY, false);
+			this.drawTrimmedText(context, this.server.getDescription(), i, this.getDescriptionY(j), l, -8355712);
 			this.drawOwnerOrExpiredText(context, y, x, this.server);
 			this.renderStatusIcon(this.server, context, x + entryWidth, y, mouseX, mouseY);
 			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
@@ -1034,8 +1038,8 @@ public class RealmsMainScreen extends RealmsScreen {
 					RealmsMainScreen.this.textRenderer, Text.translatable("mco.selectServer.minigameName", text).withColor(Colors.LIGHT_YELLOW), i, k, Colors.WHITE, false
 				);
 			} else {
-				context.drawText(RealmsMainScreen.this.textRenderer, this.server.getDescription(), i, this.getDescriptionY(j), Colors.GRAY, false);
-				this.drawGameMode(this.server, context, x, entryWidth, j);
+				int l = this.drawGameMode(this.server, context, x, entryWidth, j);
+				this.drawTrimmedText(context, this.server.getDescription(), i, this.getDescriptionY(j), l, -8355712);
 			}
 		}
 

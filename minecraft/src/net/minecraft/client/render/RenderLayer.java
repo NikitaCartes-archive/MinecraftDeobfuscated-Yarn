@@ -72,6 +72,22 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ARMOR_CUTOUT_NO_CULL = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> createArmorCutoutNoCull("armor_cutout_no_cull", texture, false))
 	);
+	private static final Function<Identifier, RenderLayer> ARMOR_TRANSLUCENT = Util.memoize(
+		(Function<Identifier, RenderLayer>)(texture -> {
+			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+				.program(ARMOR_TRANSLUCENT)
+				.texture(new RenderPhase.Texture(texture, TriState.FALSE, false))
+				.transparency(TRANSLUCENT_TRANSPARENCY)
+				.cull(DISABLE_CULLING)
+				.lightmap(ENABLE_LIGHTMAP)
+				.overlay(ENABLE_OVERLAY_COLOR)
+				.layering(VIEW_OFFSET_Z_LAYERING)
+				.build(true);
+			return of(
+				"armor_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 1536, true, true, multiPhaseParameters
+			);
+		})
+	);
 	private static final Function<Identifier, RenderLayer> ENTITY_SOLID = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
@@ -929,6 +945,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer createArmorDecalCutoutNoCull(Identifier texture) {
 		return createArmorCutoutNoCull("armor_decal_cutout_no_cull", texture, true);
+	}
+
+	public static RenderLayer createArmorTranslucent(Identifier texture) {
+		return (RenderLayer)ARMOR_TRANSLUCENT.apply(texture);
 	}
 
 	public static RenderLayer getEntitySolid(Identifier texture) {

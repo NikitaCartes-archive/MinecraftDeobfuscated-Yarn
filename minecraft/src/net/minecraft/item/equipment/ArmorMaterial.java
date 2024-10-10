@@ -53,7 +53,7 @@ public record ArmorMaterial(
 	}
 
 	public Item.Settings applyBodyArmorSettings(
-		Item.Settings settings, SoundEvent equipSound, boolean damageOnHurt, RegistryEntryList<EntityType<?>> allowedEntities
+		Item.Settings settings, RegistryEntry<SoundEvent> equipSound, boolean damageOnHurt, RegistryEntryList<EntityType<?>> allowedEntities
 	) {
 		if (damageOnHurt) {
 			settings = settings.maxDamage(EquipmentType.BODY.getMaxDamage(this.durability)).repairable(this.repairIngredient);
@@ -63,7 +63,7 @@ public record ArmorMaterial(
 			.component(
 				DataComponentTypes.EQUIPPABLE,
 				EquippableComponent.builder(EquipmentSlot.BODY)
-					.equipSound(RegistryEntry.of(equipSound))
+					.equipSound(equipSound)
 					.model(this.modelId)
 					.allowedEntities(allowedEntities)
 					.damageOnHurt(damageOnHurt)

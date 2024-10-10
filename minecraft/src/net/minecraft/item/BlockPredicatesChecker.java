@@ -53,22 +53,16 @@ public class BlockPredicatesChecker {
 	private static final Text CAN_USE_UNKNOWN_TEXT = Text.translatable("item.canUse.unknown").formatted(Formatting.GRAY);
 	private final List<BlockPredicate> predicates;
 	private final boolean showInTooltip;
-	private final List<Text> tooltipText;
+	@Nullable
+	private List<Text> tooltipText;
 	@Nullable
 	private CachedBlockPosition cachedPos;
 	private boolean lastResult;
 	private boolean nbtAware;
 
-	private BlockPredicatesChecker(List<BlockPredicate> predicates, boolean showInTooltip, List<Text> tooltipText) {
-		this.predicates = predicates;
-		this.showInTooltip = showInTooltip;
-		this.tooltipText = tooltipText;
-	}
-
 	public BlockPredicatesChecker(List<BlockPredicate> predicates, boolean showInTooltip) {
 		this.predicates = predicates;
 		this.showInTooltip = showInTooltip;
-		this.tooltipText = getTooltipText(predicates);
 	}
 
 	private static boolean canUseCache(CachedBlockPosition pos, @Nullable CachedBlockPosition cachedPos, boolean nbtAware) {
@@ -110,15 +104,23 @@ public class BlockPredicatesChecker {
 		}
 	}
 
+	private List<Text> getOrCreateTooltipText() {
+		if (this.tooltipText == null) {
+			this.tooltipText = createTooltipText(this.predicates);
+		}
+
+		return this.tooltipText;
+	}
+
 	public void addTooltips(Consumer<Text> adder) {
-		this.tooltipText.forEach(adder);
+		this.getOrCreateTooltipText().forEach(adder);
 	}
 
 	public BlockPredicatesChecker withShowInTooltip(boolean showInTooltip) {
-		return new BlockPredicatesChecker(this.predicates, showInTooltip, this.tooltipText);
+		return new BlockPredicatesChecker(this.predicates, showInTooltip);
 	}
 
-	private static List<Text> getTooltipText(List<BlockPredicate> blockPredicates) {
+	private static List<Text> createTooltipText(List<BlockPredicate> blockPredicates) {
 		for (BlockPredicate blockPredicate : blockPredicates) {
 			if (blockPredicate.blocks().isEmpty()) {
 				return List.of(CAN_USE_UNKNOWN_TEXT);

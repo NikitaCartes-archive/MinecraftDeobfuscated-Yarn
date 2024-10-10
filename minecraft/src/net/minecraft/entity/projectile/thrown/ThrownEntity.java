@@ -1,10 +1,13 @@
 package net.minecraft.entity.projectile.thrown;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -42,9 +45,10 @@ public abstract class ThrownEntity extends ProjectileEntity {
 
 	@Override
 	public void tick() {
-		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
+		this.tickInitialBubbleColumnCollision();
 		this.applyGravity();
 		this.applyDrag();
+		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 		Vec3d vec3d;
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			vec3d = hitResult.getPos();
@@ -78,6 +82,17 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		}
 
 		this.setVelocity(vec3d.multiply((double)g));
+	}
+
+	private void tickInitialBubbleColumnCollision() {
+		if (this.firstUpdate) {
+			for (BlockPos blockPos : BlockPos.iterate(this.getBoundingBox())) {
+				BlockState blockState = this.getWorld().getBlockState(blockPos);
+				if (blockState.isOf(Blocks.BUBBLE_COLUMN)) {
+					blockState.onEntityCollision(this.getWorld(), blockPos, this);
+				}
+			}
+		}
 	}
 
 	@Override

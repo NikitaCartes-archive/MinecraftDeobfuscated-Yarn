@@ -29,7 +29,7 @@ public class WinterDropBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.PALE_OAK_LOGS)
 			.add(Blocks.PALE_OAK_LOG, Blocks.PALE_OAK_WOOD, Blocks.STRIPPED_PALE_OAK_LOG, Blocks.STRIPPED_PALE_OAK_WOOD);
 		this.getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).addTag(BlockTags.PALE_OAK_LOGS);
-		this.getOrCreateTagBuilder(BlockTags.OVERWORLD_NATURAL_LOGS).addTag(BlockTags.PALE_OAK_LOGS);
+		this.getOrCreateTagBuilder(BlockTags.OVERWORLD_NATURAL_LOGS).add(Blocks.PALE_OAK_LOG);
 		this.getOrCreateTagBuilder(BlockTags.DIRT).add(Blocks.PALE_MOSS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.FLOWER_POTS).add(Blocks.POTTED_PALE_OAK_SAPLING);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_PRESSURE_PLATES).add(Blocks.PALE_OAK_PRESSURE_PLATE);
@@ -40,7 +40,9 @@ public class WinterDropBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.CEILING_HANGING_SIGNS).add(Blocks.PALE_OAK_HANGING_SIGN);
 		this.getOrCreateTagBuilder(BlockTags.WALL_HANGING_SIGNS).add(Blocks.PALE_OAK_WALL_HANGING_SIGN);
 		this.getOrCreateTagBuilder(BlockTags.FENCE_GATES).add(Blocks.PALE_OAK_FENCE_GATE);
-		this.getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(Blocks.PALE_OAK_LEAVES);
+		this.getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(Blocks.PALE_OAK_LEAVES, Blocks.PALE_MOSS_BLOCK, Blocks.PALE_MOSS_CARPET);
 		this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).add(Blocks.CREAKING_HEART);
+		this.getOrCreateTagBuilder(BlockTags.SWORD_EFFICIENT).add(Blocks.PALE_MOSS_CARPET);
+		this.getOrCreateTagBuilder(BlockTags.COMBINATION_STEP_SOUND_BLOCKS).add(Blocks.PALE_MOSS_CARPET);
 	}
 }

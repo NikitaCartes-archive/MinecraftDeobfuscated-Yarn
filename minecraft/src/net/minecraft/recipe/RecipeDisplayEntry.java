@@ -16,7 +16,8 @@ import net.minecraft.util.context.ContextParameterMap;
 
 /**
  * A recipe that is synced to the clients. Note that this does not include
- * the recipe's registry key.
+ * the recipe's ID; the recipe is instead referred to using {@link NetworkRecipeId},
+ * which is assigned at runtime.
  */
 public record RecipeDisplayEntry(
 	NetworkRecipeId id, RecipeDisplay display, OptionalInt group, RecipeBookCategory category, Optional<List<Ingredient>> craftingRequirements

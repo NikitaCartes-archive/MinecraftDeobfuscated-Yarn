@@ -2,12 +2,13 @@ package net.minecraft.particle;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
 public class ItemStackParticleEffect implements ParticleEffect {
-	private static final Codec<ItemStack> ITEM_STACK_CODEC = Codec.withAlternative(ItemStack.UNCOUNTED_CODEC, ItemStack.ITEM_CODEC, ItemStack::new);
+	private static final Codec<ItemStack> ITEM_STACK_CODEC = Codec.withAlternative(ItemStack.UNCOUNTED_CODEC, Item.ENTRY_CODEC, ItemStack::new);
 	private final ParticleType<ItemStackParticleEffect> type;
 	private final ItemStack stack;
 

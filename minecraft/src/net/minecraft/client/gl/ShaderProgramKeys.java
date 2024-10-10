@@ -30,6 +30,9 @@ public class ShaderProgramKeys {
 	public static final ShaderProgramKey RENDERTYPE_ARMOR_CUTOUT_NO_CULL = register(
 		"rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
 	);
+	public static final ShaderProgramKey RENDERTYPE_ARMOR_TRANSLUCENT = register(
+		"rendertype_armor_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL
+	);
 	public static final ShaderProgramKey RENDERTYPE_ENTITY_SOLID = register("rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
 	public static final ShaderProgramKey RENDERTYPE_ENTITY_CUTOUT = register("rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
 	public static final ShaderProgramKey RENDERTYPE_ENTITY_CUTOUT_NO_CULL = register(

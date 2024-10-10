@@ -2235,6 +2235,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		return false;
 	}
 
+	@Override
+	public boolean isControlledByPlayer() {
+		return true;
+	}
+
 	/**
 	 * A reason why a player cannot start sleeping.
 	 */

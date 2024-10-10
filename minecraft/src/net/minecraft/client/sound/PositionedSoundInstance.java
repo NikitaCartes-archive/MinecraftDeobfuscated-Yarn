@@ -26,13 +26,13 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 
 	public static PositionedSoundInstance master(SoundEvent sound, float pitch, float volume) {
 		return new PositionedSoundInstance(
-			sound.getId(), SoundCategory.MASTER, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
+			sound.id(), SoundCategory.MASTER, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
 		);
 	}
 
 	public static PositionedSoundInstance music(SoundEvent sound) {
 		return new PositionedSoundInstance(
-			sound.getId(), SoundCategory.MUSIC, 1.0F, 1.0F, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
+			sound.id(), SoundCategory.MUSIC, 1.0F, 1.0F, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
 		);
 	}
 
@@ -44,7 +44,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 
 	public static PositionedSoundInstance ambient(SoundEvent sound, float pitch, float volume) {
 		return new PositionedSoundInstance(
-			sound.getId(), SoundCategory.AMBIENT, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
+			sound.id(), SoundCategory.AMBIENT, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
 		);
 	}
 
@@ -73,7 +73,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		double y,
 		double z
 	) {
-		this(sound.getId(), category, volume, pitch, random, repeat, repeatDelay, attenuationType, x, y, z, false);
+		this(sound.id(), category, volume, pitch, random, repeat, repeatDelay, attenuationType, x, y, z, false);
 	}
 
 	public PositionedSoundInstance(

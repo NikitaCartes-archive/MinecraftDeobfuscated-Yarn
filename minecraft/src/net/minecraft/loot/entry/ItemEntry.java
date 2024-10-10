@@ -10,12 +10,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class ItemEntry extends LeafEntry {
 	public static final MapCodec<ItemEntry> CODEC = RecordCodecBuilder.mapCodec(
-		instance -> instance.group(Registries.ITEM.getEntryCodec().fieldOf("name").forGetter(entry -> entry.item))
+		instance -> instance.group(Item.ENTRY_CODEC.fieldOf("name").forGetter(entry -> entry.item))
 				.<int, int, List<LootCondition>, List<LootFunction>>and(addLeafFields(instance))
 				.apply(instance, ItemEntry::new)
 	);

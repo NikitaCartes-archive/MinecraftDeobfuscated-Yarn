@@ -113,9 +113,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
+	public void move(MovementType type, Vec3d movement) {
 		if (!this.fixed) {
-			super.move(movementType, movement);
+			super.move(type, movement);
 		}
 	}
 

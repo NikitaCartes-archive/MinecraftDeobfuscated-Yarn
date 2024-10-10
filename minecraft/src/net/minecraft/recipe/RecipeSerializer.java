@@ -7,17 +7,12 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 /**
- * The recipe serializer controls the serialization and deserialization of
- * recipe content. The caller should handle the serialization of recipes' IDs.
+ * The recipe serializer controls the deserialization of recipe content during
+ * data pack loading.
  * 
  * <p>Even though they are referred to by the {@code type} field in recipe
  * JSON format, they are stored in a registry with key
  * {@code minecraft:root/minecraft:recipe_serializer}, and is hence named.
- * 
- * <p>If a recipe's serializer exists only on the server but not on the
- * client, the client will disconnect upon receiving the recipe; if a
- * recipe JSON intended for an absent recipe serializer is read, it is
- * skipped.
  */
 public interface RecipeSerializer<T extends Recipe<?>> {
 	RecipeSerializer<ShapedRecipe> SHAPED = register("crafting_shaped", new ShapedRecipe.Serializer());
@@ -69,6 +64,14 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 
 	MapCodec<T> codec();
 
+	/**
+	 * {@return the packet codec for serializing recipes over the network}
+	 * 
+	 * @deprecated {@link Recipe} is no longer synced to the clients, making this
+	 * obsolete.
+	 * 
+	 * @see RecipeDisplayEntry
+	 */
 	@Deprecated
 	PacketCodec<RegistryByteBuf, T> packetCodec();
 

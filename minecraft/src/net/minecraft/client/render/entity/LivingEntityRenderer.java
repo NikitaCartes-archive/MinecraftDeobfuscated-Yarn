@@ -273,8 +273,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, S extends Liv
 			livingEntityRenderState.yawDegrees *= -1.0F;
 		}
 
-		livingEntityRenderState.limbFrequency = livingEntity.limbAnimator.getPos(f);
-		livingEntityRenderState.limbAmplitudeMultiplier = livingEntity.limbAnimator.getSpeed(f);
+		if (!livingEntity.hasVehicle() && livingEntity.isAlive()) {
+			livingEntityRenderState.limbFrequency = livingEntity.limbAnimator.getPos(f);
+			livingEntityRenderState.limbAmplitudeMultiplier = livingEntity.limbAnimator.getSpeed(f);
+		} else {
+			livingEntityRenderState.limbFrequency = 0.0F;
+			livingEntityRenderState.limbAmplitudeMultiplier = 0.0F;
+		}
+
 		if (livingEntity.getVehicle() instanceof LivingEntity livingEntity2) {
 			livingEntityRenderState.headItemAnimationProgress = livingEntity2.limbAnimator.getPos(f);
 		} else {

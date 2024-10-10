@@ -42,7 +42,7 @@ public class BreezeEntity extends HostileEntity {
 	private static final float field_47278 = 3.0F;
 	private static final int field_47813 = 1;
 	private static final int field_47814 = 80;
-	public AnimationState field_47269 = new AnimationState();
+	public AnimationState idleAnimationState = new AnimationState();
 	public AnimationState slidingAnimationState = new AnimationState();
 	public AnimationState slidingBackAnimationState = new AnimationState();
 	public AnimationState longJumpingAnimationState = new AnimationState();
@@ -107,7 +107,7 @@ public class BreezeEntity extends HostileEntity {
 
 	private void stopAnimations() {
 		this.shootingAnimationState.stop();
-		this.field_47269.stop();
+		this.idleAnimationState.stop();
 		this.inhalingAnimationState.stop();
 		this.longJumpingAnimationState.stop();
 	}
@@ -132,6 +132,10 @@ public class BreezeEntity extends HostileEntity {
 		if (entityPose != EntityPose.SLIDING && this.slidingAnimationState.isRunning()) {
 			this.slidingBackAnimationState.start(this.age);
 			this.slidingAnimationState.stop();
+		}
+
+		if (entityPose == EntityPose.STANDING) {
+			this.idleAnimationState.startIfNotRunning(this.age);
 		}
 
 		this.ticksUntilWhirlSound = this.ticksUntilWhirlSound == 0 ? this.random.nextBetween(1, 80) : this.ticksUntilWhirlSound - 1;

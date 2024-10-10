@@ -455,6 +455,7 @@ public class ServerPlayNetworkHandler
 				}
 
 				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
+				entity.queueBlockCollisionCheck(new Vec3d(d, e, f), entity.getPos());
 				Vec3d vec3d = new Vec3d(entity.getX() - d, entity.getY() - e, entity.getZ() - f);
 				this.handleMovement(vec3d);
 				this.player.increaseTravelMotionStats(vec3d.x, vec3d.y, vec3d.z);
@@ -934,10 +935,7 @@ public class ServerPlayNetworkHandler
 								Vec3d vec3d = new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);
 								this.player.setMovement(packet.isOnGround(), packet.horizontalCollision(), vec3d);
 								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
-								if (!this.player.isSpectator()) {
-									this.player.checkBlockCollision(new Vec3d(i, j, k), this.player.getPos());
-								}
-
+								this.player.queueBlockCollisionCheck(new Vec3d(i, j, k), this.player.getPos());
 								this.handleMovement(vec3d);
 								if (bl2) {
 									this.player.onLanding();
@@ -1864,8 +1862,11 @@ public class ServerPlayNetworkHandler
 	}
 
 	private void handleMovement(Vec3d movement) {
+		if (movement.lengthSquared() > 1.0E-5F) {
+			this.player.updateLastActionTime();
+		}
+
 		this.player.setMovement(movement);
-		this.player.updateLastActionTime();
 		this.movedThisTick = true;
 	}
 

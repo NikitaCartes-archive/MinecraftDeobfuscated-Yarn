@@ -18,7 +18,12 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 	protected final ScreenHandlerContext context;
 	protected final PlayerEntity player;
 	protected final Inventory input;
-	protected final CraftingResultInventory output = new CraftingResultInventory();
+	protected final CraftingResultInventory output = new CraftingResultInventory() {
+		@Override
+		public void markDirty() {
+			ForgingScreenHandler.this.onContentChanged(this);
+		}
+	};
 	private final int resultSlotIndex;
 
 	protected boolean canTakeOutput(PlayerEntity player, boolean present) {

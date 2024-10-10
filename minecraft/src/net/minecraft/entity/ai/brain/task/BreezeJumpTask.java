@@ -7,12 +7,14 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.BreezeEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -201,15 +203,18 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 
 	private static boolean hasRoomToJump(ServerWorld world, BreezeEntity breeze) {
 		BlockPos blockPos = breeze.getBlockPos();
-
-		for (int i = 1; i <= 4; i++) {
-			BlockPos blockPos2 = blockPos.offset(Direction.UP, i);
-			if (!world.getBlockState(blockPos2).isAir() && !world.getFluidState(blockPos2).isIn(FluidTags.WATER)) {
-				return false;
+		if (world.getBlockState(blockPos).isOf(Blocks.HONEY_BLOCK)) {
+			return false;
+		} else {
+			for (int i = 1; i <= 4; i++) {
+				BlockPos blockPos2 = blockPos.offset(Direction.UP, i);
+				if (!world.getBlockState(blockPos2).isAir() && !world.getFluidState(blockPos2).isIn(FluidTags.WATER)) {
+					return false;
+				}
 			}
-		}
 
-		return true;
+			return true;
+		}
 	}
 
 	private static Optional<Vec3d> getJumpingVelocity(BreezeEntity breeze, Random random, Vec3d jumpTarget) {
@@ -217,6 +222,11 @@ public class BreezeJumpTask extends MultiTickTask<BreezeEntity> {
 			float f = 0.058333334F * (float)breeze.getAttributeValue(EntityAttributes.FOLLOW_RANGE);
 			Optional<Vec3d> optional = LongJumpUtil.getJumpingVelocity(breeze, jumpTarget, f, i, false);
 			if (optional.isPresent()) {
+				if (breeze.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
+					double d = ((Vec3d)optional.get()).normalize().y * (double)breeze.getJumpBoostVelocityModifier();
+					return optional.map(vec3d -> vec3d.add(0.0, d, 0.0));
+				}
+
 				return optional;
 			}
 		}

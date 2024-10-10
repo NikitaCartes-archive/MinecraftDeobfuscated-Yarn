@@ -34,7 +34,7 @@ public class StonecuttingRecipe extends SingleStackRecipe {
 	}
 
 	@Override
-	public RecipeBookCategory getRecipeBookTab() {
+	public RecipeBookCategory getRecipeBookCategory() {
 		return RecipeBookCategories.STONECUTTER;
 	}
 }

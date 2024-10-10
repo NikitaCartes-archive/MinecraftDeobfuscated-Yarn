@@ -24,7 +24,7 @@ public class MusicTracker {
 	public void tick() {
 		MusicSound musicSound = this.client.getMusicType();
 		if (this.current != null) {
-			if (!musicSound.getSound().value().getId().equals(this.current.getId()) && musicSound.shouldReplaceCurrentMusic()) {
+			if (!musicSound.getSound().value().id().equals(this.current.getId()) && musicSound.shouldReplaceCurrentMusic()) {
 				this.client.getSoundManager().stop(this.current);
 				this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, musicSound.getMinDelay() / 2);
 			}
@@ -66,6 +66,6 @@ public class MusicTracker {
 	}
 
 	public boolean isPlayingType(MusicSound type) {
-		return this.current == null ? false : type.getSound().value().getId().equals(this.current.getId());
+		return this.current == null ? false : type.getSound().value().id().equals(this.current.getId());
 	}
 }

@@ -19,7 +19,6 @@ import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.world.World;
 
 public class TransmuteRecipe implements CraftingRecipe {
@@ -120,7 +119,7 @@ public class TransmuteRecipe implements CraftingRecipe {
 						CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(recipe -> recipe.category),
 						Ingredient.CODEC.fieldOf("input").forGetter(recipe -> recipe.input),
 						Ingredient.CODEC.fieldOf("material").forGetter(recipe -> recipe.material),
-						RegistryFixedCodec.of(RegistryKeys.ITEM).fieldOf("result").forGetter(recipe -> recipe.result)
+						Item.ENTRY_CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
 					)
 					.apply(instance, TransmuteRecipe::new)
 		);

@@ -44,7 +44,7 @@ public class RecipePropertySet {
 
 	static RecipePropertySet of(Collection<Ingredient> ingredients) {
 		Set<RegistryEntry<Item>> set = (Set<RegistryEntry<Item>>)ingredients.stream()
-			.flatMap(ingredient -> ingredient.getMatchingStacks().stream())
+			.flatMap(ingredient -> ingredient.getMatchingItems().stream())
 			.collect(Collectors.toUnmodifiableSet());
 		return new RecipePropertySet(set);
 	}

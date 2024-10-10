@@ -35,7 +35,7 @@ public interface CraftingRecipe extends Recipe<CraftingRecipeInput> {
 	}
 
 	@Override
-	default RecipeBookCategory getRecipeBookTab() {
+	default RecipeBookCategory getRecipeBookCategory() {
 		return switch (this.getCategory()) {
 			case BUILDING -> RecipeBookCategories.CRAFTING_BUILDING_BLOCKS;
 			case EQUIPMENT -> RecipeBookCategories.CRAFTING_EQUIPMENT;

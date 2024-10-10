@@ -562,7 +562,7 @@ public class ServerCommandSource implements AbstractServerCommandSource<ServerCo
 
 	@Override
 	public Stream<Identifier> getSoundIds() {
-		return Registries.SOUND_EVENT.stream().map(SoundEvent::getId);
+		return Registries.SOUND_EVENT.stream().map(SoundEvent::id);
 	}
 
 	@Override

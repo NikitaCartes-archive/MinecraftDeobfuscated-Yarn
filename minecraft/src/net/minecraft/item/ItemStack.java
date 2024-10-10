@@ -140,13 +140,10 @@ import org.slf4j.Logger;
  * </div>
  */
 public final class ItemStack implements ComponentHolder {
-	public static final Codec<RegistryEntry<Item>> ITEM_CODEC = Registries.ITEM
-		.getEntryCodec()
-		.validate(entry -> entry.matches(Items.AIR.getRegistryEntry()) ? DataResult.error(() -> "Item must not be minecraft:air") : DataResult.success(entry));
 	public static final Codec<ItemStack> CODEC = Codec.lazyInitialized(
 		() -> RecordCodecBuilder.create(
 				instance -> instance.group(
-							ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
+							Item.ENTRY_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
 							Codecs.rangedInt(1, 99).fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
 							ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
 						)
@@ -156,7 +153,7 @@ public final class ItemStack implements ComponentHolder {
 	public static final Codec<ItemStack> UNCOUNTED_CODEC = Codec.lazyInitialized(
 		() -> RecordCodecBuilder.create(
 				instance -> instance.group(
-							ITEM_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
+							Item.ENTRY_CODEC.fieldOf("id").forGetter(ItemStack::getRegistryEntry),
 							ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.EMPTY).forGetter(stack -> stack.components.getChanges())
 						)
 						.apply(instance, (item, components) -> new ItemStack(item, 1, components))
@@ -166,7 +163,7 @@ public final class ItemStack implements ComponentHolder {
 	public static final Codec<ItemStack> VALIDATED_UNCOUNTED_CODEC = UNCOUNTED_CODEC.validate(ItemStack::validate);
 	public static final Codec<ItemStack> OPTIONAL_CODEC = Codecs.optional(CODEC)
 		.xmap(optional -> (ItemStack)optional.orElse(ItemStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack));
-	public static final Codec<ItemStack> REGISTRY_ENTRY_CODEC = ITEM_CODEC.xmap(ItemStack::new, ItemStack::getRegistryEntry);
+	public static final Codec<ItemStack> REGISTRY_ENTRY_CODEC = Item.ENTRY_CODEC.xmap(ItemStack::new, ItemStack::getRegistryEntry);
 	public static final PacketCodec<RegistryByteBuf, ItemStack> OPTIONAL_PACKET_CODEC = new PacketCodec<RegistryByteBuf, ItemStack>() {
 		private static final PacketCodec<RegistryByteBuf, RegistryEntry<Item>> ITEM_PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.ITEM);
 

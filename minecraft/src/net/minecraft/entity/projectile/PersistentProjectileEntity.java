@@ -311,9 +311,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
-		super.move(movementType, movement);
-		if (movementType != MovementType.SELF && this.shouldFall()) {
+	public void move(MovementType type, Vec3d movement) {
+		super.move(type, movement);
+		if (type != MovementType.SELF && this.shouldFall()) {
 			this.fall();
 		}
 	}

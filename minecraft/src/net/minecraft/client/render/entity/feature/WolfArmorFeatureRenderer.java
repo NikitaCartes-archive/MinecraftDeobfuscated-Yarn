@@ -62,7 +62,7 @@ public class WolfArmorFeatureRenderer extends FeatureRenderer<WolfEntityRenderSt
 		Cracks.CrackLevel crackLevel = Cracks.WOLF_ARMOR.getCrackLevel(stack);
 		if (crackLevel != Cracks.CrackLevel.NONE) {
 			Identifier identifier = (Identifier)CRACK_TEXTURES.get(crackLevel);
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(identifier));
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.createArmorTranslucent(identifier));
 			model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
 		}
 	}

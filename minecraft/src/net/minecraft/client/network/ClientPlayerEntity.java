@@ -886,10 +886,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d movement) {
+	public void move(MovementType type, Vec3d movement) {
 		double d = this.getX();
 		double e = this.getZ();
-		super.move(movementType, movement);
+		super.move(type, movement);
 		float f = (float)(this.getX() - d);
 		float g = (float)(this.getZ() - e);
 		this.autoJump(f, g);
