@@ -26,7 +26,7 @@ public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity
 		return TEXTURE;
 	}
 
-	public LivingEntityRenderState getRenderState() {
+	public LivingEntityRenderState createRenderState() {
 		return new LivingEntityRenderState();
 	}
 }

@@ -40,7 +40,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 		return TEXTURE;
 	}
 
-	public IllusionerEntityRenderState getRenderState() {
+	public IllusionerEntityRenderState createRenderState() {
 		return new IllusionerEntityRenderState();
 	}
 

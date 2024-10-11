@@ -24,7 +24,7 @@ public class CreakingEntityRenderer<T extends CreakingEntity> extends MobEntityR
 		return TEXTURE;
 	}
 
-	public CreakingEntityRenderState getRenderState() {
+	public CreakingEntityRenderState createRenderState() {
 		return new CreakingEntityRenderState();
 	}
 

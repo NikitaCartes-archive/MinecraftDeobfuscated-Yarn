@@ -12,20 +12,20 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 4074;
+	public static final int WORLD_VERSION = 4075;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.21.2-pre2";
+	public static final String VERSION_NAME = "1.21.2-pre3";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 768;
 	@Deprecated
-	public static final int field_29736 = 214;
+	public static final int field_29736 = 215;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 4053;
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 41;
+	public static final int RESOURCE_PACK_VERSION = 42;
 	@Deprecated
 	public static final int DATA_PACK_VERSION = 57;
 	@Deprecated
@@ -163,7 +163,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073742038;
+		return 1073742039;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

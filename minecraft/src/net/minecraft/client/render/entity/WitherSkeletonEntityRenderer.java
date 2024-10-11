@@ -19,7 +19,7 @@ public class WitherSkeletonEntityRenderer extends AbstractSkeletonEntityRenderer
 		return TEXTURE;
 	}
 
-	public SkeletonEntityRenderState getRenderState() {
+	public SkeletonEntityRenderState createRenderState() {
 		return new SkeletonEntityRenderState();
 	}
 }

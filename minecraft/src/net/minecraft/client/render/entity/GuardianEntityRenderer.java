@@ -144,7 +144,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		return TEXTURE;
 	}
 
-	public GuardianEntityRenderState getRenderState() {
+	public GuardianEntityRenderState createRenderState() {
 		return new GuardianEntityRenderState();
 	}
 

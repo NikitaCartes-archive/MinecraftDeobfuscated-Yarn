@@ -12,7 +12,7 @@ public class MinecartEntityRenderer extends AbstractMinecartEntityRenderer<Abstr
 		super(context, entityModelLayer);
 	}
 
-	public MinecartEntityRenderState getRenderState() {
+	public MinecartEntityRenderState createRenderState() {
 		return new MinecartEntityRenderState();
 	}
 }

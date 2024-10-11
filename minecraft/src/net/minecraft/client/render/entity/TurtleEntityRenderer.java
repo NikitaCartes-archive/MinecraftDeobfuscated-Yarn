@@ -21,7 +21,7 @@ public class TurtleEntityRenderer extends AgeableMobEntityRenderer<TurtleEntity,
 		return turtleEntityRenderState.baby ? f * 0.83F : f;
 	}
 
-	public TurtleEntityRenderState getRenderState() {
+	public TurtleEntityRenderState createRenderState() {
 		return new TurtleEntityRenderState();
 	}
 

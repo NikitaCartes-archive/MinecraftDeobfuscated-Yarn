@@ -20,7 +20,7 @@ public class CamelEntityRenderer extends AgeableMobEntityRenderer<CamelEntity, C
 		return TEXTURE;
 	}
 
-	public CamelEntityRenderState getRenderState() {
+	public CamelEntityRenderState createRenderState() {
 		return new CamelEntityRenderState();
 	}
 

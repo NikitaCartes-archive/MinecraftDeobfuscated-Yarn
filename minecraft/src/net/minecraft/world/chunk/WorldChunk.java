@@ -84,6 +84,8 @@ public class WorldChunk extends Chunk {
 	private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
 	private final ChunkTickScheduler<Block> blockTickScheduler;
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
+	private WorldChunk.UnsavedListener unsavedListener = posx -> {
+	};
 
 	public WorldChunk(World world, ChunkPos pos) {
 		this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0L, null, null, null);
@@ -149,7 +151,23 @@ public class WorldChunk extends Chunk {
 
 		this.chunkSkyLight = protoChunk.chunkSkyLight;
 		this.setLightOn(protoChunk.isLightOn());
-		this.needsSaving = true;
+		this.markNeedsSaving();
+	}
+
+	public void setUnsavedListener(WorldChunk.UnsavedListener unsavedListener) {
+		this.unsavedListener = unsavedListener;
+		if (this.needsSaving()) {
+			unsavedListener.setUnsaved(this.pos);
+		}
+	}
+
+	@Override
+	public void markNeedsSaving() {
+		boolean bl = this.needsSaving();
+		super.markNeedsSaving();
+		if (!bl) {
+			this.unsavedListener.setUnsaved(this.pos);
+		}
 	}
 
 	@Override
@@ -309,7 +327,7 @@ public class WorldChunk extends Chunk {
 						}
 					}
 
-					this.needsSaving = true;
+					this.markNeedsSaving();
 					return blockState;
 				}
 			}
@@ -485,7 +503,7 @@ public class WorldChunk extends Chunk {
 		return false;
 	}
 
-	public void loadFromPacket(PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> consumer) {
+	public void loadFromPacket(PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> blockEntityVisitorConsumer) {
 		this.clear();
 
 		for (ChunkSection chunkSection : this.sectionArray) {
@@ -500,7 +518,7 @@ public class WorldChunk extends Chunk {
 		}
 
 		this.refreshSurfaceY();
-		consumer.accept((ChunkData.BlockEntityVisitor)(pos, blockEntityType, nbtx) -> {
+		blockEntityVisitorConsumer.accept((ChunkData.BlockEntityVisitor)(pos, blockEntityType, nbtx) -> {
 			BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
 			if (blockEntity != null && nbtx != null && blockEntity.getType() == blockEntityType) {
 				blockEntity.read(nbtx, this.world.getRegistryManager());
@@ -732,6 +750,11 @@ public class WorldChunk extends Chunk {
 	@FunctionalInterface
 	public interface EntityLoader {
 		void run(WorldChunk chunk);
+	}
+
+	@FunctionalInterface
+	public interface UnsavedListener {
+		void setUnsaved(ChunkPos pos);
 	}
 
 	class WrappedBlockEntityTickInvoker implements BlockEntityTickInvoker {

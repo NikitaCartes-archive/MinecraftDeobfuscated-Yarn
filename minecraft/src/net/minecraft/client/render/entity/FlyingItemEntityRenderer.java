@@ -57,7 +57,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		super.render(flyingItemEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public FlyingItemEntityRenderState getRenderState() {
+	public FlyingItemEntityRenderState createRenderState() {
 		return new FlyingItemEntityRenderState();
 	}
 

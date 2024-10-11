@@ -28,7 +28,7 @@ public class VexEntityRenderer extends MobEntityRenderer<VexEntity, VexEntityRen
 		return vexEntityRenderState.charging ? CHARGING_TEXTURE : TEXTURE;
 	}
 
-	public VexEntityRenderState getRenderState() {
+	public VexEntityRenderState createRenderState() {
 		return new VexEntityRenderState();
 	}
 

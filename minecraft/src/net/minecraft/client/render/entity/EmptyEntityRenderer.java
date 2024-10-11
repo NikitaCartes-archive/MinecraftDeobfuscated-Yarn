@@ -15,7 +15,7 @@ public class EmptyEntityRenderer<T extends Entity> extends EntityRenderer<T, Ent
 	}
 
 	@Override
-	public EntityRenderState getRenderState() {
+	public EntityRenderState createRenderState() {
 		return new EntityRenderState();
 	}
 }

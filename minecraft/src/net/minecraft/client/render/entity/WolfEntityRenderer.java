@@ -28,7 +28,7 @@ public class WolfEntityRenderer extends AgeableMobEntityRenderer<WolfEntity, Wol
 		return wolfEntityRenderState.texture;
 	}
 
-	public WolfEntityRenderState getRenderState() {
+	public WolfEntityRenderState createRenderState() {
 		return new WolfEntityRenderState();
 	}
 

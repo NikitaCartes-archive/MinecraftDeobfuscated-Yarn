@@ -30,7 +30,7 @@ public class LlamaEntityRenderer extends AgeableMobEntityRenderer<LlamaEntity, L
 		};
 	}
 
-	public LlamaEntityRenderState getRenderState() {
+	public LlamaEntityRenderState createRenderState() {
 		return new LlamaEntityRenderState();
 	}
 

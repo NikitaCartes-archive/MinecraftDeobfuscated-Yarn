@@ -16,6 +16,7 @@ import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
@@ -115,6 +116,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 	private static final int field_29674 = 200;
 	private static final int field_36291 = 20;
 	private static final int field_36384 = 10000;
+	private static final int field_54966 = 128;
 	public static final int DEFAULT_VIEW_DISTANCE = 2;
 	public static final int field_29669 = 32;
 	public static final int field_29670 = ChunkLevels.getLevelFromType(ChunkLevelType.ENTITY_TICKING);
@@ -142,7 +144,9 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 	private final Int2ObjectMap<ServerChunkLoadingManager.EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<>();
 	private final Long2ByteMap chunkToType = new Long2ByteOpenHashMap();
 	private final Long2LongMap chunkToNextSaveTimeMs = new Long2LongOpenHashMap();
+	private final LongSet chunksToSave = new LongLinkedOpenHashSet();
 	private final Queue<Runnable> unloadTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
+	private final AtomicInteger chunksBeingSavedCount = new AtomicInteger();
 	private int watchDistance;
 	private final ChunkGenerationContext generationContext;
 
@@ -203,7 +207,13 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 			world
 		);
 		this.setViewDistance(viewDistance);
-		this.generationContext = new ChunkGenerationContext(world, chunkGenerator, structureTemplateManager, this.lightingProvider, mainThreadExecutor);
+		this.generationContext = new ChunkGenerationContext(
+			world, chunkGenerator, structureTemplateManager, this.lightingProvider, mainThreadExecutor, this::markChunkNeedsSaving
+		);
+	}
+
+	private void markChunkNeedsSaving(ChunkPos pos) {
+		this.chunksToSave.add(pos.toLong());
 	}
 
 	protected ChunkGenerator getChunkGenerator() {
@@ -435,6 +445,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 			this.unloadChunks(() -> true);
 			this.completeAll();
 		} else {
+			this.chunkToNextSaveTimeMs.clear();
 			long l = Util.getMeasuringTimeMs();
 
 			for (ChunkHolder chunkHolder : this.chunkHolders.values()) {
@@ -490,15 +501,23 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 			runnable.run();
 		}
 
-		long m = Util.getMeasuringTimeMs();
-		int j = 0;
-		LongIterator longIterator2 = this.ticketManager.getChunks().iterator();
+		this.saveChunks(shouldKeepTicking);
+	}
 
-		while (j < 20 && shouldKeepTicking.getAsBoolean() && longIterator2.hasNext()) {
-			long n = longIterator2.nextLong();
-			ChunkHolder chunkHolder2 = this.chunkHolders.get(n);
-			if (chunkHolder2 != null && this.save(chunkHolder2, m)) {
-				j++;
+	private void saveChunks(BooleanSupplier shouldKeepTicking) {
+		long l = Util.getMeasuringTimeMs();
+		int i = 0;
+		LongIterator longIterator = this.chunksToSave.iterator();
+
+		while (i < 20 && this.chunksBeingSavedCount.get() < 128 && shouldKeepTicking.getAsBoolean() && longIterator.hasNext()) {
+			long m = longIterator.nextLong();
+			ChunkHolder chunkHolder = this.chunkHolders.get(m);
+			Chunk chunk = chunkHolder != null ? chunkHolder.getLatest() : null;
+			if (chunk == null || !chunk.needsSaving()) {
+				longIterator.remove();
+			} else if (this.save(chunkHolder, l)) {
+				i++;
+				longIterator.remove();
 			}
 		}
 	}
@@ -733,10 +752,9 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 
 	private boolean save(Chunk chunk) {
 		this.pointOfInterestStorage.saveChunk(chunk.getPos());
-		if (!chunk.needsSaving()) {
+		if (!chunk.tryMarkSaved()) {
 			return false;
 		} else {
-			chunk.setNeedsSaving(false);
 			ChunkPos chunkPos = chunk.getPos();
 
 			try {
@@ -752,10 +770,15 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 				}
 
 				Profilers.get().visit("chunkSave");
+				this.chunksBeingSavedCount.incrementAndGet();
 				SerializedChunk serializedChunk = SerializedChunk.fromChunk(this.world, chunk);
 				CompletableFuture<NbtCompound> completableFuture = CompletableFuture.supplyAsync(serializedChunk::serialize, Util.getMainWorkerExecutor());
-				this.setNbt(chunkPos, completableFuture::join).exceptionally(throwable -> {
-					this.world.getServer().onChunkSaveFailure(throwable, this.getStorageKey(), chunkPos);
+				this.setNbt(chunkPos, completableFuture::join).handle((void_, exceptionx) -> {
+					if (exceptionx != null) {
+						this.world.getServer().onChunkSaveFailure(exceptionx, this.getStorageKey(), chunkPos);
+					}
+
+					this.chunksBeingSavedCount.decrementAndGet();
 					return null;
 				});
 				this.mark(chunkPos, chunkStatus.getChunkType());

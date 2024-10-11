@@ -2,6 +2,7 @@ package net.minecraft.component.type;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -19,7 +20,9 @@ import org.apache.commons.lang3.math.Fraction;
 
 public final class BundleContentsComponent implements TooltipData {
 	public static final BundleContentsComponent DEFAULT = new BundleContentsComponent(List.of());
-	public static final Codec<BundleContentsComponent> CODEC = ItemStack.CODEC.listOf().xmap(BundleContentsComponent::new, component -> component.stacks);
+	public static final Codec<BundleContentsComponent> CODEC = ItemStack.CODEC
+		.listOf()
+		.flatXmap(BundleContentsComponent::validateOccupancy, component -> DataResult.success(component.stacks));
 	public static final PacketCodec<RegistryByteBuf, BundleContentsComponent> PACKET_CODEC = ItemStack.PACKET_CODEC
 		.collect(PacketCodecs.toList())
 		.xmap(BundleContentsComponent::new, component -> component.stacks);
@@ -34,6 +37,15 @@ public final class BundleContentsComponent implements TooltipData {
 		this.stacks = stacks;
 		this.occupancy = occupancy;
 		this.selectedStackIndex = selectedStackIndex;
+	}
+
+	private static DataResult<BundleContentsComponent> validateOccupancy(List<ItemStack> stacks) {
+		try {
+			Fraction fraction = calculateOccupancy(stacks);
+			return DataResult.success(new BundleContentsComponent(stacks, fraction, -1));
+		} catch (ArithmeticException var2) {
+			return DataResult.error(() -> "Excessive total bundle weight");
+		}
 	}
 
 	public BundleContentsComponent(List<ItemStack> stacks) {

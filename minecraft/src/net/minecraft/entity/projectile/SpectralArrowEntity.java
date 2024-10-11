@@ -29,7 +29,7 @@ public class SpectralArrowEntity extends PersistentProjectileEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.getWorld().isClient && !this.inGround) {
+		if (this.getWorld().isClient && !this.isInGround()) {
 			this.getWorld().addParticle(ParticleTypes.INSTANT_EFFECT, this.getX(), this.getY(), this.getZ(), 0.0, 0.0, 0.0);
 		}
 	}

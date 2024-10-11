@@ -22,6 +22,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 	private static final Identifier BUNDLE_PROGRESS_BAR_FULL_TEXTURE = Identifier.ofVanilla("container/bundle/bundle_progressbar_full");
 	private static final Identifier BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE = Identifier.ofVanilla("container/bundle/slot_highlight_back");
 	private static final Identifier BUNDLE_SLOT_HIGHLIGHT_FRONT_TEXTURE = Identifier.ofVanilla("container/bundle/slot_highlight_front");
+	private static final Identifier BUNDLE_SLOT_BACKGROUND_TEXTURE = Identifier.ofVanilla("container/bundle/slot_background");
 	private static final int SLOTS_PER_ROW = 4;
 	private static final int SLOT_DIMENSION = 24;
 	private static final int ROW_WIDTH = 96;
@@ -139,6 +140,8 @@ public class BundleTooltipComponent implements TooltipComponent {
 		ItemStack itemStack = (ItemStack)stacks.get(i);
 		if (bl) {
 			drawContext.drawGuiTexture(RenderLayer::getGuiTextured, BUNDLE_SLOT_HIGHLIGHT_BACK_TEXTURE, x, y, 24, 24);
+		} else {
+			drawContext.drawGuiTexture(RenderLayer::getGuiTextured, BUNDLE_SLOT_BACKGROUND_TEXTURE, x, y, 24, 24);
 		}
 
 		drawContext.drawItem(itemStack, x + 4, y + 4, seed);

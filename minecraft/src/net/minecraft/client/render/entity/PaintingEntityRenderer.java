@@ -49,7 +49,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity, Paint
 		}
 	}
 
-	public PaintingEntityRenderState getRenderState() {
+	public PaintingEntityRenderState createRenderState() {
 		return new PaintingEntityRenderState();
 	}
 

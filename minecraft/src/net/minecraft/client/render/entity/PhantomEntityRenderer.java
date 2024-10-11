@@ -24,7 +24,7 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 		return TEXTURE;
 	}
 
-	public PhantomEntityRenderState getRenderState() {
+	public PhantomEntityRenderState createRenderState() {
 		return new PhantomEntityRenderState();
 	}
 

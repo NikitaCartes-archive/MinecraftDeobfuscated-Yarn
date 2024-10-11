@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.gui.screen;
 
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -48,7 +49,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 		this.addDrawableChild(buttonWidget);
 		this.nameEdit = new TextFieldWidget(this.client.textRenderer, i, row(4), 212, 20, Text.translatable("mco.configure.world.name"));
 		this.nameEdit.setMaxLength(32);
-		this.nameEdit.setText(this.serverData.getName());
+		this.nameEdit.setText((String)Objects.requireNonNullElse(this.serverData.getName(), ""));
 		this.addDrawableChild(this.nameEdit);
 		this.descEdit = new TextFieldWidget(this.client.textRenderer, i, row(8), 212, 20, Text.translatable("mco.configure.world.description"));
 		this.descEdit.setMaxLength(32);

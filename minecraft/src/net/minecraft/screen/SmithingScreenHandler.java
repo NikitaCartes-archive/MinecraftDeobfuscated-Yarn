@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
@@ -33,6 +34,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	private final RecipePropertySet basePropertySet;
 	private final RecipePropertySet templatePropertySet;
 	private final RecipePropertySet additionPropertySet;
+	private final Property invalidRecipe = Property.create();
 
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory) {
 		this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
@@ -48,6 +50,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 		this.basePropertySet = world.getRecipeManager().getPropertySet(RecipePropertySet.SMITHING_BASE);
 		this.templatePropertySet = world.getRecipeManager().getPropertySet(RecipePropertySet.SMITHING_TEMPLATE);
 		this.additionPropertySet = world.getRecipeManager().getPropertySet(RecipePropertySet.SMITHING_ADDITION);
+		this.addProperty(this.invalidRecipe).set(0);
 	}
 
 	private static ForgingSlotsManager createForgingSlotsManager(RecipeManager recipeManager) {
@@ -94,6 +97,15 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	}
 
 	@Override
+	public void onContentChanged(Inventory inventory) {
+		super.onContentChanged(inventory);
+		if (this.world instanceof ServerWorld) {
+			boolean bl = this.getSlot(0).hasStack() && this.getSlot(1).hasStack() && this.getSlot(2).hasStack() && !this.getSlot(this.getResultSlotIndex()).hasStack();
+			this.invalidRecipe.set(bl ? 1 : 0);
+		}
+	}
+
+	@Override
 	public void updateResult() {
 		SmithingRecipeInput smithingRecipeInput = this.createRecipeInput();
 		Optional<RecipeEntry<SmithingRecipe>> optional;
@@ -125,5 +137,9 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 		} else {
 			return this.basePropertySet.canUse(stack) && !this.getSlot(1).hasStack() ? true : this.additionPropertySet.canUse(stack) && !this.getSlot(2).hasStack();
 		}
+	}
+
+	public boolean hasInvalidRecipe() {
+		return this.invalidRecipe.get() > 0;
 	}
 }

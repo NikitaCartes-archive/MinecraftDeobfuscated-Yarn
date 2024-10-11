@@ -60,7 +60,7 @@ public class SoundSystem {
 	private final Map<SoundInstance, Channel.SourceManager> sources = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
 	private final Multimap<SoundCategory, SoundInstance> sounds = HashMultimap.create();
 	private final List<TickableSoundInstance> tickingSounds = Lists.<TickableSoundInstance>newArrayList();
-	private final Map<SoundInstance, Integer> startTicks = Maps.<SoundInstance, Integer>newHashMap();
+	private final Map<SoundInstance, Integer> soundStartTicks = Maps.<SoundInstance, Integer>newHashMap();
 	private final Map<SoundInstance, Integer> soundEndTicks = Maps.<SoundInstance, Integer>newHashMap();
 	private final List<SoundInstanceListener> listeners = Lists.<SoundInstanceListener>newArrayList();
 	private final List<TickableSoundInstance> soundsToPlayNextTick = Lists.<TickableSoundInstance>newArrayList();
@@ -158,7 +158,7 @@ public class SoundSystem {
 			this.sources.values().forEach(source -> source.run(Source::stop));
 			this.sources.clear();
 			this.channel.close();
-			this.startTicks.clear();
+			this.soundStartTicks.clear();
 			this.tickingSounds.clear();
 			this.sounds.clear();
 			this.soundEndTicks.clear();
@@ -258,8 +258,8 @@ public class SoundSystem {
 			} else if (sourceManager2.isStopped()) {
 				int i = (Integer)this.soundEndTicks.get(soundInstance);
 				if (i <= this.ticks) {
-					if (isRepeatDelayed(soundInstance)) {
-						this.startTicks.put(soundInstance, this.ticks + soundInstance.getRepeatDelay());
+					if (shouldDelayRepeat(soundInstance)) {
+						this.soundStartTicks.put(soundInstance, this.ticks + soundInstance.getRepeatDelay());
 					}
 
 					iterator.remove();
@@ -278,7 +278,7 @@ public class SoundSystem {
 			}
 		}
 
-		Iterator<Entry<SoundInstance, Integer>> iterator2 = this.startTicks.entrySet().iterator();
+		Iterator<Entry<SoundInstance, Integer>> iterator2 = this.soundStartTicks.entrySet().iterator();
 
 		while (iterator2.hasNext()) {
 			Entry<SoundInstance, Integer> entry2 = (Entry<SoundInstance, Integer>)iterator2.next();
@@ -294,16 +294,16 @@ public class SoundSystem {
 		}
 	}
 
-	private static boolean canRepeatInstantly(SoundInstance sound) {
+	private static boolean hasRepeatDelay(SoundInstance sound) {
 		return sound.getRepeatDelay() > 0;
 	}
 
-	private static boolean isRepeatDelayed(SoundInstance sound) {
-		return sound.isRepeatable() && canRepeatInstantly(sound);
+	private static boolean shouldDelayRepeat(SoundInstance sound) {
+		return sound.isRepeatable() && hasRepeatDelay(sound);
 	}
 
 	private static boolean shouldRepeatInstantly(SoundInstance sound) {
-		return sound.isRepeatable() && !canRepeatInstantly(sound);
+		return sound.isRepeatable() && !hasRepeatDelay(sound);
 	}
 
 	public boolean isPlaying(SoundInstance sound) {
@@ -438,7 +438,7 @@ public class SoundSystem {
 	}
 
 	public void play(SoundInstance sound, int delay) {
-		this.startTicks.put(sound, this.ticks + delay);
+		this.soundStartTicks.put(sound, this.ticks + delay);
 	}
 
 	public void updateListenerPosition(Camera camera) {

@@ -156,9 +156,6 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	}
 
 	private boolean hasInvalidRecipe() {
-		return this.handler.getSlot(0).hasStack()
-			&& this.handler.getSlot(1).hasStack()
-			&& this.handler.getSlot(2).hasStack()
-			&& !this.handler.getSlot(this.handler.getResultSlotIndex()).hasStack();
+		return this.handler.hasInvalidRecipe();
 	}
 }

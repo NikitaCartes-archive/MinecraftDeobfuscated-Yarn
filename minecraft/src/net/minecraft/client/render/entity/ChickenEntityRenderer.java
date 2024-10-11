@@ -23,7 +23,7 @@ public class ChickenEntityRenderer extends AgeableMobEntityRenderer<ChickenEntit
 		return TEXTURE;
 	}
 
-	public ChickenEntityRenderState getRenderState() {
+	public ChickenEntityRenderState createRenderState() {
 		return new ChickenEntityRenderState();
 	}
 

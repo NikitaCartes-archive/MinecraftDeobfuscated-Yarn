@@ -37,7 +37,7 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 		return TEXTURE;
 	}
 
-	public EndermanEntityRenderState getRenderState() {
+	public EndermanEntityRenderState createRenderState() {
 		return new EndermanEntityRenderState();
 	}
 

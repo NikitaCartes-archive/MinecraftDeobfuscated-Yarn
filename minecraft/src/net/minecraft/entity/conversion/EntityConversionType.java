@@ -31,6 +31,12 @@ public enum EntityConversionType {
 				entity.startRiding(newEntity);
 			}
 
+			Entity entity3 = oldEntity.getVehicle();
+			if (entity3 != null) {
+				oldEntity.stopRiding();
+				newEntity.startRiding(entity3);
+			}
+
 			if (context.keepEquipment()) {
 				for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
 					ItemStack itemStack = oldEntity.getEquippedStack(equipmentSlot);
@@ -48,9 +54,9 @@ public enum EntityConversionType {
 			newEntity.bodyYaw = oldEntity.bodyYaw;
 			newEntity.setOnGround(oldEntity.isOnGround());
 			oldEntity.getSleepingPosition().ifPresent(newEntity::setSleepingPosition);
-			Entity entity3 = oldEntity.getLeashHolder();
-			if (entity3 != null) {
-				newEntity.attachLeash(entity3, true);
+			Entity entity2 = oldEntity.getLeashHolder();
+			if (entity2 != null) {
+				newEntity.attachLeash(entity2, true);
 			}
 
 			this.copyData(oldEntity, newEntity, context);

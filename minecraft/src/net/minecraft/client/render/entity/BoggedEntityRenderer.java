@@ -23,7 +23,7 @@ public class BoggedEntityRenderer extends AbstractSkeletonEntityRenderer<BoggedE
 		return TEXTURE;
 	}
 
-	public BoggedEntityRenderState getRenderState() {
+	public BoggedEntityRenderState createRenderState() {
 		return new BoggedEntityRenderState();
 	}
 

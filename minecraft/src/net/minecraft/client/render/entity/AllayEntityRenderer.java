@@ -23,7 +23,7 @@ public class AllayEntityRenderer extends MobEntityRenderer<AllayEntity, AllayEnt
 		return TEXTURE;
 	}
 
-	public AllayEntityRenderState getRenderState() {
+	public AllayEntityRenderState createRenderState() {
 		return new AllayEntityRenderState();
 	}
 

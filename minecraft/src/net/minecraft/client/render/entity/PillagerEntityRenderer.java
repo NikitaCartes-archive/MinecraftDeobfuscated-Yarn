@@ -22,7 +22,7 @@ public class PillagerEntityRenderer extends IllagerEntityRenderer<PillagerEntity
 		return TEXTURE;
 	}
 
-	public IllagerEntityRenderState getRenderState() {
+	public IllagerEntityRenderState createRenderState() {
 		return new IllagerEntityRenderState();
 	}
 }

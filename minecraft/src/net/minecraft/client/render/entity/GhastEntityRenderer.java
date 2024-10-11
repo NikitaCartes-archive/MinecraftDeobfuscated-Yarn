@@ -21,7 +21,7 @@ public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEnt
 		return ghastEntityRenderState.shooting ? SHOOTING_TEXTURE : TEXTURE;
 	}
 
-	public GhastEntityRenderState getRenderState() {
+	public GhastEntityRenderState createRenderState() {
 		return new GhastEntityRenderState();
 	}
 

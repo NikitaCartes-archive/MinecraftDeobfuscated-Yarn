@@ -40,7 +40,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		return TEXTURE;
 	}
 
-	public CreeperEntityRenderState getRenderState() {
+	public CreeperEntityRenderState createRenderState() {
 		return new CreeperEntityRenderState();
 	}
 

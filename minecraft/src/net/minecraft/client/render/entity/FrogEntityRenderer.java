@@ -18,7 +18,7 @@ public class FrogEntityRenderer extends MobEntityRenderer<FrogEntity, FrogEntity
 		return frogEntityRenderState.texture;
 	}
 
-	public FrogEntityRenderState getRenderState() {
+	public FrogEntityRenderState createRenderState() {
 		return new FrogEntityRenderState();
 	}
 

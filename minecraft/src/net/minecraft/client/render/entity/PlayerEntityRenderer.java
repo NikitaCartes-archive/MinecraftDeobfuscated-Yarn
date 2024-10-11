@@ -151,7 +151,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		matrixStack.pop();
 	}
 
-	public PlayerEntityRenderState getRenderState() {
+	public PlayerEntityRenderState createRenderState() {
 		return new PlayerEntityRenderState();
 	}
 

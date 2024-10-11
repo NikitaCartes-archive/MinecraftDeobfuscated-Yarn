@@ -33,7 +33,7 @@ public class BreezeEntityRenderer extends MobEntityRenderer<BreezeEntity, Breeze
 		return TEXTURE;
 	}
 
-	public BreezeEntityRenderState getRenderState() {
+	public BreezeEntityRenderState createRenderState() {
 		return new BreezeEntityRenderState();
 	}
 

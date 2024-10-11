@@ -51,7 +51,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		super.render(shulkerBulletEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public ShulkerBulletEntityRenderState getRenderState() {
+	public ShulkerBulletEntityRenderState createRenderState() {
 		return new ShulkerBulletEntityRenderState();
 	}
 

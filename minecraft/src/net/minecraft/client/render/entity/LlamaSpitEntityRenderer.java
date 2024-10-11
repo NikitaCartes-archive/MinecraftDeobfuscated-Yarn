@@ -35,7 +35,7 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity, Lla
 		super.render(llamaSpitEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public LlamaSpitEntityRenderState getRenderState() {
+	public LlamaSpitEntityRenderState createRenderState() {
 		return new LlamaSpitEntityRenderState();
 	}
 

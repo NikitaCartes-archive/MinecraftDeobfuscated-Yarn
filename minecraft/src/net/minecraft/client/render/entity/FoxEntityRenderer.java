@@ -38,7 +38,7 @@ public class FoxEntityRenderer extends AgeableMobEntityRenderer<FoxEntity, FoxEn
 		}
 	}
 
-	public FoxEntityRenderState getRenderState() {
+	public FoxEntityRenderState createRenderState() {
 		return new FoxEntityRenderState();
 	}
 

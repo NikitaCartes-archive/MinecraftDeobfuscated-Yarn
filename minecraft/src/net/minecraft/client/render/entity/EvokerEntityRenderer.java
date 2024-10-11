@@ -35,7 +35,7 @@ public class EvokerEntityRenderer<T extends SpellcastingIllagerEntity> extends I
 		return TEXTURE;
 	}
 
-	public EvokerEntityRenderState getRenderState() {
+	public EvokerEntityRenderState createRenderState() {
 		return new EvokerEntityRenderState();
 	}
 

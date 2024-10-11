@@ -2,6 +2,7 @@ package net.minecraft.client.realms;
 
 import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -74,7 +75,8 @@ public class RealmsConnection {
 
 						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getUsername(), minecraftClient.getSession().getUuidOrNull()));
 						minecraftClient.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
-						minecraftClient.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.REALMS, String.valueOf(server.id), server.name);
+						minecraftClient.getQuickPlayLogger()
+							.setWorld(QuickPlayLogger.WorldType.REALMS, String.valueOf(server.id), (String)Objects.requireNonNullElse(server.name, "unknown"));
 						minecraftClient.getServerResourcePackProvider().init(RealmsConnection.this.connection, ServerResourcePackManager.AcceptanceStatus.ALLOWED);
 					} catch (Exception var5) {
 						minecraftClient.getServerResourcePackProvider().clear();

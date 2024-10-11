@@ -28,7 +28,7 @@ public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, 
 		return TEXTURE;
 	}
 
-	public SlimeEntityRenderState getRenderState() {
+	public SlimeEntityRenderState createRenderState() {
 		return new SlimeEntityRenderState();
 	}
 

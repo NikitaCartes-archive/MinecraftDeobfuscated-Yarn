@@ -173,8 +173,13 @@ public class WrapperProtoChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setNeedsSaving(boolean needsSaving) {
-		this.wrapped.setNeedsSaving(needsSaving);
+	public void markNeedsSaving() {
+		this.wrapped.markNeedsSaving();
+	}
+
+	@Override
+	public boolean tryMarkSaved() {
+		return this.wrapped.tryMarkSaved();
 	}
 
 	@Override

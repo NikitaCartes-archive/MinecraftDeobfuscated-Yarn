@@ -55,7 +55,7 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity,
 		return state.charged ? INVULNERABLE_TEXTURE : TEXTURE;
 	}
 
-	public WitherSkullEntityRenderState getRenderState() {
+	public WitherSkullEntityRenderState createRenderState() {
 		return new WitherSkullEntityRenderState();
 	}
 

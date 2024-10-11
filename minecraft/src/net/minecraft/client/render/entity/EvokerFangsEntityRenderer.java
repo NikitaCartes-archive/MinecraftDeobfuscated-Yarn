@@ -38,7 +38,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity,
 		}
 	}
 
-	public EvokerFangsEntityRenderState getRenderState() {
+	public EvokerFangsEntityRenderState createRenderState() {
 		return new EvokerFangsEntityRenderState();
 	}
 

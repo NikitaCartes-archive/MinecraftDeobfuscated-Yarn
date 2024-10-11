@@ -30,7 +30,7 @@ public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTr
 		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}
 
-	public VillagerEntityRenderState getRenderState() {
+	public VillagerEntityRenderState createRenderState() {
 		return new VillagerEntityRenderState();
 	}
 

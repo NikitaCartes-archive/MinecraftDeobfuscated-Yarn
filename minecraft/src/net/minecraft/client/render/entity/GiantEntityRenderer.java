@@ -32,7 +32,7 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, ZombieEn
 		return TEXTURE;
 	}
 
-	public ZombieEntityRenderState getRenderState() {
+	public ZombieEntityRenderState createRenderState() {
 		return new ZombieEntityRenderState();
 	}
 

@@ -40,7 +40,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		return TEXTURE;
 	}
 
-	public SlimeEntityRenderState getRenderState() {
+	public SlimeEntityRenderState createRenderState() {
 		return new SlimeEntityRenderState();
 	}
 

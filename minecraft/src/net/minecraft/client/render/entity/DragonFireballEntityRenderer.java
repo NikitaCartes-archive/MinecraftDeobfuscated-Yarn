@@ -51,7 +51,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 	}
 
 	@Override
-	public EntityRenderState getRenderState() {
+	public EntityRenderState createRenderState() {
 		return new EntityRenderState();
 	}
 }

@@ -45,7 +45,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<AbstractPiglinEnti
 		return piglinEntityRenderState.brute ? PIGLIN_BRUTE_TEXTURE : PIGLIN_TEXTURE;
 	}
 
-	public PiglinEntityRenderState getRenderState() {
+	public PiglinEntityRenderState createRenderState() {
 		return new PiglinEntityRenderState();
 	}
 

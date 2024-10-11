@@ -26,7 +26,7 @@ public class SnowGolemEntityRenderer extends MobEntityRenderer<SnowGolemEntity, 
 		return TEXTURE;
 	}
 
-	public LivingEntityRenderState getRenderState() {
+	public LivingEntityRenderState createRenderState() {
 		return new LivingEntityRenderState();
 	}
 

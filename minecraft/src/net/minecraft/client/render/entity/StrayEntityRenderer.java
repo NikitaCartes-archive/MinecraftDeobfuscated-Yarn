@@ -22,7 +22,7 @@ public class StrayEntityRenderer extends AbstractSkeletonEntityRenderer<StrayEnt
 		return TEXTURE;
 	}
 
-	public SkeletonEntityRenderState getRenderState() {
+	public SkeletonEntityRenderState createRenderState() {
 		return new SkeletonEntityRenderState();
 	}
 }

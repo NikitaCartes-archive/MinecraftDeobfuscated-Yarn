@@ -60,7 +60,7 @@ public class WardenEntityRenderer extends MobEntityRenderer<WardenEntity, Warden
 		return TEXTURE;
 	}
 
-	public WardenEntityRenderState getRenderState() {
+	public WardenEntityRenderState createRenderState() {
 		return new WardenEntityRenderState();
 	}
 

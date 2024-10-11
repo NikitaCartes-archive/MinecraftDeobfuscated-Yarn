@@ -55,7 +55,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		}
 	}
 
-	public FallingBlockEntityRenderState getRenderState() {
+	public FallingBlockEntityRenderState createRenderState() {
 		return new FallingBlockEntityRenderState();
 	}
 

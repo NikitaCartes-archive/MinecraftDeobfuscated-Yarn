@@ -22,7 +22,7 @@ public class SquidEntityRenderer<T extends SquidEntity> extends AgeableMobEntity
 		return TEXTURE;
 	}
 
-	public SquidEntityRenderState getRenderState() {
+	public SquidEntityRenderState createRenderState() {
 		return new SquidEntityRenderState();
 	}
 

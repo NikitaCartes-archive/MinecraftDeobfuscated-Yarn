@@ -35,7 +35,7 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 		return TEXTURE;
 	}
 
-	public IllagerEntityRenderState getRenderState() {
+	public IllagerEntityRenderState createRenderState() {
 		return new IllagerEntityRenderState();
 	}
 }

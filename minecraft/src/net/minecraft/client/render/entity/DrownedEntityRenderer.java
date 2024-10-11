@@ -29,7 +29,7 @@ public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntit
 		this.addFeature(new DrownedOverlayFeatureRenderer(this, context.getModelLoader()));
 	}
 
-	public ZombieEntityRenderState getRenderState() {
+	public ZombieEntityRenderState createRenderState() {
 		return new ZombieEntityRenderState();
 	}
 

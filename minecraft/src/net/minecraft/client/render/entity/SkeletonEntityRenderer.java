@@ -19,7 +19,7 @@ public class SkeletonEntityRenderer extends AbstractSkeletonEntityRenderer<Skele
 		return TEXTURE;
 	}
 
-	public SkeletonEntityRenderState getRenderState() {
+	public SkeletonEntityRenderState createRenderState() {
 		return new SkeletonEntityRenderState();
 	}
 }

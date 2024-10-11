@@ -36,7 +36,7 @@ public class PandaEntityRenderer extends AgeableMobEntityRenderer<PandaEntity, P
 		return (Identifier)TEXTURES.getOrDefault(pandaEntityRenderState.gene, (Identifier)TEXTURES.get(PandaEntity.Gene.NORMAL));
 	}
 
-	public PandaEntityRenderState getRenderState() {
+	public PandaEntityRenderState createRenderState() {
 		return new PandaEntityRenderState();
 	}
 

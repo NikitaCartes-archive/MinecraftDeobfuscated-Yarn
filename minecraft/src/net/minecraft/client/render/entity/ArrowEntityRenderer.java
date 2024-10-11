@@ -19,7 +19,7 @@ public class ArrowEntityRenderer extends ProjectileEntityRenderer<ArrowEntity, A
 		return arrowEntityRenderState.tipped ? TIPPED_TEXTURE : TEXTURE;
 	}
 
-	public ArrowEntityRenderState getRenderState() {
+	public ArrowEntityRenderState createRenderState() {
 		return new ArrowEntityRenderState();
 	}
 

@@ -21,7 +21,7 @@ public class CowEntityRenderer extends AgeableMobEntityRenderer<CowEntity, Livin
 		return TEXTURE;
 	}
 
-	public LivingEntityRenderState getRenderState() {
+	public LivingEntityRenderState createRenderState() {
 		return new LivingEntityRenderState();
 	}
 

@@ -34,7 +34,7 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 		return striderEntityRenderState.baby ? f * 0.5F : f;
 	}
 
-	public StriderEntityRenderState getRenderState() {
+	public StriderEntityRenderState createRenderState() {
 		return new StriderEntityRenderState();
 	}
 

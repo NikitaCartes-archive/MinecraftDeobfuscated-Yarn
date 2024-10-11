@@ -23,7 +23,7 @@ public class CatEntityRenderer extends AgeableMobEntityRenderer<CatEntity, CatEn
 		return catEntityRenderState.texture;
 	}
 
-	public CatEntityRenderState getRenderState() {
+	public CatEntityRenderState createRenderState() {
 		return new CatEntityRenderState();
 	}
 

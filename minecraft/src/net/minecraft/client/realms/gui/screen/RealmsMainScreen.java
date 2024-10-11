@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -762,13 +763,15 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 		}
 
-		protected void drawTrimmedText(DrawContext context, String string, int left, int y, int right, int color) {
-			int i = right - left;
-			if (RealmsMainScreen.this.textRenderer.getWidth(string) > i) {
-				String string2 = RealmsMainScreen.this.textRenderer.trimToWidth(string, i - RealmsMainScreen.this.textRenderer.getWidth("... "));
-				context.drawText(RealmsMainScreen.this.textRenderer, string2 + "...", left, y, color, false);
-			} else {
-				context.drawText(RealmsMainScreen.this.textRenderer, string, left, y, color, false);
+		protected void drawTrimmedText(DrawContext context, @Nullable String string, int left, int y, int right, int color) {
+			if (string != null) {
+				int i = right - left;
+				if (RealmsMainScreen.this.textRenderer.getWidth(string) > i) {
+					String string2 = RealmsMainScreen.this.textRenderer.trimToWidth(string, i - RealmsMainScreen.this.textRenderer.getWidth("... "));
+					context.drawText(RealmsMainScreen.this.textRenderer, string2 + "...", left, y, color, false);
+				} else {
+					context.drawText(RealmsMainScreen.this.textRenderer, string, left, y, color, false);
+				}
 			}
 		}
 
@@ -905,7 +908,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public Text getNarration() {
-			return Text.literal(this.server.name);
+			return Text.literal((String)Objects.requireNonNullElse(this.server.name, "unknown server"));
 		}
 	}
 
@@ -1113,7 +1116,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		public Text getNarration() {
 			return (Text)(this.server.state == RealmsServer.State.UNINITIALIZED
 				? RealmsMainScreen.UNINITIALIZED_BUTTON_NARRATION
-				: Text.translatable("narrator.select", this.server.name));
+				: Text.translatable("narrator.select", Objects.requireNonNullElse(this.server.name, "unknown server")));
 		}
 
 		public RealmsServer getRealmsServer() {
@@ -1144,7 +1147,11 @@ public class RealmsMainScreen extends RealmsScreen {
 			int i = y + entryHeight / 2 - 9 / 2;
 			context.drawTextWithShadow(RealmsMainScreen.this.textRenderer, START_TEXT, x + 40 - 2, i - 5, 8388479);
 			context.drawTextWithShadow(
-				RealmsMainScreen.this.textRenderer, Text.translatable("mco.snapshot.description", this.server.name), x + 40 - 2, i + 5, Colors.GRAY
+				RealmsMainScreen.this.textRenderer,
+				Text.translatable("mco.snapshot.description", Objects.requireNonNullElse(this.server.name, "unknown server")),
+				x + 40 - 2,
+				i + 5,
+				Colors.GRAY
 			);
 			this.tooltip.render(hovered, this.isFocused(), new ScreenRect(x, y, entryWidth, entryHeight));
 		}
@@ -1182,7 +1189,10 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public Text getNarration() {
-			return Text.translatable("gui.narrate.button", ScreenTexts.joinSentences(START_TEXT, Text.translatable("mco.snapshot.description", this.server.name)));
+			return Text.translatable(
+				"gui.narrate.button",
+				ScreenTexts.joinSentences(START_TEXT, Text.translatable("mco.snapshot.description", Objects.requireNonNullElse(this.server.name, "unknown server")))
+			);
 		}
 	}
 

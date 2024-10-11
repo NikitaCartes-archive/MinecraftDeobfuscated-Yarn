@@ -194,15 +194,15 @@ public interface BlockView extends HeightLimitView {
 			return iterable;
 		} else {
 			Set<BlockPos> set = new ObjectLinkedOpenHashSet<>();
+			Vec3d vec3d2 = vec3d.normalize().multiply(1.0E-7);
+			Vec3d vec3d3 = boundingBox.getMinPos().add(vec3d2);
+			Vec3d vec3d4 = boundingBox.getMinPos().subtract(vec3d).subtract(vec3d2);
+			collectCollisionsBetween(set, vec3d4, vec3d3, boundingBox);
 
 			for (BlockPos blockPos : iterable) {
 				set.add(blockPos.toImmutable());
 			}
 
-			Vec3d vec3d2 = vec3d.normalize().multiply(1.0E-7);
-			Vec3d vec3d3 = boundingBox.getMinPos().add(vec3d2);
-			Vec3d vec3d4 = boundingBox.getMinPos().subtract(vec3d).subtract(vec3d2);
-			collectCollisionsBetween(set, vec3d4, vec3d3, boundingBox);
 			return set;
 		}
 	}

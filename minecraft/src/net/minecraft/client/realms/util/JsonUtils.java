@@ -45,12 +45,7 @@ public class JsonUtils {
 	}
 
 	public static String getStringOr(String key, JsonObject node, String defaultValue) {
-		JsonElement jsonElement = node.get(key);
-		if (jsonElement != null) {
-			return jsonElement.isJsonNull() ? defaultValue : jsonElement.getAsString();
-		} else {
-			return defaultValue;
-		}
+		return getNullableStringOr(key, node, defaultValue);
 	}
 
 	@Nullable

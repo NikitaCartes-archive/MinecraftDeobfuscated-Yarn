@@ -3,6 +3,7 @@ package net.minecraft.client.realms.gui.screen;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -208,7 +209,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		if (this.server == null) {
 			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, Colors.WHITE);
 		} else {
-			String string = this.server.getName();
+			String string = (String)Objects.requireNonNullElse(this.server.getName(), "");
 			int i = this.textRenderer.getWidth(string);
 			int j = this.server.state == RealmsServer.State.CLOSED ? Colors.LIGHT_GRAY : 8388479;
 			int k = this.textRenderer.getWidth(this.title);
@@ -397,7 +398,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	public void saveSettings(String name, String desc) {
-		String string = StringHelper.isBlank(desc) ? null : desc;
+		String string = StringHelper.isBlank(desc) ? "" : desc;
 		RealmsClient realmsClient = RealmsClient.create();
 
 		try {

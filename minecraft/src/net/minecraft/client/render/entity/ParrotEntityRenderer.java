@@ -25,7 +25,7 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 		return getTexture(parrotEntityRenderState.variant);
 	}
 
-	public ParrotEntityRenderState getRenderState() {
+	public ParrotEntityRenderState createRenderState() {
 		return new ParrotEntityRenderState();
 	}
 

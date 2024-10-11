@@ -21,7 +21,7 @@ public class TadpoleEntityRenderer extends MobEntityRenderer<TadpoleEntity, Livi
 		return TEXTURE;
 	}
 
-	public LivingEntityRenderState getRenderState() {
+	public LivingEntityRenderState createRenderState() {
 		return new LivingEntityRenderState();
 	}
 }

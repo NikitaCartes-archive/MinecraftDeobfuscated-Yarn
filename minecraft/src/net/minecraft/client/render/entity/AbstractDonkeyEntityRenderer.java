@@ -23,7 +23,7 @@ public class AbstractDonkeyEntityRenderer<T extends AbstractDonkeyEntity> extend
 		return this.texture;
 	}
 
-	public DonkeyEntityRenderState getRenderState() {
+	public DonkeyEntityRenderState createRenderState() {
 		return new DonkeyEntityRenderState();
 	}
 

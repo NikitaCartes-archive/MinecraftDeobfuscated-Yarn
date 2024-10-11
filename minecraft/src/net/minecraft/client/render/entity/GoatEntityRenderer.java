@@ -20,7 +20,7 @@ public class GoatEntityRenderer extends AgeableMobEntityRenderer<GoatEntity, Goa
 		return TEXTURE;
 	}
 
-	public GoatEntityRenderState getRenderState() {
+	public GoatEntityRenderState createRenderState() {
 		return new GoatEntityRenderState();
 	}
 

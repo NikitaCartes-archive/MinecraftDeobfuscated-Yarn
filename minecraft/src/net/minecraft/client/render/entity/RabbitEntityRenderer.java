@@ -40,7 +40,7 @@ public class RabbitEntityRenderer extends AgeableMobEntityRenderer<RabbitEntity,
 		}
 	}
 
-	public RabbitEntityRenderState getRenderState() {
+	public RabbitEntityRenderState createRenderState() {
 		return new RabbitEntityRenderState();
 	}
 

@@ -20,7 +20,7 @@ public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityRen
 		return TEXTURE;
 	}
 
-	public BatEntityRenderState getRenderState() {
+	public BatEntityRenderState createRenderState() {
 		return new BatEntityRenderState();
 	}
 

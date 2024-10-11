@@ -27,7 +27,7 @@ public class BeeEntityRenderer extends AgeableMobEntityRenderer<BeeEntity, BeeEn
 		}
 	}
 
-	public BeeEntityRenderState getRenderState() {
+	public BeeEntityRenderState createRenderState() {
 		return new BeeEntityRenderState();
 	}
 

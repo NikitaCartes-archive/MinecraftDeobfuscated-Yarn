@@ -111,7 +111,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		buffer.vertex(matrices, f, g, h).color(Colors.BLACK).normal(matrices, i, j, k);
 	}
 
-	public FishingBobberEntityState getRenderState() {
+	public FishingBobberEntityState createRenderState() {
 		return new FishingBobberEntityState();
 	}
 

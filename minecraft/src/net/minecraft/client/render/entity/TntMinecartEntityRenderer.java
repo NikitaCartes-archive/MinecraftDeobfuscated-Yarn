@@ -60,7 +60,7 @@ public class TntMinecartEntityRenderer extends AbstractMinecartEntityRenderer<Tn
 		blockRenderManager.renderBlockAsEntity(state, matrices, vertexConsumers, light, i);
 	}
 
-	public TntMinecartEntityRenderState getRenderState() {
+	public TntMinecartEntityRenderState createRenderState() {
 		return new TntMinecartEntityRenderState();
 	}
 

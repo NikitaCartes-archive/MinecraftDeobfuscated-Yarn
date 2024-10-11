@@ -39,7 +39,7 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 		return villagerEntityRenderState.baby ? f * 0.5F : f;
 	}
 
-	public VillagerEntityRenderState getRenderState() {
+	public VillagerEntityRenderState createRenderState() {
 		return new VillagerEntityRenderState();
 	}
 

@@ -22,7 +22,7 @@ public class SheepEntityRenderer extends AgeableMobEntityRenderer<SheepEntity, S
 		return TEXTURE;
 	}
 
-	public SheepEntityRenderState getRenderState() {
+	public SheepEntityRenderState createRenderState() {
 		return new SheepEntityRenderState();
 	}
 

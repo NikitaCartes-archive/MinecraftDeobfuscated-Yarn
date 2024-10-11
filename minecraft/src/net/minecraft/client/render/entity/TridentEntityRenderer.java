@@ -36,7 +36,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity, Trident
 		super.render(tridentEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public TridentEntityRenderState getRenderState() {
+	public TridentEntityRenderState createRenderState() {
 		return new TridentEntityRenderState();
 	}
 

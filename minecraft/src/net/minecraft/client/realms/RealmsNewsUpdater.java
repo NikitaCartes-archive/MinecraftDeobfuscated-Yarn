@@ -33,15 +33,14 @@ public class RealmsNewsUpdater {
 	}
 
 	private RealmsPersistence.RealmsPersistenceData checkLinkUpdated(RealmsNews news) {
-		RealmsPersistence.RealmsPersistenceData realmsPersistenceData = new RealmsPersistence.RealmsPersistenceData();
-		realmsPersistenceData.newsLink = news.newsLink;
-		RealmsPersistence.RealmsPersistenceData realmsPersistenceData2 = this.persistence.load();
-		boolean bl = realmsPersistenceData.newsLink == null || realmsPersistenceData.newsLink.equals(realmsPersistenceData2.newsLink);
-		if (bl) {
+		RealmsPersistence.RealmsPersistenceData realmsPersistenceData = this.persistence.load();
+		if (news.newsLink != null && !news.newsLink.equals(realmsPersistenceData.newsLink)) {
+			RealmsPersistence.RealmsPersistenceData realmsPersistenceData2 = new RealmsPersistence.RealmsPersistenceData();
+			realmsPersistenceData2.newsLink = news.newsLink;
+			realmsPersistenceData2.hasUnreadNews = true;
+			this.persistence.save(realmsPersistenceData2);
 			return realmsPersistenceData2;
 		} else {
-			realmsPersistenceData.hasUnreadNews = true;
-			this.persistence.save(realmsPersistenceData);
 			return realmsPersistenceData;
 		}
 	}

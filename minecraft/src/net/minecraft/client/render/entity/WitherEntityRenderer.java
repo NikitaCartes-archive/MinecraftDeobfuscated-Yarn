@@ -31,7 +31,7 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 		return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVULNERABLE_TEXTURE : TEXTURE;
 	}
 
-	public WitherEntityRenderState getRenderState() {
+	public WitherEntityRenderState createRenderState() {
 		return new WitherEntityRenderState();
 	}
 

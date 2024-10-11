@@ -151,7 +151,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		return itemFrameEntity.getHeldItemStack().getName();
 	}
 
-	public ItemFrameEntityRenderState getRenderState() {
+	public ItemFrameEntityRenderState createRenderState() {
 		return new ItemFrameEntityRenderState();
 	}
 

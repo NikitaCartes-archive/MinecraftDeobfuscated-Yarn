@@ -157,7 +157,7 @@ public class ChunkHolder extends AbstractChunkHolder {
 		if (chunk == null) {
 			return false;
 		} else {
-			chunk.setNeedsSaving(true);
+			chunk.markNeedsSaving();
 			WorldChunk worldChunk = this.getWorldChunk();
 			if (worldChunk == null) {
 				return false;

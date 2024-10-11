@@ -47,7 +47,7 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		return TEXTURE;
 	}
 
-	public ArmorStandEntityRenderState getRenderState() {
+	public ArmorStandEntityRenderState createRenderState() {
 		return new ArmorStandEntityRenderState();
 	}
 

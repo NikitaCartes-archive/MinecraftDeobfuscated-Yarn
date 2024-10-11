@@ -22,7 +22,7 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 		return TEXTURE;
 	}
 
-	public WitchEntityRenderState getRenderState() {
+	public WitchEntityRenderState createRenderState() {
 		return new WitchEntityRenderState();
 	}
 

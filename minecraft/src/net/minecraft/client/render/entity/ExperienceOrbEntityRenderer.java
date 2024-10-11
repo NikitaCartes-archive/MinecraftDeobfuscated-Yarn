@@ -70,7 +70,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			.normal(matrix, 0.0F, 1.0F, 0.0F);
 	}
 
-	public ExperienceOrbEntityRenderState getRenderState() {
+	public ExperienceOrbEntityRenderState createRenderState() {
 		return new ExperienceOrbEntityRenderState();
 	}
 

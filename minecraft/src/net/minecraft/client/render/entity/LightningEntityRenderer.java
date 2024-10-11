@@ -109,7 +109,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity, Lig
 		buffer.vertex(matrix, x1 + (shiftEast2 ? offset1 : -offset1), (float)(y * 16), z1 + (shiftSouth2 ? offset1 : -offset1)).color(red, green, blue, 0.3F);
 	}
 
-	public LightningEntityRenderState getRenderState() {
+	public LightningEntityRenderState createRenderState() {
 		return new LightningEntityRenderState();
 	}
 

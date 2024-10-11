@@ -127,7 +127,7 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S, ST exten
 			this.blockRenderManager = context.getBlockRenderManager();
 		}
 
-		public BlockDisplayEntityRenderState getRenderState() {
+		public BlockDisplayEntityRenderState createRenderState() {
 			return new BlockDisplayEntityRenderState();
 		}
 
@@ -154,7 +154,7 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S, ST exten
 			this.itemRenderer = context.getItemRenderer();
 		}
 
-		public ItemDisplayEntityRenderState getRenderState() {
+		public ItemDisplayEntityRenderState createRenderState() {
 			return new ItemDisplayEntityRenderState();
 		}
 
@@ -193,7 +193,7 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S, ST exten
 			this.displayTextRenderer = context.getTextRenderer();
 		}
 
-		public TextDisplayEntityRenderState getRenderState() {
+		public TextDisplayEntityRenderState createRenderState() {
 			return new TextDisplayEntityRenderState();
 		}
 

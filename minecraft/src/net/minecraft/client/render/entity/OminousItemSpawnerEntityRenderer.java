@@ -24,7 +24,7 @@ public class OminousItemSpawnerEntityRenderer extends EntityRenderer<OminousItem
 		this.itemRenderer = context.getItemRenderer();
 	}
 
-	public OminousItemSpawnerEntityRenderState getRenderState() {
+	public OminousItemSpawnerEntityRenderState createRenderState() {
 		return new OminousItemSpawnerEntityRenderState();
 	}
 

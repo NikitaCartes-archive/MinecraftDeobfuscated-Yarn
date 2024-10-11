@@ -141,6 +141,6 @@ public class StringHelper {
 	}
 
 	public static boolean isBlank(@Nullable String string) {
-		return string != null && string.length() != 0 ? string.chars().allMatch(StringHelper::isWhitespace) : true;
+		return string != null && !string.isEmpty() ? string.chars().allMatch(StringHelper::isWhitespace) : true;
 	}
 }

@@ -22,7 +22,7 @@ public class ZombieEntityRenderer extends ZombieBaseEntityRenderer<ZombieEntity,
 		);
 	}
 
-	public ZombieEntityRenderState getRenderState() {
+	public ZombieEntityRenderState createRenderState() {
 		return new ZombieEntityRenderState();
 	}
 

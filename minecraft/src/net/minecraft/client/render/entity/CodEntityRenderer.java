@@ -24,7 +24,7 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, LivingEntity
 		return TEXTURE;
 	}
 
-	public LivingEntityRenderState getRenderState() {
+	public LivingEntityRenderState createRenderState() {
 		return new LivingEntityRenderState();
 	}
 

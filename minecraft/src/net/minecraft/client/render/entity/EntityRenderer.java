@@ -34,7 +34,7 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
 	private final TextRenderer textRenderer;
 	protected float shadowRadius;
 	protected float shadowOpacity = 1.0F;
-	private final S state = this.getRenderState();
+	private final S state = this.createRenderState();
 
 	protected EntityRenderer(EntityRendererFactory.Context context) {
 		this.dispatcher = context.getRenderDispatcher();
@@ -239,7 +239,7 @@ public abstract class EntityRenderer<T extends Entity, S extends EntityRenderSta
 		return this.shadowRadius;
 	}
 
-	public abstract S getRenderState();
+	public abstract S createRenderState();
 
 	public final S getAndUpdateRenderState(T entity, float tickDelta) {
 		S entityRenderState = this.state;

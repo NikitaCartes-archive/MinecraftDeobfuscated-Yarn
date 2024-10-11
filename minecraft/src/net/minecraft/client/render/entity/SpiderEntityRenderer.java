@@ -33,7 +33,7 @@ public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRende
 		return TEXTURE;
 	}
 
-	public LivingEntityRenderState getRenderState() {
+	public LivingEntityRenderState createRenderState() {
 		return new LivingEntityRenderState();
 	}
 

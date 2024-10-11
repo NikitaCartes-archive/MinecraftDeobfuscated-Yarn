@@ -25,7 +25,7 @@ public class UndeadHorseEntityRenderer
 		return this.texture;
 	}
 
-	public LivingHorseEntityRenderState getRenderState() {
+	public LivingHorseEntityRenderState createRenderState() {
 		return new LivingHorseEntityRenderState();
 	}
 }

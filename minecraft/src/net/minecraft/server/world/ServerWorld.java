@@ -1071,7 +1071,22 @@ public class ServerWorld extends World implements EntityLookupView, StructureWor
 	@Override
 	public void syncGlobalEvent(int eventId, BlockPos pos, int data) {
 		if (this.getGameRules().getBoolean(GameRules.GLOBAL_SOUND_EVENTS)) {
-			this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(eventId, pos, data, true));
+			this.server.getPlayerManager().getPlayerList().forEach(player -> {
+				Vec3d vec3d2;
+				if (player.getWorld() == this) {
+					Vec3d vec3d = Vec3d.ofCenter(pos);
+					if (player.squaredDistanceTo(vec3d) < (double)MathHelper.square(32)) {
+						vec3d2 = vec3d;
+					} else {
+						Vec3d vec3d3 = vec3d.subtract(player.getPos()).normalize();
+						vec3d2 = player.getPos().add(vec3d3.multiply(32.0));
+					}
+				} else {
+					vec3d2 = player.getPos();
+				}
+
+				player.networkHandler.sendPacket(new WorldEventS2CPacket(eventId, BlockPos.ofFloored(vec3d2), data, true));
+			});
 		} else {
 			this.syncWorldEvent(null, eventId, pos, data);
 		}

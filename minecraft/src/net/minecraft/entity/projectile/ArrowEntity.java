@@ -72,14 +72,14 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	public void tick() {
 		super.tick();
 		if (this.getWorld().isClient) {
-			if (this.inGround) {
+			if (this.isInGround()) {
 				if (this.inGroundTime % 5 == 0) {
 					this.spawnParticles(1);
 				}
 			} else {
 				this.spawnParticles(2);
 			}
-		} else if (this.inGround && this.inGroundTime != 0 && !this.getPotionContents().equals(PotionContentsComponent.DEFAULT) && this.inGroundTime >= 600) {
+		} else if (this.isInGround() && this.inGroundTime != 0 && !this.getPotionContents().equals(PotionContentsComponent.DEFAULT) && this.inGroundTime >= 600) {
 			this.getWorld().sendEntityStatus(this, (byte)0);
 			this.setStack(new ItemStack(Items.ARROW));
 		}

@@ -35,7 +35,7 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 		return TEXTURE;
 	}
 
-	public SalmonEntityRenderState getRenderState() {
+	public SalmonEntityRenderState createRenderState() {
 		return new SalmonEntityRenderState();
 	}
 

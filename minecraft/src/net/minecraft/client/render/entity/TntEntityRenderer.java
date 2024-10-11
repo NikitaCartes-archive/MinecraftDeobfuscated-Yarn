@@ -46,7 +46,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity, TntEntityRender
 		super.render(tntEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public TntEntityRenderState getRenderState() {
+	public TntEntityRenderState createRenderState() {
 		return new TntEntityRenderState();
 	}
 

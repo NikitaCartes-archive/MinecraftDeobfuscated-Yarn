@@ -66,7 +66,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final LongSet EMPTY_STRUCTURE_REFERENCES = new LongOpenHashSet();
 	protected final ShortList[] postProcessingLists;
-	protected volatile boolean needsSaving;
+	private volatile boolean needsSaving;
 	private volatile boolean lightOn;
 	protected final ChunkPos pos;
 	private long inhabitedTime;
@@ -212,7 +212,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 	@Override
 	public void setStructureStart(Structure structure, StructureStart start) {
 		this.structureStarts.put(structure, start);
-		this.needsSaving = true;
+		this.markNeedsSaving();
 	}
 
 	public Map<Structure, StructureStart> getStructureStarts() {
@@ -222,7 +222,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 	public void setStructureStarts(Map<Structure, StructureStart> structureStarts) {
 		this.structureStarts.clear();
 		this.structureStarts.putAll(structureStarts);
-		this.needsSaving = true;
+		this.markNeedsSaving();
 	}
 
 	@Override
@@ -233,7 +233,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 	@Override
 	public void addStructureReference(Structure structure, long reference) {
 		((LongSet)this.structureReferences.computeIfAbsent(structure, type2 -> new LongOpenHashSet())).add(reference);
-		this.needsSaving = true;
+		this.markNeedsSaving();
 	}
 
 	@Override
@@ -245,7 +245,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 	public void setStructureReferences(Map<Structure, LongSet> structureReferences) {
 		this.structureReferences.clear();
 		this.structureReferences.putAll(structureReferences);
-		this.needsSaving = true;
+		this.markNeedsSaving();
 	}
 
 	public boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
@@ -270,8 +270,17 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 		return this.getSection(this.sectionCoordToIndex(sectionCoord)).isEmpty();
 	}
 
-	public void setNeedsSaving(boolean needsSaving) {
-		this.needsSaving = needsSaving;
+	public void markNeedsSaving() {
+		this.needsSaving = true;
+	}
+
+	public boolean tryMarkSaved() {
+		if (this.needsSaving) {
+			this.needsSaving = false;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean needsSaving() {
@@ -392,7 +401,7 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 
 	public void setLightOn(boolean lightOn) {
 		this.lightOn = lightOn;
-		this.setNeedsSaving(true);
+		this.markNeedsSaving();
 	}
 
 	@Override

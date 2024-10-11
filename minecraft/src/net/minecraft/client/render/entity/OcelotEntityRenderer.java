@@ -20,7 +20,7 @@ public class OcelotEntityRenderer extends AgeableMobEntityRenderer<OcelotEntity,
 		return TEXTURE;
 	}
 
-	public FelineEntityRenderState getRenderState() {
+	public FelineEntityRenderState createRenderState() {
 		return new FelineEntityRenderState();
 	}
 

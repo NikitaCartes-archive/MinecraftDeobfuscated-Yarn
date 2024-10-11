@@ -1051,7 +1051,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 			boolean bl = Iterables.any(this.collidedBlocks, state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA));
 			this.queuedCollisionChecks.clear();
 			this.collidedBlocks.clear();
-			if (!bl) {
+			if (!bl && this.isAlive()) {
 				if (this.fireTicks <= 0) {
 					this.setFireTicks(-this.getBurningDuration());
 				}
@@ -5267,9 +5267,7 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 		double e = packet.getY();
 		double f = packet.getZ();
 		this.updateTrackedPosition(d, e, f);
-		this.refreshPositionAfterTeleport(d, e, f);
-		this.setPitch(packet.getPitch());
-		this.setYaw(packet.getYaw());
+		this.refreshPositionAndAngles(d, e, f, packet.getYaw(), packet.getPitch());
 		this.setId(i);
 		this.setUuid(packet.getUuid());
 	}

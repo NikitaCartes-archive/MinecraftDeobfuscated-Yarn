@@ -181,6 +181,7 @@ public class ChunkGenerating {
 			worldChunk.setLoadedToWorld(true);
 			worldChunk.updateAllBlockEntities();
 			worldChunk.addChunkTickSchedulers(serverWorld);
+			worldChunk.setUnsavedListener(context.unsavedListener());
 			return worldChunk;
 		}, context.mainThreadExecutor());
 	}

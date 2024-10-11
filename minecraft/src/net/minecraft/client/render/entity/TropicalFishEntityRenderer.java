@@ -36,7 +36,7 @@ public class TropicalFishEntityRenderer
 		};
 	}
 
-	public TropicalFishEntityRenderState getRenderState() {
+	public TropicalFishEntityRenderState createRenderState() {
 		return new TropicalFishEntityRenderState();
 	}
 

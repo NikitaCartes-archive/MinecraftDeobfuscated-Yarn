@@ -26,7 +26,7 @@ public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, 
 		return TEXTURE;
 	}
 
-	public LivingEntityRenderState getRenderState() {
+	public LivingEntityRenderState createRenderState() {
 		return new LivingEntityRenderState();
 	}
 }

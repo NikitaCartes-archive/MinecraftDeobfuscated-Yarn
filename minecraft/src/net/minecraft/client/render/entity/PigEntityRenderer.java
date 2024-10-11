@@ -29,7 +29,7 @@ public class PigEntityRenderer extends AgeableMobEntityRenderer<PigEntity, PigEn
 		return TEXTURE;
 	}
 
-	public PigEntityRenderState getRenderState() {
+	public PigEntityRenderState createRenderState() {
 		return new PigEntityRenderState();
 	}
 

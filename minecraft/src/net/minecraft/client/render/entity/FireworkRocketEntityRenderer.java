@@ -47,7 +47,7 @@ public class FireworkRocketEntityRenderer extends EntityRenderer<FireworkRocketE
 		super.render(fireworkRocketEntityRenderState, matrixStack, vertexConsumerProvider, i);
 	}
 
-	public FireworkRocketEntityRenderState getRenderState() {
+	public FireworkRocketEntityRenderState createRenderState() {
 		return new FireworkRocketEntityRenderState();
 	}
 

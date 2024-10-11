@@ -177,7 +177,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity,
 		matrices.pop();
 	}
 
-	public EnderDragonEntityRenderState getRenderState() {
+	public EnderDragonEntityRenderState createRenderState() {
 		return new EnderDragonEntityRenderState();
 	}
 

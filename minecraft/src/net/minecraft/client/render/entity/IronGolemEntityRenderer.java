@@ -26,7 +26,7 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 		return TEXTURE;
 	}
 
-	public IronGolemEntityRenderState getRenderState() {
+	public IronGolemEntityRenderState createRenderState() {
 		return new IronGolemEntityRenderState();
 	}
 

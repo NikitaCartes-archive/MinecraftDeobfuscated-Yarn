@@ -134,7 +134,7 @@ public class FillBiomeCommand {
 
 			for (Chunk chunk : list) {
 				chunk.populateBiomes(createBiomeSupplier(mutableInt, chunk, blockBox, biome, filter), world.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
-				chunk.setNeedsSaving(true);
+				chunk.markNeedsSaving();
 			}
 
 			world.getChunkManager().chunkLoadingManager.sendChunkBiomePackets(list);

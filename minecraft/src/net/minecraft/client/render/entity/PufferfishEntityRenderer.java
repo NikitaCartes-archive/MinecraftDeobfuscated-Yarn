@@ -32,7 +32,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 		return TEXTURE;
 	}
 
-	public PufferfishEntityRenderState getRenderState() {
+	public PufferfishEntityRenderState createRenderState() {
 		return new PufferfishEntityRenderState();
 	}
 

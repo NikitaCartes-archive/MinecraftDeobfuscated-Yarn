@@ -34,7 +34,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity, ItemEntityRen
 		this.shadowOpacity = 0.75F;
 	}
 
-	public ItemEntityRenderState getRenderState() {
+	public ItemEntityRenderState createRenderState() {
 		return new ItemEntityRenderState();
 	}
 

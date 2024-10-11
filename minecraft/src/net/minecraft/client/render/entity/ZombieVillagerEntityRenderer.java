@@ -40,7 +40,7 @@ public class ZombieVillagerEntityRenderer
 		return TEXTURE;
 	}
 
-	public ZombieVillagerRenderState getRenderState() {
+	public ZombieVillagerRenderState createRenderState() {
 		return new ZombieVillagerRenderState();
 	}
 

@@ -28,7 +28,7 @@ public class MooshroomEntityRenderer extends AgeableMobEntityRenderer<MooshroomE
 		return (Identifier)TEXTURES.get(mooshroomEntityRenderState.type);
 	}
 
-	public MooshroomEntityRenderState getRenderState() {
+	public MooshroomEntityRenderState createRenderState() {
 		return new MooshroomEntityRenderState();
 	}
 

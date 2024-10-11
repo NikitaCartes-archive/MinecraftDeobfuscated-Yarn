@@ -57,7 +57,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		return getTexture(shulkerEntityRenderState.color);
 	}
 
-	public ShulkerEntityRenderState getRenderState() {
+	public ShulkerEntityRenderState createRenderState() {
 		return new ShulkerEntityRenderState();
 	}
 

@@ -24,7 +24,7 @@ public class DolphinEntityRenderer extends AgeableMobEntityRenderer<DolphinEntit
 		return TEXTURE;
 	}
 
-	public DolphinEntityRenderState getRenderState() {
+	public DolphinEntityRenderState createRenderState() {
 		return new DolphinEntityRenderState();
 	}
 

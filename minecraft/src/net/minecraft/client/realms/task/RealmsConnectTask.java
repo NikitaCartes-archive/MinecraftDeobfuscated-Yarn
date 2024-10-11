@@ -24,7 +24,11 @@ public class RealmsConnectTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.realmsConnection.connect(this.server, ServerAddress.parse(this.address.address));
+		if (this.address.address != null) {
+			this.realmsConnection.connect(this.server, ServerAddress.parse(this.address.address));
+		} else {
+			this.abortTask();
+		}
 	}
 
 	@Override

@@ -36,7 +36,7 @@ public class WindChargeEntityRenderer extends EntityRenderer<AbstractWindChargeE
 	}
 
 	@Override
-	public EntityRenderState getRenderState() {
+	public EntityRenderState createRenderState() {
 		return new EntityRenderState();
 	}
 }

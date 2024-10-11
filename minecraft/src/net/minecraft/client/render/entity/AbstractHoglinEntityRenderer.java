@@ -15,7 +15,7 @@ public abstract class AbstractHoglinEntityRenderer<T extends MobEntity & Hoglin>
 		super(context, new HoglinEntityModel(context.getPart(layer)), new HoglinEntityModel(context.getPart(babyLayer)), scale);
 	}
 
-	public HoglinEntityRenderState getRenderState() {
+	public HoglinEntityRenderState createRenderState() {
 		return new HoglinEntityRenderState();
 	}
 

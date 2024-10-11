@@ -54,7 +54,7 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity, E
 		return g - 1.4F;
 	}
 
-	public EndCrystalEntityRenderState getRenderState() {
+	public EndCrystalEntityRenderState createRenderState() {
 		return new EndCrystalEntityRenderState();
 	}
 

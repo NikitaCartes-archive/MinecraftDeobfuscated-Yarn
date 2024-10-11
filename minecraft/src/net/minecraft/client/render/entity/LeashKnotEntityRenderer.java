@@ -34,7 +34,7 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeashKnotEntity, Ent
 	}
 
 	@Override
-	public EntityRenderState getRenderState() {
+	public EntityRenderState createRenderState() {
 		return new EntityRenderState();
 	}
 }

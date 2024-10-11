@@ -30,7 +30,7 @@ public class AxolotlEntityRenderer extends AgeableMobEntityRenderer<AxolotlEntit
 		return (Identifier)TEXTURES.get(axolotlEntityRenderState.variant);
 	}
 
-	public AxolotlEntityRenderState getRenderState() {
+	public AxolotlEntityRenderState createRenderState() {
 		return new AxolotlEntityRenderState();
 	}
 

@@ -36,7 +36,7 @@ public final class HorseEntityRenderer extends AbstractHorseEntityRenderer<Horse
 		return (Identifier)TEXTURES.get(horseEntityRenderState.color);
 	}
 
-	public HorseEntityRenderState getRenderState() {
+	public HorseEntityRenderState createRenderState() {
 		return new HorseEntityRenderState();
 	}
 

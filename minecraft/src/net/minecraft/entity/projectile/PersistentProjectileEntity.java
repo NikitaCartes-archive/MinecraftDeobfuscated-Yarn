@@ -52,13 +52,14 @@ import net.minecraft.world.World;
 
 public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	private static final double field_30657 = 2.0;
+	public static final int field_54968 = 7;
 	private static final TrackedData<Byte> PROJECTILE_FLAGS = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Boolean> IN_GROUND = DataTracker.registerData(PersistentProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final int CRITICAL_FLAG = 1;
 	private static final int NO_CLIP_FLAG = 2;
 	@Nullable
 	private BlockState inBlockState;
-	protected boolean inGround;
 	protected int inGroundTime;
 	public PersistentProjectileEntity.PickupPermission pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
 	public int shake;
@@ -128,6 +129,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	protected void initDataTracker(DataTracker.Builder builder) {
 		builder.add(PROJECTILE_FLAGS, (byte)0);
 		builder.add(PIERCE_LEVEL, (byte)0);
+		builder.add(IN_GROUND, false);
 	}
 
 	@Override
@@ -146,12 +148,23 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	public void setVelocityClient(double x, double y, double z) {
 		super.setVelocityClient(x, y, z);
 		this.life = 0;
+		if (this.isInGround() && MathHelper.squaredMagnitude(x, y, z) > 0.0) {
+			this.setInGround(false);
+		}
+	}
+
+	@Override
+	public void onTrackedDataSet(TrackedData<?> data) {
+		super.onTrackedDataSet(data);
+		if (!this.firstUpdate && this.shake <= 0 && data.equals(IN_GROUND) && this.isInGround()) {
+			this.shake = 7;
+		}
 	}
 
 	@Override
 	public void tick() {
 		boolean bl = !this.isNoClip();
-		if (bl) {
+		if (bl && !this.isInGround()) {
 			this.applyGravity();
 		}
 
@@ -174,7 +187,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 				for (Box box : voxelShape.getBoundingBoxes()) {
 					if (box.offset(blockPos).contains(vec3d2)) {
-						this.inGround = true;
+						this.setInGround(true);
 						break;
 					}
 				}
@@ -189,11 +202,13 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.extinguish();
 		}
 
-		if (this.inGround && bl) {
-			if (this.inBlockState != blockState && this.shouldFall()) {
-				this.fall();
-			} else if (!this.getWorld().isClient) {
-				this.age();
+		if (this.isInGround() && bl) {
+			if (!this.getWorld().isClient()) {
+				if (this.inBlockState != blockState && this.shouldFall()) {
+					this.fall();
+				} else {
+					this.age();
+				}
 			}
 
 			this.inGroundTime++;
@@ -300,14 +315,22 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	private boolean shouldFall() {
-		return this.inGround && this.getWorld().isSpaceEmpty(new Box(this.getPos(), this.getPos()).expand(0.06));
+		return this.isInGround() && this.getWorld().isSpaceEmpty(new Box(this.getPos(), this.getPos()).expand(0.06));
 	}
 
 	private void fall() {
-		this.inGround = false;
+		this.setInGround(false);
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F)));
 		this.life = 0;
+	}
+
+	protected boolean isInGround() {
+		return this.dataTracker.get(IN_GROUND);
+	}
+
+	protected void setInGround(boolean inGround) {
+		this.dataTracker.set(IN_GROUND, inGround);
 	}
 
 	@Override
@@ -468,7 +491,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		this.setPosition(this.getPos().subtract(vec3d3));
 		this.setVelocity(Vec3d.ZERO);
 		this.playSound(this.getSound(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-		this.inGround = true;
+		this.setInGround(true);
 		this.shake = 7;
 		this.setCritical(false);
 		this.setPierceLevel((byte)0);
@@ -529,7 +552,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 
 		nbt.putByte("shake", (byte)this.shake);
-		nbt.putBoolean("inGround", this.inGround);
+		nbt.putBoolean("inGround", this.isInGround());
 		nbt.putByte("pickup", (byte)this.pickupType.ordinal());
 		nbt.putDouble("damage", this.damage);
 		nbt.putBoolean("crit", this.isCritical());
@@ -550,7 +573,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 
 		this.shake = nbt.getByte("shake") & 255;
-		this.inGround = nbt.getBoolean("inGround");
+		this.setInGround(nbt.getBoolean("inGround"));
 		if (nbt.contains("damage", NbtElement.NUMBER_TYPE)) {
 			this.damage = nbt.getDouble("damage");
 		}
@@ -588,7 +611,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
-		if (!this.getWorld().isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
+		if (!this.getWorld().isClient && (this.isInGround() || this.isNoClip()) && this.shake <= 0) {
 			if (this.tryPickup(player)) {
 				player.sendPickup(this, 1);
 				this.discard();
@@ -692,7 +715,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public boolean canHit() {
-		return super.canHit() && !this.inGround;
+		return super.canHit() && !this.isInGround();
 	}
 
 	@Override

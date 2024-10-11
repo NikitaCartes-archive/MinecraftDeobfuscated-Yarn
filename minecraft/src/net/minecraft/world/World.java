@@ -865,7 +865,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public void markDirty(BlockPos pos) {
 		if (this.isChunkLoaded(pos)) {
-			this.getWorldChunk(pos).setNeedsSaving(true);
+			this.getWorldChunk(pos).markNeedsSaving();
 		}
 	}
 
