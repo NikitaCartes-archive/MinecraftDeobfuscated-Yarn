@@ -7,7 +7,6 @@ import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRendere
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.VillagerResemblingModel;
 import net.minecraft.client.render.entity.state.VillagerEntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.Identifier;
 
@@ -23,11 +22,6 @@ public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTr
 
 	public Identifier getTexture(VillagerEntityRenderState villagerEntityRenderState) {
 		return TEXTURE;
-	}
-
-	protected void scale(VillagerEntityRenderState villagerEntityRenderState, MatrixStack matrixStack) {
-		float f = 0.9375F;
-		matrixStack.scale(0.9375F, 0.9375F, 0.9375F);
 	}
 
 	public VillagerEntityRenderState createRenderState() {

@@ -1640,8 +1640,8 @@ public class ClientPlayNetworkHandler extends ClientCommonNetworkHandler impleme
 	private void refreshRecipeBook(ClientRecipeBook recipeBook) {
 		recipeBook.refresh();
 		this.searchManager.addRecipeOutputReloader(recipeBook, this.world);
-		if (this.client.currentScreen instanceof RecipeBookProvider) {
-			((RecipeBookProvider)this.client.currentScreen).refreshRecipeBook();
+		if (this.client.currentScreen instanceof RecipeBookProvider recipeBookProvider) {
+			recipeBookProvider.refreshRecipeBook();
 		}
 	}
 

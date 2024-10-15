@@ -160,8 +160,9 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 		}
 
 		this.currentTab.setToggled(true);
-		this.refreshResults(false, bl);
+		this.populateAllRecipes();
 		this.refreshTabButtons(bl);
+		this.refreshResults(false, bl);
 	}
 
 	private int getTop() {
@@ -228,11 +229,18 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 		}
 	}
 
+	private void populateAllRecipes() {
+		for (RecipeBookWidget.Tab tab : this.tabs) {
+			for (RecipeResultCollection recipeResultCollection : this.recipeBook.getResultsForCategory(tab.category())) {
+				this.populateRecipes(recipeResultCollection, this.recipeFinder);
+			}
+		}
+	}
+
 	protected abstract void populateRecipes(RecipeResultCollection recipeResultCollection, RecipeFinder recipeFinder);
 
 	private void refreshResults(boolean resetCurrentPage, boolean filteringCraftable) {
 		List<RecipeResultCollection> list = this.recipeBook.getResultsForCategory(this.currentTab.getCategory());
-		list.forEach(collection -> this.populateRecipes(collection, this.recipeFinder));
 		List<RecipeResultCollection> list2 = Lists.<RecipeResultCollection>newArrayList(list);
 		list2.removeIf(resultCollection -> !resultCollection.hasDisplayableRecipes());
 		String string = this.searchField.getText();
@@ -512,6 +520,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 	}
 
 	public void refresh() {
+		this.populateAllRecipes();
 		this.refreshTabButtons(this.isFilteringCraftable());
 		if (this.isOpen()) {
 			this.refreshResults(false, this.isFilteringCraftable());

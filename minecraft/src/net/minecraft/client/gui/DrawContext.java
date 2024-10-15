@@ -233,17 +233,7 @@ public class DrawContext {
 		return text == null
 			? 0
 			: textRenderer.draw(
-				text,
-				(float)x,
-				(float)y,
-				color,
-				shadow,
-				this.matrices.peek().getPositionMatrix(),
-				this.vertexConsumers,
-				TextRenderer.TextLayerType.NORMAL,
-				0,
-				15728880,
-				textRenderer.isRightToLeft()
+				text, (float)x, (float)y, color, shadow, this.matrices.peek().getPositionMatrix(), this.vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880
 			);
 	}
 
@@ -297,31 +287,44 @@ public class DrawContext {
 		Sprite sprite2 = this.guiAtlasManager.getSprite(sprite);
 		Scaling scaling = this.guiAtlasManager.getScaling(sprite2);
 		if (scaling instanceof Scaling.Stretch) {
-			this.drawSprite(renderLayers, sprite2, x, y, width, height, color);
+			this.drawSpriteStretched(renderLayers, sprite2, x, y, width, height, color);
 		} else if (scaling instanceof Scaling.Tile tile) {
 			this.drawSpriteTiled(renderLayers, sprite2, x, y, width, height, 0, 0, tile.width(), tile.height(), tile.width(), tile.height(), color);
 		} else if (scaling instanceof Scaling.NineSlice nineSlice) {
-			this.drawSprite(renderLayers, sprite2, nineSlice, x, y, width, height, color);
+			this.drawSpriteNineSliced(renderLayers, sprite2, nineSlice, x, y, width, height, color);
 		}
 	}
 
+	/**
+	 * Draws a textured rectangle from a region in a gui texture.
+	 * 
+	 * <p>The width and height of the region are the same as
+	 * the dimensions of the rectangle.
+	 * 
+	 * @param textureWidth the width of the entire texture
+	 * @param u the x starting position of the region in the texture
+	 * @param textureHeight the height of the entire texture
+	 * @param v the y starting position of the region in the texture
+	 * @param width the width of the drawn rectangle and of the region in the texture
+	 * @param height the height of the drawn rectangle and of the region in the texture
+	 */
 	public void drawGuiTexture(
 		Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height
 	) {
 		Sprite sprite2 = this.guiAtlasManager.getSprite(sprite);
 		Scaling scaling = this.guiAtlasManager.getScaling(sprite2);
 		if (scaling instanceof Scaling.Stretch) {
-			this.drawSprite(renderLayers, sprite2, textureWidth, textureHeight, u, v, x, y, width, height, -1);
+			this.drawSpriteRegion(renderLayers, sprite2, textureWidth, textureHeight, u, v, x, y, width, height, -1);
 		} else {
-			this.drawSprite(renderLayers, sprite2, x, y, width, height);
+			this.drawSpriteStretched(renderLayers, sprite2, x, y, width, height);
 		}
 	}
 
-	public void drawSprite(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height) {
-		this.drawSprite(renderLayers, sprite, x, y, width, height, -1);
+	public void drawSpriteStretched(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height) {
+		this.drawSpriteStretched(renderLayers, sprite, x, y, width, height, -1);
 	}
 
-	public void drawSprite(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height, int color) {
+	public void drawSpriteStretched(Function<Identifier, RenderLayer> renderLayers, Sprite sprite, int x, int y, int width, int height, int color) {
 		if (width != 0 && height != 0) {
 			this.drawTexturedQuad(
 				renderLayers, sprite.getAtlasId(), x, x + width, y, y + height, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(), color
@@ -329,7 +332,7 @@ public class DrawContext {
 		}
 	}
 
-	private void drawSprite(
+	private void drawSpriteRegion(
 		Function<Identifier, RenderLayer> renderLayers,
 		Sprite sprite,
 		int textureWidth,
@@ -359,7 +362,7 @@ public class DrawContext {
 		}
 	}
 
-	private void drawSprite(
+	private void drawSpriteNineSliced(
 		Function<Identifier, RenderLayer> renderLayers, Sprite sprite, Scaling.NineSlice nineSlice, int x, int y, int width, int height, int color
 	) {
 		Scaling.NineSlice.Border border = nineSlice.border();
@@ -368,9 +371,9 @@ public class DrawContext {
 		int k = Math.min(border.top(), height / 2);
 		int l = Math.min(border.bottom(), height / 2);
 		if (width == nineSlice.width() && height == nineSlice.height()) {
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, height, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, height, color);
 		} else if (height == nineSlice.height()) {
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, height, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, height, color);
 			this.drawInnerSprite(
 				renderLayers,
 				nineSlice,
@@ -387,9 +390,9 @@ public class DrawContext {
 				nineSlice.height(),
 				color
 			);
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, height, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, height, color);
 		} else if (width == nineSlice.width()) {
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, k, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, width, k, color);
 			this.drawInnerSprite(
 				renderLayers,
 				nineSlice,
@@ -406,14 +409,14 @@ public class DrawContext {
 				nineSlice.height(),
 				color
 			);
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, width, l, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, width, l, color);
 		} else {
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, k, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, i, k, color);
 			this.drawInnerSprite(
 				renderLayers, nineSlice, sprite, x + i, y, width - j - i, k, i, 0, nineSlice.width() - j - i, k, nineSlice.width(), nineSlice.height(), color
 			);
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, k, color);
-			this.drawSprite(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, i, l, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, j, k, color);
+			this.drawSpriteRegion(renderLayers, sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, i, l, color);
 			this.drawInnerSprite(
 				renderLayers,
 				nineSlice,
@@ -430,7 +433,7 @@ public class DrawContext {
 				nineSlice.height(),
 				color
 			);
-			this.drawSprite(
+			this.drawSpriteRegion(
 				renderLayers, sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, nineSlice.height() - l, x + width - j, y + height - l, j, l, color
 			);
 			this.drawInnerSprite(
@@ -530,7 +533,7 @@ public class DrawContext {
 
 					for (int k = 0; k < height; k += tileHeight) {
 						int l = Math.min(tileHeight, height - k);
-						this.drawSprite(renderLayers, sprite, textureWidth, textureHeight, u, v, x + i, y + k, j, l, color);
+						this.drawSpriteRegion(renderLayers, sprite, textureWidth, textureHeight, u, v, x + i, y + k, j, l, color);
 					}
 				}
 			} else {
@@ -829,8 +832,10 @@ public class DrawContext {
 	private void drawStackCount(TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String stackCountText) {
 		if (stack.getCount() != 1 || stackCountText != null) {
 			String string = stackCountText == null ? String.valueOf(stack.getCount()) : stackCountText;
+			this.matrices.push();
 			this.matrices.translate(0.0F, 0.0F, 200.0F);
 			this.drawText(textRenderer, string, x + 19 - 2 - textRenderer.getWidth(string), y + 6 + 3, Colors.WHITE, true);
+			this.matrices.pop();
 		}
 	}
 

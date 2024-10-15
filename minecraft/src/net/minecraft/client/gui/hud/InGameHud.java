@@ -488,7 +488,7 @@ public class InGameHud {
 					float g = f;
 					list.add((Runnable)() -> {
 						int kx = ColorHelper.getWhite(g);
-						context.drawSprite(RenderLayer::getGuiTextured, sprite, n + 3, o + 3, 18, 18, kx);
+						context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, n + 3, o + 3, 18, 18, kx);
 					});
 				}
 			}
@@ -1122,7 +1122,7 @@ public class InGameHud {
 
 		int i = ColorHelper.getWhite(nauseaStrength);
 		Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
-		context.drawSprite(RenderLayer::getGuiTexturedOverlay, sprite, 0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight(), i);
+		context.drawSpriteStretched(RenderLayer::getGuiTexturedOverlay, sprite, 0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight(), i);
 	}
 
 	private void renderNauseaOverlay(DrawContext context, float nauseaStrength) {

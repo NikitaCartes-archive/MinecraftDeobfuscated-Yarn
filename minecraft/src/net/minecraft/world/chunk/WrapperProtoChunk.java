@@ -178,8 +178,13 @@ public class WrapperProtoChunk extends ProtoChunk {
 	}
 
 	@Override
+	public boolean isSerializable() {
+		return false;
+	}
+
+	@Override
 	public boolean tryMarkSaved() {
-		return this.wrapped.tryMarkSaved();
+		return false;
 	}
 
 	@Override

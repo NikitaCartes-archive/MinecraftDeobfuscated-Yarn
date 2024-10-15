@@ -70,13 +70,14 @@ public class MapRenderer {
 						decoration.name,
 						0.0F,
 						0.0F,
-						Colors.WHITE,
+						-1,
 						false,
 						matrices.peek().getPositionMatrix(),
 						vertexConsumers,
-						TextRenderer.TextLayerType.SEE_THROUGH,
+						TextRenderer.TextLayerType.NORMAL,
 						Integer.MIN_VALUE,
-						light
+						light,
+						false
 					);
 					matrices.pop();
 				}

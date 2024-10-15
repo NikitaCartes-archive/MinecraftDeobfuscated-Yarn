@@ -54,7 +54,7 @@ public class CyclingSlotIcon {
 
 	private void drawIcon(Slot slot, Identifier texture, float alpha, DrawContext context, int x, int y) {
 		Sprite sprite = (Sprite)MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(texture);
-		context.drawSprite(RenderLayer::getGuiTextured, sprite, x + slot.x, y + slot.y, 16, 16, ColorHelper.getWhite(alpha));
+		context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, x + slot.x, y + slot.y, 16, 16, ColorHelper.getWhite(alpha));
 	}
 
 	private float computeAlpha(float delta) {

@@ -164,11 +164,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Override
 	public void tick() {
 		boolean bl = !this.isNoClip();
-		if (bl && !this.isInGround()) {
-			this.applyGravity();
-		}
-
-		this.applyDrag();
 		Vec3d vec3d = this.getVelocity();
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
 			double d = vec3d.horizontalLength();
@@ -256,6 +251,11 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			} else {
 				this.setPosition(vec3d3.add(vec3d));
 				this.tickBlockCollision();
+			}
+
+			this.applyDrag();
+			if (bl) {
+				this.applyGravity();
 			}
 
 			super.tick();

@@ -62,7 +62,6 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gl.GlTimer;
 import net.minecraft.client.gl.ShaderLoader;
-import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -2755,7 +2754,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public Text takePanorama(File directory, int width, int height) {
 		int i = this.window.getFramebufferWidth();
 		int j = this.window.getFramebufferHeight();
-		Framebuffer framebuffer = new SimpleFramebuffer(width, height, true);
+		Framebuffer framebuffer = this.getFramebuffer();
 		float f = this.player.getPitch();
 		float g = this.player.getYaw();
 		float h = this.player.prevPitch;
@@ -2767,6 +2766,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.gameRenderer.setRenderingPanorama(true);
 			this.window.setFramebufferWidth(width);
 			this.window.setFramebufferHeight(height);
+			framebuffer.resize(width, height);
 
 			for (int l = 0; l < 6; l++) {
 				switch (l) {
@@ -2825,7 +2825,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.gameRenderer.setBlockOutlineEnabled(true);
 			this.window.setFramebufferWidth(i);
 			this.window.setFramebufferHeight(j);
-			framebuffer.delete();
+			framebuffer.resize(i, j);
 			this.gameRenderer.setRenderingPanorama(false);
 			this.getFramebuffer().beginWrite(true);
 		}

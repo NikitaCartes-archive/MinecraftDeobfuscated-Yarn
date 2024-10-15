@@ -360,6 +360,10 @@ public abstract class Chunk implements BiomeAccess.Storage, LightSourceView, Str
 
 	public abstract BasicTickScheduler<Fluid> getFluidTickScheduler();
 
+	public boolean isSerializable() {
+		return true;
+	}
+
 	public abstract Chunk.TickSchedulers getTickSchedulers(long time);
 
 	public UpgradeData getUpgradeData() {

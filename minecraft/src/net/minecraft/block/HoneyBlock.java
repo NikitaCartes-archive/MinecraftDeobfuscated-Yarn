@@ -20,9 +20,9 @@ import net.minecraft.world.World;
 
 public class HoneyBlock extends TranslucentBlock {
 	public static final MapCodec<HoneyBlock> CODEC = createCodec(HoneyBlock::new);
-	private static final double field_31101 = 0.2058;
-	private static final double field_31102 = 0.1568;
-	private static final double field_31103 = 0.1274;
+	private static final double field_31101 = 0.13;
+	private static final double field_31102 = 0.08;
+	private static final double field_31103 = 0.05;
 	private static final int TICKS_PER_SECOND = 20;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 
@@ -67,12 +67,20 @@ public class HoneyBlock extends TranslucentBlock {
 		super.onEntityCollision(state, world, pos, entity);
 	}
 
+	private static double method_65067(double d) {
+		return d / 0.98F + 0.08;
+	}
+
+	private static double method_65068(double d) {
+		return (d - 0.08) * 0.98F;
+	}
+
 	private boolean isSliding(BlockPos pos, Entity entity) {
 		if (entity.isOnGround()) {
 			return false;
 		} else if (entity.getY() > (double)pos.getY() + 0.9375 - 1.0E-7) {
 			return false;
-		} else if (entity.getVelocity().y >= -0.1568) {
+		} else if (method_65067(entity.getVelocity().y) >= -0.08) {
 			return false;
 		} else {
 			double d = Math.abs((double)pos.getX() + 0.5 - entity.getX());
@@ -90,12 +98,11 @@ public class HoneyBlock extends TranslucentBlock {
 
 	private void updateSlidingVelocity(Entity entity) {
 		Vec3d vec3d = entity.getVelocity();
-		if (entity.getVelocity().y < -0.2058) {
-			double d = entity.getVelocity().y / 0.98F + 0.08;
-			double e = -0.1274 / d;
-			entity.setVelocity(new Vec3d(vec3d.x * e, -0.1274, vec3d.z * e));
+		if (method_65067(entity.getVelocity().y) < -0.13) {
+			double d = -0.05 / method_65067(entity.getVelocity().y);
+			entity.setVelocity(new Vec3d(vec3d.x * d, method_65068(-0.05), vec3d.z * d));
 		} else {
-			entity.setVelocity(new Vec3d(vec3d.x, -0.1274, vec3d.z));
+			entity.setVelocity(new Vec3d(vec3d.x, method_65068(-0.05), vec3d.z));
 		}
 
 		entity.onLanding();

@@ -271,7 +271,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		protected void renderExtra(DrawContext context) {
-			context.drawSprite(RenderLayer::getGuiTextured, this.sprite, this.getX() + 2, this.getY() + 2, 18, 18);
+			context.drawSpriteStretched(RenderLayer::getGuiTextured, this.sprite, this.getX() + 2, this.getY() + 2, 18, 18);
 		}
 
 		@Override

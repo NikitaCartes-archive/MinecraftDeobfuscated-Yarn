@@ -86,26 +86,11 @@ public class TextRenderer {
 		int backgroundColor,
 		int light
 	) {
-		return this.draw(text, x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light, this.isRightToLeft());
-	}
+		if (this.isRightToLeft()) {
+			text = this.mirror(text);
+		}
 
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int draw(
-		String text,
-		float x,
-		float y,
-		int color,
-		boolean shadow,
-		Matrix4f matrix,
-		VertexConsumerProvider vertexConsumers,
-		TextRenderer.TextLayerType layerType,
-		int backgroundColor,
-		int light,
-		boolean rightToLeft
-	) {
-		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light, rightToLeft);
+		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light, true);
 	}
 
 	/**
@@ -123,7 +108,26 @@ public class TextRenderer {
 		int backgroundColor,
 		int light
 	) {
-		return this.draw(text.asOrderedText(), x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light);
+		return this.draw(text, x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light, true);
+	}
+
+	/**
+	 * @param color the text color in the 0xAARRGGBB format
+	 */
+	public int draw(
+		Text text,
+		float x,
+		float y,
+		int color,
+		boolean shadow,
+		Matrix4f matrix,
+		VertexConsumerProvider vertexConsumers,
+		TextRenderer.TextLayerType layerType,
+		int backgroundColor,
+		int light,
+		boolean swapZIndex
+	) {
+		return this.drawInternal(text.asOrderedText(), x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light, swapZIndex);
 	}
 
 	/**
@@ -141,7 +145,7 @@ public class TextRenderer {
 		int backgroundColor,
 		int light
 	) {
-		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light);
+		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, layerType, backgroundColor, light, true);
 	}
 
 	/**
@@ -198,18 +202,14 @@ public class TextRenderer {
 		int light,
 		boolean mirror
 	) {
-		if (mirror) {
-			text = this.mirror(text);
-		}
-
 		color = tweakTransparency(color);
 		Matrix4f matrix4f = new Matrix4f(matrix);
 		if (shadow) {
-			this.drawLayer(text, x, y, color, true, matrix, vertexConsumers, layerType, backgroundColor, light);
+			this.drawLayer(text, x, y, color, true, matrix, vertexConsumers, layerType, backgroundColor, light, mirror);
 			matrix4f.translate(FORWARD_SHIFT);
 		}
 
-		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumers, layerType, backgroundColor, light);
+		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumers, layerType, backgroundColor, light, mirror);
 		return (int)x + (shadow ? 1 : 0);
 	}
 
@@ -223,16 +223,17 @@ public class TextRenderer {
 		VertexConsumerProvider vertexConsumerProvider,
 		TextRenderer.TextLayerType layerType,
 		int backgroundColor,
-		int light
+		int light,
+		boolean swapZIndex
 	) {
 		color = tweakTransparency(color);
 		Matrix4f matrix4f = new Matrix4f(matrix);
 		if (shadow) {
-			this.drawLayer(text, x, y, color, true, matrix, vertexConsumerProvider, layerType, backgroundColor, light);
+			this.drawLayer(text, x, y, color, true, matrix, vertexConsumerProvider, layerType, backgroundColor, light, swapZIndex);
 			matrix4f.translate(FORWARD_SHIFT);
 		}
 
-		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, layerType, backgroundColor, light);
+		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, layerType, backgroundColor, light, swapZIndex);
 		return (int)x + (shadow ? 1 : 0);
 	}
 
@@ -246,9 +247,10 @@ public class TextRenderer {
 		VertexConsumerProvider vertexConsumerProvider,
 		TextRenderer.TextLayerType layerType,
 		int backgroundColor,
-		int light
+		int light,
+		boolean swapZIndex
 	) {
-		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light, swapZIndex);
 		TextVisitFactory.visitFormatted(text, Style.EMPTY, drawer);
 		return drawer.drawLayer(x);
 	}
@@ -263,9 +265,10 @@ public class TextRenderer {
 		VertexConsumerProvider vertexConsumerProvider,
 		TextRenderer.TextLayerType layerType,
 		int backgroundColor,
-		int light
+		int light,
+		boolean swapZIndex
 	) {
-		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(this, vertexConsumerProvider, x, y, color, backgroundColor, shadow, matrix, layerType, light, swapZIndex);
 		text.accept(drawer);
 		return drawer.drawLayer(x);
 	}
@@ -374,6 +377,7 @@ public class TextRenderer {
 		private final Matrix4f matrix;
 		private final TextRenderer.TextLayerType layerType;
 		private final int light;
+		private final boolean swapZIndex;
 		float x;
 		float y;
 		private final List<BakedGlyph.DrawnGlyph> glyphs;
@@ -399,7 +403,7 @@ public class TextRenderer {
 			final TextRenderer.TextLayerType layerType,
 			final int light
 		) {
-			this(textRenderer, vertexConsumers, x, y, color, 0, shadow, matrix, layerType, light);
+			this(textRenderer, vertexConsumers, x, y, color, 0, shadow, matrix, layerType, light, true);
 		}
 
 		public Drawer(
@@ -412,7 +416,8 @@ public class TextRenderer {
 			final boolean shadow,
 			final Matrix4f matrix,
 			final TextRenderer.TextLayerType layerType,
-			final int light
+			final int light,
+			final boolean swapZIndex
 		) {
 			this.field_24240 = textRenderer;
 			this.glyphs = new ArrayList();
@@ -426,6 +431,7 @@ public class TextRenderer {
 			this.matrix = matrix;
 			this.layerType = layerType;
 			this.light = light;
+			this.swapZIndex = swapZIndex;
 		}
 
 		@Override
@@ -448,11 +454,11 @@ public class TextRenderer {
 
 			float h = this.shadow ? 1.0F : 0.0F;
 			if (style.isStrikethrough()) {
-				this.addRectangle(new BakedGlyph.Rectangle(g + h, this.y + h + 4.5F, this.x + h + f, this.y + h + 4.5F - 1.0F, 0.01F, k));
+				this.addRectangle(new BakedGlyph.Rectangle(g + h, this.y + h + 4.5F, this.x + h + f, this.y + h + 4.5F - 1.0F, this.getForegroundZIndex(), k));
 			}
 
 			if (style.isUnderlined()) {
-				this.addRectangle(new BakedGlyph.Rectangle(g + h, this.y + h + 9.0F, this.x + h + f, this.y + h + 9.0F - 1.0F, 0.01F, k));
+				this.addRectangle(new BakedGlyph.Rectangle(g + h, this.y + h + 9.0F, this.x + h + f, this.y + h + 9.0F - 1.0F, this.getForegroundZIndex(), k));
 			}
 
 			this.x += f;
@@ -462,7 +468,7 @@ public class TextRenderer {
 		float drawLayer(float x) {
 			BakedGlyph bakedGlyph = null;
 			if (this.backgroundColor != 0) {
-				BakedGlyph.Rectangle rectangle = new BakedGlyph.Rectangle(x - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, -0.01F, this.backgroundColor);
+				BakedGlyph.Rectangle rectangle = new BakedGlyph.Rectangle(x - 1.0F, this.y + 9.0F, this.x, this.y - 1.0F, this.getBackgroundZIndex(), this.backgroundColor);
 				bakedGlyph = this.field_24240.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleBakedGlyph();
 				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(bakedGlyph.getLayer(this.layerType));
 				bakedGlyph.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);
@@ -490,6 +496,14 @@ public class TextRenderer {
 				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(bakedGlyph.getLayer(this.layerType));
 				bakedGlyph.draw(drawnGlyph, this.matrix, vertexConsumer, this.light);
 			}
+		}
+
+		private float getForegroundZIndex() {
+			return this.swapZIndex ? 0.01F : -0.01F;
+		}
+
+		private float getBackgroundZIndex() {
+			return this.swapZIndex ? -0.01F : 0.01F;
 		}
 	}
 

@@ -360,78 +360,82 @@ public record SerializedChunk(
 	}
 
 	public static SerializedChunk fromChunk(ServerWorld world, Chunk chunk) {
-		ChunkPos chunkPos = chunk.getPos();
-		List<SerializedChunk.SectionData> list = new ArrayList();
-		ChunkSection[] chunkSections = chunk.getSectionArray();
-		LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
+		if (!chunk.isSerializable()) {
+			throw new IllegalArgumentException("Chunk can't be serialized: " + chunk);
+		} else {
+			ChunkPos chunkPos = chunk.getPos();
+			List<SerializedChunk.SectionData> list = new ArrayList();
+			ChunkSection[] chunkSections = chunk.getSectionArray();
+			LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 
-		for (int i = lightingProvider.getBottomY(); i < lightingProvider.getTopY(); i++) {
-			int j = chunk.sectionCoordToIndex(i);
-			boolean bl = j >= 0 && j < chunkSections.length;
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, i));
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(chunkPos, i));
-			ChunkNibbleArray chunkNibbleArray3 = chunkNibbleArray != null && !chunkNibbleArray.isUninitialized() ? chunkNibbleArray.copy() : null;
-			ChunkNibbleArray chunkNibbleArray4 = chunkNibbleArray2 != null && !chunkNibbleArray2.isUninitialized() ? chunkNibbleArray2.copy() : null;
-			if (bl || chunkNibbleArray3 != null || chunkNibbleArray4 != null) {
-				ChunkSection chunkSection = bl ? chunkSections[j].copy() : null;
-				list.add(new SerializedChunk.SectionData(i, chunkSection, chunkNibbleArray3, chunkNibbleArray4));
+			for (int i = lightingProvider.getBottomY(); i < lightingProvider.getTopY(); i++) {
+				int j = chunk.sectionCoordToIndex(i);
+				boolean bl = j >= 0 && j < chunkSections.length;
+				ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, i));
+				ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(chunkPos, i));
+				ChunkNibbleArray chunkNibbleArray3 = chunkNibbleArray != null && !chunkNibbleArray.isUninitialized() ? chunkNibbleArray.copy() : null;
+				ChunkNibbleArray chunkNibbleArray4 = chunkNibbleArray2 != null && !chunkNibbleArray2.isUninitialized() ? chunkNibbleArray2.copy() : null;
+				if (bl || chunkNibbleArray3 != null || chunkNibbleArray4 != null) {
+					ChunkSection chunkSection = bl ? chunkSections[j].copy() : null;
+					list.add(new SerializedChunk.SectionData(i, chunkSection, chunkNibbleArray3, chunkNibbleArray4));
+				}
 			}
-		}
 
-		List<NbtCompound> list2 = new ArrayList(chunk.getBlockEntityPositions().size());
+			List<NbtCompound> list2 = new ArrayList(chunk.getBlockEntityPositions().size());
 
-		for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
-			NbtCompound nbtCompound = chunk.getPackedBlockEntityNbt(blockPos, world.getRegistryManager());
-			if (nbtCompound != null) {
-				list2.add(nbtCompound);
+			for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
+				NbtCompound nbtCompound = chunk.getPackedBlockEntityNbt(blockPos, world.getRegistryManager());
+				if (nbtCompound != null) {
+					list2.add(nbtCompound);
+				}
 			}
-		}
 
-		List<NbtCompound> list3 = new ArrayList();
-		long[] ls = null;
-		if (chunk.getStatus().getChunkType() == ChunkType.PROTOCHUNK) {
-			ProtoChunk protoChunk = (ProtoChunk)chunk;
-			list3.addAll(protoChunk.getEntities());
-			CarvingMask carvingMask = protoChunk.getCarvingMask();
-			if (carvingMask != null) {
-				ls = carvingMask.getMask();
+			List<NbtCompound> list3 = new ArrayList();
+			long[] ls = null;
+			if (chunk.getStatus().getChunkType() == ChunkType.PROTOCHUNK) {
+				ProtoChunk protoChunk = (ProtoChunk)chunk;
+				list3.addAll(protoChunk.getEntities());
+				CarvingMask carvingMask = protoChunk.getCarvingMask();
+				if (carvingMask != null) {
+					ls = carvingMask.getMask();
+				}
 			}
-		}
 
-		Map<Heightmap.Type, long[]> map = new EnumMap(Heightmap.Type.class);
+			Map<Heightmap.Type, long[]> map = new EnumMap(Heightmap.Type.class);
 
-		for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
-			if (chunk.getStatus().getHeightmapTypes().contains(entry.getKey())) {
-				long[] ms = ((Heightmap)entry.getValue()).asLongArray();
-				map.put((Heightmap.Type)entry.getKey(), (long[])ms.clone());
+			for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
+				if (chunk.getStatus().getHeightmapTypes().contains(entry.getKey())) {
+					long[] ms = ((Heightmap)entry.getValue()).asLongArray();
+					map.put((Heightmap.Type)entry.getKey(), (long[])ms.clone());
+				}
 			}
-		}
 
-		Chunk.TickSchedulers tickSchedulers = chunk.getTickSchedulers(world.getTime());
-		ShortList[] shortLists = (ShortList[])Arrays.stream(chunk.getPostProcessingLists())
-			.map(postProcessings -> postProcessings != null ? new ShortArrayList(postProcessings) : null)
-			.toArray(ShortList[]::new);
-		NbtCompound nbtCompound2 = writeStructures(StructureContext.from(world), chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences());
-		return new SerializedChunk(
-			world.getRegistryManager().getOrThrow(RegistryKeys.BIOME),
-			chunkPos,
-			chunk.getBottomSectionCoord(),
-			world.getTime(),
-			chunk.getInhabitedTime(),
-			chunk.getStatus(),
-			Nullables.map(chunk.getBlendingData(), BlendingData::toSerialized),
-			chunk.getBelowZeroRetrogen(),
-			chunk.getUpgradeData().copy(),
-			ls,
-			map,
-			tickSchedulers,
-			shortLists,
-			chunk.isLightOn(),
-			list,
-			list3,
-			list2,
-			nbtCompound2
-		);
+			Chunk.TickSchedulers tickSchedulers = chunk.getTickSchedulers(world.getTime());
+			ShortList[] shortLists = (ShortList[])Arrays.stream(chunk.getPostProcessingLists())
+				.map(postProcessings -> postProcessings != null ? new ShortArrayList(postProcessings) : null)
+				.toArray(ShortList[]::new);
+			NbtCompound nbtCompound2 = writeStructures(StructureContext.from(world), chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences());
+			return new SerializedChunk(
+				world.getRegistryManager().getOrThrow(RegistryKeys.BIOME),
+				chunkPos,
+				chunk.getBottomSectionCoord(),
+				world.getTime(),
+				chunk.getInhabitedTime(),
+				chunk.getStatus(),
+				Nullables.map(chunk.getBlendingData(), BlendingData::toSerialized),
+				chunk.getBelowZeroRetrogen(),
+				chunk.getUpgradeData().copy(),
+				ls,
+				map,
+				tickSchedulers,
+				shortLists,
+				chunk.isLightOn(),
+				list,
+				list3,
+				list2,
+				nbtCompound2
+			);
+		}
 	}
 
 	public NbtCompound serialize() {
