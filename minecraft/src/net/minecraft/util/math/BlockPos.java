@@ -56,15 +56,15 @@ public class BlockPos extends Vec3i {
 	 * The block position which x, y, and z values are all zero.
 	 */
 	public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
-	private static final int SIZE_BITS_X = 1 + MathHelper.floorLog2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
-	private static final int SIZE_BITS_Z = SIZE_BITS_X;
-	public static final int SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
-	private static final long BITS_X = (1L << SIZE_BITS_X) - 1L;
+	public static final int SIZE_BITS_XZ = 1 + MathHelper.floorLog2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
+	public static final int SIZE_BITS_Y = 64 - 2 * SIZE_BITS_XZ;
+	private static final long BITS_X = (1L << SIZE_BITS_XZ) - 1L;
 	private static final long BITS_Y = (1L << SIZE_BITS_Y) - 1L;
-	private static final long BITS_Z = (1L << SIZE_BITS_Z) - 1L;
+	private static final long BITS_Z = (1L << SIZE_BITS_XZ) - 1L;
 	private static final int field_33083 = 0;
 	private static final int BIT_SHIFT_Z = SIZE_BITS_Y;
-	private static final int BIT_SHIFT_X = SIZE_BITS_Y + SIZE_BITS_Z;
+	private static final int BIT_SHIFT_X = SIZE_BITS_Y + SIZE_BITS_XZ;
+	public static final int MAX_XZ = (1 << SIZE_BITS_XZ) / 2 - 1;
 
 	public BlockPos(int i, int j, int k) {
 		super(i, j, k);
@@ -83,7 +83,7 @@ public class BlockPos extends Vec3i {
 	}
 
 	public static int unpackLongX(long packedPos) {
-		return (int)(packedPos << 64 - BIT_SHIFT_X - SIZE_BITS_X >> 64 - SIZE_BITS_X);
+		return (int)(packedPos << 64 - BIT_SHIFT_X - SIZE_BITS_XZ >> 64 - SIZE_BITS_XZ);
 	}
 
 	public static int unpackLongY(long packedPos) {
@@ -91,7 +91,7 @@ public class BlockPos extends Vec3i {
 	}
 
 	public static int unpackLongZ(long packedPos) {
-		return (int)(packedPos << 64 - BIT_SHIFT_Z - SIZE_BITS_Z >> 64 - SIZE_BITS_Z);
+		return (int)(packedPos << 64 - BIT_SHIFT_Z - SIZE_BITS_XZ >> 64 - SIZE_BITS_XZ);
 	}
 
 	public static BlockPos fromLong(long packedPos) {

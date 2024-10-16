@@ -26,4 +26,8 @@ public record GlobalPos(RegistryKey<World> dimension, BlockPos pos) {
 	public String toString() {
 		return this.dimension + " " + this.pos;
 	}
+
+	public boolean isWithinRange(RegistryKey<World> dimension, BlockPos otherPos, int maxDistance) {
+		return this.dimension.equals(dimension) && this.pos.getChebyshevDistance(otherPos) <= maxDistance;
+	}
 }

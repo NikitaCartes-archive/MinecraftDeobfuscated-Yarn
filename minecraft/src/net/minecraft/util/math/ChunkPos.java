@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Util;
+import net.minecraft.world.chunk.ChunkGenerationSteps;
+import net.minecraft.world.chunk.ChunkStatus;
 
 /**
  * An immutable pair of two integers representing the X and Z coordinates of a chunk.
@@ -39,6 +41,8 @@ public class ChunkPos {
 	 * special value used as a marker.
 	 */
 	public static final long MARKER = toLong(1875066, 1875066);
+	private static final int field_54976 = (32 + ChunkGenerationSteps.GENERATION.get(ChunkStatus.FULL).accumulatedDependencies().size() + 1) * 2;
+	public static final int MAX_COORDINATE = ChunkSectionPos.getSectionCoord(BlockPos.MAX_XZ) - field_54976;
 	/**
 	 * The origin of the chunk position, {@code 0, 0}.
 	 */

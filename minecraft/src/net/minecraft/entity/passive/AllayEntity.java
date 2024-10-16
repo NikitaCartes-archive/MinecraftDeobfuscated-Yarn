@@ -83,6 +83,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private static final float field_39463 = 15.0F;
 	private static final int DUPLICATION_COOLDOWN = 6000;
 	private static final int field_39679 = 3;
+	public static final int field_54974 = 1024;
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CAN_DUPLICATE = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
@@ -616,7 +617,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 					return true;
 				} else {
 					GlobalPos globalPos = (GlobalPos)optional.get();
-					return globalPos.dimension().equals(world.getRegistryKey()) && globalPos.pos().equals(pos);
+					return globalPos.isWithinRange(world.getRegistryKey(), AllayEntity.this.getBlockPos(), 1024) && globalPos.pos().equals(pos);
 				}
 			}
 		}

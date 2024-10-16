@@ -130,7 +130,7 @@ public class AllayBrain {
 	private static boolean shouldGoTowardsNoteBlock(LivingEntity allay, Brain<?> brain, GlobalPos pos) {
 		Optional<Integer> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS);
 		World world = allay.getWorld();
-		return world.getRegistryKey() == pos.dimension() && world.getBlockState(pos.pos()).isOf(Blocks.NOTE_BLOCK) && optional.isPresent();
+		return pos.isWithinRange(world.getRegistryKey(), allay.getBlockPos(), 1024) && world.getBlockState(pos.pos()).isOf(Blocks.NOTE_BLOCK) && optional.isPresent();
 	}
 
 	private static Optional<LookTarget> getLikedLookTarget(LivingEntity allay) {

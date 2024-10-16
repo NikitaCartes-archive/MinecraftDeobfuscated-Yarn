@@ -202,7 +202,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		if (this.hasHive()) {
+		if (this.hasHivePos()) {
 			nbt.put("hive_pos", NbtHelper.fromBlockPos(this.getHivePos()));
 		}
 
@@ -402,12 +402,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	private boolean isHiveNearFire() {
-		if (this.hivePos == null) {
-			return false;
-		} else {
-			BlockEntity blockEntity = this.getWorld().getBlockEntity(this.hivePos);
-			return blockEntity instanceof BeehiveBlockEntity && ((BeehiveBlockEntity)blockEntity).isNearFire();
-		}
+		BeehiveBlockEntity beehiveBlockEntity = this.getHive();
+		return beehiveBlockEntity != null && beehiveBlockEntity.isNearFire();
 	}
 
 	@Override
@@ -442,7 +438,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Debug
-	public boolean hasHive() {
+	public boolean hasHivePos() {
 		return this.hivePos != null;
 	}
 
@@ -493,21 +489,23 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 			boolean bl = this.hasAngerTime() && !this.hasStung() && this.getTarget() != null && this.getTarget().squaredDistanceTo(this) < 4.0;
 			this.setNearTarget(bl);
-			if (this.age % 20 == 0 && !this.isHiveValid()) {
+			if (this.age % 20 == 0 && !this.hasValidHive()) {
 				this.hivePos = null;
 			}
 		}
 	}
 
-	boolean isHiveValid() {
-		if (!this.hasHive()) {
-			return false;
-		} else if (this.isTooFar(this.hivePos)) {
-			return false;
+	@Nullable
+	BeehiveBlockEntity getHive() {
+		if (this.hivePos == null) {
+			return null;
 		} else {
-			BlockEntity blockEntity = this.getWorld().getBlockEntity(this.hivePos);
-			return blockEntity != null && blockEntity.getType() == BlockEntityType.BEEHIVE;
+			return this.isTooFar(this.hivePos) ? null : (BeehiveBlockEntity)this.getWorld().getBlockEntity(this.hivePos, BlockEntityType.BEEHIVE).orElse(null);
 		}
+	}
+
+	boolean hasValidHive() {
+		return this.getHive() != null;
 	}
 
 	public boolean hasNectar() {
@@ -727,7 +725,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		@Nullable
 		private Vec3d getRandomLocation() {
 			Vec3d vec3d2;
-			if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, this.getMaxWanderDistance())) {
+			if (BeeEntity.this.hasValidHive() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, this.getMaxWanderDistance())) {
 				Vec3d vec3d = Vec3d.ofCenter(BeeEntity.this.hivePos);
 				vec3d2 = vec3d.subtract(BeeEntity.this.getPos()).normalize();
 			} else {
@@ -740,7 +738,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		}
 
 		private int getMaxWanderDistance() {
-			int i = !BeeEntity.this.hasHive() && !BeeEntity.this.hasFlower() ? 16 : 24;
+			int i = !BeeEntity.this.hasHivePos() && !BeeEntity.this.hasFlower() ? 16 : 24;
 			return 48 - i;
 		}
 	}
@@ -748,15 +746,15 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	class EnterHiveGoal extends BeeEntity.NotAngryGoal {
 		@Override
 		public boolean canBeeStart() {
-			if (BeeEntity.this.hasHive()
-				&& BeeEntity.this.canEnterHive()
-				&& BeeEntity.this.hivePos.isWithinDistance(BeeEntity.this.getPos(), 2.0)
-				&& BeeEntity.this.getWorld().getBlockEntity(BeeEntity.this.hivePos) instanceof BeehiveBlockEntity beehiveBlockEntity) {
-				if (!beehiveBlockEntity.isFullOfBees()) {
-					return true;
-				}
+			if (BeeEntity.this.hivePos != null && BeeEntity.this.canEnterHive() && BeeEntity.this.hivePos.isWithinDistance(BeeEntity.this.getPos(), 2.0)) {
+				BeehiveBlockEntity beehiveBlockEntity = BeeEntity.this.getHive();
+				if (beehiveBlockEntity != null) {
+					if (!beehiveBlockEntity.isFullOfBees()) {
+						return true;
+					}
 
-				BeeEntity.this.hivePos = null;
+					BeeEntity.this.hivePos = null;
+				}
 			}
 
 			return false;
@@ -769,7 +767,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 		@Override
 		public void start() {
-			if (BeeEntity.this.getWorld().getBlockEntity(BeeEntity.this.hivePos) instanceof BeehiveBlockEntity beehiveBlockEntity) {
+			BeehiveBlockEntity beehiveBlockEntity = BeeEntity.this.getHive();
+			if (beehiveBlockEntity != null) {
 				beehiveBlockEntity.tryEnterHive(BeeEntity.this);
 			}
 		}
@@ -778,7 +777,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	class FindHiveGoal extends BeeEntity.NotAngryGoal {
 		@Override
 		public boolean canBeeStart() {
-			return BeeEntity.this.ticksLeftToFindHive == 0 && !BeeEntity.this.hasHive() && BeeEntity.this.canEnterHive();
+			return BeeEntity.this.ticksLeftToFindHive == 0 && !BeeEntity.this.hasHivePos() && BeeEntity.this.canEnterHive();
 		}
 
 		@Override
@@ -824,7 +823,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			if (BeeEntity.this.getCropsGrownSincePollination() >= 10) {
 				return false;
 			} else {
-				return BeeEntity.this.random.nextFloat() < 0.3F ? false : BeeEntity.this.hasNectar() && BeeEntity.this.isHiveValid();
+				return BeeEntity.this.random.nextFloat() < 0.3F ? false : BeeEntity.this.hasNectar() && BeeEntity.this.hasValidHive();
 			}
 		}
 
@@ -949,6 +948,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		@Override
 		public boolean canBeeStart() {
 			return BeeEntity.this.hivePos != null
+				&& !BeeEntity.this.isTooFar(BeeEntity.this.hivePos)
 				&& !BeeEntity.this.hasPositionTarget()
 				&& BeeEntity.this.canEnterHive()
 				&& !this.isCloseEnough(BeeEntity.this.hivePos)
@@ -1007,7 +1007,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		}
 
 		private boolean startMovingToFar(BlockPos pos) {
-			int i = BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 3) ? 1 : 2;
+			int i = BeeEntity.this.isWithinDistance(pos, 3) ? 1 : 2;
 			BeeEntity.this.navigation.setRangeMultiplier(10.0F);
 			BeeEntity.this.navigation.startMovingTo((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), i, 1.0);
 			return BeeEntity.this.navigation.getCurrentPath() != null && BeeEntity.this.navigation.getCurrentPath().reachesTarget();
@@ -1325,7 +1325,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 		@Override
 		public void start() {
-			if (BeeEntity.this.hivePos != null && BeeEntity.this.getWorld().isPosLoaded(BeeEntity.this.hivePos) && !BeeEntity.this.isHiveValid()) {
+			if (BeeEntity.this.hivePos != null && BeeEntity.this.getWorld().isPosLoaded(BeeEntity.this.hivePos) && !BeeEntity.this.hasValidHive()) {
 				BeeEntity.this.clearHivePos();
 			}
 

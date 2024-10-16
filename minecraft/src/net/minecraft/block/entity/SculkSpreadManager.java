@@ -47,6 +47,7 @@ public class SculkSpreadManager {
 	public static final float field_37611 = 0.5F;
 	private static final int MAX_CURSORS = 32;
 	public static final int field_37612 = 11;
+	public static final int MAX_CURSOR_DISTANCE = 1024;
 	final boolean worldGen;
 	private final TagKey<Block> replaceableTag;
 	private final int extraBlockChance;
@@ -151,22 +152,24 @@ public class SculkSpreadManager {
 			Object2IntMap<BlockPos> object2IntMap = new Object2IntOpenHashMap<>();
 
 			for (SculkSpreadManager.Cursor cursor : this.cursors) {
-				cursor.spread(world, pos, random, this, shouldConvertToBlock);
-				if (cursor.charge <= 0) {
-					world.syncWorldEvent(WorldEvents.SCULK_CHARGE, cursor.getPos(), 0);
-				} else {
-					BlockPos blockPos = cursor.getPos();
-					object2IntMap.computeInt(blockPos, (posx, charge) -> (charge == null ? 0 : charge) + cursor.charge);
-					SculkSpreadManager.Cursor cursor2 = (SculkSpreadManager.Cursor)map.get(blockPos);
-					if (cursor2 == null) {
-						map.put(blockPos, cursor);
-						list.add(cursor);
-					} else if (!this.isWorldGen() && cursor.charge + cursor2.charge <= 1000) {
-						cursor2.merge(cursor);
+				if (!cursor.isTooFarFrom(pos)) {
+					cursor.spread(world, pos, random, this, shouldConvertToBlock);
+					if (cursor.charge <= 0) {
+						world.syncWorldEvent(WorldEvents.SCULK_CHARGE, cursor.getPos(), 0);
 					} else {
-						list.add(cursor);
-						if (cursor.charge < cursor2.charge) {
+						BlockPos blockPos = cursor.getPos();
+						object2IntMap.computeInt(blockPos, (posx, charge) -> (charge == null ? 0 : charge) + cursor.charge);
+						SculkSpreadManager.Cursor cursor2 = (SculkSpreadManager.Cursor)map.get(blockPos);
+						if (cursor2 == null) {
 							map.put(blockPos, cursor);
+							list.add(cursor);
+						} else if (!this.isWorldGen() && cursor.charge + cursor2.charge <= 1000) {
+							cursor2.merge(cursor);
+						} else {
+							list.add(cursor);
+							if (cursor.charge < cursor2.charge) {
+								map.put(blockPos, cursor);
+							}
 						}
 					}
 				}
@@ -231,6 +234,10 @@ public class SculkSpreadManager {
 
 		public BlockPos getPos() {
 			return this.pos;
+		}
+
+		boolean isTooFarFrom(BlockPos pos) {
+			return this.pos.getChebyshevDistance(pos) > 1024;
 		}
 
 		public int getCharge() {

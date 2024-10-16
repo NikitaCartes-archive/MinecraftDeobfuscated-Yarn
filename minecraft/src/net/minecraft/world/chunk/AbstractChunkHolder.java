@@ -37,6 +37,9 @@ public abstract class AbstractChunkHolder {
 
 	public AbstractChunkHolder(ChunkPos pos) {
 		this.pos = pos;
+		if (pos.getChebyshevDistance(ChunkPos.ORIGIN) > ChunkPos.MAX_COORDINATE) {
+			throw new IllegalStateException("Trying to create chunk out of reasonable bounds: " + pos);
+		}
 	}
 
 	public CompletableFuture<OptionalChunk<Chunk>> load(ChunkStatus requestedStatus, ServerChunkLoadingManager chunkLoadingManager) {

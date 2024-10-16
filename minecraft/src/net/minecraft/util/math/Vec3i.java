@@ -353,6 +353,21 @@ public class Vec3i implements Comparable<Vec3i> {
 	}
 
 	/**
+	 * {@return the Chebyshev distance between here and {@code vec}}
+	 * 
+	 * <p>Chebyshev distance, also called chessboard distance, is the distance measured
+	 * as the greatest of the differences of any of their coordinates.
+	 * For example, the Chebyshev distance between {@code (0, 0, 0)} and {@code (3, 5, 1)}
+	 * is {@code 5}.
+	 */
+	public int getChebyshevDistance(Vec3i vec) {
+		int i = Math.abs(this.getX() - vec.getX());
+		int j = Math.abs(this.getY() - vec.getY());
+		int k = Math.abs(this.getZ() - vec.getZ());
+		return Math.max(Math.max(i, j), k);
+	}
+
+	/**
 	 * {@return the component on the {@code axis} axis}
 	 */
 	public int getComponentAlongAxis(Direction.Axis axis) {

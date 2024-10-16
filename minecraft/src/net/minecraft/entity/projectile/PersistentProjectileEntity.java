@@ -146,7 +146,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public void setVelocityClient(double x, double y, double z) {
-		super.setVelocityClient(x, y, z);
+		this.setVelocity(x, y, z);
 		this.life = 0;
 		if (this.isInGround() && MathHelper.squaredMagnitude(x, y, z) > 0.0) {
 			this.setInGround(false);
@@ -165,14 +165,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	public void tick() {
 		boolean bl = !this.isNoClip();
 		Vec3d vec3d = this.getVelocity();
-		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			double d = vec3d.horizontalLength();
-			this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
-			this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI));
-			this.prevYaw = this.getYaw();
-			this.prevPitch = this.getPitch();
-		}
-
 		BlockPos blockPos = this.getBlockPos();
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		if (!blockState.isAir() && bl) {

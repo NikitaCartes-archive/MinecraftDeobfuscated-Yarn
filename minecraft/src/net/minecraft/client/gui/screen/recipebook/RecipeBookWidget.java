@@ -297,6 +297,7 @@ public abstract class RecipeBookWidget<T extends AbstractRecipeScreenHandler> im
 		this.recipeFinder.clear();
 		this.client.player.getInventory().populateRecipeFinder(this.recipeFinder);
 		this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
+		this.populateAllRecipes();
 		this.refreshResults(false, this.isFilteringCraftable());
 	}
 
