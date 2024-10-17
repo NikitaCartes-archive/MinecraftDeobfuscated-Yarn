@@ -2783,7 +2783,11 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 	public boolean startRiding(Entity entity, boolean force) {
 		if (entity == this.vehicle) {
 			return false;
-		} else if (entity.couldAcceptPassenger() && entity.type.isSaveable()) {
+		} else if (!entity.couldAcceptPassenger()) {
+			return false;
+		} else if (!this.getWorld().isClient() && !entity.type.isSaveable()) {
+			return false;
+		} else {
 			for (Entity entity2 = entity; entity2.vehicle != null; entity2 = entity2.vehicle) {
 				if (entity2.vehicle == this) {
 					return false;
@@ -2805,8 +2809,6 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 			} else {
 				return false;
 			}
-		} else {
-			return false;
 		}
 	}
 

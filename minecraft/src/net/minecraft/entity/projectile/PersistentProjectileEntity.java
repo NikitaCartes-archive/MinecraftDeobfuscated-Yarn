@@ -246,7 +246,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			this.applyDrag();
-			if (bl) {
+			if (bl && !this.isInGround()) {
 				this.applyGravity();
 			}
 

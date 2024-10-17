@@ -140,13 +140,13 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 	}
 
 	protected void executeTask(R task) {
-		try {
-			try (Zone zone = TracyClient.beginZone("Task", SharedConstants.isDevelopment)) {
-				task.run();
-			}
+		try (Zone zone = TracyClient.beginZone("Task", SharedConstants.isDevelopment)) {
+			task.run();
 		} catch (Exception var7) {
 			LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", this.getName(), var7);
-			throw var7;
+			if (isMemoryError(var7)) {
+				throw var7;
+			}
 		}
 	}
 
