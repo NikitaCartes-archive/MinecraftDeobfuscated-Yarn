@@ -954,18 +954,15 @@ public abstract class Entity implements DataTracked, Nameable, EntityLike, Score
 			boolean bl = !MathHelper.approximatelyEquals(movement.x, vec3d.x);
 			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.horizontalCollision = bl || bl2;
-			if (Math.abs(movement.y) > 0.0 || this.isLocalPlayerOrLogicalSideForUpdatingMovement()) {
-				this.verticalCollision = movement.y != vec3d.y;
-				this.groundCollision = this.verticalCollision && movement.y < 0.0;
-				this.setMovement(this.groundCollision, this.horizontalCollision, vec3d);
-			}
-
+			this.verticalCollision = movement.y != vec3d.y;
+			this.groundCollision = this.verticalCollision && movement.y < 0.0;
 			if (this.horizontalCollision) {
 				this.collidedSoftly = this.hasCollidedSoftly(vec3d);
 			} else {
 				this.collidedSoftly = false;
 			}
 
+			this.setMovement(this.groundCollision, this.horizontalCollision, vec3d);
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			if (!this.getWorld().isClient() || this.isLogicalSideForUpdatingMovement()) {

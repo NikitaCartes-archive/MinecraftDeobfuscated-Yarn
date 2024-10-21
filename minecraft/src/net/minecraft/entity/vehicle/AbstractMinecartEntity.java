@@ -386,6 +386,16 @@ public abstract class AbstractMinecartEntity extends VehicleEntity {
 			}
 		} else {
 			super.move(type, movement);
+			this.tickBlockCollision();
+		}
+	}
+
+	@Override
+	public void tickBlockCollision() {
+		if (!areMinecartImprovementsEnabled(this.getWorld())) {
+			this.tickBlockCollision(this.getPos(), this.getPos());
+		} else {
+			super.tickBlockCollision();
 		}
 	}
 

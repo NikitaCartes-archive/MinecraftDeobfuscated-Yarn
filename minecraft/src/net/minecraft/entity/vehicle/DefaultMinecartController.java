@@ -105,7 +105,6 @@ public class DefaultMinecartController extends MinecartController {
 			}
 
 			this.minecart.tickBlockCollision();
-			this.minecart.tickBlockCollision();
 			this.setPitch(0.0F);
 			double d = this.minecart.prevX - this.getX();
 			double e = this.minecart.prevZ - this.getZ();

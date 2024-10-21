@@ -180,8 +180,12 @@ public class ChunkHolder extends AbstractChunkHolder {
 		}
 	}
 
+	public boolean hasPendingUpdates() {
+		return this.pendingBlockUpdates || !this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty();
+	}
+
 	public void flushUpdates(WorldChunk chunk) {
-		if (this.pendingBlockUpdates || !this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty()) {
+		if (this.hasPendingUpdates()) {
 			World world = chunk.getWorld();
 			if (!this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty()) {
 				List<ServerPlayerEntity> list = this.playersWatchingChunkProvider.getPlayersWatchingChunk(this.pos, true);

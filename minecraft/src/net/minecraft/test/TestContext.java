@@ -54,6 +54,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -693,7 +694,8 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockEntity blockEntity = this.getWorld().getBlockEntity(blockPos);
 		if (!(blockEntity instanceof LockableContainerBlockEntity)) {
-			throw new GameTestException("Expected a container at " + pos + ", found " + Registries.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
+			Identifier identifier = blockEntity != null ? Registries.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()) : null;
+			throw new GameTestException("Expected a container at " + pos + ", found " + identifier);
 		} else if (((LockableContainerBlockEntity)blockEntity).count(item) != 1) {
 			throw new GameTestException("Container should contain: " + item);
 		}

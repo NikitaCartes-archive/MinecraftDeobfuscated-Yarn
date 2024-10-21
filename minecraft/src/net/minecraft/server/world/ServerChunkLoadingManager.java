@@ -693,9 +693,9 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 				this.world.disableTickSchedulers(worldChunk);
 				CompletableFuture<?> completableFuturex = holder.getPostProcessingFuture();
 				if (completableFuturex.isDone()) {
-					this.sendToPlayers(worldChunk);
+					this.sendToPlayers(holder, worldChunk);
 				} else {
-					completableFuturex.thenAcceptAsync(v -> this.sendToPlayers(worldChunk), this.mainThreadExecutor);
+					completableFuturex.thenAcceptAsync(object -> this.sendToPlayers(holder, worldChunk), this.mainThreadExecutor);
 				}
 
 				return worldChunk;
@@ -707,7 +707,7 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 		return completableFuture2;
 	}
 
-	private void sendToPlayers(WorldChunk chunk) {
+	private void sendToPlayers(ChunkHolder chunkHolder, WorldChunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
 
 		for (ServerPlayerEntity serverPlayerEntity : this.playerChunkWatchingManager.getPlayersWatchingChunk()) {
@@ -715,6 +715,8 @@ public class ServerChunkLoadingManager extends VersionedChunkStorage implements 
 				track(serverPlayerEntity, chunk);
 			}
 		}
+
+		this.world.getChunkManager().markForUpdate(chunkHolder);
 	}
 
 	public CompletableFuture<OptionalChunk<WorldChunk>> makeChunkAccessible(ChunkHolder holder) {

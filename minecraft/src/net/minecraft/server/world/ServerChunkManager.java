@@ -569,6 +569,12 @@ public class ServerChunkManager extends ChunkManager {
 		this.ticketManager.removePersistentTickets();
 	}
 
+	public void markForUpdate(ChunkHolder chunkHolder) {
+		if (chunkHolder.hasPendingUpdates()) {
+			this.chunksToBroadcastUpdate.add(chunkHolder);
+		}
+	}
+
 	static record ChunkWithHolder(WorldChunk chunk, ChunkHolder holder) {
 	}
 
