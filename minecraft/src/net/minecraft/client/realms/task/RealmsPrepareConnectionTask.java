@@ -136,9 +136,9 @@ public class RealmsPrepareConnectionTask extends LongRunningTask {
 
 	private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address, UUID id) {
 		try {
-			if (address.resourcePackUrl != null) {
+			if (address.resourcePackUrl == null) {
 				return CompletableFuture.failedFuture(new IllegalStateException("resourcePackUrl was null"));
-			} else if (address.resourcePackHash != null) {
+			} else if (address.resourcePackHash == null) {
 				return CompletableFuture.failedFuture(new IllegalStateException("resourcePackHash was null"));
 			} else {
 				ServerResourcePackLoader serverResourcePackLoader = MinecraftClient.getInstance().getServerResourcePackProvider();

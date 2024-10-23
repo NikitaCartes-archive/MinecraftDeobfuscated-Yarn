@@ -12,11 +12,11 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = false;
 	@Deprecated
-	public static final int WORLD_VERSION = 4080;
+	public static final int WORLD_VERSION = 4082;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.21.2";
+	public static final String VERSION_NAME = "1.21.3";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 768;
 	@Deprecated

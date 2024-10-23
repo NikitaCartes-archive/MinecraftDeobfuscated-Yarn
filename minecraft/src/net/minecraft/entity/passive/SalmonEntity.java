@@ -149,7 +149,7 @@ public class SalmonEntity extends SchoolingFishEntity implements VariantHolder<S
 		}
 
 		static SalmonEntity.Variant byId(String id) {
-			return (SalmonEntity.Variant)CODEC.byId(id, SMALL);
+			return (SalmonEntity.Variant)CODEC.byId(id, MEDIUM);
 		}
 	}
 }
